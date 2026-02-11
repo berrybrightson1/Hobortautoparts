@@ -20,10 +20,12 @@ export default function QuotePage() {
         vin: "",
         year: "",
         make: "",
-        model: ""
+        model: "",
+        submodel: "",
+        engine: ""
     })
 
-    const isStep1Valid = formData.vin && formData.year && formData.make && formData.model
+    const isStep1Valid = formData.vin && formData.year && formData.make && formData.model && formData.submodel && formData.engine
 
     // VIN detection logic
     useEffect(() => {
@@ -37,13 +39,19 @@ export default function QuotePage() {
                     const year = results.find((r: any) => r.Variable === "Model Year")?.Value
                     const make = results.find((r: any) => r.Variable === "Make")?.Value
                     const model = results.find((r: any) => r.Variable === "Model")?.Value
+                    const submodel = results.find((r: any) => r.Variable === "Trim")?.Value
+                    const engineDisp = results.find((r: any) => r.Variable === "Displacement (L)")?.Value
+                    const engineCyl = results.find((r: any) => r.Variable === "Engine Number of Cylinders")?.Value
+                    const engine = engineDisp ? `${engineDisp}L ${engineCyl ? engineCyl + 'cyl' : ''}` : results.find((r: any) => r.Variable === "Engine Model")?.Value
 
-                    if (year || make || model) {
+                    if (year || make || model || submodel || engine) {
                         setFormData(prev => ({
                             ...prev,
                             year: year || prev.year,
                             make: make || prev.make,
-                            model: model || prev.model
+                            model: model || prev.model,
+                            submodel: submodel || prev.submodel,
+                            engine: engine || prev.engine
                         }))
                     }
                 } catch (error) {
@@ -222,6 +230,30 @@ export default function QuotePage() {
                                                     required
                                                     value={formData.model}
                                                     onChange={(e) => setFormData({ ...formData, model: e.target.value })}
+                                                    className="h-14 rounded-2xl border-primary-blue/10 bg-primary-blue/5 focus:bg-white transition-all font-black placeholder:font-bold"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div className="space-y-2.5">
+                                                <Label htmlFor="submodel" className="ml-1 text-[10px] font-black text-primary-blue/80 uppercase tracking-widest">Sub-Model / Trim</Label>
+                                                <Input
+                                                    id="submodel"
+                                                    placeholder="e.g. AMG Line / SE"
+                                                    required
+                                                    value={formData.submodel}
+                                                    onChange={(e) => setFormData({ ...formData, submodel: e.target.value })}
+                                                    className="h-14 rounded-2xl border-primary-blue/10 bg-primary-blue/5 focus:bg-white transition-all font-black placeholder:font-bold"
+                                                />
+                                            </div>
+                                            <div className="space-y-2.5">
+                                                <Label htmlFor="engine" className="ml-1 text-[10px] font-black text-primary-blue/80 uppercase tracking-widest">Engine Configuration</Label>
+                                                <Input
+                                                    id="engine"
+                                                    placeholder="e.g. 2.0L I4 / 4.0L V8"
+                                                    required
+                                                    value={formData.engine}
+                                                    onChange={(e) => setFormData({ ...formData, engine: e.target.value })}
                                                     className="h-14 rounded-2xl border-primary-blue/10 bg-primary-blue/5 focus:bg-white transition-all font-black placeholder:font-bold"
                                                 />
                                             </div>
