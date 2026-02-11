@@ -28,31 +28,31 @@ const itemVariants = {
 export default function LandingPage() {
   const [testimonialPage, setTestimonialPage] = useState(0)
   const isMobile = useMediaQuery("(max-width: 768px)")
-  const itemsPerPage = isMobile ? 1 : 4
+  const itemsPerPage = isMobile ? 1 : 2 // Only 2 per page on desktop to guarantee landscape aspect ratio
 
   const testimonials = [
     {
-      quote: "Hobort is the only sourcing hub I trust for my clients' high-end American imports. The VIN verification is flawless.",
+      quote: "The only sourcing hub I trust for high-end US imports. VIN verification is simply flawless.",
       author: "Samuel Osei",
-      role: "CEO and Co-founder",
+      role: "CEO — Accra, GH",
       avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Samuel"
     },
     {
-      quote: "Finally, a logistics partner that understands the urgency of a repair shop. Parts arrive on schedule, every time.",
+      quote: "Parts arrive on schedule, every time. A partner that understands the urgency of a repair shop.",
       author: "Kofi Boateng",
-      role: "Operations Director",
+      role: "Ops Director — Kumasi",
       avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Kofi"
     },
     {
-      quote: "The direct sourcing from US elite hubs has cut our procurement costs by 22% this quarter alone.",
+      quote: "Direct sourcing cut our procurement costs by 22% this quarter. Unmatchable value.",
       author: "Emmanuel Mensah",
-      role: "Fleet Manager",
+      role: "Fleet Manager — Tema",
       avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Emmanuel"
     },
     {
       quote: "Zero hassle. They handle the NJ export and Tema clearance while I focus on fixing cars.",
       author: "Prince Appiah",
-      role: "Garage Owner",
+      role: "Garage Owner — Accra",
       avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Prince"
     }
   ]
@@ -110,9 +110,11 @@ export default function LandingPage() {
                   Request a Quote <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
-              <Button variant="outline" size="lg" className="rounded-full px-10 h-14 text-lg border-2">
-                <Play className="mr-2 h-4 w-4 fill-primary-blue" /> How it Works
-              </Button>
+              <Link href="/services">
+                <Button variant="outline" size="lg" className="rounded-full px-10 h-14 text-lg border-2">
+                  <Play className="mr-2 h-4 w-4 fill-primary-blue" /> How it Works
+                </Button>
+              </Link>
             </div>
 
             {/* Premium Tracking Widget (Redesigned) */}
@@ -313,7 +315,7 @@ export default function LandingPage() {
             </div>
 
             {/* Step 4: 4-Set Horizontal Smooth Testimonial Slider */}
-            <div className="mt-20 w-full max-w-[90rem] mx-auto px-4 overflow-hidden">
+            <div className="mt-20 w-full max-w-[115rem] mx-auto px-4 overflow-hidden">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={testimonialPage}
@@ -321,21 +323,21 @@ export default function LandingPage() {
                   animate={{ x: 0, opacity: 1 }}
                   exit={{ x: -100, opacity: 0 }}
                   transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8"
+                  className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12"
                 >
                   {testimonials.slice(testimonialPage * itemsPerPage, (testimonialPage * itemsPerPage) + itemsPerPage).map((testimonial, i) => (
                     <div
                       key={i}
-                      className="relative h-full min-h-[320px] bg-slate-50/50 rounded-[2.5rem] border border-slate-100 p-8 flex flex-col justify-between transition-all duration-500 hover:shadow-xl hover:bg-white group/testimonial"
+                      className="relative min-h-[280px] w-full bg-slate-50/50 rounded-[3rem] border border-white p-10 flex flex-col justify-between transition-all duration-500 hover:shadow-xl hover:bg-white group/testimonial overflow-hidden shadow-sm"
                     >
                       <div className="flex flex-col gap-4">
-                        <Quote className="h-10 w-10 text-primary-blue/20 fill-primary-blue/5" />
-                        <p className="text-lg font-medium text-slate-700 leading-relaxed tracking-tight text-left">
-                          {testimonial.quote}
+                        <Quote className="h-8 w-8 text-primary-blue/20 fill-primary-blue/5" />
+                        <p className="text-lg font-medium text-slate-700 leading-snug tracking-tight text-left italic">
+                          "{testimonial.quote}"
                         </p>
                       </div>
 
-                      <div className="flex items-center gap-4 mt-8 pt-6 border-t border-slate-100">
+                      <div className="flex items-center gap-4 pt-6 mt-6 border-t border-slate-200/20">
                         <div className="h-12 w-12 rounded-full overflow-hidden bg-slate-200 ring-4 ring-white shadow-sm shrink-0">
                           <img
                             src={testimonial.avatar}
@@ -344,8 +346,8 @@ export default function LandingPage() {
                           />
                         </div>
                         <div className="flex flex-col min-w-0 text-left">
-                          <p className="text-base font-bold text-primary-blue truncate">{testimonial.author}</p>
-                          <p className="text-[10px] font-black text-slate-400 truncate uppercase tracking-[0.2em]">{testimonial.role}</p>
+                          <p className="text-base font-black text-primary-blue truncate tracking-tight">{testimonial.author}</p>
+                          <p className="text-[10px] font-bold text-slate-400 truncate uppercase tracking-[0.2em]">{testimonial.role}</p>
                         </div>
                       </div>
                     </div>
@@ -355,20 +357,19 @@ export default function LandingPage() {
 
               {/* Set-based Pagination Dots */}
               <div className="mt-16 flex justify-center gap-3">
-                {[...Array(isMobile ? 3 : totalPages)].map((_, i) => (
+                {[...Array(totalPages)].map((_, i) => (
                   <button
                     key={i}
                     onClick={() => {
-                      if (!isMobile) setTestimonialPage(i)
+                      setTestimonialPage(i)
                     }}
                     className={cn(
                       "h-1.5 rounded-full transition-all duration-700",
-                      i === (isMobile ? testimonialPage % 3 : testimonialPage)
+                      i === testimonialPage
                         ? "bg-primary-orange w-12"
                         : "bg-slate-200 w-3"
                     )}
                     aria-label={`Go to testimonial page ${i + 1}`}
-                    disabled={isMobile}
                   />
                 ))}
               </div>

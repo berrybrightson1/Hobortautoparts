@@ -22,7 +22,7 @@ export function Footer() {
                 <div className="flex flex-wrap items-center justify-center gap-10 text-sm font-black uppercase tracking-widest text-blue-100">
                     <Link href="/about" className="hover:text-primary-orange transition-colors">About Us</Link>
                     <Link href="/services" className="hover:text-primary-orange transition-colors">Services</Link>
-                    <Link href="/dashboard" className="hover:text-primary-orange transition-colors">Portal</Link>
+                    <Link href="/portal" className="hover:text-primary-orange transition-colors">Portal</Link>
                     <Link href="/quote" className="hover:text-primary-orange transition-colors">Scout Request</Link>
                 </div>
 
