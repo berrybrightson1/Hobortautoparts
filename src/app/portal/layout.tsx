@@ -50,7 +50,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
     const [sidebarOpen, setSidebarOpen] = React.useState(true)
     const [showLogoutDialog, setShowLogoutDialog] = React.useState(false)
 
-    const currentNav = NAV_ITEMS[role] || NAV_ITEMS.customer
+    const currentNav = (role ? NAV_ITEMS[role as keyof typeof NAV_ITEMS] : null) || NAV_ITEMS.customer
 
     return (
         <div className="flex h-screen bg-slate-50">

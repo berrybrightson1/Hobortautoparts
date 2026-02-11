@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-export type UserRole = 'customer' | 'agent' | 'admin'
+export type UserRole = 'customer' | 'agent' | 'admin' | null
 
 export interface OrderRequest {
     id: string
@@ -26,6 +26,7 @@ export interface Notification {
 
 interface PortalState {
     role: UserRole
+    isAuthenticated: boolean
     orders: OrderRequest[]
     notifications: Notification[]
     setRole: (role: UserRole) => void
@@ -39,7 +40,8 @@ interface PortalState {
 export const usePortalStore = create<PortalState>()(
     persist(
         (set) => ({
-            role: 'customer',
+            role: null,
+            isAuthenticated: false,
             orders: [],
             notifications: [
                 {
@@ -59,7 +61,7 @@ export const usePortalStore = create<PortalState>()(
                     type: 'system'
                 }
             ],
-            setRole: (role) => set({ role }),
+            setRole: (role) => set({ role, isAuthenticated: !!role }),
             addOrder: (order) => set((state) => ({
                 orders: [
                     {

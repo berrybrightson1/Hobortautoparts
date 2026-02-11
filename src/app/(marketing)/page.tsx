@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import { Search, ShieldCheck, Zap, Truck, Star, ArrowRight, Play, Quote } from "lucide-react"
+import { Search, ShieldCheck, Zap, Truck, Star, ArrowRight, Play, Quote, BadgePercent } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
@@ -28,32 +28,44 @@ const itemVariants = {
 export default function LandingPage() {
   const [testimonialPage, setTestimonialPage] = useState(0)
   const isMobile = useMediaQuery("(max-width: 768px)")
-  const itemsPerPage = isMobile ? 1 : 2 // Only 2 per page on desktop to guarantee landscape aspect ratio
+  const itemsPerPage = isMobile ? 1 : 3 // 3 per page on desktop for a full-width experience
 
   const testimonials = [
     {
-      quote: "The only sourcing hub I trust for high-end US imports. VIN verification is simply flawless.",
+      quote: "The Georgia export hub is a game changer. I get my US imports faster and cheaper than ever before. Unbeatable service!",
+      author: "BBL Drizzy",
+      role: "Luxury Fleet Owner — Accra",
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Drizzy"
+    },
+    {
+      quote: "VIN verification is 100% accurate. I've never had a part fitment issue since I started sourcing through Hobort.",
+      author: "Berry Brightson",
+      role: "Master Technician — Kumasi",
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Berry"
+    },
+    {
+      quote: "Direct sourcing from the US has cut my procurement costs significantly. Hobort is the most reliable partner in Ghana.",
       author: "Samuel Osei",
-      role: "CEO — Accra, GH",
+      role: "CEO, Osei Garages — Accra",
       avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Samuel"
     },
     {
-      quote: "Parts arrive on schedule, every time. A partner that understands the urgency of a repair shop.",
+      quote: "From the US Logistics Center to the Accra Pickup point, the transparency is incredible. I always know where my parts are.",
       author: "Kofi Boateng",
-      role: "Ops Director — Kumasi",
+      role: "Ops Director — Tema",
       avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Kofi"
     },
     {
-      quote: "Direct sourcing cut our procurement costs by 22% this quarter. Unmatchable value.",
-      author: "Emmanuel Mensah",
-      role: "Fleet Manager — Tema",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Emmanuel"
+      quote: "Finally a company that understands the urgency of a professional garage. Fast shipping and genuine OEM quality every time.",
+      author: "Daniel Asante",
+      role: "Service Manager — Takoradi",
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Daniel"
     },
     {
-      quote: "Zero hassle. They handle the NJ export and Tema clearance while I focus on fixing cars.",
-      author: "Prince Appiah",
-      role: "Garage Owner — Accra",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Prince"
+      quote: "The portal makes it so easy to track orders. Hobort is definitely the #1 US parts hub for West Africa.",
+      author: "Kwame Owusu",
+      role: "Garage Owner — East Legon",
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Kwame"
     }
   ]
 
@@ -75,7 +87,7 @@ export default function LandingPage() {
   return (
     <div className="flex flex-col">
       {/* Premium Centered Hero */}
-      <section className="relative overflow-hidden pt-20 pb-24 md:pt-32 md:pb-36">
+      <section className="relative overflow-hidden pt-32 pb-24 md:pt-48 md:pb-36">
         {/* Step 3: Hero Ambient Depth */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full -z-10 pointer-events-none overflow-hidden">
           <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[70%] bg-primary-orange/5 blur-[120px] rounded-full animate-pulse" />
@@ -159,15 +171,15 @@ export default function LandingPage() {
               <div className="mt-6 flex justify-center gap-10">
                 <div className="flex items-center gap-2">
                   <div className="h-1.5 w-1.5 rounded-full bg-primary-blue/30" />
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">NJ Export Hub</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Georgia Export Hub</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="h-1.5 w-1.5 rounded-full bg-primary-blue/30" />
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Texas Logistics</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">US Logistics Center</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="h-1.5 w-1.5 rounded-full bg-green-400/30" />
-                  <p className="text-[10px] font-black uppercase tracking-widest text-green-600/60">Accra Delivery</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-green-600/60">Accra Pickup</p>
                 </div>
               </div>
             </motion.div>
@@ -230,11 +242,11 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-      < section className="py-20 bg-slate-50/80 relative" >
+      <section className="py-20 bg-slate-50/80 relative">
         <div className="container px-4 mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-14 flex flex-col gap-3">
             <h2 className="text-sm font-black uppercase tracking-[0.2em] text-primary-orange">The Hobort Advantage</h2>
-            <p className="text-3xl font-bold text-primary-blue tracking-tight">Why we are the preferred partner for Ghana's mechanics.</p>
+            <p className="text-3xl font-bold text-primary-blue tracking-tight">Why we are the preferred partner for Ghana's automotive industry.</p>
           </div>
 
           <motion.div
@@ -242,13 +254,13 @@ export default function LandingPage() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="grid gap-8 md:grid-cols-3"
+            className="grid gap-8 md:grid-cols-2 lg:grid-cols-4"
           >
             {[
               {
                 icon: Zap,
                 title: "Direct from Source",
-                desc: "We skip the middlemen. Your parts come straight from elite US retailers, ensuring pure quality and unbeatable value.",
+                desc: "Get authentic OEM and high-quality used parts delivered straight from elite US retailers, ensuring pure quality and unbeatable value.",
                 bg: "bg-orange-50",
                 color: "text-primary-orange"
               },
@@ -262,9 +274,16 @@ export default function LandingPage() {
               {
                 icon: Truck,
                 title: "Logistics Mastery",
-                desc: "From New Jersey export hubs to Tema port clearance, we handle every kilometer of the journey.",
+                desc: "From Atlanta export hubs to Tema port clearance, we handle every kilometer of the journey via specialized air and sea freight.",
                 bg: "bg-green-50",
                 color: "text-green-600"
+              },
+              {
+                icon: BadgePercent,
+                title: "Unbeatable Savings",
+                desc: "By optimizing the supply chain and sourcing direct, we pass savings of up to 25% directly to your garage.",
+                bg: "bg-purple-50",
+                color: "text-purple-600"
               }
             ].map((feature, i) => (
               <motion.div
@@ -284,104 +303,140 @@ export default function LandingPage() {
       </section >
 
       {/* Centered Showcase Section */}
-      < section className="py-24 bg-white relative overflow-hidden" >
+      <section className="py-16 bg-white relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none">
           <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(#1b4e6f_1px,transparent_1px)] [background-size:24px_24px]" />
         </div>
 
-        <div className="container mx-auto px-4 text-center relative z-10">
-          <div className="max-w-4xl mx-auto flex flex-col items-center gap-10">
-            <h2 className="text-3xl font-black text-primary-blue md:text-5xl leading-[1.1] tracking-tight">
-              Genuine Sourcing. <br />
-              <span className="text-primary-orange">Affordable Logistics.</span>
-            </h2>
-            <p className="text-xl text-slate-500 leading-relaxed max-w-2xl">
-              Join a network of over 450 Ghanaian garage owners who have revolutionized their supply chain with Hobort Auto Parts Express.
-            </p>
-
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-y-10 gap-x-8 md:gap-16 w-full max-w-3xl mt-4">
-              <div className="flex flex-col gap-2">
-                <p className="text-4xl md:text-5xl font-black text-primary-blue">450+</p>
-                <p className="text-[10px] md:text-xs text-slate-400 uppercase font-black tracking-[0.2em]">Garages Served</p>
-              </div>
-              <div className="flex flex-col gap-2">
-                <p className="text-4xl md:text-5xl font-black text-primary-blue">12k+</p>
-                <p className="text-[10px] md:text-xs text-slate-400 uppercase font-black tracking-[0.2em]">Parts Delivered</p>
-              </div>
-              <div className="flex flex-col gap-2 col-span-2 md:col-span-1 items-center md:items-start">
-                <p className="text-4xl md:text-5xl font-black text-primary-blue">100%</p>
-                <p className="text-[10px] md:text-xs text-slate-400 uppercase font-black tracking-[0.2em]">VIN Accuracy</p>
-              </div>
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 md:gap-20 items-center">
+            <div className="flex flex-col items-center md:items-start text-center md:text-left gap-6">
+              <h2 className="text-3xl font-black text-primary-blue md:text-5xl tracking-tight leading-tight">
+                Genuine Sourcing. <br />
+                <span className="text-primary-orange">Affordable Logistics.</span>
+              </h2>
+              <p className="text-base md:text-lg text-slate-500 leading-relaxed max-w-md">
+                Join 450+ Ghanaian garage owners who have revolutionized their supply chain with Hobort Auto Parts Express.
+              </p>
             </div>
 
-            {/* Step 4: 4-Set Horizontal Smooth Testimonial Slider */}
-            <div className="mt-20 w-full max-w-[115rem] mx-auto px-4 overflow-hidden">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={testimonialPage}
-                  initial={{ x: 100, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  exit={{ x: -100, opacity: 0 }}
-                  transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-                  className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12"
+            <div className="flex flex-col gap-8 w-full">
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <div className="flex justify-between items-end">
+                    <p className="text-[10px] md:text-xs text-slate-400 uppercase font-black tracking-[0.2em]">Garages Served</p>
+                    <p className="text-xl font-black text-primary-blue">Expanding</p>
+                  </div>
+                  <div className="h-2.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      whileInView={{ width: "85%" }}
+                      transition={{ duration: 1.5, ease: "easeOut" }}
+                      className="h-full bg-primary-blue rounded-full"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex justify-between items-end">
+                    <p className="text-[10px] md:text-xs text-slate-400 uppercase font-black tracking-[0.2em]">Parts Delivered</p>
+                    <p className="text-xl font-black text-primary-blue">High Volume</p>
+                  </div>
+                  <div className="h-2.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      whileInView={{ width: "92%" }}
+                      transition={{ duration: 1.5, ease: "easeOut", delay: 0.2 }}
+                      className="h-full bg-primary-orange rounded-full"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex justify-between items-end">
+                    <p className="text-[10px] md:text-xs text-slate-400 uppercase font-black tracking-[0.2em]">VIN Accuracy</p>
+                    <p className="text-xl font-black text-primary-blue">Precise</p>
+                  </div>
+                  <div className="h-2.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      whileInView={{ width: "100%" }}
+                      transition={{ duration: 1.5, ease: "easeOut", delay: 0.4 }}
+                      className="h-full bg-green-500 rounded-full"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Step 4: 4-Set Horizontal Smooth Testimonial Slider */}
+        <div className="mt-20 w-full max-w-[115rem] mx-auto px-4 overflow-hidden">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={testimonialPage}
+              initial={{ x: 100, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: -100, opacity: 0 }}
+              transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+              className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12"
+            >
+              {testimonials.slice(testimonialPage * itemsPerPage, (testimonialPage * itemsPerPage) + itemsPerPage).map((testimonial, i) => (
+                <div
+                  key={i}
+                  className="relative min-h-[280px] w-full bg-slate-50/50 rounded-[3rem] border border-white p-10 flex flex-col justify-between transition-all duration-500 hover:shadow-xl hover:bg-white group/testimonial overflow-hidden shadow-sm"
                 >
-                  {testimonials.slice(testimonialPage * itemsPerPage, (testimonialPage * itemsPerPage) + itemsPerPage).map((testimonial, i) => (
-                    <div
-                      key={i}
-                      className="relative min-h-[280px] w-full bg-slate-50/50 rounded-[3rem] border border-white p-10 flex flex-col justify-between transition-all duration-500 hover:shadow-xl hover:bg-white group/testimonial overflow-hidden shadow-sm"
-                    >
-                      <div className="flex flex-col gap-4">
-                        <Quote className="h-8 w-8 text-primary-blue/20 fill-primary-blue/5" />
-                        <p className="text-lg font-medium text-slate-700 leading-snug tracking-tight text-left italic">
-                          "{testimonial.quote}"
-                        </p>
-                      </div>
+                  <div className="flex flex-col gap-4">
+                    <Quote className="h-8 w-8 text-primary-blue/20 fill-primary-blue/5" />
+                    <p className="text-lg font-medium text-slate-700 leading-snug tracking-tight text-left italic">
+                      "{testimonial.quote}"
+                    </p>
+                  </div>
 
-                      <div className="flex items-center gap-4 pt-6 mt-6 border-t border-slate-200/20">
-                        <div className="h-12 w-12 rounded-full overflow-hidden bg-slate-200 ring-4 ring-white shadow-sm shrink-0">
-                          <img
-                            src={testimonial.avatar}
-                            alt={testimonial.author}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <div className="flex flex-col min-w-0 text-left">
-                          <p className="text-base font-black text-primary-blue truncate tracking-tight">{testimonial.author}</p>
-                          <p className="text-[10px] font-bold text-slate-400 truncate uppercase tracking-[0.2em]">{testimonial.role}</p>
-                        </div>
-                      </div>
+                  <div className="flex items-center gap-4 pt-6 mt-6 border-t border-slate-200/20">
+                    <div className="h-12 w-12 rounded-full overflow-hidden bg-slate-200 ring-4 ring-white shadow-sm shrink-0">
+                      <img
+                        src={testimonial.avatar}
+                        alt={testimonial.author}
+                        className="w-full h-full object-cover"
+                      />
                     </div>
-                  ))}
-                </motion.div>
-              </AnimatePresence>
+                    <div className="flex flex-col min-w-0 text-left">
+                      <p className="text-base font-black text-primary-blue truncate tracking-tight">{testimonial.author}</p>
+                      <p className="text-[10px] font-bold text-slate-400 truncate uppercase tracking-[0.2em]">{testimonial.role}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </motion.div>
+          </AnimatePresence>
 
-              {/* Set-based Pagination Dots */}
-              <div className="mt-16 flex justify-center gap-3">
-                {[...Array(totalPages)].map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => {
-                      setTestimonialPage(i)
-                    }}
-                    className={cn(
-                      "h-1.5 rounded-full transition-all duration-700",
-                      i === testimonialPage
-                        ? "bg-primary-orange w-12"
-                        : "bg-slate-200 w-3"
-                    )}
-                    aria-label={`Go to testimonial page ${i + 1}`}
-                  />
-                ))}
-              </div>
+          {/* Set-based Pagination Dots */}
+          <div className="mt-16 flex justify-center gap-3">
+            {[...Array(totalPages)].map((_, i) => (
+              <button
+                key={i}
+                onClick={() => {
+                  setTestimonialPage(i)
+                }}
+                className={cn(
+                  "h-1.5 rounded-full transition-all duration-700",
+                  i === testimonialPage
+                    ? "bg-primary-orange w-12"
+                    : "bg-slate-200 w-3"
+                )}
+                aria-label={`Go to testimonial page ${i + 1}`}
+              />
+            ))}
+          </div>
 
-              <div className="pt-12 text-center">
-                <Link href="/quote">
-                  <Button variant="orange" size="lg" className="rounded-full px-16 h-20 text-xl font-black shadow-premium hover:scale-105 transition-transform">
-                    Start Your First Scout
-                  </Button>
-                </Link>
-              </div>
-            </div>
+          <div className="pt-12 text-center">
+            <Link href="/quote">
+              <Button variant="orange" size="lg" className="rounded-full px-16 h-20 text-xl font-black shadow-premium hover:scale-105 transition-transform">
+                Start Your First Scout
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
@@ -398,7 +453,7 @@ export default function LandingPage() {
           <div className="h-16 rounded-full bg-white/90 backdrop-blur-xl border border-slate-200/50 shadow-2xl flex items-center justify-between pl-6 pr-2">
             <span className="text-sm font-bold text-slate-800">Ready to order?</span>
             <Link href="/quote">
-              <Button variant="orange" className="h-12 px-6 rounded-full text-white font-bold text-sm shadow-lg hover:scale-105 transition-transform">
+              <Button variant="orange" className="h-12 px-6 rounded-full text-white font-bold text-sm shadow-lg hover:scale-105 transition-transform" >
                 Start Sourcing
               </Button>
             </Link>

@@ -17,22 +17,42 @@ export default function QuotePage() {
 
     // Form state (minimal for demo)
     const [formData, setFormData] = useState({
+        vin: "",
         year: "",
         make: "",
         model: ""
     })
 
-    const isStep1Valid = formData.year && formData.make && formData.model
+    const isStep1Valid = formData.vin && formData.year && formData.make && formData.model
 
-    // Auto-advance logic
+    // VIN detection logic
     useEffect(() => {
-        if (step === 1 && isStep1Valid) {
-            const timer = setTimeout(() => {
-                setStep(2)
-            }, 1000)
-            return () => clearTimeout(timer)
+        const decodeVin = async () => {
+            if (formData.vin.length === 17) {
+                try {
+                    const response = await fetch(`https://vpic.nhtsa.dot.gov/api/vehicles/decodevin/${formData.vin}?format=json`)
+                    const data = await response.json()
+                    const results = data.Results
+
+                    const year = results.find((r: any) => r.Variable === "Model Year")?.Value
+                    const make = results.find((r: any) => r.Variable === "Make")?.Value
+                    const model = results.find((r: any) => r.Variable === "Model")?.Value
+
+                    if (year || make || model) {
+                        setFormData(prev => ({
+                            ...prev,
+                            year: year || prev.year,
+                            make: make || prev.make,
+                            model: model || prev.model
+                        }))
+                    }
+                } catch (error) {
+                    console.error("VIN decoding failed:", error)
+                }
+            }
         }
-    }, [isStep1Valid, step])
+        decodeVin()
+    }, [formData.vin])
 
     async function onSubmit(event: React.SyntheticEvent) {
         event.preventDefault()
@@ -160,8 +180,15 @@ export default function QuotePage() {
                                     <div className="space-y-6">
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <div className="space-y-2.5">
-                                                <Label htmlFor="vin" className="ml-1 text-[10px] font-black text-primary-blue/80 uppercase tracking-widest">VIN (Optional)</Label>
-                                                <Input id="vin" placeholder="17-CHARACTER VIN" className="h-14 rounded-2xl border-primary-blue/10 bg-primary-blue/5 focus:bg-white transition-all font-mono uppercase font-black placeholder:normal-case placeholder:font-bold" />
+                                                <Label htmlFor="vin" className="ml-1 text-[10px] font-black text-primary-blue/80 uppercase tracking-widest">VIN Number</Label>
+                                                <Input
+                                                    id="vin"
+                                                    placeholder="17-CHARACTER VIN"
+                                                    className="h-14 rounded-2xl border-primary-blue/10 bg-primary-blue/5 focus:bg-white transition-all font-mono uppercase font-black placeholder:normal-case placeholder:font-bold"
+                                                    required
+                                                    value={formData.vin}
+                                                    onChange={(e) => setFormData({ ...formData, vin: e.target.value })}
+                                                />
                                             </div>
                                             <div className="space-y-2.5">
                                                 <Label htmlFor="year" className="ml-1 text-[10px] font-black text-primary-blue/80 uppercase tracking-widest">Build Year</Label>

@@ -6,11 +6,13 @@ import { Menu, X, Search, User } from "lucide-react"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { usePortalStore } from "@/lib/store"
 
 const NAV_LINKS = [
     { name: "Home", href: "/" },
     { name: "About", href: "/about" },
     { name: "Services", href: "/services" },
+    { name: "Contact", href: "/contact" },
 ]
 
 const AUTH_LINKS = [
@@ -21,6 +23,13 @@ const AUTH_LINKS = [
 export function Navbar() {
     const [isOpen, setIsOpen] = React.useState(false)
     const pathname = usePathname()
+    const { role } = usePortalStore()
+
+    // Since role is persisted and defaults to customer, we might want to check 
+    // if we are on the portal or if we've explicitly set it.
+    // For this demo, let's assume we show "Dashboard" if we are not on the login page 
+    // and a role is present.
+    const isAuthenticated = !!role
 
     return (
         <nav className="fixed top-0 left-0 right-0 z-50 w-full bg-white border-b border-slate-100 shadow-sm h-20 flex items-center">
@@ -67,15 +76,22 @@ export function Navbar() {
                 {/* Right Section: Auth Links & Mobile Menu Toggle */}
                 <div className="flex items-center gap-6">
                     <div className="hidden md:flex items-center gap-6 mr-2">
-                        {AUTH_LINKS.map((link) => (
-                            <Link
-                                key={link.href}
-                                href={link.href}
-                                className="text-sm font-bold text-primary-blue/60 hover:text-primary-blue transition-colors"
-                            >
-                                {link.name}
+                        {isAuthenticated ? (
+                            <Link href="/portal" className="text-sm font-bold text-primary-orange transition-colors flex items-center gap-2">
+                                <User className="h-4 w-4" />
+                                Dashboard
                             </Link>
-                        ))}
+                        ) : (
+                            AUTH_LINKS.map((link) => (
+                                <Link
+                                    key={link.href}
+                                    href={link.href}
+                                    className="text-sm font-bold text-primary-blue/60 hover:text-primary-blue transition-colors"
+                                >
+                                    {link.name}
+                                </Link>
+                            ))
+                        )}
                     </div>
 
                     <Button
@@ -94,7 +110,7 @@ export function Navbar() {
                 isOpen && (
                     <div className="fixed inset-x-4 top-24 z-50 rounded-3xl border border-slate-100 bg-white/95 p-8 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-md md:hidden">
                         <div className="grid gap-8">
-                            {[...NAV_LINKS, { name: "New Sourcing Request", href: "/quote" }, ...AUTH_LINKS].map((link) => {
+                            {[...NAV_LINKS, { name: "New Sourcing Request", href: "/quote" }, ...(isAuthenticated ? [{ name: "Dashboard", href: "/portal" }] : AUTH_LINKS)].map((link) => {
                                 const isActive = pathname === link.href
                                 return (
                                     <Link

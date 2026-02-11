@@ -50,13 +50,13 @@ export const SERVICES = [
         icon: "Wrench",
     },
     {
-        title: "Eco-Shipping (Sea)",
-        description: "Cost-effective shipping for bulk orders or heavy parts like engines.",
-        icon: "Ship",
+        title: "Quality Used Parts",
+        description: "Tested and warrantied recycled parts for budget-conscious repairs without compromising on safety.",
+        icon: "Recycle",
     },
     {
-        title: "Priority Air Freight",
-        description: "Need it fast? We deliver via air in 5-7 business days with door-to-door tracking.",
-        icon: "Plane",
+        title: "Logistics & Freight (Sea/Air)",
+        description: "Flexible shipping options: Eco-Sea for bulk/heavy parts or Priority Air for urgent deliveries in 5-7 days.",
+        icon: "Truck",
     },
 ];
