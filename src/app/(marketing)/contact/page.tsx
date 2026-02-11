@@ -1,14 +1,32 @@
 "use client"
 
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Mail, Phone, MapPin, Send, Zap, Clock, ShieldCheck } from "lucide-react"
+import { Mail, MapPin, Zap, Clock, ShieldCheck, MessageCircle } from "lucide-react"
 import { motion } from "framer-motion"
 
 export default function ContactPage() {
+    const [formData, setFormData] = useState({
+        name: "",
+        phone: "",
+        subject: "",
+        message: ""
+    })
+
+    const handleWhatsAppRedirect = (e: React.FormEvent) => {
+        e.preventDefault()
+
+        const phoneNumber = "14045434422" // Cleaned US number from policy
+        const text = `*New Website Inquiry*\n\n*Name:* ${formData.name}\n*Phone:* ${formData.phone}\n*Subject:* ${formData.subject}\n\n*Message:* ${formData.message}`
+
+        const encodedText = encodeURIComponent(text)
+        window.open(`https://wa.me/${phoneNumber}?text=${encodedText}`, '_blank')
+    }
+
     return (
         <div className="flex flex-col pt-32 pb-20">
             <section className="container mx-auto px-4 md:px-8">
@@ -22,7 +40,7 @@ export default function ContactPage() {
                             Let's Talk <span className="text-primary-orange">Sourcing.</span>
                         </h1>
                         <p className="mt-8 text-xl text-slate-500 leading-relaxed mx-auto max-w-2xl">
-                            Have questions about a specific part or our logistics process? Our team is ready to assist you in getting exactly what your vehicle needs.
+                            Have questions about a specific part or our logistics process? Our team is ready to assist you via WhatsApp for lightning-fast responses.
                         </p>
                     </motion.div>
                 </div>
@@ -46,20 +64,20 @@ export default function ContactPage() {
                                     bg: "bg-blue-50"
                                 },
                                 {
-                                    icon: Phone,
-                                    title: "US Phone",
+                                    icon: MessageCircle,
+                                    title: "WhatsApp Support",
                                     value: "+1 404-543-4422",
-                                    desc: "Logistics Support Line",
-                                    color: "text-primary-orange",
-                                    bg: "bg-orange-50"
+                                    desc: "Global Logistics Support Line",
+                                    color: "text-green-600",
+                                    bg: "bg-green-50"
                                 },
                                 {
                                     icon: MapPin,
                                     title: "Ghana Office",
                                     value: "JWVQ+9WR, Sakumono",
                                     desc: "Greater Accra • Pickup Center",
-                                    color: "text-green-600",
-                                    bg: "bg-green-50"
+                                    color: "text-primary-orange",
+                                    bg: "bg-orange-50"
                                 },
                                 {
                                     icon: Mail,
@@ -70,70 +88,103 @@ export default function ContactPage() {
                                     bg: "bg-slate-50"
                                 }
                             ].map((item, i) => (
-                                <Card key={i} className="border-slate-100 shadow-sm hover:shadow-md transition-shadow rounded-3xl overflow-hidden">
+                                <Card key={i} className="border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 rounded-[2rem] overflow-hidden group">
                                     <CardContent className="p-6 flex items-start gap-6">
-                                        <div className={`h-12 w-12 rounded-2xl ${item.bg} flex items-center justify-center shrink-0`}>
+                                        <div className={`h-12 w-12 rounded-2xl ${item.bg} flex items-center justify-center shrink-0 transition-transform group-hover:scale-110`}>
                                             <item.icon className={`h-6 w-6 ${item.color}`} />
                                         </div>
                                         <div className="flex flex-col gap-1">
-                                            <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-widest leading-none mb-1">{item.title}</h3>
-                                            <p className="text-lg font-medium text-primary-blue">{item.value}</p>
-                                            <p className="text-sm font-medium text-slate-500">{item.desc}</p>
+                                            <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] leading-none mb-1">{item.title}</h3>
+                                            <p className="text-lg font-semibold text-primary-blue">{item.value}</p>
+                                            <p className="text-sm font-medium text-slate-500/70">{item.desc}</p>
                                         </div>
                                     </CardContent>
                                 </Card>
                             ))}
                         </div>
 
-                        <div className="p-8 rounded-[2.5rem] bg-primary-blue text-white relative overflow-hidden group">
-                            <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
-                                <Zap className="h-24 w-24" />
+                        <div className="p-10 rounded-[3rem] bg-emerald-600 text-white relative overflow-hidden group shadow-2xl shadow-emerald-600/20">
+                            <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+                                <MessageCircle className="h-24 w-24" />
                             </div>
                             <div className="relative z-10 space-y-4">
-                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-white text-[10px] font-medium uppercase tracking-widest">
-                                    <Clock className="h-3 w-3" /> Priority Support
+                                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/20 text-white text-[10px] font-bold uppercase tracking-widest backdrop-blur-sm">
+                                    <Zap className="h-3.3 w-3.3" /> Immediate Response
                                 </div>
-                                <h3 className="text-2xl font-semibold leading-tight">Emergency Part Request?</h3>
-                                <p className="text-blue-100/70 font-medium">
-                                    Existing customers with active Hub IDs get 24/7 priority access to our US sourcing agents.
+                                <h3 className="text-3xl font-semibold leading-tight">Connect with an Agent</h3>
+                                <p className="text-emerald-50/70 font-medium text-lg leading-relaxed">
+                                    Our US-based sourcing agents are online and ready to verify your parts via WhatsApp.
                                 </p>
                             </div>
                         </div>
                     </motion.div>
 
-                    {/* Right Section: Form */}
+                    {/* Right Section: Form (WhatsApp Themed) */}
                     <motion.div
                         initial={{ opacity: 0, x: 30 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.6, delay: 0.4 }}
                     >
-                        <Card className="border-primary-blue/10 shadow-2xl shadow-primary-blue/5 rounded-[3rem] overflow-hidden">
-                            <div className="bg-primary-blue/5 p-10 border-b border-primary-blue/5">
-                                <h2 className="text-3xl font-semibold text-primary-blue tracking-tight">Send a Message</h2>
-                                <p className="text-primary-blue/60 font-medium mt-1">Our agents are standing by.</p>
+                        <Card className="border-emerald-100 shadow-2xl shadow-primary-blue/5 rounded-[3.5rem] overflow-hidden">
+                            <div className="bg-emerald-600 p-12 text-white relative overflow-hidden">
+                                <div className="absolute top-0 right-0 p-4 opacity-10">
+                                    <MessageCircle className="h-32 w-32 -mr-10 -mt-10" />
+                                </div>
+                                <div className="relative z-10">
+                                    <h2 className="text-4xl font-semibold tracking-tight uppercase leading-none">Send a <span className="text-emerald-200">Message</span></h2>
+                                    <p className="text-emerald-50/70 font-medium mt-3 text-lg">Direct WhatsApp Support • Agents Online</p>
+                                </div>
                             </div>
-                            <CardContent className="p-10">
-                                <form className="space-y-6">
-                                    <div className="grid sm:grid-cols-2 gap-6">
-                                        <div className="space-y-2.5">
-                                            <Label htmlFor="name" className="ml-1 text-[10px] font-medium text-primary-blue/80 uppercase tracking-widest">Full Name</Label>
-                                            <Input id="name" placeholder="John Doe" className="h-14 rounded-2xl border-primary-blue/10 bg-primary-blue/5 focus:bg-white transition-all font-medium placeholder:font-medium" />
+                            <CardContent className="p-10 lg:p-12">
+                                <form onSubmit={handleWhatsAppRedirect} className="space-y-8">
+                                    <div className="grid sm:grid-cols-2 gap-8">
+                                        <div className="space-y-3">
+                                            <Label htmlFor="name" className="ml-1 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Full Name</Label>
+                                            <Input
+                                                id="name"
+                                                required
+                                                placeholder="John Doe"
+                                                value={formData.name}
+                                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                                className="h-16 rounded-[1.25rem] border-slate-100 bg-slate-50 focus:bg-white focus:ring-emerald-500/20 transition-all font-semibold placeholder:font-medium text-primary-blue"
+                                            />
                                         </div>
-                                        <div className="space-y-2.5">
-                                            <Label htmlFor="phone" className="ml-1 text-[10px] font-medium text-primary-blue/80 uppercase tracking-widest">Phone Number</Label>
-                                            <Input id="phone" placeholder="+233..." className="h-14 rounded-2xl border-primary-blue/10 bg-primary-blue/5 focus:bg-white transition-all font-medium placeholder:font-medium" />
+                                        <div className="space-y-3">
+                                            <Label htmlFor="phone" className="ml-1 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Phone Number</Label>
+                                            <Input
+                                                id="phone"
+                                                required
+                                                placeholder="+233..."
+                                                value={formData.phone}
+                                                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                                className="h-16 rounded-[1.25rem] border-slate-100 bg-slate-50 focus:bg-white focus:ring-emerald-500/20 transition-all font-semibold placeholder:font-medium text-primary-blue"
+                                            />
                                         </div>
                                     </div>
-                                    <div className="space-y-2.5">
-                                        <Label htmlFor="subject" className="ml-1 text-[10px] font-medium text-primary-blue/80 uppercase tracking-widest">Subject</Label>
-                                        <Input id="subject" placeholder="e.g. Bulk Order Inquiry" className="h-14 rounded-2xl border-primary-blue/10 bg-primary-blue/5 focus:bg-white transition-all font-medium placeholder:font-medium" />
+                                    <div className="space-y-3">
+                                        <Label htmlFor="subject" className="ml-1 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Subject</Label>
+                                        <Input
+                                            id="subject"
+                                            required
+                                            placeholder="e.g. Bulk Order Inquiry"
+                                            value={formData.subject}
+                                            onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                                            className="h-16 rounded-[1.25rem] border-slate-100 bg-slate-50 focus:bg-white focus:ring-emerald-500/20 transition-all font-semibold placeholder:font-medium text-primary-blue"
+                                        />
                                     </div>
-                                    <div className="space-y-2.5">
-                                        <Label htmlFor="message" className="ml-1 text-[10px] font-medium text-primary-blue/80 uppercase tracking-widest">Message</Label>
-                                        <Textarea id="message" placeholder="How can we help you today?" className="min-h-[150px] rounded-2xl border-primary-blue/10 bg-primary-blue/5 focus:bg-white transition-all font-medium p-5 resize-none placeholder:font-medium" />
+                                    <div className="space-y-3">
+                                        <Label htmlFor="message" className="ml-1 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Message</Label>
+                                        <Textarea
+                                            id="message"
+                                            required
+                                            placeholder="How can we help you today?"
+                                            value={formData.message}
+                                            onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                                            className="min-h-[160px] rounded-[1.5rem] border-slate-100 bg-slate-50 focus:bg-white focus:ring-emerald-500/20 transition-all font-semibold p-6 resize-none placeholder:font-medium text-primary-blue"
+                                        />
                                     </div>
-                                    <Button className="w-full bg-primary-orange hover:bg-orange-600 text-white font-semibold h-16 rounded-2xl shadow-xl shadow-primary-orange/20 text-lg transition-all hover:scale-[1.01] active:scale-[0.99] group">
-                                        Send Message <Send className="ml-2 h-5 w-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                                    <Button type="submit" className="w-full bg-primary-orange hover:bg-orange-600 text-white font-bold h-20 rounded-[1.5rem] shadow-xl shadow-primary-orange/20 text-xl transition-all hover:scale-[1.01] active:scale-[0.99] group flex items-center justify-center gap-3">
+                                        Send to WhatsApp <MessageCircle className="h-6 w-6 group-hover:rotate-12 transition-transform" />
                                     </Button>
                                 </form>
                             </CardContent>
