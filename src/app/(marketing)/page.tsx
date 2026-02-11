@@ -62,7 +62,7 @@ export default function LandingPage() {
       avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Daniel"
     },
     {
-      quote: "The portal makes it so easy to track orders. Hobort is definitely the #1 US parts hub for West Africa.",
+      quote: "The portal makes it so easy to track orders. Hobort is definitely the #1 US parts hub for Ghana.",
       author: "Kwame Owusu",
       role: "Garage Owner — East Legon",
       avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Kwame"
@@ -113,7 +113,7 @@ export default function LandingPage() {
             </h1>
 
             <p className="max-w-[800px] text-lg text-slate-500 md:text-xl leading-relaxed font-normal">
-              Hobort Auto Parts Express connects customers across Ghana and West Africa to authentic, VIN-verified auto parts sourced directly from trusted U.S. suppliers and delivered safely, quickly, and at prices you can afford.
+              Hobort Auto Parts Express connects customers across Ghana to authentic, VIN-verified auto parts sourced directly from trusted U.S. suppliers and delivered safely, quickly, and at prices you can afford.
             </p>
 
             <div className="flex flex-col gap-4 sm:flex-row mt-4">

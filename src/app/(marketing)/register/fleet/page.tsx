@@ -22,7 +22,7 @@ export default function FleetRegisterPage() {
                         <div className="grid gap-6">
                             <div className="grid gap-2">
                                 <label className="text-sm font-semibold text-slate-700">Company Name</label>
-                                <Input placeholder="e.g. West African Logistics" className="rounded-xl h-12 font-medium" />
+                                <Input placeholder="e.g. Ghanaian Logistics" className="rounded-xl h-12 font-medium" />
                             </div>
                             <div className="grid gap-2">
                                 <label className="text-sm font-semibold text-slate-700">Fleet Size</label>

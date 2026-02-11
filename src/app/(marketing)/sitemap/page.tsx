@@ -1,8 +1,9 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Map, Globe, Shield, User, Car, Zap } from "lucide-react"
+import { ArrowLeft, Map as MapIcon, Globe, Shield, User, Car, Zap } from "lucide-react"
 import Link from "next/link"
+import { PolicyTabs } from "@/components/marketing/policy-tabs"
 
 export default function SitemapPage() {
     const sections = [
@@ -51,10 +52,12 @@ export default function SitemapPage() {
     return (
         <div className="min-h-screen bg-white">
             <div className="max-w-4xl mx-auto px-6 py-24">
-                <Link href="/" className="group inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-primary-blue/30 hover:text-primary-blue transition-colors mb-12">
+                <Link href="/" className="group inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-primary-blue/30 hover:text-primary-blue transition-colors mb-4">
                     <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
                     Back to Hub
                 </Link>
+
+                <PolicyTabs />
 
                 <div className="space-y-4 mb-20 text-center md:text-left">
                     <h1 className="text-6xl font-semibold text-primary-blue tracking-tighter uppercase leading-none">
@@ -92,7 +95,7 @@ export default function SitemapPage() {
 
                 <div className="p-10 rounded-3xl bg-slate-50 border border-slate-100 flex flex-col items-center text-center space-y-6">
                     <div className="h-16 w-16 rounded-full bg-white flex items-center justify-center shadow-sm">
-                        <Map className="h-8 w-8 text-primary-blue" />
+                        <MapIcon className="h-8 w-8 text-primary-blue" />
                     </div>
                     <div className="space-y-2">
                         <h3 className="text-xl font-semibold text-primary-blue uppercase tracking-tight">Can't find what you're looking for?</h3>
