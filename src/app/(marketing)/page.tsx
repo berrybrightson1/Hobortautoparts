@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import { Search, ShieldCheck, Zap, Truck, Star, ArrowRight, Play } from "lucide-react"
+import { Search, ShieldCheck, Zap, Truck, Star, ArrowRight, Play, Quote } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
@@ -34,62 +34,26 @@ export default function LandingPage() {
     {
       quote: "Hobort is the only sourcing hub I trust for my clients' high-end American imports. The VIN verification is flawless.",
       author: "Samuel Osei",
-      role: "Master Technician — Accra, GH"
+      role: "CEO and Co-founder",
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Samuel"
     },
     {
       quote: "Finally, a logistics partner that understands the urgency of a repair shop. Parts arrive on schedule, every time.",
       author: "Kofi Boateng",
-      role: "Fleet Manager — Kumasi, GH"
+      role: "Operations Director",
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Kofi"
     },
     {
       quote: "The direct sourcing from US elite hubs has cut our procurement costs by 22% this quarter alone.",
       author: "Emmanuel Mensah",
-      role: "Logistics Director — Tema"
+      role: "Fleet Manager",
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Emmanuel"
     },
     {
       quote: "Zero hassle. They handle the NJ export and Tema clearance while I focus on fixing cars.",
       author: "Prince Appiah",
-      role: "Garage Owner — East Legon"
-    },
-    {
-      quote: "VIN-verified parts mean no more wrong components or return shipping nightmares. Game changer.",
-      author: "David Quartey",
-      role: "Mercedes Specialist — Osu"
-    },
-    {
-      quote: "The tracking system is incredibly precise. I know exactly when my engine blocks will clear customs.",
-      author: "Isaac Tetteh",
-      role: "Engine Specialist — Lapaz"
-    },
-    {
-      quote: "Best part sourcing service in West Africa. Their New Jersey team is incredibly responsive.",
-      author: "Kwame Adu",
-      role: "Classic Car Restorer — Cantonments"
-    },
-    {
-      quote: "We've scaled our fleet maintenance by 40% since partnering with Hobort. Reliable and professional.",
-      author: "Joseph Antwi",
-      role: "Fleet Operations — Takoradi"
-    },
-    {
-      quote: "Authentication is key for luxury spares. Hobort guarantees 100% genuine parts every time.",
-      author: "Abena Mansa",
-      role: "Procurement Lead — Spintex"
-    },
-    {
-      quote: "No more middleman markups. Direct prices from US auctions and dealers. Simply unmatched.",
-      author: "Francis Dankwa",
-      role: "Auto Dealer — Kasoa"
-    },
-    {
-      quote: "Their air freight speed is legendary. Got a critical transmission in under 7 days.",
-      author: "Seth Baah",
-      role: "Performance Shop — Achimota"
-    },
-    {
-      quote: "Professionalism at its peak. The documentation is always perfect, making clearance a breeze.",
-      author: "Rita Owusu",
-      role: "Supply Chain Manager — Airport Residential"
+      role: "Garage Owner",
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Prince"
     }
   ]
 
@@ -362,23 +326,26 @@ export default function LandingPage() {
                   {testimonials.slice(testimonialPage * itemsPerPage, (testimonialPage * itemsPerPage) + itemsPerPage).map((testimonial, i) => (
                     <div
                       key={i}
-                      className="relative h-[250px] bg-white rounded-[2rem] border border-slate-100 shadow-premium p-6 flex flex-col items-start justify-center overflow-hidden group/testimonial transition-all duration-500 hover:border-primary-orange/20"
+                      className="relative h-full min-h-[320px] bg-slate-50/50 rounded-[2.5rem] border border-slate-100 p-8 flex flex-col justify-between transition-all duration-500 hover:shadow-xl hover:bg-white group/testimonial"
                     >
-                      <div className="absolute top-0 right-0 w-24 h-24 bg-primary-blue/5 blur-3xl -z-10 rounded-full group-hover/testimonial:bg-primary-orange/5 transition-colors duration-700" />
-
-                      <div className="flex flex-col items-start text-left gap-3 w-full">
-                        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-50 text-[8px] font-bold text-green-600 uppercase tracking-wide ring-1 ring-green-100/50 whitespace-nowrap">
-                          <ShieldCheck className="h-3 w-3" />
-                          Verified Expert Sourced
-                        </div>
-
-                        <p className="text-sm font-bold text-primary-blue leading-snug tracking-tight italic line-clamp-4">
-                          "{testimonial.quote}"
+                      <div className="flex flex-col gap-4">
+                        <Quote className="h-10 w-10 text-primary-blue/20 fill-primary-blue/5" />
+                        <p className="text-lg font-medium text-slate-700 leading-relaxed tracking-tight text-left">
+                          {testimonial.quote}
                         </p>
+                      </div>
 
-                        <div className="flex flex-col mt-1">
-                          <p className="text-xs font-bold text-primary-blue">{testimonial.author}</p>
-                          <p className="text-[8px] text-slate-400 font-bold uppercase tracking-[0.1em]">{testimonial.role}</p>
+                      <div className="flex items-center gap-4 mt-8 pt-6 border-t border-slate-100">
+                        <div className="h-12 w-12 rounded-full overflow-hidden bg-slate-200 ring-4 ring-white shadow-sm shrink-0">
+                          <img
+                            src={testimonial.avatar}
+                            alt={testimonial.author}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div className="flex flex-col min-w-0 text-left">
+                          <p className="text-base font-bold text-primary-blue truncate">{testimonial.author}</p>
+                          <p className="text-[10px] font-black text-slate-400 truncate uppercase tracking-[0.2em]">{testimonial.role}</p>
                         </div>
                       </div>
                     </div>
