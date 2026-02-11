@@ -1,36 +1,46 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Hobort Auto Parts Express (HAPE) - Gravity Build
 
-## Getting Started
+## 🚀 Project Overview
+HAPE is a Next.js application built on the **Gravity** boilerplate (Wireframe Mode). It solves the auto parts supply chain issue in Ghana by providing a transparent "Request for Quote" platform.
 
-First, run the development server:
+**Current State:** 🚧 **Wireframe Mode** (UI/UX only, Database disabled).
 
+## 🎨 Design System
+* **Font:** `Inter` (Google Fonts)
+* **Primary Colors:**
+    * Orange: `#fe8323` (Buttons, Active States)
+    * Blue: `#1b4e6f` (Nav, Headings, Primary Text)
+* **Icons:** `lucide-react` (Stroke width: 1.5px)
+
+## 🛠 Tech Stack
+* **Framework:** Next.js 15+ (App Router)
+* **React Compiler:** Enabled and Configured
+* **Styling:** Tailwind CSS 4 (Theme-first)
+* **Icons:** Lucide React
+
+## 📂 Project Architecture
+/src
+  /app
+    (marketing)      # Public pages (Home, About, Services, Quote)
+    (dashboard)      # Auth pages (Dashboard, Agent, Track)
+  /components
+    /ui              # Primitives (ResponsiveModal, Button)
+    /marketing       # Layout components (Navbar, Footer)
+  /lib
+    /mock-data.ts    # JSON constants for Wireframing
+    /utils.ts        # cn() helper
+  /hooks
+    /use-media-query.ts # Device detection
+
+## 🧩 Key Features
+1. **Responsive Sourcing Wizard:** A 3-step form for VIN and part details.
+2. **Dual-Device Modal:** Adapts between Dialog (Desktop) and Drawer (Mobile).
+3. **Agent Portal:** High-density table (MSC style) for B2B fleet management.
+4. **Order Tracking:** Visual timeline modeled after CH Robinson.
+
+## 🏃 Run Development
 ```bash
+cd hape
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
