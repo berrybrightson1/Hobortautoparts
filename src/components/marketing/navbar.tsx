@@ -53,7 +53,7 @@ export function Navbar() {
                                     key={link.href}
                                     href={link.href}
                                     className={cn(
-                                        "text-sm font-bold transition-all relative py-2",
+                                        "text-sm font-medium transition-all relative py-2",
                                         isActive ? "text-primary-orange" : "text-primary-blue/60 hover:text-primary-blue"
                                     )}
                                 >
@@ -67,7 +67,7 @@ export function Navbar() {
                     </div>
 
                     <Link href="/quote" className="hidden lg:block">
-                        <Button variant="orange" size="sm" className="rounded-full px-6 font-bold shadow-premium h-10 text-xs">
+                        <Button variant="orange" size="sm" className="rounded-full px-6 font-semibold shadow-premium h-10 text-xs text-white">
                             New Sourcing Request
                         </Button>
                     </Link>
@@ -77,7 +77,7 @@ export function Navbar() {
                 <div className="flex items-center gap-6">
                     <div className="hidden md:flex items-center gap-6 mr-2">
                         {isAuthenticated ? (
-                            <Link href="/portal" className="text-sm font-bold text-primary-orange transition-colors flex items-center gap-2">
+                            <Link href="/portal" className="text-sm font-medium text-primary-orange transition-colors flex items-center gap-2">
                                 <User className="h-4 w-4" />
                                 Dashboard
                             </Link>
@@ -86,7 +86,7 @@ export function Navbar() {
                                 <Link
                                     key={link.href}
                                     href={link.href}
-                                    className="text-sm font-bold text-primary-blue/60 hover:text-primary-blue transition-colors"
+                                    className="text-sm font-medium text-primary-blue/60 hover:text-primary-blue transition-colors"
                                 >
                                     {link.name}
                                 </Link>
@@ -117,7 +117,7 @@ export function Navbar() {
                                         key={link.href}
                                         href={link.href}
                                         className={cn(
-                                            "text-2xl font-bold transition-all flex items-center gap-3",
+                                            "text-2xl font-semibold transition-all flex items-center gap-3",
                                             isActive ? "text-primary-orange" : "text-primary-blue/80 hover:text-primary-orange"
                                         )}
                                         onClick={() => setIsOpen(false)}

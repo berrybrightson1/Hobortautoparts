@@ -41,7 +41,7 @@ export default function AgentDashboard() {
         <div className="space-y-8 animate-in fade-in duration-500 max-w-7xl mx-auto pb-10">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
-                    <h2 className="text-3xl font-black tracking-tight text-slate-900">Agent Dashboard</h2>
+                    <h2 className="text-3xl font-semibold tracking-tight text-slate-900">Agent Dashboard</h2>
                     <p className="text-slate-500 font-medium">Overview of your sourcing activities and performance.</p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -61,7 +61,7 @@ export default function AgentDashboard() {
                                 i === 2 ? "bg-gradient-to-br from-purple-50 to-white" : "bg-gradient-to-br from-orange-50 to-white"
                     )}>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-500">
+                            <CardTitle className="text-sm font-semibold uppercase tracking-wider text-slate-500">
                                 {stat.label}
                             </CardTitle>
                             <div className={cn(
@@ -78,12 +78,12 @@ export default function AgentDashboard() {
                         </CardHeader>
                         <CardContent>
                             <div className={cn(
-                                "text-3xl font-black",
+                                "text-3xl font-semibold",
                                 i === 0 ? "text-green-900" :
                                     i === 1 ? "text-blue-900" :
                                         i === 2 ? "text-purple-900" : "text-orange-900"
                             )}>{stat.value}</div>
-                            <div className="flex items-center text-xs mt-2 font-bold">
+                            <div className="flex items-center text-xs mt-2 font-semibold">
                                 {stat.trend === 'up' ? (
                                     <ArrowUpRight className="mr-1 h-3 w-3 text-emerald-600" />
                                 ) : (
@@ -103,7 +103,7 @@ export default function AgentDashboard() {
             <Card className="border-slate-100 shadow-xl shadow-slate-200/40 rounded-[2.5rem] overflow-hidden bg-white">
                 <CardHeader className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-50 p-8">
                     <div>
-                        <CardTitle className="text-xl font-bold text-slate-900">Assigned Orders</CardTitle>
+                        <CardTitle className="text-xl font-semibold text-slate-900">Assigned Orders</CardTitle>
                         <CardDescription className="text-slate-500 font-medium mt-1">Recent orders assigned to you for sourcing.</CardDescription>
                     </div>
                     <div className="flex items-center gap-3">
@@ -127,12 +127,12 @@ export default function AgentDashboard() {
                         <Table>
                             <TableHeader className="bg-slate-50/50">
                                 <TableRow className="hover:bg-transparent border-slate-100">
-                                    <TableHead className="font-bold text-slate-500 text-xs uppercase tracking-wider pl-8 h-12">Order ID</TableHead>
-                                    <TableHead className="font-bold text-slate-500 text-xs uppercase tracking-wider h-12">Customer</TableHead>
-                                    <TableHead className="font-bold text-slate-500 text-xs uppercase tracking-wider h-12">Vehicle</TableHead>
-                                    <TableHead className="font-bold text-slate-500 text-xs uppercase tracking-wider h-12">Details</TableHead>
-                                    <TableHead className="font-bold text-slate-500 text-xs uppercase tracking-wider h-12">Status</TableHead>
-                                    <TableHead className="text-right font-bold text-slate-500 text-xs uppercase tracking-wider pr-8 h-12">Actions</TableHead>
+                                    <TableHead className="font-semibold text-slate-500 text-xs uppercase tracking-wider pl-8 h-12">Order ID</TableHead>
+                                    <TableHead className="font-semibold text-slate-500 text-xs uppercase tracking-wider h-12">Customer</TableHead>
+                                    <TableHead className="font-semibold text-slate-500 text-xs uppercase tracking-wider h-12">Vehicle</TableHead>
+                                    <TableHead className="font-semibold text-slate-500 text-xs uppercase tracking-wider h-12">Details</TableHead>
+                                    <TableHead className="font-semibold text-slate-500 text-xs uppercase tracking-wider h-12">Status</TableHead>
+                                    <TableHead className="text-right font-semibold text-slate-500 text-xs uppercase tracking-wider pr-8 h-12">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -145,7 +145,7 @@ export default function AgentDashboard() {
                                 ) : (
                                     filteredOrders.map((order) => (
                                         <TableRow key={order.id} className="hover:bg-blue-50/30 transition-colors border-slate-50 group cursor-pointer">
-                                            <TableCell className="font-bold text-slate-900 pl-8 py-5">
+                                            <TableCell className="font-semibold text-slate-900 pl-8 py-5">
                                                 <div className="flex items-center gap-2">
                                                     <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 group-hover:bg-white group-hover:shadow-sm transition-all">
                                                         <FileText className="h-4 w-4" />
@@ -155,7 +155,7 @@ export default function AgentDashboard() {
                                             </TableCell>
                                             <TableCell className="py-5">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="h-8 w-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-xs font-bold border border-blue-100">
+                                                    <div className="h-8 w-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-xs font-semibold border border-blue-100">
                                                         {order.customerName.charAt(0)}
                                                     </div>
                                                     <span className="font-medium text-slate-700">{order.customerName}</span>
@@ -169,7 +169,7 @@ export default function AgentDashboard() {
                                             </TableCell>
                                             <TableCell className="py-5">
                                                 <div className="text-sm">
-                                                    <span className="font-bold text-slate-900">{order.parts.length} parts</span>
+                                                    <span className="font-semibold text-slate-900">{order.parts.length} parts</span>
                                                     <p className="text-xs text-slate-500">{new Date(order.createdAt).toLocaleDateString()}</p>
                                                 </div>
                                             </TableCell>

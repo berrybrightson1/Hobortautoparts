@@ -28,7 +28,7 @@ export default function AdminPortal() {
     return (
         <div className="flex flex-col gap-10 max-w-7xl mx-auto pb-10">
             <div className="flex flex-col gap-2">
-                <h2 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-4">
+                <h2 className="text-3xl font-semibold text-slate-900 tracking-tight flex items-center gap-4">
                     System Control <ShieldAlert className="h-8 w-8 text-primary-orange" />
                 </h2>
                 <p className="text-slate-500 font-medium">Global platform health and transaction monitoring.</p>
@@ -44,12 +44,12 @@ export default function AdminPortal() {
                     )}>
                         <div>
                             <p className={cn(
-                                "text-[10px] font-bold uppercase tracking-[0.2em] mb-2",
+                                "text-[10px] font-semibold uppercase tracking-[0.2em] mb-2",
                                 stat.label.includes("Revenue") ? "text-green-600" :
                                     stat.label.includes("Users") ? "text-blue-600" : "text-orange-600"
                             )}>{stat.label}</p>
                             <p className={cn(
-                                "text-4xl font-black",
+                                "text-4xl font-semibold",
                                 stat.label.includes("Revenue") ? "text-green-900" :
                                     stat.label.includes("Users") ? "text-blue-900" : "text-orange-900"
                             )}>{stat.value}</p>
@@ -110,10 +110,10 @@ export default function AdminPortal() {
                 {/* System Activity */}
                 <div className="bg-white rounded-[2.5rem] border border-slate-100 p-8 shadow-xl shadow-slate-200/40">
                     <div className="flex items-center justify-between mb-8">
-                        <h3 className="text-xl font-bold text-slate-900 flex items-center gap-3">
+                        <h3 className="text-xl font-semibold text-slate-900 flex items-center gap-3">
                             <Activity className="h-6 w-6 text-primary-orange" /> Live Activity
                         </h3>
-                        <Link href="/portal/admin/approvals" className="text-[10px] font-black text-blue-600 uppercase tracking-widest hover:underline">
+                        <Link href="/portal/admin/approvals" className="text-[10px] font-semibold text-blue-600 uppercase tracking-widest hover:underline">
                             View Compliance Queue
                         </Link>
                     </div>
@@ -123,8 +123,8 @@ export default function AdminPortal() {
                                 <div className="h-12 w-12 rounded-2xl bg-blue-50 flex items-center justify-center shrink-0 group-hover:bg-white group-hover:shadow-md transition-all">
                                     <Bell className="h-5 w-5 text-blue-500" />
                                 </div>
-                                <div>
-                                    <p className="text-sm font-bold text-slate-900">New Sourcing Request Submitted</p>
+                                <div className="flex-1">
+                                    <p className="text-sm font-semibold text-slate-900">New Sourcing Request Submitted</p>
                                     <p className="text-xs text-slate-500 font-medium mt-1">2 minutes ago • Customer ID: #451</p>
                                 </div>
                             </div>
@@ -135,13 +135,13 @@ export default function AdminPortal() {
                 {/* Distribution */}
                 <div className="bg-slate-900 rounded-[2.5rem] p-10 text-white relative overflow-hidden flex flex-col justify-between shadow-xl shadow-slate-900/20 group">
                     <div className="relative z-10">
-                        <h3 className="text-2xl font-bold mb-8 flex items-center gap-3">
+                        <h3 className="text-2xl font-semibold mb-8 flex items-center gap-3">
                             <TrendingUp className="h-6 w-6 text-primary-orange" />
                             Global Distribution
                         </h3>
                         <div className="space-y-8">
                             <div className="space-y-3">
-                                <div className="flex justify-between text-xs font-bold uppercase tracking-widest opacity-80">
+                                <div className="flex justify-between text-xs font-semibold uppercase tracking-widest opacity-80">
                                     <span>Air Freight (Express)</span>
                                     <span>68%</span>
                                 </div>
@@ -152,7 +152,7 @@ export default function AdminPortal() {
                                 </div>
                             </div>
                             <div className="space-y-3">
-                                <div className="flex justify-between text-xs font-bold uppercase tracking-widest opacity-80">
+                                <div className="flex justify-between text-xs font-semibold uppercase tracking-widest opacity-80">
                                     <span>Sea Freight (Bulk)</span>
                                     <span>32%</span>
                                 </div>
@@ -163,7 +163,7 @@ export default function AdminPortal() {
                         </div>
                     </div>
                     <div className="relative z-10 mt-8">
-                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 rounded-full text-xs font-bold backdrop-blur-md border border-white/10 hover:bg-white/20 transition-colors cursor-default">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 rounded-full text-xs font-semibold backdrop-blur-md border border-white/10 hover:bg-white/20 transition-colors cursor-default">
                             <TrendingUp className="h-4 w-4 text-emerald-400" />
                             <span>Efficiency up 12% this week</span>
                         </div>

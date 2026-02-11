@@ -62,10 +62,10 @@ export function NotificationDrawer() {
                 <SheetHeader className="px-8 py-8 border-b border-slate-50 bg-white">
                     <div className="flex items-center justify-between">
                         <div className="space-y-1">
-                            <SheetTitle className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-3">
+                            <SheetTitle className="text-2xl font-semibold text-slate-900 tracking-tight flex items-center gap-3">
                                 Activities
                                 {unreadCount > 0 && (
-                                    <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-600 text-[10px] font-black uppercase tracking-wider">
+                                    <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-600 text-[10px] font-semibold uppercase tracking-wider">
                                         {unreadCount} NEW
                                     </span>
                                 )}
@@ -77,7 +77,7 @@ export function NotificationDrawer() {
                                 variant="outline"
                                 size="sm"
                                 onClick={clearNotifications}
-                                className="h-9 px-4 rounded-full border-slate-100 text-[10px] font-black uppercase tracking-widest hover:bg-primary-blue hover:text-white hover:border-primary-blue transition-all"
+                                className="h-9 px-4 rounded-full border-slate-100 text-[10px] font-semibold uppercase tracking-widest hover:bg-primary-blue hover:text-white hover:border-primary-blue transition-all"
                             >
                                 <Check className="mr-1.5 h-3 w-3" /> Clear All
                             </Button>
@@ -107,7 +107,7 @@ export function NotificationDrawer() {
                                 </div>
                             </div>
                             <div className="space-y-1">
-                                <p className="font-black text-slate-900">All caught up!</p>
+                                <p className="font-semibold text-slate-900">All caught up!</p>
                                 <p className="text-xs font-medium text-slate-400 max-w-[200px]">You have no unread notifications or active tasks right now.</p>
                             </div>
                         </div>
@@ -135,10 +135,10 @@ export function NotificationDrawer() {
                                     </div>
                                     <div className="flex-1 space-y-1 relative z-10">
                                         <div className="flex items-start justify-between gap-2">
-                                            <p className={cn("text-sm font-black transition-colors", notification.read ? "text-slate-900" : "text-primary-blue")}>
+                                            <p className={cn("text-sm font-semibold transition-colors", notification.read ? "text-slate-900" : "text-primary-blue")}>
                                                 {notification.title}
                                             </p>
-                                            <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest tabular-nums mt-1">{notification.time}</span>
+                                            <span className="text-[10px] font-semibold text-slate-300 uppercase tracking-widest tabular-nums mt-1">{notification.time}</span>
                                         </div>
                                         <p className="text-xs text-slate-500 font-medium leading-relaxed pr-4">
                                             {notification.message}
@@ -157,8 +157,8 @@ export function NotificationDrawer() {
                 <div className="p-8 bg-white border-t border-slate-50">
                     <div className="p-6 rounded-[2rem] bg-slate-900 text-white relative overflow-hidden group cursor-pointer">
                         <div className="relative z-10">
-                            <p className="text-[10px] font-black text-primary-orange uppercase tracking-widest mb-1">Status Report</p>
-                            <p className="text-sm font-bold">Platform Status: Optimal</p>
+                            <p className="text-[10px] font-semibold text-primary-orange uppercase tracking-widest mb-1">Status Report</p>
+                            <p className="text-sm font-semibold">Platform Status: Optimal</p>
                             <p className="text-[10px] opacity-60 mt-1 font-medium">Auto-cleanup enabled for 24h old logs.</p>
                         </div>
                         <div className="absolute -right-4 -bottom-4 h-24 w-24 bg-white/5 rounded-full blur-2xl group-hover:bg-white/10 transition-colors" />

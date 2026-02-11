@@ -37,26 +37,26 @@ export default function LoginPage() {
     return (
         <div className="space-y-6">
             <div className="space-y-2">
-                <h1 className="text-3xl font-black text-primary-blue tracking-tight">Sign In</h1>
-                <p className="text-primary-blue/60 font-bold">Select your portal to continue.</p>
+                <h1 className="text-3xl font-semibold text-primary-blue tracking-tight">Sign In</h1>
+                <p className="text-primary-blue/60 font-medium">Select your portal to continue.</p>
             </div>
 
             <Tabs defaultValue="customer" className="w-full" onValueChange={setActiveRole}>
                 <TabsList className="grid w-full grid-cols-3 mb-8 h-12 bg-primary-blue/5 p-1 rounded-2xl">
-                    <TabsTrigger value="customer" className="rounded-xl font-bold h-10 data-[state=active]:bg-white data-[state=active]:text-primary-blue data-[state=active]:shadow-sm text-[10px] uppercase tracking-wider">
+                    <TabsTrigger value="customer" className="rounded-xl font-semibold h-10 data-[state=active]:bg-white data-[state=active]:text-primary-blue data-[state=active]:shadow-sm text-[10px] uppercase tracking-wider">
                         Customer
                     </TabsTrigger>
-                    <TabsTrigger value="agent" className="rounded-xl font-bold h-10 data-[state=active]:bg-white data-[state=active]:text-primary-blue data-[state=active]:shadow-sm text-[10px] uppercase tracking-wider">
+                    <TabsTrigger value="agent" className="rounded-xl font-semibold h-10 data-[state=active]:bg-white data-[state=active]:text-primary-blue data-[state=active]:shadow-sm text-[10px] uppercase tracking-wider">
                         Agent
                     </TabsTrigger>
-                    <TabsTrigger value="admin" className="rounded-xl font-bold h-10 data-[state=active]:bg-white data-[state=active]:text-primary-blue data-[state=active]:shadow-sm text-[10px] uppercase tracking-wider">
+                    <TabsTrigger value="admin" className="rounded-xl font-semibold h-10 data-[state=active]:bg-white data-[state=active]:text-primary-blue data-[state=active]:shadow-sm text-[10px] uppercase tracking-wider">
                         Admin
                     </TabsTrigger>
                 </TabsList>
 
                 <form onSubmit={onSubmit} className="space-y-5">
                     <div className="grid gap-2">
-                        <Label htmlFor="email" className="ml-1 text-primary-blue/80 font-black text-xs uppercase tracking-wider">Email Address</Label>
+                        <Label htmlFor="email" className="ml-1 text-primary-blue/80 font-semibold text-xs uppercase tracking-wider">Email Address</Label>
                         <Input
                             id="email"
                             placeholder="name@example.com"
@@ -65,13 +65,13 @@ export default function LoginPage() {
                             autoComplete="email"
                             autoCorrect="off"
                             disabled={isLoading}
-                            className="h-12 rounded-xl border-primary-blue/10 bg-primary-blue/5 focus:bg-white transition-all font-bold"
+                            className="h-12 rounded-xl border-primary-blue/10 bg-primary-blue/5 focus:bg-white transition-all font-medium"
                         />
                     </div>
                     <div className="grid gap-2">
                         <div className="flex items-center justify-between">
-                            <Label htmlFor="password" className="ml-1 text-primary-blue/80 font-black text-xs uppercase tracking-wider">Password</Label>
-                            <Link href="/forgot-password" university-link="true" className="text-xs font-black text-primary-orange hover:text-orange-600 transition-colors">
+                            <Label htmlFor="password" className="ml-1 text-primary-blue/80 font-semibold text-xs uppercase tracking-wider">Password</Label>
+                            <Link href="/forgot-password" university-link="true" className="text-xs font-semibold text-primary-orange hover:text-orange-600 transition-colors">
                                 Forgot?
                             </Link>
                         </div>
@@ -80,7 +80,7 @@ export default function LoginPage() {
                                 id="password"
                                 type={showPassword ? "text" : "password"}
                                 disabled={isLoading}
-                                className="h-12 rounded-xl border-primary-blue/10 bg-primary-blue/5 focus:bg-white transition-all font-bold pr-10"
+                                className="h-12 rounded-xl border-primary-blue/10 bg-primary-blue/5 focus:bg-white transition-all font-medium pr-10"
                             />
                             <button
                                 type="button"
@@ -91,7 +91,7 @@ export default function LoginPage() {
                             </button>
                         </div>
                     </div>
-                    <Button className="w-full h-12 rounded-xl font-black text-base shadow-xl shadow-primary-blue/10 bg-primary-blue hover:bg-hobort-blue-dark transition-all hover:scale-[1.01] active:scale-[0.99] text-white" disabled={isLoading}>
+                    <Button className="w-full h-12 rounded-xl font-semibold text-base shadow-xl shadow-primary-blue/10 bg-primary-blue hover:bg-hobort-blue-dark transition-all hover:scale-[1.01] active:scale-[0.99] text-white" disabled={isLoading}>
                         {isLoading && (
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         )}
@@ -105,22 +105,22 @@ export default function LoginPage() {
                     <span className="w-full border-t border-primary-blue/5" />
                 </div>
                 <div className="relative flex justify-center text-[10px] uppercase">
-                    <span className="bg-white px-3 text-primary-blue/30 font-black tracking-widest leading-none">Security Guaranteed</span>
+                    <span className="bg-white px-3 text-primary-blue/30 font-bold tracking-widest leading-none">Security Guaranteed</span>
                 </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-                <Button variant="outline" className="h-11 rounded-xl border-slate-200 hover:bg-slate-50 hover:text-slate-900 font-bold text-xs" disabled={isLoading}>
+                <Button variant="outline" className="h-11 rounded-xl border-slate-200 hover:bg-slate-50 hover:text-slate-900 font-semibold text-xs" disabled={isLoading}>
                     Google
                 </Button>
-                <Button variant="outline" className="h-11 rounded-xl border-slate-200 hover:bg-slate-50 hover:text-slate-900 font-bold text-xs" disabled={isLoading}>
+                <Button variant="outline" className="h-11 rounded-xl border-slate-200 hover:bg-slate-50 hover:text-slate-900 font-semibold text-xs" disabled={isLoading}>
                     Apple
                 </Button>
             </div>
 
-            <p className="text-sm text-center text-primary-blue/60 font-bold pt-4">
+            <p className="text-sm text-center text-primary-blue/60 font-medium pt-4">
                 New to Hobort?{" "}
-                <Link href="/signup" className="font-black text-primary-orange hover:text-orange-600 transition-colors">
+                <Link href="/signup" className="font-semibold text-primary-orange hover:text-orange-600 transition-colors">
                     Join now
                 </Link>
             </p>

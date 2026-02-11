@@ -40,10 +40,10 @@ export default function UsersPage() {
             {/* Header Section */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div className="space-y-1">
-                    <h2 className="text-4xl font-black tracking-tighter text-slate-900 uppercase">User Network</h2>
+                    <h2 className="text-4xl font-semibold tracking-tighter text-slate-900 uppercase">User Network</h2>
                     <p className="text-slate-500 font-medium text-lg">Governance and account management for the Hobort ecosystem.</p>
                 </div>
-                <Button className="h-14 px-8 rounded-[2rem] bg-slate-900 hover:bg-black text-white shadow-xl shadow-slate-900/10 transition-all font-black uppercase tracking-widest text-xs group">
+                <Button className="h-14 px-8 rounded-[2rem] bg-slate-900 hover:bg-black text-white shadow-xl shadow-slate-900/10 transition-all font-semibold uppercase tracking-widest text-xs group">
                     <UserPlus className="mr-3 h-5 w-5 group-hover:scale-110 transition-transform" /> Create New Account
                 </Button>
             </div>
@@ -56,7 +56,7 @@ export default function UsersPage() {
                             key={role.id}
                             onClick={() => setActiveRole(role.id as any)}
                             className={cn(
-                                "flex-1 py-3 px-6 rounded-full text-xs font-black uppercase tracking-widest transition-all duration-500 relative z-10",
+                                "flex-1 py-3 px-6 rounded-full text-xs font-semibold uppercase tracking-widest transition-all duration-500 relative z-10",
                                 activeRole === role.id ? "text-white" : "text-slate-400 hover:text-slate-600"
                             )}
                         >
@@ -82,12 +82,12 @@ export default function UsersPage() {
                     <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300 group-focus-within:text-primary-blue transition-colors" />
                     <Input
                         placeholder="Search by name, email, or digital ID..."
-                        className="h-14 pl-14 pr-6 rounded-[2rem] border-0 bg-white ring-1 ring-slate-100 focus-visible:ring-primary-blue/30 text-sm font-bold shadow-sm transition-all placeholder:text-slate-300"
+                        className="h-14 pl-14 pr-6 rounded-[2rem] border-0 bg-white ring-1 ring-slate-100 focus-visible:ring-primary-blue/30 text-sm font-semibold shadow-sm transition-all placeholder:text-slate-300"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
                     <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                        <kbd className="h-6 px-2 rounded-lg bg-slate-50 border border-slate-100 text-[10px] font-black text-slate-300 flex items-center shadow-sm">
+                        <kbd className="h-6 px-2 rounded-lg bg-slate-50 border border-slate-100 text-[10px] font-semibold text-slate-300 flex items-center shadow-sm">
                             / FOR QUICK FIND
                         </kbd>
                     </div>
@@ -101,11 +101,11 @@ export default function UsersPage() {
                         <Table>
                             <TableHeader className="bg-slate-50/30">
                                 <TableRow className="hover:bg-transparent border-slate-50">
-                                    <TableHead className="font-black text-slate-400 text-xs uppercase tracking-[0.2em] pl-10 h-16">Entity Instance</TableHead>
-                                    <TableHead className="font-black text-slate-400 text-xs uppercase tracking-[0.2em] h-16">Security Class</TableHead>
-                                    <TableHead className="font-black text-slate-400 text-xs uppercase tracking-[0.2em] h-16">Lifecycle</TableHead>
-                                    <TableHead className="font-black text-slate-400 text-xs uppercase tracking-[0.2em] h-16 text-right">Economic Activity</TableHead>
-                                    <TableHead className="font-black text-slate-400 text-xs uppercase tracking-[0.2em] h-16 text-right pr-10">Ops</TableHead>
+                                    <TableHead className="font-semibold text-slate-400 text-xs uppercase tracking-[0.2em] pl-10 h-16">Entity Instance</TableHead>
+                                    <TableHead className="font-semibold text-slate-400 text-xs uppercase tracking-[0.2em] h-16">Security Class</TableHead>
+                                    <TableHead className="font-semibold text-slate-400 text-xs uppercase tracking-[0.2em] h-16">Lifecycle</TableHead>
+                                    <TableHead className="font-semibold text-slate-400 text-xs uppercase tracking-[0.2em] h-16 text-right">Economic Activity</TableHead>
+                                    <TableHead className="font-semibold text-slate-400 text-xs uppercase tracking-[0.2em] h-16 text-right pr-10">Ops</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -113,19 +113,19 @@ export default function UsersPage() {
                                     <TableRow key={user.id} className="hover:bg-slate-50/50 transition-all border-slate-50 group cursor-default">
                                         <TableCell className="pl-10 py-6">
                                             <div className="flex items-center gap-5">
-                                                <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-slate-50 to-white flex items-center justify-center text-slate-400 font-bold text-sm shrink-0 border border-slate-100 shadow-sm relative group-hover:scale-105 transition-transform duration-500">
+                                                <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-slate-50 to-white flex items-center justify-center text-slate-400 font-semibold text-sm shrink-0 border border-slate-100 shadow-sm relative group-hover:scale-105 transition-transform duration-500">
                                                     {user.avatar}
                                                     <div className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full bg-emerald-500 border-2 border-white" />
                                                 </div>
                                                 <div>
-                                                    <p className="font-black text-slate-900 text-base tracking-tight">{user.name}</p>
-                                                    <p className="text-xs text-slate-400 font-black uppercase tracking-wider mt-0.5">{user.email}</p>
+                                                    <p className="font-semibold text-slate-900 text-base tracking-tight">{user.name}</p>
+                                                    <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider mt-0.5">{user.email}</p>
                                                 </div>
                                             </div>
                                         </TableCell>
                                         <TableCell className="py-6">
                                             <span className={cn(
-                                                "inline-flex items-center px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border",
+                                                "inline-flex items-center px-4 py-1.5 rounded-full text-[10px] font-semibold uppercase tracking-widest border",
                                                 user.role === 'Agent'
                                                     ? "bg-blue-50 text-blue-600 border-blue-100"
                                                     : user.role === 'Admin'
@@ -137,7 +137,7 @@ export default function UsersPage() {
                                         </TableCell>
                                         <TableCell className="py-6">
                                             <Badge variant="secondary" className={cn(
-                                                "capitalize font-black text-[10px] uppercase tracking-widest border-0 px-3 py-1 shadow-none rounded-lg",
+                                                "capitalize font-semibold text-[10px] uppercase tracking-widest border-0 px-3 py-1 shadow-none rounded-lg",
                                                 user.status === 'Active' ? "bg-emerald-100 text-emerald-700" : "bg-red-50 text-red-600"
                                             )}>
                                                 {user.status}
@@ -145,8 +145,8 @@ export default function UsersPage() {
                                         </TableCell>
                                         <TableCell className="text-right py-6">
                                             <div className="flex flex-col items-end gap-1">
-                                                <span className="text-base font-black text-slate-900 tracking-tight">{user.spent}</span>
-                                                <span className="text-[10px] uppercase font-black text-slate-400 tracking-[0.2em] bg-slate-50 px-2 py-0.5 rounded-md">Last Op: {user.lastActive}</span>
+                                                <span className="text-base font-semibold text-slate-900 tracking-tight">{user.spent}</span>
+                                                <span className="text-[10px] uppercase font-semibold text-slate-400 tracking-[0.2em] bg-slate-50 px-2 py-0.5 rounded-md">Last Op: {user.lastActive}</span>
                                             </div>
                                         </TableCell>
                                         <TableCell className="text-right pr-10 py-6">
@@ -169,13 +169,13 @@ export default function UsersPage() {
                         <Search className="h-10 w-10 text-slate-200" />
                     </div>
                     <div className="space-y-1">
-                        <p className="text-xl font-black text-slate-900">No entities found</p>
+                        <p className="text-xl font-semibold text-slate-900">No entities found</p>
                         <p className="text-sm font-medium text-slate-400 max-w-[300px]">Adjust your filters or try searching for a different identifier.</p>
                     </div>
                     <Button
                         variant="outline"
                         onClick={() => { setActiveRole('all'); setSearchQuery('') }}
-                        className="rounded-full h-12 px-8 border-slate-200 text-xs font-black uppercase tracking-widest"
+                        className="rounded-full h-12 px-8 border-slate-200 text-xs font-semibold uppercase tracking-widest"
                     >
                         Reset All Filters
                     </Button>

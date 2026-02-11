@@ -38,14 +38,14 @@ export default function OrdersPage() {
         <div className="space-y-8 animate-in fade-in duration-500 max-w-7xl mx-auto pb-10">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
-                    <h2 className="text-3xl font-black tracking-tight text-slate-900">All Orders</h2>
+                    <h2 className="text-3xl font-semibold tracking-tight text-slate-900">All Orders</h2>
                     <p className="text-slate-500 font-medium">Manage and track all sourcing requests across the platform.</p>
                 </div>
                 <div className="flex items-center gap-2">
                     <Button variant="outline" className="rounded-xl border-slate-200 text-slate-600 hover:text-slate-900 shadow-sm">
                         <Download className="mr-2 h-4 w-4" /> Export
                     </Button>
-                    <Button className="rounded-xl bg-primary-blue hover:bg-blue-700 text-white shadow-lg shadow-blue-900/20">
+                    <Button className="rounded-xl bg-primary-blue hover:bg-blue-700 text-white shadow-lg shadow-blue-900/20 font-semibold">
                         <FileText className="mr-2 h-4 w-4" /> New Order
                     </Button>
                 </div>
@@ -73,12 +73,12 @@ export default function OrdersPage() {
                         <Table>
                             <TableHeader className="bg-slate-50/50">
                                 <TableRow className="hover:bg-transparent border-slate-100">
-                                    <TableHead className="font-bold text-slate-500 text-xs uppercase tracking-wider pl-6 h-12">Order ID</TableHead>
-                                    <TableHead className="font-bold text-slate-500 text-xs uppercase tracking-wider h-12">Customer</TableHead>
-                                    <TableHead className="font-bold text-slate-500 text-xs uppercase tracking-wider h-12">Vehicle</TableHead>
-                                    <TableHead className="font-bold text-slate-500 text-xs uppercase tracking-wider h-12">Status</TableHead>
-                                    <TableHead className="font-bold text-slate-500 text-xs uppercase tracking-wider h-12">Date</TableHead>
-                                    <TableHead className="text-right font-bold text-slate-500 text-xs uppercase tracking-wider pr-6 h-12">Actions</TableHead>
+                                    <TableHead className="font-semibold text-slate-500 text-xs uppercase tracking-wider pl-6 h-12">Order ID</TableHead>
+                                    <TableHead className="font-semibold text-slate-500 text-xs uppercase tracking-wider h-12">Customer</TableHead>
+                                    <TableHead className="font-semibold text-slate-500 text-xs uppercase tracking-wider h-12">Vehicle</TableHead>
+                                    <TableHead className="font-semibold text-slate-500 text-xs uppercase tracking-wider h-12">Status</TableHead>
+                                    <TableHead className="font-semibold text-slate-500 text-xs uppercase tracking-wider h-12">Date</TableHead>
+                                    <TableHead className="text-right font-semibold text-slate-500 text-xs uppercase tracking-wider pr-6 h-12">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -91,7 +91,7 @@ export default function OrdersPage() {
                                 ) : (
                                     filteredOrders.map((order) => (
                                         <TableRow key={order.id} className="hover:bg-blue-50/30 transition-colors border-slate-50 group cursor-pointer">
-                                            <TableCell className="font-bold text-slate-900 pl-6 py-4">
+                                            <TableCell className="font-semibold text-slate-900 pl-6 py-4">
                                                 <div className="flex items-center gap-2">
                                                     <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 group-hover:bg-white group-hover:shadow-sm transition-all">
                                                         <FileText className="h-4 w-4" />
@@ -101,7 +101,7 @@ export default function OrdersPage() {
                                             </TableCell>
                                             <TableCell className="py-4">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-50 to-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold border border-blue-200">
+                                                    <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-50 to-blue-100 text-blue-600 flex items-center justify-center text-xs font-semibold border border-blue-200">
                                                         {order.customerName.charAt(0)}
                                                     </div>
                                                     <span className="font-medium text-slate-700 group-hover:text-primary-blue transition-colors">{order.customerName}</span>

@@ -18,7 +18,7 @@ export default function ContactPage() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5 }}
                     >
-                        <h1 className="text-5xl font-black text-primary-blue md:text-7xl tracking-tight leading-[1.1]">
+                        <h1 className="text-5xl font-semibold text-primary-blue md:text-7xl tracking-tight leading-[1.1]">
                             Let's Talk <span className="text-primary-orange">Sourcing.</span>
                         </h1>
                         <p className="mt-8 text-xl text-slate-500 leading-relaxed mx-auto max-w-2xl">
@@ -76,8 +76,8 @@ export default function ContactPage() {
                                             <item.icon className={`h-6 w-6 ${item.color}`} />
                                         </div>
                                         <div className="flex flex-col gap-1">
-                                            <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest leading-none mb-1">{item.title}</h3>
-                                            <p className="text-lg font-black text-primary-blue">{item.value}</p>
+                                            <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-widest leading-none mb-1">{item.title}</h3>
+                                            <p className="text-lg font-medium text-primary-blue">{item.value}</p>
                                             <p className="text-sm font-medium text-slate-500">{item.desc}</p>
                                         </div>
                                     </CardContent>
@@ -90,10 +90,10 @@ export default function ContactPage() {
                                 <Zap className="h-24 w-24" />
                             </div>
                             <div className="relative z-10 space-y-4">
-                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-white text-[10px] font-black uppercase tracking-widest">
+                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-white text-[10px] font-medium uppercase tracking-widest">
                                     <Clock className="h-3 w-3" /> Priority Support
                                 </div>
-                                <h3 className="text-2xl font-black leading-tight">Emergency Part Request?</h3>
+                                <h3 className="text-2xl font-semibold leading-tight">Emergency Part Request?</h3>
                                 <p className="text-blue-100/70 font-medium">
                                     Existing customers with active Hub IDs get 24/7 priority access to our US sourcing agents.
                                 </p>
@@ -109,30 +109,30 @@ export default function ContactPage() {
                     >
                         <Card className="border-primary-blue/10 shadow-2xl shadow-primary-blue/5 rounded-[3rem] overflow-hidden">
                             <div className="bg-primary-blue/5 p-10 border-b border-primary-blue/5">
-                                <h2 className="text-3xl font-black text-primary-blue tracking-tight">Send a Message</h2>
+                                <h2 className="text-3xl font-semibold text-primary-blue tracking-tight">Send a Message</h2>
                                 <p className="text-primary-blue/60 font-medium mt-1">Our agents are standing by.</p>
                             </div>
                             <CardContent className="p-10">
                                 <form className="space-y-6">
                                     <div className="grid sm:grid-cols-2 gap-6">
                                         <div className="space-y-2.5">
-                                            <Label htmlFor="name" className="ml-1 text-[10px] font-black text-primary-blue/80 uppercase tracking-widest">Full Name</Label>
-                                            <Input id="name" placeholder="John Doe" className="h-14 rounded-2xl border-primary-blue/10 bg-primary-blue/5 focus:bg-white transition-all font-black placeholder:font-bold" />
+                                            <Label htmlFor="name" className="ml-1 text-[10px] font-medium text-primary-blue/80 uppercase tracking-widest">Full Name</Label>
+                                            <Input id="name" placeholder="John Doe" className="h-14 rounded-2xl border-primary-blue/10 bg-primary-blue/5 focus:bg-white transition-all font-medium placeholder:font-medium" />
                                         </div>
                                         <div className="space-y-2.5">
-                                            <Label htmlFor="phone" className="ml-1 text-[10px] font-black text-primary-blue/80 uppercase tracking-widest">Phone Number</Label>
-                                            <Input id="phone" placeholder="+233..." className="h-14 rounded-2xl border-primary-blue/10 bg-primary-blue/5 focus:bg-white transition-all font-black placeholder:font-bold" />
+                                            <Label htmlFor="phone" className="ml-1 text-[10px] font-medium text-primary-blue/80 uppercase tracking-widest">Phone Number</Label>
+                                            <Input id="phone" placeholder="+233..." className="h-14 rounded-2xl border-primary-blue/10 bg-primary-blue/5 focus:bg-white transition-all font-medium placeholder:font-medium" />
                                         </div>
                                     </div>
                                     <div className="space-y-2.5">
-                                        <Label htmlFor="subject" className="ml-1 text-[10px] font-black text-primary-blue/80 uppercase tracking-widest">Subject</Label>
-                                        <Input id="subject" placeholder="e.g. Bulk Order Inquiry" className="h-14 rounded-2xl border-primary-blue/10 bg-primary-blue/5 focus:bg-white transition-all font-black placeholder:font-bold" />
+                                        <Label htmlFor="subject" className="ml-1 text-[10px] font-medium text-primary-blue/80 uppercase tracking-widest">Subject</Label>
+                                        <Input id="subject" placeholder="e.g. Bulk Order Inquiry" className="h-14 rounded-2xl border-primary-blue/10 bg-primary-blue/5 focus:bg-white transition-all font-medium placeholder:font-medium" />
                                     </div>
                                     <div className="space-y-2.5">
-                                        <Label htmlFor="message" className="ml-1 text-[10px] font-black text-primary-blue/80 uppercase tracking-widest">Message</Label>
-                                        <Textarea id="message" placeholder="How can we help you today?" className="min-h-[150px] rounded-2xl border-primary-blue/10 bg-primary-blue/5 focus:bg-white transition-all font-black p-5 resize-none placeholder:font-bold" />
+                                        <Label htmlFor="message" className="ml-1 text-[10px] font-medium text-primary-blue/80 uppercase tracking-widest">Message</Label>
+                                        <Textarea id="message" placeholder="How can we help you today?" className="min-h-[150px] rounded-2xl border-primary-blue/10 bg-primary-blue/5 focus:bg-white transition-all font-medium p-5 resize-none placeholder:font-medium" />
                                     </div>
-                                    <Button className="w-full bg-primary-orange hover:bg-orange-600 text-white font-black h-16 rounded-2xl shadow-xl shadow-primary-orange/20 text-lg transition-all hover:scale-[1.01] active:scale-[0.99] group">
+                                    <Button className="w-full bg-primary-orange hover:bg-orange-600 text-white font-semibold h-16 rounded-2xl shadow-xl shadow-primary-orange/20 text-lg transition-all hover:scale-[1.01] active:scale-[0.99] group">
                                         Send Message <Send className="ml-2 h-5 w-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                                     </Button>
                                 </form>
@@ -148,7 +148,7 @@ export default function ContactPage() {
                         <div className="h-14 w-14 rounded-2xl bg-white border border-slate-100 flex items-center justify-center text-primary-orange shadow-sm mb-2">
                             <ShieldCheck className="h-8 w-8" />
                         </div>
-                        <h2 className="text-3xl font-black text-primary-blue tracking-tight">Secure & Professional</h2>
+                        <h2 className="text-3xl font-semibold text-primary-blue tracking-tight">Secure & Professional</h2>
                         <p className="text-slate-500 font-medium">
                             Every enquiry is logged in our central CRM to ensure consistent follow-up and accountability. Your data is protected by industry-standard encryption.
                         </p>

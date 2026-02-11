@@ -20,8 +20,8 @@ export default function TrackingPage({ params }: { params: Promise<{ id: string 
                     <AlertCircle className="h-10 w-10 text-red-500" />
                 </div>
                 <div className="text-center space-y-2">
-                    <h1 className="text-3xl font-bold text-slate-900">Order Not Found</h1>
-                    <p className="text-slate-500 max-w-md">We couldn't find an active order with ID <span className="font-mono font-bold text-slate-900">{orderId}</span>. Please check the ID and try again.</p>
+                    <h1 className="text-3xl font-semibold text-slate-900">Order Not Found</h1>
+                    <p className="text-slate-500 max-w-md">We couldn't find an active order with ID <span className="font-mono font-semibold text-slate-900">{orderId}</span>. Please check the ID and try again.</p>
                 </div>
                 <Link href="/">
                     <Button variant="outline" className="gap-2">
@@ -47,7 +47,7 @@ export default function TrackingPage({ params }: { params: Promise<{ id: string 
                     <div className="h-4 w-px bg-slate-200 mx-2" />
                     <span className="hidden md:inline">Track Shipment</span>
                     <ChevronRight className="h-4 w-4 text-slate-300 hidden md:inline" />
-                    <span className="text-slate-900 font-bold bg-slate-100 px-2 py-0.5 rounded-md">{order.id}</span>
+                    <span className="text-slate-900 font-semibold bg-slate-100 px-2 py-0.5 rounded-md">{order.id}</span>
                 </div>
             </div>
 
@@ -60,9 +60,9 @@ export default function TrackingPage({ params }: { params: Promise<{ id: string 
                         </div>
                         <div className="space-y-1">
                             <div className="flex items-center justify-center md:justify-start gap-3">
-                                <h1 className="text-4xl font-black text-slate-900 tracking-tight">{order.id}</h1>
+                                <h1 className="text-4xl font-semibold text-slate-900 tracking-tight">{order.id}</h1>
                                 <span className={cn(
-                                    "px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider",
+                                    "px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider",
                                     order.status === 'delivered' ? "bg-emerald-100 text-emerald-700" :
                                         order.status === 'shipped' ? "bg-purple-100 text-purple-700" :
                                             "bg-blue-50 text-blue-700"
@@ -70,7 +70,7 @@ export default function TrackingPage({ params }: { params: Promise<{ id: string 
                                     {order.status}
                                 </span>
                             </div>
-                            <p className="text-lg font-bold text-slate-700">{order.vehicleInfo}</p>
+                            <p className="text-lg font-semibold text-slate-700">{order.vehicleInfo}</p>
                             <p className="text-slate-500 font-medium text-sm flex items-center gap-2 justify-center md:justify-start">
                                 <PackageSearch className="h-4 w-4" />
                                 {order.parts.join(", ")}
@@ -79,7 +79,7 @@ export default function TrackingPage({ params }: { params: Promise<{ id: string 
                     </div>
 
                     <div className="flex flex-col items-center md:items-end gap-1 bg-slate-50 p-4 rounded-2xl border border-slate-100 min-w-[200px]">
-                        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Estimated Delivery</p>
+                        <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest">Estimated Delivery</p>
                         <p className="text-xl font-bold text-slate-900">
                             {new Date(new Date(order.createdAt).getTime() + 439200000).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                         </p>
@@ -90,7 +90,7 @@ export default function TrackingPage({ params }: { params: Promise<{ id: string 
                 {/* Horizontal Stepper (Landscape Mode) */}
                 <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
                     <div className="bg-slate-900 px-6 py-4 flex items-center justify-between">
-                        <p className="text-white font-bold flex items-center gap-2">
+                        <p className="text-white font-semibold flex items-center gap-2">
                             <MapPin className="h-5 w-5 text-primary-orange" />
                             Tracking Timeline
                         </p>
@@ -118,17 +118,17 @@ export default function TrackingPage({ params }: { params: Promise<{ id: string 
                                                 ? "border-primary-orange text-primary-orange shadow-lg shadow-orange-500/20 scale-110"
                                                 : "border-slate-200 text-slate-300"
                                         )}>
-                                            {isCompleted ? <ShieldCheck className="h-5 w-5 fill-orange-50" /> : <span className="font-bold text-sm">{idx + 1}</span>}
+                                            {isCompleted ? <ShieldCheck className="h-5 w-5 fill-orange-50" /> : <span className="font-semibold text-sm">{idx + 1}</span>}
                                         </div>
 
                                         <div className="space-y-1">
                                             <h3 className={cn(
-                                                "text-sm font-bold transition-colors w-full px-2",
+                                                "text-sm font-semibold transition-colors w-full px-2",
                                                 isCompleted ? "text-slate-900" : "text-slate-400"
                                             )}>
                                                 {step.status}
                                             </h3>
-                                            <p className="text-[10px] uppercase font-bold text-slate-400">
+                                            <p className="text-[10px] uppercase font-semibold text-slate-400">
                                                 {new Date(step.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                                             </p>
                                             <p className="text-[10px] text-slate-300">
@@ -150,24 +150,24 @@ export default function TrackingPage({ params }: { params: Promise<{ id: string 
                                 <MapPin className="h-6 w-6 text-primary-orange" />
                             </div>
                             <div>
-                                <h3 className="text-xl font-bold mb-1">Live Location</h3>
+                                <h3 className="text-xl font-semibold mb-1">Live Location</h3>
                                 <p className="text-slate-400">Shipment is currently in transit to the destination port.</p>
                             </div>
                         </div>
                         {/* Fake map visual */}
                         <div className="mt-8 h-32 w-full bg-white/5 rounded-xl border border-white/10 flex items-center justify-center">
-                            <span className="text-xs font-bold uppercase tracking-widest opacity-30">Map Visualization Unavailable in Demo</span>
+                            <span className="text-xs font-semibold uppercase tracking-widest opacity-30">Map Visualization Unavailable in Demo</span>
                         </div>
                     </div>
 
                     <div className="bg-white rounded-3xl border border-slate-200 p-8 flex flex-col justify-center gap-4">
-                        <h3 className="font-bold text-slate-900">Customer Details</h3>
+                        <h3 className="font-semibold text-slate-900">Customer Details</h3>
                         <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-500">
+                            <div className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center font-semibold text-slate-500">
                                 {order.customerName.charAt(0)}
                             </div>
                             <div>
-                                <p className="font-bold text-slate-900">{order.customerName}</p>
+                                <p className="font-semibold text-slate-900">{order.customerName}</p>
                                 <p className="text-xs text-slate-500">Authorized Receiver</p>
                             </div>
                         </div>

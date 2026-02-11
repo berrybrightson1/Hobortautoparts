@@ -21,7 +21,7 @@ export default function ToolsPage() {
     return (
         <div className="space-y-10 animate-in fade-in duration-500 max-w-7xl mx-auto pb-10">
             <div>
-                <h2 className="text-3xl font-black tracking-tight text-slate-900">Agent Tools</h2>
+                <h2 className="text-3xl font-semibold tracking-tight text-slate-900">Agent Tools</h2>
                 <p className="text-slate-500 font-medium">Utilities to help streamline your sourcing workflow.</p>
             </div>
 
@@ -34,17 +34,17 @@ export default function ToolsPage() {
                                     {getIcon(tool.icon)}
                                 </div>
                                 <Badge variant="secondary" className={
-                                    tool.status === 'Active' ? "bg-emerald-50 text-emerald-600 border-emerald-100 font-bold px-2 py-0.5" :
-                                        tool.status === 'Beta' ? "bg-purple-50 text-purple-600 border-purple-100 font-bold px-2 py-0.5" : "bg-slate-100 text-slate-500 font-bold px-2 py-0.5"
+                                    tool.status === 'Active' ? "bg-emerald-50 text-emerald-600 border-emerald-100 font-semibold px-2 py-0.5" :
+                                        tool.status === 'Beta' ? "bg-purple-50 text-purple-600 border-purple-100 font-semibold px-2 py-0.5" : "bg-slate-100 text-slate-500 font-semibold px-2 py-0.5"
                                 }>
                                     {tool.status}
                                 </Badge>
                             </div>
-                            <CardTitle className="mt-6 text-xl font-bold text-slate-900">{tool.name}</CardTitle>
+                            <CardTitle className="mt-6 text-xl font-semibold text-slate-900">{tool.name}</CardTitle>
                             <CardDescription className="text-slate-500 font-medium leading-relaxed mt-2">{tool.description}</CardDescription>
                         </CardHeader>
                         <CardContent className="p-8 pt-4">
-                            <Button variant="ghost" className="w-full justify-between hover:bg-slate-50 text-slate-400 group-hover:text-primary-blue font-bold rounded-xl h-11 px-4 transition-colors">
+                            <Button variant="ghost" className="w-full justify-between hover:bg-slate-50 text-slate-400 group-hover:text-primary-blue font-semibold rounded-xl h-11 px-4 transition-colors">
                                 Launch Tool <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                             </Button>
                         </CardContent>

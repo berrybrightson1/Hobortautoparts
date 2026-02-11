@@ -12,7 +12,7 @@ export default function ProfilePage() {
     return (
         <div className="space-y-6 max-w-4xl mx-auto animate-in fade-in duration-500">
             <div>
-                <h2 className="text-2xl font-bold tracking-tight text-slate-900">My Profile</h2>
+                <h2 className="text-2xl font-semibold tracking-tight text-slate-900">My Profile</h2>
                 <p className="text-slate-500">Manage your account settings and preferences.</p>
             </div>
 
@@ -26,7 +26,7 @@ export default function ProfilePage() {
                 <TabsContent value="general">
                     <Card className="border-slate-100 shadow-sm">
                         <CardHeader>
-                            <CardTitle>Profile Details</CardTitle>
+                            <CardTitle className="tracking-tight font-semibold">Profile Details</CardTitle>
                             <CardDescription>Update your photo and personal details here.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
@@ -35,7 +35,7 @@ export default function ProfilePage() {
                                     <User className="h-10 w-10" />
                                 </div>
                                 <div className="space-y-2">
-                                    <Button variant="outline" size="sm">Change Avatar</Button>
+                                    <Button variant="outline" size="sm" className="font-semibold rounded-lg">Change Avatar</Button>
                                     <p className="text-xs text-slate-500">JPG, GIF or PNG. 1MB max.</p>
                                 </div>
                             </div>
@@ -62,7 +62,7 @@ export default function ProfilePage() {
                             </div>
                         </CardContent>
                         <CardFooter className="border-t border-slate-100 px-6 py-4 flex justify-end">
-                            <Button>Save Changes</Button>
+                            <Button className="font-semibold rounded-xl px-6">Save Changes</Button>
                         </CardFooter>
                     </Card>
                 </TabsContent>
@@ -70,7 +70,7 @@ export default function ProfilePage() {
                 <TabsContent value="security">
                     <Card className="border-slate-100 shadow-sm">
                         <CardHeader>
-                            <CardTitle>Password & Security</CardTitle>
+                            <CardTitle className="tracking-tight font-semibold">Password & Security</CardTitle>
                             <CardDescription>Manage your password and security settings.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
@@ -88,7 +88,7 @@ export default function ProfilePage() {
                             </div>
                         </CardContent>
                         <CardFooter className="border-t border-slate-100 px-6 py-4 flex justify-end">
-                            <Button>Update Password</Button>
+                            <Button className="font-semibold rounded-xl px-6">Update Password</Button>
                         </CardFooter>
                     </Card>
                 </TabsContent>
@@ -96,7 +96,7 @@ export default function ProfilePage() {
                 <TabsContent value="notifications">
                     <Card className="border-slate-100 shadow-sm">
                         <CardHeader>
-                            <CardTitle>Notifications</CardTitle>
+                            <CardTitle className="tracking-tight font-semibold">Notifications</CardTitle>
                             <CardDescription>Choose what you want to be notified about.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">

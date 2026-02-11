@@ -33,7 +33,7 @@ export default function PortalRouter() {
     return (
         <div className="flex flex-col items-center justify-center min-h-screen gap-4">
             <Loader2 className="h-8 w-8 animate-spin text-primary-blue" />
-            <p className="text-sm font-bold text-primary-blue/60 uppercase tracking-widest">
+            <p className="text-sm font-semibold text-primary-blue/60 uppercase tracking-widest">
                 Redirecting to your workspace...
             </p>
         </div>

@@ -64,7 +64,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
                     {sidebarOpen ? (
                         <img src="/Hobort auto express logo Main.png" alt="Hobort" className="h-12 w-auto transition-all" />
                     ) : (
-                        <div className="h-10 w-10 bg-primary-blue rounded-xl flex items-center justify-center text-white font-bold text-xs shrink-0">H</div>
+                        <div className="h-10 w-10 bg-primary-blue rounded-xl flex items-center justify-center text-white font-semibold text-xs shrink-0">H</div>
                     )}
                 </div>
 
@@ -84,7 +84,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
                                 )}
                             >
                                 <item.icon className={cn("h-5 w-5 shrink-0 transition-transform group-hover:scale-110", isActive ? "text-white" : "text-slate-400")} />
-                                {sidebarOpen && <span className="text-xs font-black uppercase tracking-widest whitespace-nowrap">{item.name}</span>}
+                                {sidebarOpen && <span className="text-xs font-semibold uppercase tracking-widest whitespace-nowrap">{item.name}</span>}
                             </Link>
                         )
                     })}
@@ -101,7 +101,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
                         onClick={() => setShowLogoutDialog(true)}
                     >
                         <LogOut className="h-5 w-5 shrink-0 transition-transform group-hover:-translate-x-1" />
-                        {sidebarOpen && <span className="text-xs font-black uppercase tracking-widest">Logout</span>}
+                        {sidebarOpen && <span className="text-xs font-semibold uppercase tracking-widest">Logout</span>}
                     </Button>
                 </div>
             </aside>
@@ -118,15 +118,15 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
                         >
                             <Menu className="h-5 w-5" />
                         </button>
-                        <h1 className="text-lg font-bold text-primary-blue uppercase tracking-tight">{pathname.split('/').pop()}</h1>
+                        <h1 className="text-lg font-semibold text-primary-blue uppercase tracking-tight">{pathname.split('/').pop()}</h1>
                     </div>
 
                     <div className="flex items-center gap-4">
                         <NotificationDrawer />
 
                         <div className="text-right hidden sm:block">
-                            <p className="text-xs font-bold text-primary-blue">Testing User</p>
-                            <p className="text-[10px] text-slate-400 uppercase font-bold tracking-widest">{role}</p>
+                            <p className="text-xs font-semibold text-primary-blue">Testing User</p>
+                            <p className="text-[10px] text-slate-400 uppercase font-semibold tracking-widest">{role}</p>
                         </div>
                         <div className="h-10 w-10 rounded-full bg-slate-100 border-2 border-white shadow-sm flex items-center justify-center overflow-hidden">
                             <UserCircle className="h-6 w-6 text-slate-300" />
@@ -152,21 +152,21 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
                             <ShieldAlert className="h-5 w-5" />
                         </div>
                         <div className="flex flex-col text-left whitespace-nowrap">
-                            <span className="text-[8px] font-black text-slate-300 uppercase tracking-[0.3em] leading-none mb-1">Security</span>
-                            <span className="text-sm font-black text-slate-900 uppercase tracking-tight leading-none">Ready to logout?</span>
+                            <span className="text-[8px] font-semibold text-slate-300 uppercase tracking-[0.3em] leading-none mb-1">Security</span>
+                            <span className="text-sm font-semibold text-slate-900 uppercase tracking-tight leading-none">Ready to logout?</span>
                         </div>
                     </div>
 
                     <div className="flex gap-2 shrink-0">
                         <Button
-                            className="h-10 px-6 rounded-full bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all border-none"
+                            className="h-10 px-6 rounded-full bg-slate-900 text-white text-[10px] font-semibold uppercase tracking-widest hover:bg-slate-800 transition-all border-none"
                             onClick={() => router.push('/login')}
                         >
                             Confirm
                         </Button>
                         <Button
                             variant="outline"
-                            className="h-10 px-6 rounded-full border-2 border-slate-100 text-slate-400 text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 hover:text-slate-900 transition-all whitespace-nowrap"
+                            className="h-10 px-6 rounded-full border-2 border-slate-100 text-slate-400 text-[10px] font-semibold uppercase tracking-widest hover:bg-slate-50 hover:text-slate-900 transition-all whitespace-nowrap"
                             onClick={() => setShowLogoutDialog(false)}
                         >
                             Cancel

@@ -54,7 +54,7 @@ export default function ShipmentManagerPage() {
         <div className="space-y-8 animate-in fade-in duration-500 max-w-7xl mx-auto pb-10">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
-                    <h2 className="text-3xl font-black tracking-tight text-slate-900">Shipment Manager</h2>
+                    <h2 className="text-3xl font-semibold tracking-tight text-slate-900">Shipment Manager</h2>
                     <p className="text-slate-500 font-medium">Update tracking statuses and manage global logistics.</p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -70,11 +70,11 @@ export default function ShipmentManagerPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <Card className="bg-gradient-to-br from-blue-50 to-white border-blue-100 rounded-3xl shadow-sm">
                     <CardHeader className="pb-2">
-                        <CardDescription className="text-blue-600 font-bold uppercase tracking-wider text-[10px]">In Transit (Air)</CardDescription>
-                        <CardTitle className="text-4xl font-black text-blue-900">8</CardTitle>
+                        <CardDescription className="text-blue-600 font-semibold uppercase tracking-wider text-[10px]">In Transit (Air)</CardDescription>
+                        <CardTitle className="text-4xl font-semibold text-blue-900">8</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="flex items-center text-xs text-blue-600 font-bold bg-blue-100/50 w-fit px-2 py-1 rounded-lg">
+                        <div className="flex items-center text-xs text-blue-600 font-semibold bg-blue-100/50 w-fit px-2 py-1 rounded-lg">
                             <Plane className="h-3.5 w-3.5 mr-1.5" />
                             Arriving in 3-5 days
                         </div>
@@ -82,11 +82,11 @@ export default function ShipmentManagerPage() {
                 </Card>
                 <Card className="bg-gradient-to-br from-orange-50 to-white border-orange-100 rounded-3xl shadow-sm">
                     <CardHeader className="pb-2">
-                        <CardDescription className="text-orange-600 font-bold uppercase tracking-wider text-[10px]">Pending Customs</CardDescription>
-                        <CardTitle className="text-4xl font-black text-orange-900">12</CardTitle>
+                        <CardDescription className="text-orange-600 font-semibold uppercase tracking-wider text-[10px]">Pending Customs</CardDescription>
+                        <CardTitle className="text-4xl font-semibold text-orange-900">12</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="flex items-center text-xs text-orange-600 font-bold bg-orange-100/50 w-fit px-2 py-1 rounded-lg">
+                        <div className="flex items-center text-xs text-orange-600 font-semibold bg-orange-100/50 w-fit px-2 py-1 rounded-lg">
                             <AlertCircle className="h-3.5 w-3.5 mr-1.5" />
                             Action Required
                         </div>
@@ -94,11 +94,11 @@ export default function ShipmentManagerPage() {
                 </Card>
                 <Card className="bg-gradient-to-br from-emerald-50 to-white border-emerald-100 rounded-3xl shadow-sm">
                     <CardHeader className="pb-2">
-                        <CardDescription className="text-emerald-600 font-bold uppercase tracking-wider text-[10px]">Delivered Today</CardDescription>
-                        <CardTitle className="text-4xl font-black text-emerald-900">4</CardTitle>
+                        <CardDescription className="text-emerald-600 font-semibold uppercase tracking-wider text-[10px]">Delivered Today</CardDescription>
+                        <CardTitle className="text-4xl font-semibold text-emerald-900">4</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="flex items-center text-xs text-emerald-600 font-bold bg-emerald-100/50 w-fit px-2 py-1 rounded-lg">
+                        <div className="flex items-center text-xs text-emerald-600 font-semibold bg-emerald-100/50 w-fit px-2 py-1 rounded-lg">
                             <CheckCircle className="h-3.5 w-3.5 mr-1.5" />
                             100% On Time
                         </div>
@@ -123,30 +123,30 @@ export default function ShipmentManagerPage() {
                         <Table>
                             <TableHeader className="bg-slate-50/50">
                                 <TableRow className="hover:bg-transparent border-slate-100">
-                                    <TableHead className="font-bold text-slate-500 text-xs uppercase tracking-wider pl-6 h-12">Tracking ID</TableHead>
-                                    <TableHead className="font-bold text-slate-500 text-xs uppercase tracking-wider h-12">Customer</TableHead>
-                                    <TableHead className="font-bold text-slate-500 text-xs uppercase tracking-wider h-12">Route</TableHead>
-                                    <TableHead className="font-bold text-slate-500 text-xs uppercase tracking-wider h-12">Status</TableHead>
-                                    <TableHead className="font-bold text-slate-500 text-xs uppercase tracking-wider h-12">Est. Delivery</TableHead>
-                                    <TableHead className="text-right font-bold text-slate-500 text-xs uppercase tracking-wider pr-6 h-12">Actions</TableHead>
+                                    <TableHead className="font-semibold text-slate-500 text-xs uppercase tracking-wider pl-6 h-12">Tracking ID</TableHead>
+                                    <TableHead className="font-semibold text-slate-500 text-xs uppercase tracking-wider h-12">Customer</TableHead>
+                                    <TableHead className="font-semibold text-slate-500 text-xs uppercase tracking-wider h-12">Route</TableHead>
+                                    <TableHead className="font-semibold text-slate-500 text-xs uppercase tracking-wider h-12">Status</TableHead>
+                                    <TableHead className="font-semibold text-slate-500 text-xs uppercase tracking-wider h-12">Est. Delivery</TableHead>
+                                    <TableHead className="text-right font-semibold text-slate-500 text-xs uppercase tracking-wider pr-6 h-12">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {filteredOrders.map((order) => (
                                     <TableRow key={order.id} className="hover:bg-blue-50/30 transition-colors border-slate-50 group cursor-pointer">
-                                        <TableCell className="font-bold text-slate-900 pl-6 py-4">
+                                        <TableCell className="font-semibold text-slate-900 pl-6 py-4">
                                             <span className="bg-slate-100 text-slate-600 px-2 py-1 rounded-md text-xs group-hover:bg-white group-hover:shadow-sm transition-all">
                                                 {order.id}
                                             </span>
                                         </TableCell>
                                         <TableCell className="py-4">
                                             <div className="flex flex-col">
-                                                <span className="font-bold text-slate-800">{order.customerName}</span>
+                                                <span className="font-semibold text-slate-800">{order.customerName}</span>
                                                 <span className="text-xs font-medium text-slate-400">{order.vehicleInfo}</span>
                                             </div>
                                         </TableCell>
                                         <TableCell className="py-4">
-                                            <div className="flex items-center gap-2 text-xs font-bold text-slate-500 bg-slate-50 w-fit px-2 py-1 rounded-full border border-slate-100">
+                                            <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 bg-slate-50 w-fit px-2 py-1 rounded-full border border-slate-100">
                                                 <span className="h-1.5 w-1.5 rounded-full bg-slate-400"></span>
                                                 NJ Hub
                                                 <span className="text-slate-300">→</span>
@@ -155,7 +155,7 @@ export default function ShipmentManagerPage() {
                                         </TableCell>
                                         <TableCell className="py-4">
                                             <Badge variant="secondary" className={cn(
-                                                "capitalize font-bold border-0 px-2 py-0.5 shadow-none",
+                                                "capitalize font-semibold border-0 px-2 py-0.5 shadow-none",
                                                 order.status === 'pending' ? "bg-orange-100 text-orange-700" :
                                                     order.status === 'quoted' ? "bg-blue-100 text-blue-700" :
                                                         order.status === 'shipped' ? "bg-purple-100 text-purple-700" :
@@ -176,7 +176,7 @@ export default function ShipmentManagerPage() {
                                                     </Button>
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end" className="w-56 p-2 bg-white/95 backdrop-blur-sm border-slate-200 shadow-xl shadow-slate-200/50 rounded-2xl">
-                                                    <DropdownMenuLabel className="text-xs font-bold text-slate-400 uppercase tracking-wider px-3 py-2">Update Status</DropdownMenuLabel>
+                                                    <DropdownMenuLabel className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-3 py-2">Update Status</DropdownMenuLabel>
 
                                                     <DropdownMenuItem
                                                         onClick={() => handleStatusUpdate(order.id, 'quoted')}

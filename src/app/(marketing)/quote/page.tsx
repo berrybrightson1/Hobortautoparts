@@ -9,11 +9,29 @@ import { Textarea } from "@/components/ui/textarea"
 import { ArrowLeft, Car, Package, CheckCircle2, ArrowRight, ShieldCheck, Zap } from "lucide-react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
+import { BrandedSelect } from "@/components/marketing/branded-select"
+
+// Common vehicle options for accuracy
+const YEARS = Array.from({ length: 27 }, (_, i) => (2026 - i).toString())
+const MAKES = ["Toyota", "Honda", "Mercedes-Benz", "BMW", "Ford", "Nissan", "Hyundai", "Kia", "Lexus", "Audi", "Land Rover", "Jeep", "Chevrolet", "Volkswagen"]
+const COMMON_MODELS: Record<string, string[]> = {
+    "Toyota": ["Camry", "Corolla", "RAV4", "Land Cruiser", "Hilux", "Vitz", "Highlander", "Avalon", "Tacoma", "Tundra"],
+    "Honda": ["Civic", "Accord", "CR-V", "Pilot", "Fit", "HR-V", "Odyssey", "Insight"],
+    "Mercedes-Benz": ["C-Class", "E-Class", "S-Class", "G-Class", "GLE", "GLC", "GLA", "GLS", "CLA"],
+    "BMW": ["3 Series", "5 Series", "7 Series", "X1", "X3", "X5", "X6", "X7", "M3", "M5"],
+    "Ford": ["F-150", "Explorer", "Escape", "Mustang", "Ranger", "Edge", "Focus", "Expedition"],
+    "Nissan": ["Altima", "Sentra", "Rogue", "Pathfinder", "Patrol", "Navara", "Murano", "Titan"],
+    "Hyundai": ["Elantra", "Sonata", "Tucson", "Santa Fe", "Palisade", "Kona", "Ioniq"],
+    "Kia": ["Sportage", "Sorento", "Telluride", "Rio", "Optima", "Stinger", "Soul"],
+}
+const COMMON_ENGINES = ["2.0L I4", "2.4L I4", "2.5L I4", "3.0L V6", "3.5L V6", "4.0L V8", "4.4L V8 Turbo", "Hybrid", "Electric"]
+const COMMON_TRIMS = ["Base", "Standard", "Premium", "Luxury", "Sport", "LE", "XLE", "SE", "XSE", "Limited", "Platinum", "AMG Line", "M Sport"]
 
 export default function QuotePage() {
     const [isLoading, setIsLoading] = useState(false)
     const [isSubmitted, setIsSubmitted] = useState(false)
     const [step, setStep] = useState(1)
+    const [vinLoading, setVinLoading] = useState(false)
 
     // Form state (minimal for demo)
     const [formData, setFormData] = useState({
@@ -25,37 +43,44 @@ export default function QuotePage() {
         engine: ""
     })
 
-    const isStep1Valid = formData.vin && formData.year && formData.make && formData.model && formData.submodel && formData.engine
+    const isStep1Valid = Boolean(formData.vin && formData.year && formData.make && formData.model && formData.submodel && formData.engine)
 
     // VIN detection logic
     useEffect(() => {
         const decodeVin = async () => {
             if (formData.vin.length === 17) {
+                setVinLoading(true)
                 try {
                     const response = await fetch(`https://vpic.nhtsa.dot.gov/api/vehicles/decodevin/${formData.vin}?format=json`)
                     const data = await response.json()
                     const results = data.Results
 
-                    const year = results.find((r: any) => r.Variable === "Model Year")?.Value
-                    const make = results.find((r: any) => r.Variable === "Make")?.Value
-                    const model = results.find((r: any) => r.Variable === "Model")?.Value
-                    const submodel = results.find((r: any) => r.Variable === "Trim")?.Value
+                    const rawYear = results.find((r: any) => r.Variable === "Model Year")?.Value
+                    const rawMake = results.find((r: any) => r.Variable === "Make")?.Value
+                    const rawModel = results.find((r: any) => r.Variable === "Model")?.Value
+                    const rawTrim = results.find((r: any) => r.Variable === "Trim")?.Value
+
+                    // Normalize Make
+                    const normalizedMake = MAKES.find(m => rawMake?.toUpperCase().includes(m.toUpperCase())) || rawMake
+
                     const engineDisp = results.find((r: any) => r.Variable === "Displacement (L)")?.Value
                     const engineCyl = results.find((r: any) => r.Variable === "Engine Number of Cylinders")?.Value
                     const engine = engineDisp ? `${engineDisp}L ${engineCyl ? engineCyl + 'cyl' : ''}` : results.find((r: any) => r.Variable === "Engine Model")?.Value
 
-                    if (year || make || model || submodel || engine) {
+                    if (rawYear || normalizedMake || rawModel || rawTrim || engine) {
                         setFormData(prev => ({
                             ...prev,
-                            year: year || prev.year,
-                            make: make || prev.make,
-                            model: model || prev.model,
-                            submodel: submodel || prev.submodel,
+                            year: rawYear || prev.year,
+                            make: normalizedMake || prev.make,
+                            model: rawModel || prev.model,
+                            submodel: rawTrim || prev.submodel,
                             engine: engine || prev.engine
                         }))
                     }
                 } catch (error) {
                     console.error("VIN decoding failed:", error)
+                } finally {
+                    setVinLoading(false)
                 }
             }
         }
@@ -83,8 +108,8 @@ export default function QuotePage() {
                                 <CheckCircle2 className="h-10 w-10" />
                             </div>
                             <div className="space-y-2">
-                                <h1 className="text-4xl font-black text-primary-blue tracking-tighter">Request Received!</h1>
-                                <p className="text-primary-blue/60 font-bold text-lg">Our agents are already looking for your parts.</p>
+                                <h1 className="text-4xl font-semibold text-primary-blue tracking-tighter">Request Received!</h1>
+                                <p className="text-primary-blue/60 font-medium text-lg">Our agents are already looking for your parts.</p>
                             </div>
                         </div>
 
@@ -94,23 +119,23 @@ export default function QuotePage() {
                                     <Zap className="h-20 w-20 text-primary-orange" />
                                 </div>
                                 <div className="relative z-10 space-y-4">
-                                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-orange/10 text-primary-orange text-[10px] font-black uppercase tracking-widest">
+                                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-orange/10 text-primary-orange text-[10px] font-medium uppercase tracking-widest">
                                         <ShieldCheck className="h-3 w-3" /> Important Step
                                     </div>
-                                    <h3 className="text-2xl font-black text-primary-blue leading-tight">
+                                    <h3 className="text-2xl font-semibold text-primary-blue leading-tight">
                                         Create an account to <span className="text-primary-orange">track your order</span> and save this request.
                                     </h3>
-                                    <p className="text-primary-blue/70 font-bold">
+                                    <p className="text-primary-blue/70 font-medium">
                                         Join over 5,000 auto professionals getting live updates on their sourcing requests.
                                     </p>
                                     <div className="pt-4 flex flex-col sm:flex-row gap-4">
                                         <Link href="/signup" className="flex-1">
-                                            <Button className="w-full bg-primary-orange hover:bg-orange-600 text-white font-black h-14 rounded-xl shadow-lg shadow-primary-orange/20 text-lg transition-transform hover:scale-[1.02] active:scale-[0.98]">
+                                            <Button className="w-full bg-primary-orange hover:bg-orange-600 text-white font-semibold h-14 rounded-xl shadow-lg shadow-primary-orange/20 text-lg transition-transform hover:scale-[1.02] active:scale-[0.98]">
                                                 Create Account <ArrowRight className="ml-2 h-5 w-5" />
                                             </Button>
                                         </Link>
                                         <Link href="/" className="flex-1">
-                                            <Button variant="outline" className="w-full border-primary-blue/10 text-primary-blue/60 hover:text-primary-blue hover:bg-primary-blue/5 font-black h-14 rounded-xl">
+                                            <Button variant="outline" className="w-full border-primary-blue/10 text-primary-blue/60 hover:text-primary-blue hover:bg-primary-blue/5 font-medium h-14 rounded-xl">
                                                 Back to Home
                                             </Button>
                                         </Link>
@@ -128,7 +153,7 @@ export default function QuotePage() {
                                         <div className="h-10 w-10 rounded-full bg-primary-blue/5 flex items-center justify-center text-primary-blue">
                                             <item.icon className="h-5 w-5" />
                                         </div>
-                                        <span className="text-[10px] font-black text-primary-blue/40 uppercase tracking-tighter leading-none">{item.label}</span>
+                                        <span className="text-[10px] font-medium text-primary-blue/40 uppercase tracking-tighter leading-none">{item.label}</span>
                                     </div>
                                 ))}
                             </div>
@@ -147,9 +172,9 @@ export default function QuotePage() {
                         <Link href="/" className="group p-2 rounded-full hover:bg-primary-blue/5 transition-all outline-none">
                             <ArrowLeft className="h-6 w-6 text-primary-blue/30 group-hover:text-primary-blue group-hover:-translate-x-1 transition-all" />
                         </Link>
-                        <h1 className="text-4xl font-black text-primary-blue tracking-tighter">New Sourcing Request</h1>
+                        <h1 className="text-4xl font-semibold text-primary-blue tracking-tighter">New Sourcing Request</h1>
                     </div>
-                    <p className="text-primary-blue/60 font-bold">Get a premium price estimate in record time.</p>
+                    <p className="text-primary-blue/60 font-medium">Get a premium price estimate in record time.</p>
                 </div>
 
                 <Card className="border-primary-blue/10 shadow-2xl shadow-primary-blue/5 overflow-hidden rounded-3xl relative">
@@ -163,18 +188,18 @@ export default function QuotePage() {
 
                     <CardHeader className="bg-primary-blue/5 border-b border-primary-blue/5 pb-8 pt-12 px-10">
                         <div className="flex justify-between items-center mb-2">
-                            <span className="text-[10px] font-black text-primary-orange uppercase tracking-[0.2em]">Step {step} of 2</span>
-                            <span className="text-[10px] font-black text-primary-blue/40 uppercase tracking-[0.2em]">{step === 1 ? "Vehicle Details" : "Parts Specification"}</span>
+                            <span className="text-[10px] font-semibold text-primary-orange uppercase tracking-[0.2em]">Step {step} of 2</span>
+                            <span className="text-[10px] font-semibold text-primary-blue/40 uppercase tracking-[0.2em]">{step === 1 ? "Vehicle Details" : "Parts Specification"}</span>
                         </div>
                         <div className="flex items-center gap-5">
                             <div className="h-14 w-14 rounded-2xl bg-primary-blue text-white flex items-center justify-center shadow-xl shadow-primary-blue/20">
                                 {step === 1 ? <Car className="h-7 w-7" /> : <Package className="h-7 w-7" />}
                             </div>
                             <div>
-                                <CardTitle className="text-2xl font-black text-primary-blue tracking-tight">
+                                <CardTitle className="text-2xl font-semibold text-primary-blue tracking-tight">
                                     {step === 1 ? "Vehicle Details" : "Parts Specification"}
                                 </CardTitle>
-                                <CardDescription className="text-primary-blue/60 font-bold text-sm">
+                                <CardDescription className="text-primary-blue/60 font-medium text-sm">
                                     {step === 1 ? "Every detail counts for an accurate quote." : "List exactly what you need."}
                                 </CardDescription>
                             </div>
@@ -187,83 +212,71 @@ export default function QuotePage() {
                                 <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
                                     <div className="space-y-6">
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <div className="space-y-2.5">
-                                                <Label htmlFor="vin" className="ml-1 text-[10px] font-black text-primary-blue/80 uppercase tracking-widest">VIN Number</Label>
-                                                <Input
-                                                    id="vin"
-                                                    placeholder="17-CHARACTER VIN"
-                                                    className="h-14 rounded-2xl border-primary-blue/10 bg-primary-blue/5 focus:bg-white transition-all font-mono uppercase font-black placeholder:normal-case placeholder:font-bold"
-                                                    required
-                                                    value={formData.vin}
-                                                    onChange={(e) => setFormData({ ...formData, vin: e.target.value })}
-                                                />
+                                            <div className="space-y-2.5 relative">
+                                                <Label htmlFor="vin" className="ml-1 text-[10px] font-medium text-primary-blue/80 uppercase tracking-widest">VIN Number</Label>
+                                                <div className="relative">
+                                                    <Input
+                                                        id="vin"
+                                                        placeholder="17-CHARACTER VIN"
+                                                        className="h-14 pr-12 rounded-2xl border-primary-blue/10 bg-primary-blue/5 focus:bg-white transition-all font-mono uppercase font-semibold placeholder:normal-case placeholder:font-medium"
+                                                        required
+                                                        value={formData.vin}
+                                                        onChange={(e) => setFormData({ ...formData, vin: e.target.value })}
+                                                    />
+                                                    {vinLoading && (
+                                                        <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                                                            <div className="h-5 w-5 border-2 border-primary-orange/30 border-t-primary-orange rounded-full animate-spin" />
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
-                                            <div className="space-y-2.5">
-                                                <Label htmlFor="year" className="ml-1 text-[10px] font-black text-primary-blue/80 uppercase tracking-widest">Build Year</Label>
-                                                <Input
-                                                    id="year"
-                                                    placeholder="e.g. 2024"
-                                                    required
-                                                    value={formData.year}
-                                                    onChange={(e) => setFormData({ ...formData, year: e.target.value })}
-                                                    className="h-14 rounded-2xl border-primary-blue/10 bg-primary-blue/5 focus:bg-white transition-all font-black placeholder:font-bold"
-                                                />
-                                            </div>
+                                            <BrandedSelect
+                                                label="Build Year"
+                                                value={formData.year}
+                                                options={YEARS}
+                                                onChange={(val) => setFormData({ ...formData, year: val })}
+                                                placeholder="Select Year"
+                                            />
                                         </div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <div className="space-y-2.5">
-                                                <Label htmlFor="make" className="ml-1 text-[10px] font-black text-primary-blue/80 uppercase tracking-widest">Brand / Make</Label>
-                                                <Input
-                                                    id="make"
-                                                    placeholder="e.g. Mercedes-Benz"
-                                                    required
-                                                    value={formData.make}
-                                                    onChange={(e) => setFormData({ ...formData, make: e.target.value })}
-                                                    className="h-14 rounded-2xl border-primary-blue/10 bg-primary-blue/5 focus:bg-white transition-all font-black placeholder:font-bold"
-                                                />
-                                            </div>
-                                            <div className="space-y-2.5">
-                                                <Label htmlFor="model" className="ml-1 text-[10px] font-black text-primary-blue/80 uppercase tracking-widest">Series / Model</Label>
-                                                <Input
-                                                    id="model"
-                                                    placeholder="e.g. G-Class"
-                                                    required
-                                                    value={formData.model}
-                                                    onChange={(e) => setFormData({ ...formData, model: e.target.value })}
-                                                    className="h-14 rounded-2xl border-primary-blue/10 bg-primary-blue/5 focus:bg-white transition-all font-black placeholder:font-bold"
-                                                />
-                                            </div>
+                                            <BrandedSelect
+                                                label="Brand / Make"
+                                                value={formData.make}
+                                                options={MAKES}
+                                                onChange={(val) => setFormData({ ...formData, make: val, model: "" })}
+                                                placeholder="Select Brand"
+                                            />
+                                            <BrandedSelect
+                                                label="Series / Model"
+                                                value={formData.model}
+                                                options={formData.make ? (COMMON_MODELS[formData.make] || ["Other"]) : []}
+                                                onChange={(val) => setFormData({ ...formData, model: val })}
+                                                placeholder={formData.make ? "Select Model" : "Select Brand First"}
+                                                disabled={!formData.make}
+                                            />
                                         </div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <div className="space-y-2.5">
-                                                <Label htmlFor="submodel" className="ml-1 text-[10px] font-black text-primary-blue/80 uppercase tracking-widest">Sub-Model / Trim</Label>
-                                                <Input
-                                                    id="submodel"
-                                                    placeholder="e.g. AMG Line / SE"
-                                                    required
-                                                    value={formData.submodel}
-                                                    onChange={(e) => setFormData({ ...formData, submodel: e.target.value })}
-                                                    className="h-14 rounded-2xl border-primary-blue/10 bg-primary-blue/5 focus:bg-white transition-all font-black placeholder:font-bold"
-                                                />
-                                            </div>
-                                            <div className="space-y-2.5">
-                                                <Label htmlFor="engine" className="ml-1 text-[10px] font-black text-primary-blue/80 uppercase tracking-widest">Engine Configuration</Label>
-                                                <Input
-                                                    id="engine"
-                                                    placeholder="e.g. 2.0L I4 / 4.0L V8"
-                                                    required
-                                                    value={formData.engine}
-                                                    onChange={(e) => setFormData({ ...formData, engine: e.target.value })}
-                                                    className="h-14 rounded-2xl border-primary-blue/10 bg-primary-blue/5 focus:bg-white transition-all font-black placeholder:font-bold"
-                                                />
-                                            </div>
+                                            <BrandedSelect
+                                                label="Sub-Model / Trim"
+                                                value={formData.submodel}
+                                                options={COMMON_TRIMS}
+                                                onChange={(val) => setFormData({ ...formData, submodel: val })}
+                                                placeholder="Select Trim"
+                                            />
+                                            <BrandedSelect
+                                                label="Engine Configuration"
+                                                value={formData.engine}
+                                                options={COMMON_ENGINES}
+                                                onChange={(val) => setFormData({ ...formData, engine: val })}
+                                                placeholder="Select Engine"
+                                            />
                                         </div>
                                     </div>
                                     <Button
                                         type="button"
                                         onClick={() => setStep(2)}
                                         disabled={!isStep1Valid}
-                                        className="w-full bg-primary-blue hover:bg-hobort-blue-dark text-white font-black h-16 rounded-2xl shadow-2xl shadow-primary-blue/20 text-lg transition-all hover:scale-[1.01] active:scale-[0.99] group"
+                                        className="w-full bg-primary-blue hover:bg-hobort-blue-dark text-white font-semibold h-16 rounded-2xl shadow-2xl shadow-primary-blue/20 text-lg transition-all hover:scale-[1.01] active:scale-[0.99] group"
                                     >
                                         {isStep1Valid ? "Switching to Parts..." : "Continue to Parts"} <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                                     </Button>
@@ -271,11 +284,11 @@ export default function QuotePage() {
                             ) : (
                                 <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
                                     <div className="space-y-2.5">
-                                        <Label htmlFor="parts" className="ml-1 text-[10px] font-black text-primary-blue/80 uppercase tracking-widest">Detailed Description</Label>
+                                        <Label htmlFor="parts" className="ml-1 text-[10px] font-medium text-primary-blue/80 uppercase tracking-widest">Detailed Description</Label>
                                         <Textarea
                                             id="parts"
                                             placeholder="e.g. Front ceramic brake pads, Carbon fiber mirror caps, etc."
-                                            className="min-h-[180px] rounded-2xl border-primary-blue/10 bg-primary-blue/5 focus:bg-white transition-all font-black p-5 resize-none placeholder:font-bold"
+                                            className="min-h-[180px] rounded-2xl border-primary-blue/10 bg-primary-blue/5 focus:bg-white transition-all font-medium p-5 resize-none placeholder:font-medium"
                                             required
                                         />
                                     </div>
@@ -284,14 +297,14 @@ export default function QuotePage() {
                                             type="button"
                                             variant="outline"
                                             onClick={() => setStep(1)}
-                                            className="h-16 px-8 rounded-2xl border-primary-blue/10 text-primary-blue font-black hover:bg-primary-blue/5"
+                                            className="h-16 px-8 rounded-2xl border-primary-blue/10 text-primary-blue font-semibold hover:bg-primary-blue/5"
                                         >
                                             <ArrowLeft className="mr-2 h-5 w-5" /> Back
                                         </Button>
                                         <Button
                                             type="submit"
                                             disabled={isLoading}
-                                            className="flex-1 bg-primary-blue hover:bg-hobort-blue-dark text-white font-black h-16 rounded-2xl shadow-2xl shadow-primary-blue/20 text-lg transition-all hover:scale-[1.01] active:scale-[0.99]"
+                                            className="flex-1 bg-primary-blue hover:bg-hobort-blue-dark text-white font-semibold h-16 rounded-2xl shadow-2xl shadow-primary-blue/20 text-lg transition-all hover:scale-[1.01] active:scale-[0.99]"
                                         >
                                             {isLoading ? (
                                                 <Loader2 className="mr-2 h-6 w-6 animate-spin" />
@@ -305,7 +318,7 @@ export default function QuotePage() {
                         </form>
                     </CardContent>
                     <CardFooter className="bg-primary-blue/5 p-6 flex justify-center border-t border-primary-blue/5">
-                        <p className="text-[10px] font-black text-primary-blue/30 uppercase tracking-[0.2em]">
+                        <p className="text-[10px] font-semibold text-primary-blue/30 uppercase tracking-[0.2em]">
                             Professional Sourcing Network • Security Guaranteed
                         </p>
                     </CardFooter>

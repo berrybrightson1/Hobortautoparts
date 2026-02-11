@@ -24,10 +24,10 @@ export default function CustomerDashboard() {
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
                 <div>
-                    <h2 className="text-3xl font-black tracking-tight text-slate-900">Welcome back, Alex!</h2>
+                    <h2 className="text-3xl font-semibold tracking-tight text-slate-900">Welcome back, Alex!</h2>
                     <p className="text-slate-500 font-medium">Track your orders and manage your vehicle sourcing requests.</p>
                 </div>
-                <Button className="bg-primary-orange hover:bg-orange-600 text-white font-bold rounded-xl shadow-lg shadow-orange-900/20 px-6 h-11">
+                <Button className="bg-primary-orange hover:bg-orange-600 text-white font-semibold rounded-xl shadow-lg shadow-orange-900/20 px-6 h-11 transition-all active:scale-95">
                     <Plus className="mr-2 h-4 w-4" /> New Request
                 </Button>
             </div>
@@ -36,8 +36,8 @@ export default function CustomerDashboard() {
                 {/* Main Content: Orders */}
                 <div className="md:col-span-2 space-y-6">
                     <div className="flex items-center justify-between px-1">
-                        <h3 className="text-xl font-bold text-slate-900">Recent Activity</h3>
-                        <Button variant="link" className="text-primary-blue font-bold text-sm hover:no-underline hover:text-blue-700">
+                        <h3 className="text-xl font-semibold text-slate-900">Recent Activity</h3>
+                        <Button variant="link" className="text-primary-blue font-semibold text-sm hover:no-underline hover:text-blue-700">
                             View All <ChevronRight className="ml-1 h-4 w-4" />
                         </Button>
                     </div>
@@ -61,14 +61,14 @@ export default function CustomerDashboard() {
 
                                             <div className="flex-1 space-y-1.5">
                                                 <div className="flex items-center justify-between">
-                                                    <p className="font-bold text-lg text-slate-900">{order.vehicleInfo}</p>
+                                                    <p className="font-semibold text-lg text-slate-900">{order.vehicleInfo}</p>
                                                     <span className="text-xs text-slate-400 font-mono bg-slate-50 px-2 py-1 rounded-md border border-slate-100">{order.id}</span>
                                                 </div>
                                                 <div className="flex items-center gap-2 text-sm text-slate-500 font-medium">
                                                     <span>{order.parts.join(", ")}</span>
                                                 </div>
                                                 <div className="flex items-center gap-3 pt-2">
-                                                    <Badge className={cn("rounded-lg px-2.5 py-0.5 border font-bold shadow-sm", getStatusColor(order.status))}>
+                                                    <Badge className={cn("rounded-lg px-2.5 py-0.5 border font-semibold shadow-sm", getStatusColor(order.status))}>
                                                         {order.status}
                                                     </Badge>
                                                     <span className="text-xs text-slate-400 flex items-center font-medium">
@@ -78,7 +78,7 @@ export default function CustomerDashboard() {
                                                 </div>
                                             </div>
 
-                                            <Button variant="outline" className="w-full sm:w-auto rounded-xl border-slate-200 text-slate-600 font-bold hover:text-primary-blue hover:border-blue-200 hover:bg-blue-50 transition-all">
+                                            <Button variant="outline" className="w-full sm:w-auto rounded-xl border-slate-200 text-slate-600 font-semibold hover:text-primary-blue hover:border-blue-200 hover:bg-blue-50 transition-all">
                                                 Details
                                             </Button>
                                         </div>
@@ -92,7 +92,7 @@ export default function CustomerDashboard() {
                 {/* Sidebar: My Vehicles */}
                 <div className="space-y-6">
                     <div className="flex items-center justify-between px-1">
-                        <h3 className="text-xl font-bold text-slate-900">My Garage</h3>
+                        <h3 className="text-xl font-semibold text-slate-900">My Garage</h3>
                         <Button variant="ghost" size="sm" className="h-8 w-8 p-0 rounded-full hover:bg-slate-100">
                             <Plus className="h-5 w-5 text-slate-500" />
                         </Button>
@@ -105,7 +105,7 @@ export default function CustomerDashboard() {
                                     <Car className="h-6 w-6" />
                                 </div>
                                 <div>
-                                    <p className="font-bold text-slate-900">Honda Civic Type R</p>
+                                    <p className="font-semibold text-slate-900">Honda Civic Type R</p>
                                     <p className="text-xs text-slate-500 font-medium">2019 • JHMZB...</p>
                                 </div>
                             </div>
@@ -114,7 +114,7 @@ export default function CustomerDashboard() {
                                     <Car className="h-6 w-6" />
                                 </div>
                                 <div>
-                                    <p className="font-bold text-slate-900">Toyota Camry</p>
+                                    <p className="font-semibold text-slate-900">Toyota Camry</p>
                                     <p className="text-xs text-slate-500 font-medium">2015 • 4T1B...</p>
                                 </div>
                             </div>
@@ -127,11 +127,11 @@ export default function CustomerDashboard() {
                         <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-2xl" />
 
                         <CardHeader className="relative z-10 pb-2">
-                            <CardTitle className="text-xl font-bold">Need Help?</CardTitle>
+                            <CardTitle className="text-xl font-semibold">Need Help?</CardTitle>
                         </CardHeader>
                         <CardContent className="text-blue-50 text-sm space-y-6 relative z-10">
                             <p className="font-medium leading-relaxed">Our expert agents are ready to assist you with finding the exact parts for your vehicle.</p>
-                            <Button className="w-full bg-white text-primary-blue hover:bg-blue-50 font-bold rounded-xl h-11 shadow-lg shadow-black/10 border-0">
+                            <Button className="w-full bg-white text-primary-blue hover:bg-blue-50 font-semibold rounded-xl h-11 shadow-lg shadow-black/10 border-0 transition-all">
                                 Contact Support
                             </Button>
                         </CardContent>

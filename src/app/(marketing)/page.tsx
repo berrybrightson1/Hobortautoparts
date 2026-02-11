@@ -102,18 +102,18 @@ export default function LandingPage() {
             transition={{ duration: 0.5 }}
             className="flex flex-col items-center gap-8 max-w-4xl mx-auto"
           >
-            <div className="inline-flex items-center gap-2 px-6 py-2 rounded-full bg-slate-100 text-primary-blue text-xs font-bold uppercase tracking-[0.2em] ring-1 ring-slate-200">
+            <div className="inline-flex items-center gap-2 px-6 py-2 rounded-full bg-slate-100 text-primary-blue text-xs font-semibold uppercase tracking-[0.2em] ring-1 ring-slate-200">
               <Star className="h-3 w-3 text-primary-orange fill-primary-orange" />
               Ghana's #1 US Parts Hub
             </div>
 
-            <h1 className="text-5xl font-black tracking-tight text-primary-blue sm:text-6xl md:text-7xl leading-[1.1]">
-              Genuine <br className="sm:hidden" /> Auto Parts. <br />
-              <span className="text-primary-orange">Direct from <br className="sm:hidden" /> Source.</span>
+            <h1 className="text-5xl font-semibold tracking-tight text-primary-blue sm:text-6xl md:text-7xl leading-[1.1]">
+              Genuine Auto Parts. <br />
+              <span className="text-primary-orange">Trusted Delivery. <br className="sm:hidden" /> Real Savings.</span>
             </h1>
 
-            <p className="max-w-[700px] text-lg text-slate-500 md:text-xl leading-relaxed">
-              Experience zero-hassle sourcing. We connect West Africa's leading mechanics with authentic, VIN-verified components at affordable prices. Quality guaranteed.
+            <p className="max-w-[800px] text-lg text-slate-500 md:text-xl leading-relaxed font-normal">
+              Hobort Auto Parts Express connects customers across Ghana and West Africa to authentic, VIN-verified auto parts sourced directly from trusted U.S. suppliers and delivered safely, quickly, and at prices you can afford.
             </p>
 
             <div className="flex flex-col gap-4 sm:flex-row mt-4">
@@ -157,7 +157,7 @@ export default function LandingPage() {
                   </div>
                   <Button
                     variant="orange"
-                    className="h-16 px-12 rounded-2xl w-full md:w-auto font-black text-lg shadow-xl shadow-primary-orange/20 hover:shadow-primary-orange/40 hover:-translate-y-0.5 transition-all group-hover/tracker:scale-[1.02]"
+                    className="h-16 px-12 rounded-2xl w-full md:w-auto font-semibold text-lg shadow-xl shadow-primary-orange/20 hover:shadow-primary-orange/40 hover:-translate-y-0.5 transition-all group-hover/tracker:scale-[1.02] text-white"
                     onClick={() => {
                       const val = window.localStorage.getItem('temp_track_id')
                       if (val) window.location.href = `/track/${val}`
@@ -171,15 +171,15 @@ export default function LandingPage() {
               <div className="mt-6 flex justify-center gap-10">
                 <div className="flex items-center gap-2">
                   <div className="h-1.5 w-1.5 rounded-full bg-primary-blue/30" />
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Georgia Export Hub</p>
+                  <p className="text-[10px] font-medium uppercase tracking-widest text-slate-400">Georgia Export Hub</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="h-1.5 w-1.5 rounded-full bg-primary-blue/30" />
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">US Logistics Center</p>
+                  <p className="text-[10px] font-medium uppercase tracking-widest text-slate-400">US Logistics Center</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="h-1.5 w-1.5 rounded-full bg-green-400/30" />
-                  <p className="text-[10px] font-black uppercase tracking-widest text-green-600/60">Accra Pickup</p>
+                  <p className="text-[10px] font-medium uppercase tracking-widest text-green-600/60">Accra Pickup</p>
                 </div>
               </div>
             </motion.div>
@@ -226,14 +226,14 @@ export default function LandingPage() {
                   <div className="h-16 w-16 md:h-24 md:w-24 rounded-2xl md:rounded-[2rem] bg-slate-50 md:bg-slate-50 border border-slate-100 flex items-center justify-center text-primary-blue group-hover:bg-primary-orange group-hover:text-white transition-all duration-500 shadow-sm md:group-hover:scale-110 md:group-hover:rotate-3">
                     <item.icon className="h-6 w-6 md:h-10 md:w-10" />
                   </div>
-                  <div className="hidden md:flex absolute -bottom-2 -right-2 h-10 w-10 rounded-full bg-white border border-slate-100 items-center justify-center text-xs font-black text-primary-blue shadow-sm">
+                  <div className="hidden md:flex absolute -bottom-2 -right-2 h-10 w-10 rounded-full bg-white border border-slate-100 items-center justify-center text-xs font-semibold text-primary-blue shadow-sm">
                     {item.step}
                   </div>
                 </div>
                 <div className="flex flex-col gap-1 md:gap-2 text-left md:text-center">
                   <div className="flex items-center gap-2 md:justify-center">
-                    <span className="md:hidden text-xs font-black text-primary-orange bg-orange-50 px-2 py-0.5 rounded-full ring-1 ring-orange-100">{item.step}</span>
-                    <h3 className="text-lg md:text-xl font-black text-primary-blue tracking-tight uppercase">{item.title}</h3>
+                    <span className="md:hidden text-xs font-semibold text-primary-orange bg-orange-50 px-2 py-0.5 rounded-full ring-1 ring-orange-100">{item.step}</span>
+                    <h3 className="text-lg md:text-xl font-semibold text-primary-blue tracking-tight uppercase">{item.title}</h3>
                   </div>
                   <p className="text-slate-500 font-medium text-xs md:text-sm leading-relaxed">{item.desc}</p>
                 </div>
@@ -245,8 +245,8 @@ export default function LandingPage() {
       <section className="py-20 bg-slate-50/80 relative">
         <div className="container px-4 mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-14 flex flex-col gap-3">
-            <h2 className="text-sm font-black uppercase tracking-[0.2em] text-primary-orange">The Hobort Advantage</h2>
-            <p className="text-3xl font-bold text-primary-blue tracking-tight">Why we are the preferred partner for Ghana's automotive industry.</p>
+            <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-primary-orange">The Hobort Advantage</h2>
+            <p className="text-3xl font-semibold text-primary-blue tracking-tight">Why customers across Ghana trust us for genuine auto parts</p>
           </div>
 
           <motion.div
@@ -260,28 +260,28 @@ export default function LandingPage() {
               {
                 icon: Zap,
                 title: "Direct from Source",
-                desc: "Get authentic OEM and high-quality used parts delivered straight from elite US retailers, ensuring pure quality and unbeatable value.",
+                desc: "We deliver authentic OEM and high-quality used parts straight from trusted U.S. suppliers—ensuring reliability, quality, and true value.",
                 bg: "bg-orange-50",
                 color: "text-primary-orange"
               },
               {
                 icon: ShieldCheck,
                 title: "Quality Guaranteed",
-                desc: "Every component is cross-referenced with your VIN by our scouters to ensure 100% genuine fitment.",
+                desc: "Every part is carefully checked and matched to your VIN to ensure the correct fit and dependable performance.",
                 bg: "bg-blue-50",
                 color: "text-primary-blue"
               },
               {
                 icon: Truck,
-                title: "Logistics Mastery",
-                desc: "From Atlanta export hubs to Tema port clearance, we handle every kilometer of the journey via specialized air and sea freight.",
+                title: "Logistics Expertise",
+                desc: "From our Atlanta export hubs to Tema port clearance, we manage the full journey through secure air and sea freight—fast, safe, and efficient.",
                 bg: "bg-green-50",
                 color: "text-green-600"
               },
               {
                 icon: BadgePercent,
-                title: "Unbeatable Savings",
-                desc: "By optimizing the supply chain and sourcing direct, we pass savings of up to 25% directly to your garage.",
+                title: "Real Savings",
+                desc: "By sourcing directly and streamlining delivery, we pass up to 25% savings straight to you without compromising quality.",
                 bg: "bg-purple-50",
                 color: "text-purple-600"
               }
@@ -294,7 +294,7 @@ export default function LandingPage() {
                 <div className={cn("h-14 w-14 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500", feature.bg)}>
                   <feature.icon className={cn("h-7 w-7", feature.color)} />
                 </div>
-                <h3 className="text-2xl font-bold text-primary-blue mb-4 tracking-tight">{feature.title}</h3>
+                <h3 className="text-2xl font-semibold text-primary-blue mb-4 tracking-tight">{feature.title}</h3>
                 <p className="text-slate-500 leading-relaxed text-sm">{feature.desc}</p>
               </motion.div>
             ))}
@@ -311,7 +311,7 @@ export default function LandingPage() {
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 md:gap-20 items-center">
             <div className="flex flex-col items-center md:items-start text-center md:text-left gap-6">
-              <h2 className="text-3xl font-black text-primary-blue md:text-5xl tracking-tight leading-tight">
+              <h2 className="text-3xl font-semibold text-primary-blue md:text-5xl tracking-tight leading-tight">
                 Genuine Sourcing. <br />
                 <span className="text-primary-orange">Affordable Logistics.</span>
               </h2>
@@ -324,8 +324,8 @@ export default function LandingPage() {
               <div className="space-y-6">
                 <div className="space-y-2">
                   <div className="flex justify-between items-end">
-                    <p className="text-[10px] md:text-xs text-slate-400 uppercase font-black tracking-[0.2em]">Garages Served</p>
-                    <p className="text-xl font-black text-primary-blue">Expanding</p>
+                    <p className="text-[10px] md:text-xs text-slate-400 uppercase font-semibold tracking-[0.2em]">Garages Served</p>
+                    <p className="text-xl font-semibold text-primary-blue">Expanding</p>
                   </div>
                   <div className="h-2.5 w-full bg-slate-100 rounded-full overflow-hidden">
                     <motion.div
@@ -339,8 +339,8 @@ export default function LandingPage() {
 
                 <div className="space-y-2">
                   <div className="flex justify-between items-end">
-                    <p className="text-[10px] md:text-xs text-slate-400 uppercase font-black tracking-[0.2em]">Parts Delivered</p>
-                    <p className="text-xl font-black text-primary-blue">High Volume</p>
+                    <p className="text-[10px] md:text-xs text-slate-400 uppercase font-semibold tracking-[0.2em]">Parts Delivered</p>
+                    <p className="text-xl font-semibold text-primary-blue">High Volume</p>
                   </div>
                   <div className="h-2.5 w-full bg-slate-100 rounded-full overflow-hidden">
                     <motion.div
@@ -354,8 +354,8 @@ export default function LandingPage() {
 
                 <div className="space-y-2">
                   <div className="flex justify-between items-end">
-                    <p className="text-[10px] md:text-xs text-slate-400 uppercase font-black tracking-[0.2em]">VIN Accuracy</p>
-                    <p className="text-xl font-black text-primary-blue">Precise</p>
+                    <p className="text-[10px] md:text-xs text-slate-400 uppercase font-semibold tracking-[0.2em]">VIN Accuracy</p>
+                    <p className="text-xl font-semibold text-primary-blue">Precise</p>
                   </div>
                   <div className="h-2.5 w-full bg-slate-100 rounded-full overflow-hidden">
                     <motion.div
@@ -403,8 +403,8 @@ export default function LandingPage() {
                       />
                     </div>
                     <div className="flex flex-col min-w-0 text-left">
-                      <p className="text-base font-black text-primary-blue truncate tracking-tight">{testimonial.author}</p>
-                      <p className="text-[10px] font-bold text-slate-400 truncate uppercase tracking-[0.2em]">{testimonial.role}</p>
+                      <p className="text-base font-semibold text-primary-blue truncate tracking-tight">{testimonial.author}</p>
+                      <p className="text-[10px] font-semibold text-slate-400 truncate uppercase tracking-[0.2em]">{testimonial.role}</p>
                     </div>
                   </div>
                 </div>
@@ -433,8 +433,8 @@ export default function LandingPage() {
 
           <div className="pt-12 text-center">
             <Link href="/quote">
-              <Button variant="orange" size="lg" className="rounded-full px-16 h-20 text-xl font-black shadow-premium hover:scale-105 transition-transform">
-                Start Your First Scout
+              <Button variant="orange" size="lg" className="rounded-full px-16 h-20 text-xl font-semibold shadow-premium hover:scale-105 transition-transform text-white">
+                Start Your First Order
               </Button>
             </Link>
           </div>
@@ -451,9 +451,9 @@ export default function LandingPage() {
           className="fixed bottom-6 left-6 right-6 z-50 md:hidden"
         >
           <div className="h-16 rounded-full bg-white/90 backdrop-blur-xl border border-slate-200/50 shadow-2xl flex items-center justify-between pl-6 pr-2">
-            <span className="text-sm font-bold text-slate-800">Ready to order?</span>
+            <span className="text-sm font-semibold text-slate-800">Ready to order?</span>
             <Link href="/quote">
-              <Button variant="orange" className="h-12 px-6 rounded-full text-white font-bold text-sm shadow-lg hover:scale-105 transition-transform" >
+              <Button variant="orange" className="h-12 px-6 rounded-full text-white font-semibold text-sm shadow-lg hover:scale-105 transition-transform" >
                 Start Sourcing
               </Button>
             </Link>
