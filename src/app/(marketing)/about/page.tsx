@@ -9,7 +9,7 @@ export default function AboutPage() {
     return (
         <div className="flex flex-col pt-24 pb-12 overflow-hidden bg-white">
             {/* Minimal Hero - Tighter spacing, reduced font size */}
-            <section className="container mx-auto px-4 md:px-8 text-center mb-20 relative">
+            <section className="container max-w-[1400px] mx-auto px-6 text-center mb-20 relative">
                 <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -30,7 +30,7 @@ export default function AboutPage() {
             </section>
 
             {/* Value Highlights - Compact Grid */}
-            <section className="container mx-auto px-4 md:px-8 mb-24">
+            <section className="container max-w-[1400px] mx-auto px-6 mb-24">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {[
                         { title: "Direct Sourcing", desc: "No middlemen. Direct access to U.S. OEM dealerships and warehouses.", icon: Target, color: "text-primary-orange", bg: "bg-orange-50" },
@@ -57,7 +57,7 @@ export default function AboutPage() {
             </section>
 
             {/* Core Problem - Compact Glassmorphic Section */}
-            <section className="mb-24 px-4 overflow-hidden">
+            <section className="container max-w-[1400px] mx-auto px-6 mb-24 overflow-hidden">
                 <motion.div
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
@@ -87,7 +87,7 @@ export default function AboutPage() {
             </section>
 
             {/* Offering Grid - Minimal Technical Layout */}
-            <section className="container mx-auto px-4 md:px-8 mb-24">
+            <section className="container max-w-[1400px] mx-auto px-6 mb-24">
                 <div className="flex justify-between items-end gap-10 mb-12 border-b border-slate-100 pb-6">
                     <div className="space-y-2">
                         <h2 className="text-3xl font-semibold text-primary-blue tracking-tighter uppercase">Product & Service <span className="text-primary-orange">Catalog.</span></h2>
@@ -116,7 +116,7 @@ export default function AboutPage() {
 
             {/* Combined Process & Options - Side by Side */}
             <section className="bg-slate-50 py-16 mb-24 border-y border-slate-100">
-                <div className="container mx-auto px-4 md:px-8">
+                <div className="container max-w-[1400px] mx-auto px-6">
                     <div className="grid lg:grid-cols-2 gap-16 lg:gap-32 max-w-6xl mx-auto">
                         {/* 7-Step Process Compact */}
                         <div className="space-y-10">
@@ -174,7 +174,7 @@ export default function AboutPage() {
             </section>
 
             {/* Strategy & Targets - Minimal Layout */}
-            <section className="container mx-auto px-4 md:px-8 max-w-6xl mb-24">
+            <section className="container max-w-[1400px] mx-auto px-6 mb-24">
                 <div className="grid lg:grid-cols-2 gap-16 lg:gap-32 items-start">
                     <div className="space-y-8">
                         <h2 className="text-3xl font-semibold text-primary-blue tracking-tighter uppercase leading-tight">Strategic <br /><span className="text-primary-orange">Advantages.</span></h2>

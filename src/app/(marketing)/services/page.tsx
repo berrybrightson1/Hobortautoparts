@@ -6,7 +6,7 @@ import * as LucideIcons from "lucide-react"
 export default function ServicesPage() {
     return (
         <div className="flex flex-col gap-20 pt-40 pb-20">
-            <section className="container mx-auto px-4 md:px-8 text-center pb-12">
+            <section className="container max-w-[1400px] mx-auto px-6 text-center pb-12">
                 <div className="max-w-4xl mx-auto flex flex-col gap-8">
                     <h1 className="text-5xl font-semibold text-primary-blue md:text-7xl tracking-tight leading-[1.1]">Our Sourcing Services</h1>
                     <p className="text-xl text-slate-500 max-w-2xl mx-auto leading-relaxed">
@@ -15,7 +15,7 @@ export default function ServicesPage() {
                 </div>
             </section>
 
-            <section className="container px-4 md:px-8 max-w-5xl mx-auto">
+            <section className="container max-w-[1400px] mx-auto px-6">
                 <div className="grid gap-6 md:grid-cols-2">
                     {SERVICES.map((service, index) => {
                         // @ts-ignore - dynamic icon access for wireframe
@@ -49,7 +49,7 @@ export default function ServicesPage() {
                 </div>
             </section>
 
-            <section className="container mx-auto px-4 md:px-8 pb-32">
+            <section className="container max-w-[1400px] mx-auto px-6 pb-32">
                 <div className="rounded-[4rem] bg-primary-blue p-16 md:p-24 overflow-hidden relative shadow-premium text-center flex flex-col items-center">
                     <div className="relative z-10 flex flex-col items-center gap-10 max-w-2xl mx-auto">
                         <div className="text-white">

@@ -2,12 +2,12 @@ import Link from "next/link"
 
 export function Footer() {
     return (
-        <footer className="bg-primary-blue py-12 px-4 text-white relative overflow-hidden">
+        <footer className="bg-primary-blue py-12 relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none">
                 <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:24px_24px]" />
             </div>
 
-            <div className="container mx-auto flex flex-col md:flex-row items-center justify-between gap-8 relative z-10 border-b border-white/10 pb-10">
+            <div className="container max-w-[1400px] mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-8 relative z-10 border-b border-white/10 pb-10">
                 <div className="flex flex-col gap-3 max-w-sm text-center md:text-left">
                     <Link href="/" className="flex items-center md:justify-start justify-center">
                         <span className="text-xl font-semibold tracking-tighter text-white uppercase leading-none">
@@ -39,7 +39,7 @@ export function Footer() {
                 </div>
             </div>
 
-            <div className="container mx-auto mt-10 flex flex-col md:flex-row items-center justify-between gap-6 text-[10px] text-white/40 font-medium uppercase tracking-widest">
+            <div className="container max-w-[1400px] mx-auto px-6 mt-10 flex flex-col md:flex-row items-center justify-between gap-6 text-[10px] text-white/40 font-medium uppercase tracking-widest">
                 <p>&copy; {new Date().getFullYear()} Hobort. All rights reserved.</p>
                 <div className="flex gap-8">
                     <span>Terms & Privacy</span>

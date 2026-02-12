@@ -8,7 +8,7 @@ import { PolicyTabs } from "@/components/marketing/policy-tabs"
 export default function PrivacyPolicyPage() {
     return (
         <div className="min-h-screen bg-white">
-            <div className="max-w-4xl mx-auto px-6 py-24">
+            <div className="container max-w-[1400px] mx-auto px-6 py-24">
                 <Link href="/" className="group inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-primary-blue/30 hover:text-primary-blue transition-colors mb-4">
                     <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
                     Back to Hub

@@ -31,7 +31,7 @@ const slides = [
         title: "Logistics Expertise",
         description: "From our Atlanta export hubs to Tema port clearance, we manage the full journey through secure air and sea freight—fast, safe, and efficient.",
         icon: Truck,
-        image: "/Hero slider white latest.jpg",
+        image: "/Hero slider white new.jpg",
         theme: "light"
     },
     {
@@ -39,8 +39,8 @@ const slides = [
         title: "Real Savings",
         description: "By sourcing directly and streamlining delivery, we pass up to 25% savings straight to you without compromising quality.",
         icon: BadgePercent,
-        image: "/Hero slider dark.jpg",
-        theme: "dark"
+        image: "/Hero slider white.jpg",
+        theme: "light"
     },
 ]
 
@@ -82,7 +82,8 @@ export function HeroSlider() {
 
     return (
         <section className={cn(
-            "relative h-[600px] lg:h-auto lg:aspect-[1920/800] w-full overflow-hidden transition-colors duration-500",
+            "relative w-full overflow-hidden transition-colors duration-500",
+            "h-auto min-h-[600px] lg:h-auto lg:aspect-[1920/800]", // Flexible height on mobile, fixed aspect on desktop
             isDarkTheme ? "bg-slate-900" : "bg-white"
         )}>
             {/* Dynamic Background Image */}
@@ -107,11 +108,16 @@ export function HeroSlider() {
                         className="object-cover object-center"
                         priority
                     />
+                    {/* Mobile Overlay for readability */}
+                    <div className={cn(
+                        "absolute inset-0 md:hidden transition-colors duration-500",
+                        isDarkTheme ? "bg-black/40" : "bg-white/40"
+                    )} />
                 </motion.div>
             </AnimatePresence>
 
-            <div className="relative z-20 container max-w-[1400px] mx-auto px-6 h-full flex flex-col justify-center">
-                <div className="max-w-3xl text-left mt-16 md:mt-0">
+            <div className="relative z-20 container max-w-[1400px] mx-auto px-4 md:px-6 h-full flex flex-col justify-start md:justify-center pt-32 pb-20 md:py-0">
+                <div className="max-w-3xl text-left">
                     <motion.div
                         key={currentSlide + "content"}
                         initial={{ opacity: 0, y: 20 }}
@@ -119,7 +125,7 @@ export function HeroSlider() {
                         transition={{ delay: 0.2, duration: 0.5 }}
                     >
                         <div className={cn(
-                            "inline-flex items-center gap-2 px-4 py-1.5 rounded-full backdrop-blur-md border text-xs font-semibold uppercase tracking-[0.2em] mb-6 transition-colors duration-300",
+                            "inline-flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-1.5 rounded-full backdrop-blur-md border text-[10px] md:text-xs font-semibold uppercase tracking-[0.2em] mb-6 md:mb-6 transition-colors duration-300",
                             isDarkTheme
                                 ? "bg-white/10 border-white/20 text-white"
                                 : "bg-slate-100/80 border-slate-200 text-primary-blue"
@@ -129,37 +135,37 @@ export function HeroSlider() {
                         </div>
 
                         <h1 className={cn(
-                            "text-4xl md:text-7xl font-bold tracking-tight mb-6 leading-[1.1] transition-colors duration-300",
+                            "text-3xl sm:text-4xl md:text-7xl font-bold tracking-tight mb-4 md:mb-6 leading-[1.1] transition-colors duration-300",
                             isDarkTheme ? "text-white" : "text-primary-blue"
                         )}>
                             {current.title}
                         </h1>
 
                         <p className={cn(
-                            "text-lg md:text-2xl leading-relaxed font-light max-w-2xl transition-colors duration-300",
-                            isDarkTheme ? "text-slate-200" : "text-slate-600"
+                            "text-base sm:text-lg md:text-2xl leading-relaxed font-light max-w-xl md:max-w-2xl transition-colors duration-300 mb-8",
+                            isDarkTheme ? "text-slate-100" : "text-slate-700"
                         )}>
                             {current.description}
                         </p>
 
-                        <div className="mt-8 flex flex-col sm:flex-row gap-4">
-                            <Link href="/signup">
-                                <Button size="lg" className="rounded-full px-8 text-lg bg-primary-orange hover:bg-orange-600 text-white border-none shadow-premium hover:shadow-orange-500/20 w-full sm:w-auto">
+                        <div className="flex flex-row gap-3 md:gap-4 w-full sm:w-auto">
+                            <Link href="/signup" className="flex-1 sm:flex-none">
+                                <Button size="lg" className="w-full sm:w-auto rounded-full px-4 sm:px-8 text-base md:text-lg bg-primary-orange hover:bg-orange-600 text-white border-none shadow-premium hover:shadow-orange-500/20 whitespace-nowrap">
                                     Get Started
                                 </Button>
                             </Link>
-                            <Link href="/how-it-works">
+                            <Link href="/how-it-works" className="flex-1 sm:flex-none">
                                 <Button
                                     variant="outline"
                                     size="lg"
                                     className={cn(
-                                        "rounded-full px-8 text-lg hover:text-primary-orange transition-colors duration-300 w-full sm:w-auto",
+                                        "w-full sm:w-auto rounded-full px-4 sm:px-8 text-base md:text-lg hover:text-primary-orange transition-colors duration-300 whitespace-nowrap",
                                         isDarkTheme
                                             ? "text-white border-white/30 hover:bg-white/10"
                                             : "text-primary-blue border-slate-200 hover:bg-slate-50"
                                     )}
                                 >
-                                    <Play className={cn("mr-2 h-4 w-4", isDarkTheme ? "fill-white" : "fill-primary-blue")} />
+                                    <Play className={cn("mr-2 h-4 w-4 shrink-0", isDarkTheme ? "fill-white" : "fill-primary-blue")} />
                                     How it Works
                                 </Button>
                             </Link>
@@ -168,12 +174,12 @@ export function HeroSlider() {
 
                     {/* Static Tracking Widget */}
                     <div className="mt-8 md:mt-10">
-                        <TrackingWidget className="px-0" />
+                        <TrackingWidget className="px-0 relative z-30" />
                     </div>
                 </div>
 
-                {/* Navigation Controls */}
-                <div className="absolute bottom-12 left-4 md:left-auto md:right-32 flex gap-4 z-30">
+                {/* Navigation Controls - Desktop Only or subtle on mobile */}
+                <div className="hidden md:flex absolute bottom-12 right-32 gap-4 z-30">
                     <Button
                         variant="ghost"
                         size="icon"
@@ -203,7 +209,7 @@ export function HeroSlider() {
                 </div>
 
                 {/* Pagination Dots */}
-                <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3 z-30">
+                <div className="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 flex gap-2 md:gap-3 z-30">
                     {slides.map((slide, index) => {
                         const isActive = index === currentSlide
                         return (
@@ -214,8 +220,8 @@ export function HeroSlider() {
                                     setCurrentSlide(index)
                                 }}
                                 className={cn(
-                                    "h-2 rounded-full cursor-pointer transition-all duration-300",
-                                    isActive ? "w-8 bg-primary-orange" : "w-2",
+                                    "h-1.5 md:h-2 rounded-full cursor-pointer transition-all duration-300",
+                                    isActive ? "w-6 md:w-8 bg-primary-orange" : "w-1.5 md:w-2",
                                     !isActive && (isDarkTheme ? "bg-white/30 hover:bg-white/50" : "bg-slate-300 hover:bg-slate-400")
                                 )}
                             />

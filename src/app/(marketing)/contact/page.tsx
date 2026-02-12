@@ -30,7 +30,7 @@ export default function ContactPage() {
 
     return (
         <div className="flex flex-col pt-32 pb-20">
-            <section className="container mx-auto px-4 md:px-8">
+            <section className="container max-w-[1400px] mx-auto px-6">
                 <div className="max-w-4xl mx-auto text-center mb-16">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -194,7 +194,7 @@ export default function ContactPage() {
             </section>
 
             <section className="mt-32 py-20 bg-slate-50/50 border-y border-slate-100">
-                <div className="container mx-auto px-4 text-center">
+                <div className="container max-w-[1400px] mx-auto px-6 text-center">
                     <div className="max-w-2xl mx-auto flex flex-col items-center gap-6">
                         <div className="h-14 w-14 rounded-2xl bg-white border border-slate-100 flex items-center justify-center text-primary-orange shadow-sm mb-2">
                             <ShieldCheck className="h-8 w-8" />

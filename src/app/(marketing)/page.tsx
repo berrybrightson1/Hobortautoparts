@@ -116,7 +116,7 @@ export default function LandingPage() {
       {/* Step 2: 3-Step Intelligence Process */}
       {/* Step 2: 3-Step Intelligence Process - Mobile Optimized */}
       <section className="py-12 md:py-20 bg-white relative overflow-hidden">
-        <div className="container mx-auto px-4">
+        <div className="container max-w-[1400px] mx-auto px-6">
           <div className="grid md:grid-cols-3 gap-8 md:gap-12 relative">
             {/* Connecting Line (Desktop) */}
             <div className="hidden md:block absolute top-12 left-[15%] right-[15%] h-px bg-slate-100 -z-10" />
@@ -155,7 +155,7 @@ export default function LandingPage() {
           <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(#1b4e6f_1px,transparent_1px)] [background-size:24px_24px]" />
         </div>
 
-        <div className="container mx-auto px-4 relative z-10">
+        <div className="container max-w-[1400px] mx-auto px-6 relative z-10">
           <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 md:gap-20 items-center">
             <div className="flex flex-col items-center md:items-start text-center md:text-left gap-6">
               <h2 className="text-3xl font-semibold text-primary-blue md:text-5xl tracking-tight leading-tight">
@@ -219,7 +219,7 @@ export default function LandingPage() {
         </div>
 
         {/* Step 4: 4-Set Horizontal Smooth Testimonial Slider */}
-        <div className="mt-20 w-full max-w-[115rem] mx-auto px-4 overflow-hidden">
+        <div className="mt-20 w-full max-w-[1400px] mx-auto px-6 overflow-hidden">
           <AnimatePresence mode="wait">
             <motion.div
               key={testimonialPage}
