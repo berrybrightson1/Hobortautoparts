@@ -122,7 +122,7 @@ export default function LandingPage() {
                   Request a Quote <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
-              <Link href="/services">
+              <Link href="/how-it-works">
                 <Button variant="outline" size="lg" className="rounded-full px-10 h-14 text-lg border-2">
                   <Play className="mr-2 h-4 w-4 fill-primary-blue" /> How it Works
                 </Button>

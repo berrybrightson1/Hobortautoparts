@@ -19,16 +19,17 @@ export function Footer() {
                     </p>
                 </div>
 
-                <div className="flex flex-wrap items-center justify-center gap-12 text-[10px] font-medium uppercase tracking-widest text-blue-100/60">
-                    <div className="flex flex-col gap-4">
+                <div className="flex flex-wrap items-start justify-center md:justify-end gap-12 text-[10px] font-medium uppercase tracking-widest text-blue-100/60 flex-1">
+                    <div className="flex flex-col gap-4 min-w-[140px]">
                         <span className="text-white border-b border-dashed border-white/20 pb-2 mb-2">Navigation</span>
                         <Link href="/about" className="hover:text-primary-orange transition-colors">About</Link>
+                        <Link href="/how-it-works" className="hover:text-primary-orange transition-colors">How it Works</Link>
                         <Link href="/services" className="hover:text-primary-orange transition-colors">Services</Link>
                         <Link href="/contact" className="hover:text-primary-orange transition-colors">Contact</Link>
                         <Link href="/portal" className="hover:text-primary-orange transition-colors">Client Portal</Link>
                     </div>
 
-                    <div className="flex flex-col gap-4">
+                    <div className="flex flex-col gap-4 min-w-[140px]">
                         <span className="text-white border-b border-dashed border-white/20 pb-2 mb-2">Policies</span>
                         <Link href="/shipping-policy" className="hover:text-primary-orange transition-colors">Shipping Policy</Link>
                         <Link href="/return-policy" className="hover:text-primary-orange transition-colors">Return Policy</Link>

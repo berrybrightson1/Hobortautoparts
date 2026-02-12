@@ -41,7 +41,7 @@ export function Navbar() {
                         <img
                             src="/Hobort auto express logo Main.png"
                             alt="Hobort Auto Parts Express"
-                            className="h-12 md:h-14 w-auto object-contain transition-transform hover:scale-105"
+                            className="h-16 md:h-18 w-auto object-contain transition-transform hover:scale-105"
                         />
                     </Link>
 

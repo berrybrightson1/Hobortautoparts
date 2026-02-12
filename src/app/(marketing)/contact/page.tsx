@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Mail, MapPin, Zap, Clock, ShieldCheck, MessageCircle } from "lucide-react"
+import { SmartPhoneInput } from "@/components/ui/phone-input"
 import { motion } from "framer-motion"
 
 export default function ContactPage() {
@@ -20,7 +21,7 @@ export default function ContactPage() {
     const handleWhatsAppRedirect = (e: React.FormEvent) => {
         e.preventDefault()
 
-        const phoneNumber = "14045434422" // Cleaned US number from policy
+        const phoneNumber = "16784966882" // Updated US number
         const text = `*New Website Inquiry*\n\n*Name:* ${formData.name}\n*Phone:* ${formData.phone}\n*Subject:* ${formData.subject}\n\n*Message:* ${formData.message}`
 
         const encodedText = encodeURIComponent(text)
@@ -66,24 +67,24 @@ export default function ContactPage() {
                                 {
                                     icon: MessageCircle,
                                     title: "WhatsApp Support",
-                                    value: "+1 404-543-4422",
+                                    value: "+1 (678) 496-6882",
                                     desc: "Global Logistics Support Line",
                                     color: "text-green-600",
                                     bg: "bg-green-50"
                                 },
                                 {
                                     icon: MapPin,
-                                    title: "Ghana Office",
-                                    value: "JWVQ+9WR, Sakumono",
-                                    desc: "Greater Accra • Pickup Center",
+                                    title: "Ghana Contact",
+                                    value: "0557300478 / 0501700653",
+                                    desc: "JWVQ+9WR, Sakumono • Pickup Center",
                                     color: "text-primary-orange",
                                     bg: "bg-orange-50"
                                 },
                                 {
                                     icon: Mail,
                                     title: "Email",
-                                    value: "Info@hobortautopartsexpress.com",
-                                    desc: "Response within 2 hours",
+                                    value: "info@hobortautopartsexpress.com",
+                                    desc: "parts@hobortautopartsexpress.com",
                                     color: "text-primary-blue",
                                     bg: "bg-slate-50"
                                 }
@@ -103,16 +104,16 @@ export default function ContactPage() {
                             ))}
                         </div>
 
-                        <div className="p-10 rounded-[3rem] bg-emerald-600 text-white relative overflow-hidden group shadow-2xl shadow-emerald-600/20">
+                        <div className="p-10 rounded-[3rem] bg-primary-blue text-white relative overflow-hidden group shadow-2xl shadow-primary-blue/20">
                             <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
                                 <MessageCircle className="h-24 w-24" />
                             </div>
                             <div className="relative z-10 space-y-4">
-                                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/20 text-white text-[10px] font-bold uppercase tracking-widest backdrop-blur-sm">
+                                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 text-white text-[10px] font-bold uppercase tracking-widest backdrop-blur-sm">
                                     <Zap className="h-3.3 w-3.3" /> Immediate Response
                                 </div>
                                 <h3 className="text-3xl font-semibold leading-tight">Connect with an Agent</h3>
-                                <p className="text-emerald-50/70 font-medium text-lg leading-relaxed">
+                                <p className="text-blue-100/70 font-medium text-lg leading-relaxed">
                                     Our US-based sourcing agents are online and ready to verify your parts via WhatsApp.
                                 </p>
                             </div>
@@ -143,7 +144,7 @@ export default function ContactPage() {
                                             <Input
                                                 id="name"
                                                 required
-                                                placeholder="John Doe"
+                                                placeholder="Berry Brightson"
                                                 value={formData.name}
                                                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                                 className="h-16 rounded-[1.25rem] border-slate-100 bg-slate-50 focus:bg-white focus:ring-emerald-500/20 transition-all font-semibold placeholder:font-medium text-primary-blue"
@@ -151,13 +152,12 @@ export default function ContactPage() {
                                         </div>
                                         <div className="space-y-3">
                                             <Label htmlFor="phone" className="ml-1 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Phone Number</Label>
-                                            <Input
+                                            <SmartPhoneInput
                                                 id="phone"
-                                                required
-                                                placeholder="+233..."
                                                 value={formData.phone}
-                                                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                                className="h-16 rounded-[1.25rem] border-slate-100 bg-slate-50 focus:bg-white focus:ring-emerald-500/20 transition-all font-semibold placeholder:font-medium text-primary-blue"
+                                                onChange={(val) => setFormData({ ...formData, phone: val })}
+                                                placeholder="Enter number..."
+                                                className="w-full"
                                             />
                                         </div>
                                     </div>
