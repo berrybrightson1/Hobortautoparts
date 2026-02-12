@@ -1,46 +1,69 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { ShieldCheck, Zap, Truck, BadgePercent, ChevronLeft, ChevronRight, Play } from "lucide-react"
+import { motion, AnimatePresence, Variants } from "framer-motion"
+import { ShieldCheck, Zap, Truck, BadgePercent, ChevronRight, Play, CheckCircle2, Globe2, PackageCheck } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import Link from "next/link"
 import { TrackingWidget } from "@/components/marketing/tracking-widget"
 import { cn } from "@/lib/utils"
 
-const slides = [
+interface Slide {
+    id: number
+    title: string
+    description: string
+    icon: React.ElementType
+    image: string
+    theme: string
+    badge: string
+}
+
+const slides: Slide[] = [
     {
         id: 1,
-        title: "Direct from Source",
-        description: "We deliver authentic OEM and high-quality used parts straight from trusted U.S. suppliers—ensuring reliability, quality, and true value.",
+        title: "Genuine U.S. auto parts delivered globally",
+        description: "Access a massive inventory of authentic OEM and certified aftermarket components directly from the United States. We bridge the gap between American quality and international demand.",
         icon: Zap,
         image: "/Hero slider white latest.jpg",
-        theme: "light" // Light background, Dark text
+        theme: "light",
+        badge: "Authorized Supply Chain"
     },
     {
         id: 2,
-        title: "Quality Guaranteed",
-        description: "Every part is carefully checked and matched to your VIN to ensure the correct fit and dependable performance.",
+        title: "Precision VIN matching for every single order",
+        description: "Eliminate the risk of incorrect parts with our advanced technical verification and expert matching systems. Every component is cross-referenced against your specific vehicle data.",
         icon: ShieldCheck,
         image: "/Hero slider dark.jpg",
-        theme: "dark" // Dark background, Light text
+        theme: "dark",
+        badge: "Guaranteed Accuracy"
     },
     {
         id: 3,
-        title: "Logistics Expertise",
-        description: "From our Atlanta export hubs to Tema port clearance, we manage the full journey through secure air and sea freight—fast, safe, and efficient.",
+        title: "Fast export and seamless customs clearance",
+        description: "Navigate international shipping complexities with our specialized logistics team and established export hubs. We handle the paperwork so your parts arrive without delay.",
         icon: Truck,
         image: "/Hero slider white new.jpg",
-        theme: "light"
+        theme: "light",
+        badge: "Logistics Excellence"
     },
     {
         id: 4,
-        title: "Real Savings",
-        description: "By sourcing directly and streamlining delivery, we pass up to 25% savings straight to you without compromising quality.",
+        title: "Premium quality at unbeatable wholesale pricing",
+        description: "Leverage our direct-to-source relationships to secure the best rates on hard-to-find luxury and performance parts. Quality remains our priority while delivering significant value.",
         icon: BadgePercent,
         image: "/Hero slider white.jpg",
-        theme: "light"
+        theme: "light",
+        badge: "Direct-to-Source Value"
+    },
+    {
+        id: 5,
+        title: "Complete tracking from our hub to your door",
+        description: "Monitor every step of your shipment's journey with real-time updates and proactive delivery management. Total visibility ensures you stay informed from checkout to installation.",
+        icon: PackageCheck,
+        image: "/Hero slider white latest 1.jpg",
+        theme: "light",
+        badge: "End-to-End Visibility"
     },
 ]
 
@@ -48,20 +71,31 @@ export function HeroSlider() {
     const [currentSlide, setCurrentSlide] = useState(0)
     const [direction, setDirection] = useState(0)
 
-    const slideVariants = {
+    // Safety check: Reset index if it's out of bounds (useful during development/HMR)
+    if (currentSlide >= slides.length) {
+        setCurrentSlide(0)
+    }
+
+    const slideVariants: Variants = {
         enter: (direction: number) => ({
-            x: direction > 0 ? 1000 : -1000,
-            opacity: 0
+            opacity: 0,
+            scale: 1.05
         }),
         center: {
             zIndex: 1,
-            x: 0,
-            opacity: 1
+            opacity: 1,
+            scale: 1,
+            transition: {
+                opacity: { duration: 0.8, ease: "easeOut" },
+                scale: { duration: 8, ease: "linear" }
+            }
         },
         exit: (direction: number) => ({
             zIndex: 0,
-            x: direction < 0 ? 1000 : -1000,
-            opacity: 0
+            opacity: 0,
+            transition: {
+                opacity: { duration: 0.8, ease: "easeIn" }
+            }
         })
     }
 
@@ -73,19 +107,15 @@ export function HeroSlider() {
     useEffect(() => {
         const timer = setInterval(() => {
             paginate(1)
-        }, 6000)
+        }, 8000)
         return () => clearInterval(timer)
     }, [])
 
-    const current = slides[currentSlide]
-    const isDarkTheme = current.theme === 'dark'
+    // Safety fallback for current slide
+    const current = slides[currentSlide] || slides[0]
 
     return (
-        <section className={cn(
-            "relative w-full overflow-hidden transition-colors duration-500",
-            "h-auto min-h-[600px] lg:h-auto lg:aspect-[1920/800]", // Flexible height on mobile, fixed aspect on desktop
-            isDarkTheme ? "bg-slate-900" : "bg-white"
-        )}>
+        <section className="relative w-full min-h-[100dvh] overflow-hidden bg-slate-900 transition-colors duration-500">
             {/* Dynamic Background Image */}
             <AnimatePresence initial={false} custom={direction}>
                 <motion.div
@@ -95,138 +125,224 @@ export function HeroSlider() {
                     initial="enter"
                     animate="center"
                     exit="exit"
+                    className="absolute inset-0 w-full h-full z-0 pointer-events-none select-none"
                     transition={{
-                        x: { type: "spring", stiffness: 300, damping: 30 },
-                        opacity: { duration: 0.5 }
+                        opacity: { duration: 0.4 }
                     }}
-                    className="absolute inset-0 w-full h-full z-0 flex items-center justify-center"
                 >
-                    <Image
-                        src={current.image}
-                        alt="Hero Background"
-                        fill
-                        className="object-cover object-center"
-                        priority
-                    />
-                    {/* Mobile Overlay for readability */}
-                    <div className={cn(
-                        "absolute inset-0 md:hidden transition-colors duration-500",
-                        isDarkTheme ? "bg-black/40" : "bg-white/40"
-                    )} />
+                    {current && current.image && (
+                        <>
+                            <Image
+                                src={current.image}
+                                alt="Hero Background"
+                                fill
+                                className="object-cover object-center"
+                                priority
+                            />
+                            {/* Gradient Overlays matching prototype */}
+                            <div className="absolute inset-0 bg-gradient-to-r from-slate-900/95 via-slate-900/70 to-slate-900/30" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-slate-900/20" />
+                        </>
+                    )}
                 </motion.div>
             </AnimatePresence>
 
-            <div className="relative z-20 container max-w-[1400px] mx-auto px-4 md:px-6 h-full flex flex-col justify-start md:justify-center pt-32 pb-20 md:py-0">
-                <div className="max-w-3xl text-left">
+            {/* Static Noise Texture */}
+            <div className="absolute inset-0 z-0 opacity-[0.04] pointer-events-none mix-blend-overlay"
+                style={{ backgroundImage: `url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIi8+CjxjaXJjbGUgY3g9IjEiIGN5PSIxIiByPSIxIiBmaWxsPSIjMDAwIi8+Cjwvc3ZnPg==')` }}>
+            </div>
+
+            <div className="relative z-20 max-w-[1400px] mx-auto px-6 h-full grid lg:grid-cols-2 gap-12 items-center pt-32 pb-40 lg:py-0 min-h-[100dvh]">
+
+                {/* Text Content */}
+                <div className="flex flex-col justify-center space-y-8">
                     <motion.div
                         key={currentSlide + "content"}
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2, duration: 0.5 }}
+                        transition={{ delay: 0.2, duration: 0.8, ease: "easeOut" }}
                     >
-                        <div className={cn(
-                            "inline-flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-1.5 rounded-full backdrop-blur-md border text-[10px] md:text-xs font-semibold uppercase tracking-[0.2em] mb-6 md:mb-6 transition-colors duration-300",
-                            isDarkTheme
-                                ? "bg-white/10 border-white/20 text-white"
-                                : "bg-slate-100/80 border-slate-200 text-primary-blue"
-                        )}>
-                            <current.icon className={cn("h-3 w-3", isDarkTheme ? "text-white" : "text-primary-orange")} />
-                            {current.title === "Direct from Source" ? "Genuine Parts" : "Hobort Auto Express"}
+                        {/* Premium Hero Badge (Redesigned) */}
+                        <div className="relative inline-flex items-center gap-4 mb-10 group cursor-default">
+                            {/* Accent Line - Adjusted for flush alignment */}
+                            <div className="absolute -left-4 w-2 h-[1px] bg-primary-orange/50 group-hover:w-4 group-hover:bg-primary-orange transition-all duration-500"></div>
+
+                            <div className="flex items-center gap-3">
+                                <div className="relative">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-primary-orange shadow-[0_0_10px_rgba(254,131,35,0.8)]"></div>
+                                    <div className="absolute inset-0 w-1.5 h-1.5 rounded-full bg-primary-orange animate-ping opacity-40"></div>
+                                </div>
+                                <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-white/90 drop-shadow-sm transition-colors group-hover:text-white">
+                                    {current.badge}
+                                </span>
+                            </div>
+
+                            {/* Glass background elements */}
+                            <div className="absolute -inset-x-4 -inset-y-2 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-sm -z-10"></div>
                         </div>
 
-                        <h1 className={cn(
-                            "text-3xl sm:text-4xl md:text-7xl font-bold tracking-tight mb-4 md:mb-6 leading-[1.1] transition-colors duration-300",
-                            isDarkTheme ? "text-white" : "text-primary-blue"
-                        )}>
+                        {/* Headline - One Line Constraint */}
+                        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-extrabold tracking-tighter text-white drop-shadow-2xl mb-6 font-display line-clamp-2 leading-[1.1]">
                             {current.title}
                         </h1>
 
-                        <p className={cn(
-                            "text-base sm:text-lg md:text-2xl leading-relaxed font-light max-w-xl md:max-w-2xl transition-colors duration-300 mb-8",
-                            isDarkTheme ? "text-slate-100" : "text-slate-700"
-                        )}>
-                            {current.description}
-                        </p>
+                        {/* Subtext - Two Line Consistency */}
+                        <div className="pl-6 border-l-4 border-primary-orange/50 mb-8">
+                            <p className="text-base md:text-lg text-slate-300 max-w-xl font-medium leading-relaxed line-clamp-2">
+                                {current.description}
+                            </p>
+                        </div>
 
-                        <div className="flex flex-row gap-3 md:gap-4 w-full sm:w-auto">
+                        {/* Buttons: Side-by-Side Mobile Layout */}
+                        <div className="flex flex-row gap-3 md:gap-5 w-full sm:w-auto pt-4">
                             <Link href="/signup" className="flex-1 sm:flex-none">
-                                <Button size="lg" className="w-full sm:w-auto rounded-full px-4 sm:px-8 text-base md:text-lg bg-primary-orange hover:bg-orange-600 text-white border-none shadow-premium hover:shadow-orange-500/20 whitespace-nowrap">
+                                <Button className="w-full h-14 md:h-16 px-6 md:px-10 rounded-full bg-primary-orange hover:bg-orange-600 text-white font-bold text-sm md:text-lg shadow-[0_0_40px_-10px_rgba(249,115,22,0.3)] hover:shadow-orange-500/40 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2 group whitespace-nowrap border-none">
                                     Get Started
+                                    <ChevronRight className="w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:translate-x-1" />
                                 </Button>
                             </Link>
+
                             <Link href="/how-it-works" className="flex-1 sm:flex-none">
-                                <Button
-                                    variant="outline"
-                                    size="lg"
-                                    className={cn(
-                                        "w-full sm:w-auto rounded-full px-4 sm:px-8 text-base md:text-lg hover:text-primary-orange transition-colors duration-300 whitespace-nowrap",
-                                        isDarkTheme
-                                            ? "text-white border-white/30 hover:bg-white/10"
-                                            : "text-primary-blue border-slate-200 hover:bg-slate-50"
-                                    )}
-                                >
-                                    <Play className={cn("mr-2 h-4 w-4 shrink-0", isDarkTheme ? "fill-white" : "fill-primary-blue")} />
-                                    How it Works
+                                <Button className="w-full h-14 md:h-16 px-6 md:px-10 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 backdrop-blur-sm text-white font-bold text-sm md:text-lg hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2 whitespace-nowrap group">
+                                    <div className="h-6 w-6 rounded-full bg-white flex items-center justify-center group-hover:scale-110 transition-transform">
+                                        <Play className="w-2.5 h-2.5 ml-0.5 text-slate-900 fill-current" />
+                                    </div>
+                                    <span>How it Works</span>
                                 </Button>
                             </Link>
                         </div>
                     </motion.div>
 
-                    {/* Static Tracking Widget */}
-                    <div className="mt-8 md:mt-10">
-                        <TrackingWidget className="px-0 relative z-30" />
+                    {/* Tracking Widget */}
+                    <div className="mt-8 md:mt-12">
+                        <TrackingWidget />
                     </div>
                 </div>
 
-                {/* Navigation Controls - Desktop Only or subtle on mobile */}
-                <div className="hidden md:flex absolute bottom-12 right-32 gap-4 z-30">
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => paginate(-1)}
-                        className={cn(
-                            "rounded-full backdrop-blur-sm shadow-sm transition-colors duration-300 hover:text-primary-blue",
-                            isDarkTheme
-                                ? "bg-white/10 text-white hover:bg-white/20 border-white/10"
-                                : "bg-white/80 text-slate-600 hover:bg-white border-slate-200"
-                        )}
-                    >
-                        <ChevronLeft className="h-8 w-8" />
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => paginate(1)}
-                        className={cn(
-                            "rounded-full backdrop-blur-sm shadow-sm transition-colors duration-300 hover:text-primary-blue",
-                            isDarkTheme
-                                ? "bg-white/10 text-white hover:bg-white/20 border-white/10"
-                                : "bg-white/80 text-slate-600 hover:bg-white border-slate-200"
-                        )}
-                    >
-                        <ChevronRight className="h-8 w-8" />
-                    </Button>
-                </div>
+                {/* Right Visual (Desktop Only) */}
+                <div className="hidden lg:flex relative h-full min-h-[600px] items-center justify-center pointer-events-none select-none px-10">
+                    {/* Orbital System */}
+                    <div className="relative w-[500px] h-[500px]">
+                        <div className="absolute inset-0 border border-white/5 rounded-full animate-spin-slow"></div>
+                        <div className="absolute inset-12 border border-white/5 rounded-full animate-spin-reverse opacity-50"></div>
+                        <div className="absolute inset-24 border border-dashed border-white/10 rounded-full animate-spin-slow opacity-30"></div>
 
-                {/* Pagination Dots */}
-                <div className="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 flex gap-2 md:gap-3 z-30">
-                    {slides.map((slide, index) => {
-                        const isActive = index === currentSlide
-                        return (
-                            <div
-                                key={slide.id}
-                                onClick={() => {
-                                    setDirection(index > currentSlide ? 1 : -1)
-                                    setCurrentSlide(index)
-                                }}
-                                className={cn(
-                                    "h-1.5 md:h-2 rounded-full cursor-pointer transition-all duration-300",
-                                    isActive ? "w-6 md:w-8 bg-primary-orange" : "w-1.5 md:w-2",
-                                    !isActive && (isDarkTheme ? "bg-white/30 hover:bg-white/50" : "bg-slate-300 hover:bg-slate-400")
-                                )}
-                            />
-                        )
-                    })}
+                        {/* Floating Card 1 */}
+                        <div className="absolute top-[10%] right-[10%] bg-white/10 backdrop-blur-md border border-white/20 p-4 pr-6 rounded-2xl flex items-center gap-4 animate-bounce hover:scale-105 transition-transform cursor-default pointer-events-auto">
+                            <div className="h-10 w-10 bg-emerald-500/20 rounded-full flex items-center justify-center text-emerald-400 border border-emerald-500/20">
+                                <ShieldCheck className="w-5 h-5" />
+                            </div>
+                            <div>
+                                <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Status Update</div>
+                                <div className="text-sm font-bold text-white">Order #8821 Shipped</div>
+                            </div>
+                        </div>
+
+                        {/* Floating Card 2 */}
+                        <div className="absolute bottom-[20%] left-[0%] bg-white/10 backdrop-blur-md border border-white/20 p-4 pr-6 rounded-2xl flex items-center gap-4 animate-bounce hover:scale-105 transition-transform cursor-default pointer-events-auto" style={{ animationDelay: '1s' }}>
+                            <div className="h-10 w-10 bg-primary-orange/20 rounded-full flex items-center justify-center text-primary-orange border border-primary-orange/20">
+                                <Truck className="w-5 h-5" />
+                            </div>
+                            <div>
+                                <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Transit</div>
+                                <div className="text-sm font-bold text-white">Arriving in 2 Days</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Rebuilt Bottom Section */}
+            <div className="absolute bottom-0 left-0 w-full z-20 pb-8 md:pb-12 border-t border-white/5 bg-slate-900/20 backdrop-blur-sm">
+                <div className="max-w-[1400px] mx-auto px-6 h-full flex flex-col md:flex-row justify-between items-center gap-6 pt-8">
+
+                    {/* Left side: Identify, Source, Deliver (Minimal) */}
+                    <div className="flex items-center gap-6 md:gap-10">
+                        <div className="flex items-center gap-2 group cursor-default">
+                            <div className="w-8 h-8 rounded-full bg-primary-orange/10 flex items-center justify-center border border-primary-orange/20 transition-all group-hover:bg-primary-orange/20">
+                                <CheckCircle2 className="w-4 h-4 text-primary-orange" />
+                            </div>
+                            <span className="text-xs md:text-sm font-bold tracking-widest uppercase text-slate-400 group-hover:text-white transition-colors">Identify</span>
+                        </div>
+                        <div className="hidden sm:block w-px h-4 bg-white/10"></div>
+                        <div className="flex items-center gap-2 group cursor-default">
+                            <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center border border-blue-500/20 transition-all group-hover:bg-blue-500/20">
+                                <Globe2 className="w-4 h-4 text-blue-400" />
+                            </div>
+                            <span className="text-xs md:text-sm font-bold tracking-widest uppercase text-slate-400 group-hover:text-white transition-colors">Source</span>
+                        </div>
+                        <div className="hidden sm:block w-px h-4 bg-white/10"></div>
+                        <div className="flex items-center gap-2 group cursor-default">
+                            <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20 transition-all group-hover:bg-emerald-500/20">
+                                <PackageCheck className="w-4 h-4 text-emerald-400" />
+                            </div>
+                            <span className="text-xs md:text-sm font-bold tracking-widest uppercase text-slate-400 group-hover:text-white transition-colors">Deliver</span>
+                        </div>
+                    </div>
+
+                    {/* Enhanced Slider Indicators (Centered on Mobile, In-between on MD) */}
+                    <div className="flex gap-4 items-center">
+                        <div className="flex gap-2.5">
+                            {slides.map((_, index) => (
+                                <button
+                                    key={index}
+                                    onClick={() => {
+                                        setDirection(index > currentSlide ? 1 : -1)
+                                        setCurrentSlide(index)
+                                    }}
+                                    aria-label={`Go to slide ${index + 1}`}
+                                    className="relative h-1.5 transition-all duration-500 overflow-hidden rounded-full bg-white/10 hover:bg-white/20"
+                                    style={{ width: index === currentSlide ? '40px' : '12px' }}
+                                >
+                                    <AnimatePresence initial={false}>
+                                        {index === currentSlide && (
+                                            <motion.div
+                                                className="absolute inset-0 bg-primary-orange"
+                                                initial={{ scaleX: 0 }}
+                                                animate={{ scaleX: 1 }}
+                                                transition={{ duration: 8, ease: "linear" }}
+                                                style={{ originX: 0 }}
+                                            />
+                                        )}
+                                    </AnimatePresence>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Right side: Premium Brand Logos */}
+                    <div className="flex items-center gap-8">
+                        <div className="hidden sm:flex flex-col items-end mr-2">
+                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-1">Authentic</span>
+                            <span className="text-xs font-bold text-white tracking-wider whitespace-nowrap">Brand Partners</span>
+                        </div>
+                        <div className="flex items-center gap-6 md:gap-8 overflow-hidden">
+                            {/* Brand Logos (Placeholders with Premium Styling) */}
+                            <div className="flex items-center gap-6 grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-500">
+                                <div className="flex flex-col items-center">
+                                    <span className="text-[10px] font-black text-white/40 tracking-tighter">MERCEDES</span>
+                                    <div className="h-0.5 w-full bg-white/10 mt-1"></div>
+                                </div>
+                                <div className="flex flex-col items-center">
+                                    <span className="text-[10px] font-black text-white/40 tracking-tighter">BMW</span>
+                                    <div className="h-0.5 w-full bg-white/10 mt-1"></div>
+                                </div>
+                                <div className="flex flex-col items-center">
+                                    <span className="text-[10px] font-black text-white/40 tracking-tighter">TOYOTA</span>
+                                    <div className="h-0.5 w-full bg-white/10 mt-1"></div>
+                                </div>
+                                <div className="flex flex-col items-center">
+                                    <span className="text-[10px] font-black text-white/40 tracking-tighter">RENAULT</span>
+                                    <div className="h-0.5 w-full bg-white/10 mt-1"></div>
+                                </div>
+                                <div className="flex flex-col items-center">
+                                    <span className="text-[10px] font-black text-white/40 tracking-tighter">FORD</span>
+                                    <div className="h-0.5 w-full bg-white/10 mt-1"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </section>
