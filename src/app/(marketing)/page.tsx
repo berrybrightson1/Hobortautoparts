@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import { Search, ShieldCheck, Zap, Truck, Star, ArrowRight, Play, Quote, BadgePercent } from "lucide-react"
+import { Search, ShieldCheck, Truck, Star, ArrowRight, Play, Quote } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
@@ -9,6 +9,8 @@ import { cn } from "@/lib/utils"
 import { useMediaQuery } from "@/hooks/use-media-query"
 
 // ... (existing imports)
+import { HeroSlider } from "@/components/marketing/hero-slider"
+import { TrackingWidget } from "@/components/marketing/tracking-widget"
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -87,105 +89,8 @@ export default function LandingPage() {
   return (
     <div className="flex flex-col">
       {/* Premium Centered Hero */}
-      <section className="relative overflow-hidden pt-32 pb-24 md:pt-48 md:pb-36">
-        {/* Step 3: Hero Ambient Depth */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full -z-10 pointer-events-none overflow-hidden">
-          <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[70%] bg-primary-orange/5 blur-[120px] rounded-full animate-pulse" />
-          <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[70%] bg-primary-blue/5 blur-[120px] rounded-full" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(circle_at_center,transparent_0%,white_90%)]" />
-        </div>
+      <HeroSlider />
 
-        <div className="container px-4 text-center mx-auto">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-            className="flex flex-col items-center gap-8 max-w-4xl mx-auto"
-          >
-            <div className="inline-flex items-center gap-2 px-6 py-2 rounded-full bg-slate-100 text-primary-blue text-xs font-semibold uppercase tracking-[0.2em] ring-1 ring-slate-200">
-              <Star className="h-3 w-3 text-primary-orange fill-primary-orange" />
-              Ghana's #1 US Parts Hub
-            </div>
-
-            <h1 className="text-5xl font-semibold tracking-tight text-primary-blue sm:text-6xl md:text-7xl leading-[1.1]">
-              Genuine Auto Parts. <br />
-              <span className="text-primary-orange">Trusted Delivery. <br className="sm:hidden" /> Real Savings.</span>
-            </h1>
-
-            <p className="max-w-[800px] text-lg text-slate-500 md:text-xl leading-relaxed font-normal">
-              Hobort Auto Parts Express connects customers across Ghana to authentic, VIN-verified auto parts sourced directly from trusted U.S. suppliers and delivered safely, quickly, and at prices you can afford.
-            </p>
-
-            <div className="flex flex-col gap-4 sm:flex-row mt-4">
-              <Link href="/quote">
-                <Button variant="orange" size="lg" className="rounded-full px-10 h-14 text-lg shadow-premium">
-                  Request a Quote <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
-              <Link href="/how-it-works">
-                <Button variant="outline" size="lg" className="rounded-full px-10 h-14 text-lg border-2">
-                  <Play className="mr-2 h-4 w-4 fill-primary-blue" /> How it Works
-                </Button>
-              </Link>
-            </div>
-
-            {/* Premium Tracking Widget (Redesigned) */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6, duration: 0.8 }}
-              className="mt-16 w-full max-w-2xl relative"
-            >
-              <div className="glass p-2 rounded-[2rem] shadow-premium group/tracker transition-all duration-500 hover:shadow-[0_40px_80px_-20px_rgba(27,78,111,0.15)] border-2 border-slate-200/60 ring-1 ring-slate-100/50">
-                <div className="bg-white/80 backdrop-blur-xl rounded-[1.75rem] p-3 md:p-4 flex flex-col md:flex-row gap-3 items-center border border-white relative overflow-hidden">
-                  <div className="flex-1 w-full relative">
-                    <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within/tracker:text-primary-orange transition-colors">
-                      <Search className="h-5 w-5" />
-                    </div>
-                    <input
-                      type="text"
-                      placeholder="Enter Order ID (e.g. HB-1001)"
-                      className="w-full h-16 rounded-2xl border-2 border-slate-50 bg-slate-50/30 pl-16 pr-6 text-lg font-medium focus:bg-white focus:ring-8 focus:ring-primary-orange/5 focus:border-primary-orange transition-all outline-none placeholder:text-slate-400"
-                      onChange={(e) => window.localStorage.setItem('temp_track_id', e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          const val = (e.currentTarget as HTMLInputElement).value
-                          if (val) window.location.href = `/track/${val}`
-                        }
-                      }}
-                    />
-                  </div>
-                  <Button
-                    variant="orange"
-                    className="h-16 px-12 rounded-2xl w-full md:w-auto font-semibold text-lg shadow-xl shadow-primary-orange/20 hover:shadow-primary-orange/40 hover:-translate-y-0.5 transition-all group-hover/tracker:scale-[1.02] text-white"
-                    onClick={() => {
-                      const val = window.localStorage.getItem('temp_track_id')
-                      if (val) window.location.href = `/track/${val}`
-                    }}
-                  >
-                    Locate Shipment
-                  </Button>
-                </div>
-              </div>
-
-              <div className="mt-6 flex justify-center gap-10">
-                <div className="flex items-center gap-2">
-                  <div className="h-1.5 w-1.5 rounded-full bg-primary-blue/30" />
-                  <p className="text-[10px] font-medium uppercase tracking-widest text-slate-400">Georgia Export Hub</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="h-1.5 w-1.5 rounded-full bg-primary-blue/30" />
-                  <p className="text-[10px] font-medium uppercase tracking-widest text-slate-400">US Logistics Center</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="h-1.5 w-1.5 rounded-full bg-green-400/30" />
-                  <p className="text-[10px] font-medium uppercase tracking-widest text-green-600/60">Accra Pickup</p>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
 
       {/* Step 1: Dynamic Brand Marquee */}
       <section className="bg-primary-blue py-10 border-y border-white/5 relative overflow-hidden group">
@@ -242,65 +147,7 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-      <section className="py-20 bg-slate-50/80 relative">
-        <div className="container px-4 mx-auto">
-          <div className="text-center max-w-2xl mx-auto mb-14 flex flex-col gap-3">
-            <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-primary-orange">The Hobort Advantage</h2>
-            <p className="text-3xl font-semibold text-primary-blue tracking-tight">Why customers across Ghana trust us for genuine auto parts</p>
-          </div>
-
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="grid gap-8 md:grid-cols-2 lg:grid-cols-4"
-          >
-            {[
-              {
-                icon: Zap,
-                title: "Direct from Source",
-                desc: "We deliver authentic OEM and high-quality used parts straight from trusted U.S. suppliers—ensuring reliability, quality, and true value.",
-                bg: "bg-orange-50",
-                color: "text-primary-orange"
-              },
-              {
-                icon: ShieldCheck,
-                title: "Quality Guaranteed",
-                desc: "Every part is carefully checked and matched to your VIN to ensure the correct fit and dependable performance.",
-                bg: "bg-blue-50",
-                color: "text-primary-blue"
-              },
-              {
-                icon: Truck,
-                title: "Logistics Expertise",
-                desc: "From our Atlanta export hubs to Tema port clearance, we manage the full journey through secure air and sea freight—fast, safe, and efficient.",
-                bg: "bg-green-50",
-                color: "text-green-600"
-              },
-              {
-                icon: BadgePercent,
-                title: "Real Savings",
-                desc: "By sourcing directly and streamlining delivery, we pass up to 25% savings straight to you without compromising quality.",
-                bg: "bg-purple-50",
-                color: "text-purple-600"
-              }
-            ].map((feature, i) => (
-              <motion.div
-                key={i}
-                variants={itemVariants}
-                className="group p-8 rounded-3xl border border-slate-100 bg-white shadow-sm hover:shadow-premium hover:-translate-y-2 transition-all duration-500 flex flex-col items-center text-center"
-              >
-                <div className={cn("h-14 w-14 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500", feature.bg)}>
-                  <feature.icon className={cn("h-7 w-7", feature.color)} />
-                </div>
-                <h3 className="text-2xl font-semibold text-primary-blue mb-4 tracking-tight">{feature.title}</h3>
-                <p className="text-slate-500 leading-relaxed text-sm">{feature.desc}</p>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section >
+      {/* Removed WhoWeAre from here as it is now the HeroSlider */}
 
       {/* Centered Showcase Section */}
       <section className="py-16 bg-white relative overflow-hidden">
