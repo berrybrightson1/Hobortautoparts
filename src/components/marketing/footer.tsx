@@ -14,12 +14,12 @@ export function Footer() {
                             HOBORT AUTO PARTS EXPRESS<span className="text-primary-orange">.</span>
                         </span>
                     </Link>
-                    <p className="text-[11px] text-blue-100/40 uppercase font-medium tracking-widest leading-relaxed">
+                    <p className="text-[11px] text-white/60 uppercase font-medium tracking-widest leading-relaxed">
                         Intercontinental Supply Chain • Global Inventory
                     </p>
                 </div>
 
-                <div className="flex flex-wrap items-start justify-center md:justify-end gap-12 text-[10px] font-medium uppercase tracking-widest text-blue-100/60 flex-1">
+                <div className="flex flex-wrap items-start justify-center md:justify-end gap-12 text-[10px] font-medium uppercase tracking-widest text-white/80 flex-1">
                     <div className="flex flex-col gap-4 min-w-[140px]">
                         <span className="text-white border-b border-dashed border-white/20 pb-2 mb-2">Navigation</span>
                         <Link href="/about" className="hover:text-primary-orange transition-colors">About</Link>
@@ -39,7 +39,7 @@ export function Footer() {
                 </div>
             </div>
 
-            <div className="container mx-auto mt-10 flex flex-col md:flex-row items-center justify-between gap-6 text-[10px] text-blue-100/30 font-medium uppercase tracking-widest">
+            <div className="container mx-auto mt-10 flex flex-col md:flex-row items-center justify-between gap-6 text-[10px] text-white/40 font-medium uppercase tracking-widest">
                 <p>&copy; {new Date().getFullYear()} Hobort. All rights reserved.</p>
                 <div className="flex gap-8">
                     <span>Terms & Privacy</span>

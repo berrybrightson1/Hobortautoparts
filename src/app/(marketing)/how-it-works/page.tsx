@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Search, ShieldCheck, ShoppingCart, Truck, PackageCheck, ArrowRight, MessageCircle } from "lucide-react"
+import { Search, ShieldCheck, ShoppingCart, Truck, PackageCheck, ArrowRight, MessageCircle, FileText } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 
@@ -14,9 +14,9 @@ const STEPS = [
         bg: "bg-emerald-50"
     },
     {
-        title: "Verification",
-        description: "Our US-based agents physically audit parts and verify vendor reputation. We ensure you never pay for a 'bad' part.",
-        icon: ShieldCheck,
+        title: "Quote",
+        description: "Receive a comprehensive, transparent invoice including item cost, shipping estimates, and service fees.",
+        icon: FileText,
         color: "text-primary-blue",
         bg: "bg-blue-50"
     },
@@ -28,16 +28,16 @@ const STEPS = [
         bg: "bg-orange-50"
     },
     {
-        title: "Logistics",
-        description: "Your parts are consolidated at our Georgia Export Hub and shipped via Air or Sea freight with full tracking details.",
-        icon: Truck,
-        color: "text-primary-blue",
-        bg: "bg-slate-100"
+        title: "Verification",
+        description: "Our US-based agents physically audit parts and verify vendor reputation before shipping to Ghana.",
+        icon: ShieldCheck,
+        color: "text-purple-600",
+        bg: "bg-purple-50"
     },
     {
-        title: "Delivery",
+        title: "Shipment",
         description: "Fast clearing and final delivery. Pick up at our Sakumono center or take advantage of our doorstep delivery service.",
-        icon: PackageCheck,
+        icon: Truck,
         color: "text-green-600",
         bg: "bg-green-50"
     }
