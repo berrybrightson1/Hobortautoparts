@@ -10,6 +10,20 @@ import { ArrowLeft, Car, Package, CheckCircle2, ArrowRight, ShieldCheck, Zap } f
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { BrandedSelect } from "@/components/marketing/branded-select"
+import { Loader2, AlertCircle } from "lucide-react"
+
+// VIN Validation Helper
+function validateVIN(vin: string) {
+    if (!vin || vin.length !== 17) return false
+
+    // Invalid characters in VIN: I, O, Q
+    if (/[IOQ]/i.test(vin)) return false
+
+    // Basic format: Must be alphanumeric
+    if (!/^[A-HJ-NPR-Z0-9]+$/i.test(vin)) return false
+
+    return true
+}
 
 // Common vehicle options for accuracy
 const YEARS = Array.from({ length: 27 }, (_, i) => (2026 - i).toString())
@@ -42,6 +56,8 @@ export default function QuotePage() {
         submodel: "",
         engine: ""
     })
+    const [vinError, setVinError] = useState<string | null>(null)
+    const [isVehicleConfirmed, setIsVehicleConfirmed] = useState(false)
 
     const isStep1Valid = Boolean(formData.vin && formData.year && formData.make && formData.model && formData.submodel && formData.engine)
 
@@ -49,6 +65,12 @@ export default function QuotePage() {
     useEffect(() => {
         const decodeVin = async () => {
             if (formData.vin.length === 17) {
+                if (!validateVIN(formData.vin)) {
+                    setVinError("Invalid VIN format. Letters I, O, and Q are not allowed.")
+                    return
+                }
+
+                setVinError(null)
                 setVinLoading(true)
                 try {
                     const response = await fetch(`https://vpic.nhtsa.dot.gov/api/vehicles/decodevin/${formData.vin}?format=json`)
@@ -60,6 +82,12 @@ export default function QuotePage() {
                     const rawModel = results.find((r: any) => r.Variable === "Model")?.Value
                     const rawTrim = results.find((r: any) => r.Variable === "Trim")?.Value
 
+                    if (!rawMake || !rawModel) {
+                        setVinError("Vehicle not found. Please verify the VIN or enter details manually.")
+                        setVinLoading(false)
+                        return
+                    }
+
                     // Normalize Make
                     const normalizedMake = MAKES.find(m => rawMake?.toUpperCase().includes(m.toUpperCase())) || rawMake
 
@@ -67,21 +95,23 @@ export default function QuotePage() {
                     const engineCyl = results.find((r: any) => r.Variable === "Engine Number of Cylinders")?.Value
                     const engine = engineDisp ? `${engineDisp}L ${engineCyl ? engineCyl + 'cyl' : ''}` : results.find((r: any) => r.Variable === "Engine Model")?.Value
 
-                    if (rawYear || normalizedMake || rawModel || rawTrim || engine) {
-                        setFormData(prev => ({
-                            ...prev,
-                            year: rawYear || prev.year,
-                            make: normalizedMake || prev.make,
-                            model: rawModel || prev.model,
-                            submodel: rawTrim || prev.submodel,
-                            engine: engine || prev.engine
-                        }))
-                    }
+                    setFormData(prev => ({
+                        ...prev,
+                        year: rawYear || prev.year,
+                        make: normalizedMake || prev.make,
+                        model: rawModel || prev.model,
+                        submodel: rawTrim || prev.submodel,
+                        engine: engine || prev.engine
+                    }))
+                    setIsVehicleConfirmed(false) // Require re-confirmation
                 } catch (error) {
                     console.error("VIN decoding failed:", error)
+                    setVinError("Decoding failed. Please check your connection or enter manually.")
                 } finally {
                     setVinLoading(false)
                 }
+            } else {
+                setVinError(null)
             }
         }
         decodeVin()
@@ -218,8 +248,12 @@ export default function QuotePage() {
                                                     <Input
                                                         id="vin"
                                                         placeholder="17-CHARACTER VIN"
-                                                        className="h-14 pr-12 rounded-2xl border-primary-blue/10 bg-primary-blue/5 focus:bg-white transition-all font-mono uppercase font-semibold placeholder:normal-case placeholder:font-medium"
+                                                        className={cn(
+                                                            "h-14 pr-12 rounded-2xl border-primary-blue/10 bg-primary-blue/5 focus:bg-white transition-all font-mono uppercase font-semibold placeholder:normal-case placeholder:font-medium",
+                                                            vinError && "border-red-500 bg-red-50"
+                                                        )}
                                                         required
+                                                        maxLength={17}
                                                         value={formData.vin}
                                                         onChange={(e) => setFormData({ ...formData, vin: e.target.value })}
                                                     />
@@ -228,7 +262,15 @@ export default function QuotePage() {
                                                             <div className="h-5 w-5 border-2 border-primary-orange/30 border-t-primary-orange rounded-full animate-spin" />
                                                         </div>
                                                     )}
+                                                    {vinError && !vinLoading && (
+                                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 text-red-500">
+                                                            <AlertCircle className="h-5 w-5" />
+                                                        </div>
+                                                    )}
                                                 </div>
+                                                {vinError && (
+                                                    <p className="text-[10px] text-red-500 font-medium ml-1 animate-in fade-in slide-in-from-top-1">{vinError}</p>
+                                                )}
                                             </div>
                                             <BrandedSelect
                                                 label="Build Year"
@@ -272,13 +314,51 @@ export default function QuotePage() {
                                             />
                                         </div>
                                     </div>
+
+                                    {/* Vehicle Profile Confirmation Card */}
+                                    {isStep1Valid && (
+                                        <motion.div
+                                            initial={{ opacity: 0, height: 0 }}
+                                            animate={{ opacity: 1, height: "auto" }}
+                                            className="bg-primary-blue/5 rounded-2xl p-6 border border-primary-blue/10 overflow-hidden"
+                                        >
+                                            <div className="flex items-start gap-4">
+                                                <div className="h-10 w-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500 border border-emerald-500/20">
+                                                    <ShieldCheck className="h-5 w-5" />
+                                                </div>
+                                                <div className="flex-1">
+                                                    <h4 className="text-xs font-bold uppercase tracking-widest text-primary-blue/40 mb-1">Identified Vehicle Profile</h4>
+                                                    <p className="text-lg font-bold text-primary-blue leading-tight mb-4">
+                                                        {formData.year} {formData.make} {formData.model}
+                                                        <span className="block text-sm font-medium text-primary-blue/60 mt-0.5">{formData.submodel} • {formData.engine}</span>
+                                                    </p>
+
+                                                    {!isVehicleConfirmed ? (
+                                                        <Button
+                                                            type="button"
+                                                            variant="orange"
+                                                            className="h-10 px-6 rounded-xl text-xs font-bold w-full sm:w-auto"
+                                                            onClick={() => setIsVehicleConfirmed(true)}
+                                                        >
+                                                            Yes, This is My Vehicle
+                                                        </Button>
+                                                    ) : (
+                                                        <div className="flex items-center gap-2 text-emerald-600 font-bold text-xs uppercase tracking-widest bg-emerald-500/5 py-2 px-3 rounded-lg border border-emerald-500/10 w-full sm:w-auto">
+                                                            <CheckCircle2 className="h-4 w-4" /> Vehicle Verified
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </motion.div>
+                                    )}
+
                                     <Button
                                         type="button"
                                         onClick={() => setStep(2)}
-                                        disabled={!isStep1Valid}
-                                        className="w-full bg-primary-blue hover:bg-hobort-blue-dark text-white font-semibold h-16 rounded-2xl shadow-2xl shadow-primary-blue/20 text-lg transition-all hover:scale-[1.01] active:scale-[0.99] group"
+                                        disabled={!isStep1Valid || !isVehicleConfirmed}
+                                        className="w-full bg-primary-blue hover:bg-hobort-blue-dark text-white font-semibold h-16 rounded-2xl shadow-2xl shadow-primary-blue/20 text-lg transition-all hover:scale-[1.01] active:scale-[0.99] group disabled:opacity-50 disabled:grayscale"
                                     >
-                                        {isStep1Valid ? "Switching to Parts..." : "Continue to Parts"} <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                                        {isVehicleConfirmed ? "Continue to Parts" : "Please Confirm Vehicle Details"} <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                                     </Button>
                                 </div>
                             ) : (
