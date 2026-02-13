@@ -71,9 +71,8 @@ const BRANDS = [
     { name: "summit", src: "/summit.png" },
     { name: "rockland", src: "/rockland.png" },
     { name: "autozone", src: "/autozone.png" },
-    { name: "advance", src: "/advance.png" },
-    { name: "autopart", src: "/autopart.png" },
-    { name: "ebay", src: "/ebay.png" }
+    { name: "ebay", src: "/ebay.png" },
+    { name: "autopart", src: "/autopart.png" }
 ]
 
 export function HeroSlider() {
@@ -89,7 +88,6 @@ export function HeroSlider() {
         return () => window.removeEventListener('resize', checkMobile)
     }, [])
 
-    // Safety check: Reset index if it's out of bounds
     if (currentSlide >= slides.length) {
         setCurrentSlide(0)
     }
@@ -122,15 +120,11 @@ export function HeroSlider() {
         setCurrentSlide(index)
     }
 
-    const paginate = (newDirection: number) => {
-        setDirection(newDirection)
-        setCurrentSlide((prev) => (prev + newDirection + slides.length) % slides.length)
-    }
-
     useEffect(() => {
         if (isPaused) return
         const timer = setInterval(() => {
-            paginate(1)
+            setDirection(1)
+            setCurrentSlide((prev) => (prev + 1) % slides.length)
         }, 8000)
         return () => clearInterval(timer)
     }, [isPaused, currentSlide])
@@ -149,9 +143,6 @@ export function HeroSlider() {
                     animate="center"
                     exit="exit"
                     className="absolute inset-0 w-full h-full z-0 pointer-events-none select-none"
-                    transition={{
-                        opacity: { duration: 0.4 }
-                    }}
                 >
                     {current && current.image && (
                         <>
@@ -162,7 +153,6 @@ export function HeroSlider() {
                                 className="object-cover object-center"
                                 priority
                             />
-                            {/* Gradient Overlays */}
                             <div className="absolute inset-0 bg-gradient-to-r from-slate-900/95 via-slate-900/70 to-slate-900/30" />
                             <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-slate-900/20" />
                         </>
@@ -170,13 +160,46 @@ export function HeroSlider() {
                 </motion.div>
             </AnimatePresence>
 
-            {/* Static Noise Texture */}
+            {/* Vertical Indicator System (Desktop Only) */}
+            <div className="hidden lg:flex absolute right-8 top-1/2 -translate-y-1/2 z-40 flex-col gap-6">
+                {slides.map((_, index) => (
+                    <button
+                        key={index}
+                        onClick={() => goToSlide(index)}
+                        className="group relative h-12 w-6 flex items-center justify-center pointer-events-auto"
+                        onMouseEnter={() => setIsPaused(true)}
+                        onMouseLeave={() => setIsPaused(false)}
+                    >
+                        <div className={cn(
+                            "absolute w-[2px] h-full rounded-full transition-all duration-500",
+                            currentSlide === index ? "bg-primary-orange" : "bg-white/10 group-hover:bg-white/30"
+                        )} />
+
+                        <AnimatePresence>
+                            {currentSlide === index && !isPaused && (
+                                <motion.div
+                                    className="absolute w-[2px] bg-primary-orange shadow-[0_0_15px_rgba(254,131,35,0.6)]"
+                                    initial={{ height: 0, top: 0 }}
+                                    animate={{ height: "100%" }}
+                                    transition={{ duration: 8, ease: "linear" }}
+                                />
+                            )}
+                        </AnimatePresence>
+
+                        <div className={cn(
+                            "w-2 h-2 rounded-full transition-all duration-500 z-10",
+                            currentSlide === index ? "bg-white scale-125 shadow-lg" : "bg-white/20 scale-100 group-hover:scale-110"
+                        )} />
+                    </button>
+                ))}
+            </div>
+
+            {/* Noise Texture */}
             <div className="absolute inset-0 z-0 opacity-[0.04] pointer-events-none mix-blend-overlay"
                 style={{ backgroundImage: `url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIi8+CjxjaXJjbGUgY3g9IjEiIGN5PSIxIiByPSIxIiBmaWxsPSIjMDAwIi8+Cjwvc3ZnPg==')` }}>
             </div>
 
-            <div className="relative z-20 max-w-[1400px] mx-auto px-6 h-full grid lg:grid-cols-2 gap-12 items-center pt-32 pb-40 lg:py-0 min-h-[100dvh]">
-                {/* Text Content */}
+            <div className="relative z-20 max-w-[1400px] mx-auto px-6 h-full grid lg:grid-cols-2 gap-12 items-center pt-24 pb-32 lg:pb-0 min-h-[100dvh]">
                 <div className="flex flex-col justify-center space-y-8">
                     <motion.div
                         key={currentSlide + "content"}
@@ -185,7 +208,7 @@ export function HeroSlider() {
                         transition={{ delay: 0.2, duration: 0.8, ease: "easeOut" }}
                     >
                         {/* Premium Hero Badge */}
-                        <div className="relative inline-flex items-center gap-4 mb-10 group cursor-default">
+                        <div className="relative inline-flex items-center gap-4 mb-6 group cursor-default">
                             <div className="absolute -left-4 w-2 h-[1px] bg-primary-orange/50 group-hover:w-4 group-hover:bg-primary-orange transition-all duration-500"></div>
                             <div className="flex items-center gap-3">
                                 <div className="relative">
@@ -197,20 +220,17 @@ export function HeroSlider() {
                                 </span>
                             </div>
                         </div>
-
                         {/* Headline */}
-                        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-extrabold tracking-tighter text-white drop-shadow-2xl mb-6 font-display leading-[1.1]">
+                        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-extrabold tracking-tighter text-white drop-shadow-2xl mb-4 font-display leading-[1.1]">
                             {current.title}
                         </h1>
-
                         {/* Subtext */}
-                        <div className="pl-6 border-l-4 border-primary-orange/50 mb-8">
+                        <div className="pl-6 border-l-4 border-primary-orange/50 mb-6">
                             <p className="text-base md:text-lg text-slate-300 max-w-xl font-medium leading-relaxed min-h-[4.5rem] md:min-h-[5.25rem]">
                                 {current.description}
                             </p>
                         </div>
 
-                        {/* Buttons */}
                         <div className="flex flex-row gap-3 md:gap-5 w-full sm:w-auto pt-4">
                             <Link href="/signup" className="flex-1 sm:flex-none">
                                 <Button className="w-full h-14 md:h-16 px-6 md:px-10 rounded-full bg-primary-orange hover:bg-orange-600 text-white font-bold text-sm md:text-lg shadow-[0_0_40px_-10px_rgba(249,115,22,0.3)] hover:shadow-orange-500/40 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2 group whitespace-nowrap border-none">
@@ -230,20 +250,17 @@ export function HeroSlider() {
                         </div>
                     </motion.div>
 
-                    {/* Tracking Widget */}
                     <div className="mt-4 md:mt-10">
                         <TrackingWidget />
                     </div>
                 </div>
 
-                {/* Right Visual (Desktop Only) */}
                 <div className="hidden lg:flex relative h-full min-h-[600px] items-center justify-center pointer-events-none select-none px-10">
                     <div className="relative w-[500px] h-[500px]">
                         <div className="absolute inset-0 border border-white/5 rounded-full animate-spin-slow"></div>
                         <div className="absolute inset-12 border border-white/5 rounded-full animate-spin-reverse opacity-50"></div>
                         <div className="absolute inset-24 border border-dashed border-white/10 rounded-full animate-spin-slow opacity-30"></div>
 
-                        {/* Floating Cards */}
                         <div className="absolute top-[10%] right-[10%] bg-white/10 backdrop-blur-md border border-white/20 p-4 pr-6 rounded-2xl flex items-center gap-4 animate-bounce">
                             <div className="h-10 w-10 bg-emerald-500/20 rounded-full flex items-center justify-center text-emerald-400 border border-emerald-500/20">
                                 <ShieldCheck className="w-5 h-5" />
@@ -263,105 +280,71 @@ export function HeroSlider() {
                                 <div className="text-sm font-bold text-white">Arriving in 2 Days</div>
                             </div>
                         </div>
-
-                        {/* Moved & Minimized Slider Indicators (Circled Place) */}
-                        <div className="absolute bottom-4 right-10 flex items-center gap-4">
-                            {slides.map((_, index) => (
-                                <button
-                                    key={index}
-                                    onClick={() => goToSlide(index)}
-                                    className="group/btn relative h-10 flex flex-col justify-center pointer-events-auto"
-                                    onMouseEnter={() => setIsPaused(true)}
-                                    onMouseLeave={() => setIsPaused(false)}
-                                >
-                                    <div className="flex items-center">
-                                        <div className={cn(
-                                            "h-0.5 rounded-full transition-all duration-700",
-                                            currentSlide === index ? "w-8 bg-primary-orange" : "w-3 bg-slate-200/20 group-hover/btn:bg-slate-300/40"
-                                        )} />
-                                    </div>
-                                    <AnimatePresence>
-                                        {currentSlide === index && !isPaused && (
-                                            <motion.div
-                                                className="absolute bottom-0 left-0 right-0 h-[1px] bg-primary-orange/50"
-                                                initial={{ scaleX: 0 }}
-                                                animate={{ scaleX: 1 }}
-                                                transition={{ duration: 8, ease: "linear" }}
-                                                style={{ originX: 0 }}
-                                            />
-                                        )}
-                                    </AnimatePresence>
-                                </button>
-                            ))}
-                        </div>
                     </div>
                 </div>
             </div>
 
-            {/* Rebuilt Bottom Section (Branding & Navigation) */}
-            <div className="absolute bottom-0 left-0 w-full z-30 bg-slate-900/40 backdrop-blur-md border-t border-white/10 py-4 md:py-6">
-                <div className="max-w-[1400px] mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-8 md:gap-4">
-
-                    {/* Left side: Identify | Source | Deliver (High Fidelity) */}
+            {/* Bottom Section (Branding & Navigation) */}
+            <div className="absolute bottom-0 left-0 w-full z-30 bg-slate-900/60 backdrop-blur-xl border-t border-white/10 py-6 md:py-8">
+                <div className="max-w-[1400px] mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-10 md:gap-4">
                     <div className="flex items-center gap-4 lg:gap-8 shrink-0">
                         <div className="flex items-center gap-3 group cursor-default">
                             <div className="w-8 h-8 rounded-full bg-primary-orange/20 flex items-center justify-center border border-primary-orange/30 transition-all group-hover:bg-primary-orange/30">
                                 <CheckCircle2 className="w-4 h-4 text-primary-orange" />
                             </div>
-                            <span className="text-[10px] md:text-xs font-black tracking-[0.2em] uppercase text-white/90 group-hover:text-white transition-colors">Identify</span>
+                            <span className="text-[10px] md:text-sm font-black tracking-[0.2em] uppercase text-white/90 group-hover:text-white transition-colors">Identify</span>
                         </div>
-
                         <div className="h-4 w-px bg-white/10" />
-
                         <div className="flex items-center gap-3 group cursor-default">
                             <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center border border-blue-500/30 transition-all group-hover:bg-blue-500/30">
                                 <Globe2 className="w-4 h-4 text-blue-400" />
                             </div>
-                            <span className="text-[10px] md:text-xs font-black tracking-[0.2em] uppercase text-white/90 group-hover:text-white transition-colors">Source</span>
+                            <span className="text-[10px] md:text-sm font-black tracking-[0.2em] uppercase text-white/90 group-hover:text-white transition-colors">Source</span>
                         </div>
-
                         <div className="h-4 w-px bg-white/10" />
-
                         <div className="flex items-center gap-3 group cursor-default">
                             <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30 transition-all group-hover:bg-emerald-500/30">
                                 <Truck className="w-4 h-4 text-emerald-400" />
                             </div>
-                            <span className="text-[10px] md:text-xs font-black tracking-[0.2em] uppercase text-white/90 group-hover:text-white transition-colors">Deliver</span>
+                            <span className="text-[10px] md:text-sm font-black tracking-[0.2em] uppercase text-white/90 group-hover:text-white transition-colors">Deliver</span>
                         </div>
                     </div>
 
-                    {/* Right side: Premium Brand Logos with Mobile Marquee */}
+                    {/* Vertical Separator (Desktop) */}
+                    <div className="hidden md:block w-px h-12 bg-gradient-to-b from-transparent via-white/20 to-transparent shrink-0 mx-4" />
+
+                    {/* Right side: Premium Brand Logos with Specialized Mobile Layout (2 per slide) */}
                     <div className="flex items-center gap-6 w-full md:w-auto overflow-hidden">
-                        <div className="hidden xl:flex flex-col items-end mr-2 shrink-0">
+                        <div className="hidden xl:flex flex-col items-end mr-4 shrink-0">
                             <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-slate-500 mb-0.5">Authentic</span>
-                            <span className="text-[10px] font-black text-white/90 tracking-widest uppercase whitespace-nowrap">Brand Partners</span>
+                            <span className="text-[11px] font-black text-white tracking-widest uppercase whitespace-nowrap">Brand Partners</span>
                         </div>
 
-                        {/* Logo Container - Enlarged for Desktop "Full Logos" */}
-                        <div className="relative flex-1 md:flex-none overflow-hidden">
+                        <div className="relative flex-1 md:flex-none overflow-hidden pb-2">
                             <motion.div
-                                className="flex items-center gap-4 md:gap-8"
+                                className="flex items-center gap-8 md:gap-12"
                                 animate={isMobile ? {
-                                    x: [0, -1000],
-                                } : {}}
-                                transition={isMobile ? {
+                                    x: [`0%`, `-${100 * (BRANDS.length / 2)}%`],
+                                } : {
+                                    x: [0, -1200],
+                                }}
+                                transition={{
                                     x: {
                                         repeat: Infinity,
                                         repeatType: "loop",
-                                        duration: 25,
+                                        duration: isMobile ? 12 : 30,
                                         ease: "linear",
                                     },
-                                } : {}}
+                                }}
                             >
-                                {/* Double logos on mobile for seamless loop */}
-                                {[...BRANDS, ...(isMobile ? BRANDS : [])].map((brand, idx) => (
+                                {[...BRANDS, ...BRANDS, ...BRANDS, ...BRANDS].map((brand, idx) => (
                                     <div key={`${brand.name}-${idx}`} className="flex flex-col items-center group/brand relative shrink-0">
-                                        <div className="h-8 md:h-12 w-16 md:w-28 relative grayscale opacity-40 md:grayscale-0 md:opacity-100 group-hover/brand:grayscale-0 group-hover/brand:opacity-100 transition-all duration-500 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-1.5 md:p-1">
+                                        <div className="h-20 md:h-16 w-48 md:w-40 relative transition-all duration-500 flex items-center justify-center scale-125 md:scale-125">
                                             <Image
                                                 src={brand.src}
                                                 alt={brand.name}
                                                 fill
-                                                className="object-contain"
+                                                className="object-contain p-2 md:p-1"
                                             />
                                         </div>
                                     </div>
@@ -369,7 +352,6 @@ export function HeroSlider() {
                             </motion.div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </section>
