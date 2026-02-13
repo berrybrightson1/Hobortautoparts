@@ -25,7 +25,7 @@ export default function ContactPage() {
         const text = `*New Website Inquiry*\n\n*Name:* ${formData.name}\n*Phone:* ${formData.phone}\n*Subject:* ${formData.subject}\n\n*Message:* ${formData.message}`
 
         const encodedText = encodeURIComponent(text)
-        window.open(`https://wa.me/${phoneNumber}?text=${encodedText}`, '_blank')
+        window.location.href = `https://wa.me/${phoneNumber}?text=${encodedText}`
     }
 
     return (
