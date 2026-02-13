@@ -1,11 +1,57 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
+import { useAuth } from "@/components/auth/auth-provider"
+import { supabase } from "@/lib/supabase"
+import { toast } from "sonner"
+import { Loader2 } from "lucide-react"
 
 export default function SettingsPage() {
+    const { profile, user } = useAuth()
+    const [isLoading, setIsLoading] = useState(false)
+    const [fullName, setFullName] = useState("")
+    const [phoneNumber, setPhoneNumber] = useState("")
+
+    useEffect(() => {
+        if (profile) {
+            setFullName(profile.full_name || "")
+            setPhoneNumber(profile.phone_number || "")
+        }
+    }, [profile])
+
+    const handleSave = async () => {
+        if (!user) return
+        setIsLoading(true)
+
+        try {
+            const { error } = await supabase
+                .from('profiles')
+                .update({
+                    full_name: fullName,
+                    phone_number: phoneNumber,
+                    updated_at: new Date().toISOString(),
+                })
+                .eq('id', user.id)
+
+            if (error) throw error
+
+            toast.success("Settings updated", {
+                description: "Your profile information has been saved successfully."
+            })
+        } catch (error: any) {
+            console.error("Error updating settings:", error)
+            toast.error("Failed to update settings", {
+                description: error.message || "An unexpected error occurred."
+            })
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
     return (
         <div className="space-y-6 max-w-4xl mx-auto animate-in fade-in duration-500 pb-10">
             <div>
@@ -65,24 +111,43 @@ export default function SettingsPage() {
                     <CardDescription>Update your personal details.</CardDescription>
                 </CardHeader>
                 <CardContent className="p-8 pt-4 space-y-6">
-                    <div className="grid grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                            <label className="text-sm font-semibold text-slate-700 ml-1">First Name</label>
-                            <Input defaultValue="Sarah" className="h-11 rounded-xl border-slate-200 bg-slate-50 focus:bg-white transition-all" />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-semibold text-slate-700 ml-1">Last Name</label>
-                            <Input defaultValue="Williams" className="h-11 rounded-xl border-slate-200 bg-slate-50 focus:bg-white transition-all" />
-                        </div>
+                    <div className="space-y-2">
+                        <label className="text-sm font-semibold text-slate-700 ml-1">Full Name</label>
+                        <Input
+                            value={fullName}
+                            onChange={(e) => setFullName(e.target.value)}
+                            placeholder="Your full name"
+                            className="h-11 rounded-xl border-slate-200 bg-slate-50 focus:bg-white transition-all"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-sm font-semibold text-slate-700 ml-1">Phone Number</label>
+                        <Input
+                            value={phoneNumber}
+                            onChange={(e) => setPhoneNumber(e.target.value)}
+                            placeholder="+233..."
+                            className="h-11 rounded-xl border-slate-200 bg-slate-50 focus:bg-white transition-all"
+                        />
                     </div>
                     <div className="space-y-2">
                         <label className="text-sm font-semibold text-slate-700 ml-1">Email</label>
-                        <Input defaultValue="sarah.w@example.com" disabled className="h-11 rounded-xl border-slate-200 bg-slate-100 text-slate-500" />
+                        <Input value={user?.email || ""} disabled className="h-11 rounded-xl border-slate-200 bg-slate-100 text-slate-500" />
                     </div>
                 </CardContent>
                 <CardFooter className="flex justify-end border-t border-slate-50 bg-slate-50/30 p-8">
-                    <Button className="rounded-xl bg-primary-blue hover:bg-blue-700 text-white shadow-lg shadow-blue-900/20 px-6 h-11 font-semibold transition-all active:scale-95">
-                        Save Changes
+                    <Button
+                        onClick={handleSave}
+                        disabled={isLoading}
+                        className="rounded-xl bg-primary-blue hover:bg-blue-700 text-white shadow-lg shadow-blue-900/20 px-6 h-11 font-semibold transition-all active:scale-95"
+                    >
+                        {isLoading ? (
+                            <div className="flex items-center gap-2">
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                                <span>Saving...</span>
+                            </div>
+                        ) : (
+                            "Save Changes"
+                        )}
                     </Button>
                 </CardFooter>
             </Card>
