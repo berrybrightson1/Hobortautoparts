@@ -58,6 +58,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }, [])
 
     const fetchProfile = async (userId: string) => {
+        console.log("AuthProvider: Fetching profile for", userId)
         try {
             const { data, error } = await supabase
                 .from('profiles')
@@ -66,14 +67,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 .single()
 
             if (!error && data) {
+                console.log("AuthProvider: Existing profile found:", data.role)
                 setProfile(data)
                 return
             }
 
+            console.log("AuthProvider: Profile not found or error:", error?.message)
+
             // Fallback: If profile doesn't exist, create it from user metadata
-            // (Common for existing users after a schema reset)
             const { data: { user: authUser } } = await supabase.auth.getUser()
             if (authUser) {
+                console.log("AuthProvider: Attempting to sync profile from auth metadata")
                 const { data: newProfile, error: syncError } = await supabase
                     .from('profiles')
                     .upsert({
@@ -86,11 +90,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                     .single()
 
                 if (!syncError) {
+                    console.log("AuthProvider: Profile synced successfully:", newProfile.role)
                     setProfile(newProfile)
+                } else {
+                    console.error("AuthProvider: Sync error:", syncError)
                 }
             }
         } catch (err) {
-            console.error("Error in profile synchronization:", err)
+            console.error("AuthProvider: Unexpected sync error:", err)
         }
     }
 

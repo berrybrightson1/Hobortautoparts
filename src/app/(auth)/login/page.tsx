@@ -26,11 +26,17 @@ export default function LoginPage() {
 
     // Auto-redirect once AuthProvider fetches the role
     useEffect(() => {
+        console.log("LoginPage: useEffect check - profile:", profile, "loading:", loading, "activeRole:", activeRole)
+
+        if (loading) return // Still fetching
+
         if (profile?.role) {
             const userRole = profile.role
+            console.log("LoginPage: Profile matched. Role:", userRole, "Selected Portal:", activeRole)
 
             // SECURITY: Ensure the user's role matches the portal they are trying to access
             if (userRole !== activeRole) {
+                console.warn("LoginPage: Portal mismatch for user role:", userRole)
                 toast.error("Portal access denied", {
                     description: `This account is registered as a ${userRole}. Please select the ${userRole.toUpperCase()} portal.`
                 })
@@ -38,13 +44,16 @@ export default function LoginPage() {
                 return
             }
 
+            console.log("LoginPage: Validation passed. Pushing to:", userRole)
             setRole(userRole)
 
             if (userRole === 'admin') router.push("/portal/admin")
             else if (userRole === 'agent') router.push("/portal/agent")
             else router.push("/portal/customer")
+        } else if (!loading && !profile) {
+            console.log("LoginPage: Profile search finished but no profile found.")
         }
-    }, [profile, router, setRole, activeRole])
+    }, [profile, loading, router, setRole, activeRole])
 
     async function onSubmit(event: React.SyntheticEvent) {
         event.preventDefault()
