@@ -316,30 +316,28 @@ export function HeroSlider() {
                             <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-1">Authentic</span>
                             <span className="text-xs font-bold text-white tracking-wider whitespace-nowrap">Brand Partners</span>
                         </div>
-                        <div className="flex items-center gap-6 md:gap-8 overflow-hidden">
-                            {/* Brand Logos (Placeholders with Premium Styling) */}
-                            <div className="flex items-center gap-6 grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-500">
-                                <div className="flex flex-col items-center">
-                                    <span className="text-[10px] font-black text-white/40 tracking-tighter">MERCEDES</span>
-                                    <div className="h-0.5 w-full bg-white/10 mt-1"></div>
+                        <div className="flex items-center gap-4 md:gap-6 overflow-hidden">
+                            {/* Brand Logos (Real Logos with Premium Styling) */}
+                            {[
+                                { name: "summit", src: "/summit.png" },
+                                { name: "rockland", src: "/rockland.png" },
+                                { name: "autozone", src: "/autozone.png" },
+                                { name: "advance", src: "/advance.png" },
+                                { name: "autopart", src: "/autopart.png" },
+                                { name: "ebay", src: "/ebay.png" }
+                            ].map((brand) => (
+                                <div key={brand.name} className="flex flex-col items-center group/brand relative">
+                                    <div className="h-12 md:h-14 w-24 md:w-28 relative grayscale opacity-40 group-hover/brand:grayscale-0 group-hover/brand:opacity-100 transition-all duration-500 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-1.5 md:p-2">
+                                        <Image
+                                            src={brand.src}
+                                            alt={brand.name}
+                                            fill
+                                            className="object-contain"
+                                        />
+                                    </div>
+                                    <div className="h-0.5 w-0 bg-primary-orange group-hover/brand:w-full transition-all duration-500 absolute -bottom-2" />
                                 </div>
-                                <div className="flex flex-col items-center">
-                                    <span className="text-[10px] font-black text-white/40 tracking-tighter">BMW</span>
-                                    <div className="h-0.5 w-full bg-white/10 mt-1"></div>
-                                </div>
-                                <div className="flex flex-col items-center">
-                                    <span className="text-[10px] font-black text-white/40 tracking-tighter">TOYOTA</span>
-                                    <div className="h-0.5 w-full bg-white/10 mt-1"></div>
-                                </div>
-                                <div className="flex flex-col items-center">
-                                    <span className="text-[10px] font-black text-white/40 tracking-tighter">RENAULT</span>
-                                    <div className="h-0.5 w-full bg-white/10 mt-1"></div>
-                                </div>
-                                <div className="flex flex-col items-center">
-                                    <span className="text-[10px] font-black text-white/40 tracking-tighter">FORD</span>
-                                    <div className="h-0.5 w-full bg-white/10 mt-1"></div>
-                                </div>
-                            </div>
+                            ))}
                         </div>
                     </div>
 

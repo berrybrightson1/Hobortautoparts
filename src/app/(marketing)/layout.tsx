@@ -1,5 +1,6 @@
 import { Navbar } from "@/components/marketing/navbar";
 import { Footer } from "@/components/marketing/footer";
+import { FloatingCTA } from "@/components/marketing/floating-cta";
 
 export default function MarketingLayout({
     children,
@@ -13,6 +14,9 @@ export default function MarketingLayout({
                 {children}
             </main>
             <Footer />
+
+            {/* Global Floating CTA - Mobile Only */}
+            <FloatingCTA />
         </div>
     );
 }
