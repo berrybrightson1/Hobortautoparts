@@ -8,10 +8,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { PasswordInput } from "@/components/ui/password-input"
 import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { User, Briefcase, Truck, ArrowRight, Loader2 } from "lucide-react"
-
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { ArrowRight, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import { supabase } from "@/lib/supabase"
 
@@ -54,14 +52,18 @@ export default function SignupPage() {
                 return
             }
 
-            toast.success("Account created successfully!", {
-                description: "You've been registered as a " + (activeTab === 'agent' ? 'Partner' : 'Customer') + "."
-            })
+            if (activeTab === 'agent') {
+                toast.success("Application submitted!", {
+                    description: "Your agent application is pending admin approval. You'll receive an email once approved."
+                })
+            } else {
+                toast.success("Account created successfully!", {
+                    description: "Welcome to Hobort Auto Parts Express!"
+                })
+            }
 
-            // Set role for local state
             setRole(activeTab === 'agent' ? 'agent' : 'customer')
 
-            // Redirect
             if (activeTab === 'agent') {
                 router.push("/portal/agent")
             } else {
@@ -69,7 +71,7 @@ export default function SignupPage() {
             }
         } catch (error: any) {
             toast.error("Signup failed", {
-                description: error.message || "An error occurred during registration."
+                description: error.message || "An error occurred. Please try again."
             })
         } finally {
             setIsLoading(false)
@@ -79,8 +81,12 @@ export default function SignupPage() {
     return (
         <div className="space-y-6">
             <div className="space-y-2">
-                <h1 className="text-3xl font-semibold text-primary-blue tracking-tight">Create Account</h1>
-                <p className="text-primary-blue/60 font-medium">Join our global network of auto parts professionals.</p>
+                <h1 className="text-3xl font-semibold text-primary-blue tracking-tight">
+                    Create Account
+                </h1>
+                <p className="text-primary-blue/60 font-medium">
+                    Join our global network of auto parts professionals.
+                </p>
             </div>
 
             <Tabs defaultValue="customer" className="w-full" onValueChange={setActiveTab}>
@@ -89,9 +95,24 @@ export default function SignupPage() {
                         Customer
                     </TabsTrigger>
                     <TabsTrigger value="agent" className="rounded-xl font-semibold h-10 data-[state=active]:bg-white data-[state=active]:text-primary-blue data-[state=active]:shadow-sm">
-                        Partner
+                        Partner / Agent
                     </TabsTrigger>
                 </TabsList>
+
+                {/* Description based on selected tab */}
+                <div className="mb-6 p-4 bg-blue-50 border border-blue-100 rounded-xl">
+                    <p className="text-sm text-primary-blue/80 leading-relaxed">
+                        {activeTab === "customer" ? (
+                            <>
+                                <strong>Customer Account:</strong> Order auto parts, track shipments, and manage your requests. Perfect for individuals and businesses sourcing parts from the US.
+                            </>
+                        ) : (
+                            <>
+                                <strong>Partner / Agent Account:</strong> Join our affiliate network and earn commissions by referring customers. Your application will be reviewed by our admin team within 24-48 hours. Once approved, you'll gain access to partner tools and start earning.
+                            </>
+                        )}
+                    </p>
+                </div>
 
                 <form onSubmit={onSubmit} className="space-y-5">
                     <div className="grid grid-cols-2 gap-4">
@@ -136,7 +157,7 @@ export default function SignupPage() {
                     </div>
 
                     <div className="grid gap-2">
-                        <Label htmlFor="password" university-link="true" className="ml-1 text-primary-blue/80 font-semibold text-xs uppercase tracking-wider">Password</Label>
+                        <Label htmlFor="password" className="ml-1 text-primary-blue/80 font-semibold text-xs uppercase tracking-wider">Password</Label>
                         <PasswordInput
                             id="password"
                             required
@@ -149,12 +170,11 @@ export default function SignupPage() {
 
                     {activeTab === 'agent' && (
                         <div className="grid gap-2 animate-in fade-in slide-in-from-top-2 duration-300">
-                            <Label htmlFor="company" className="ml-1 text-primary-blue/80 font-semibold text-xs uppercase tracking-wider">Company Name</Label>
+                            <Label htmlFor="company" className="ml-1 text-primary-blue/80 font-semibold text-xs uppercase tracking-wider">Company Name (Optional)</Label>
                             <Input
                                 id="company"
                                 placeholder="Auto Pros Ltd"
                                 className="h-11 rounded-xl bg-primary-blue/5 border-primary-blue/10 font-medium"
-                                required
                                 disabled={isLoading}
                                 value={company}
                                 onChange={(e) => setCompany(e.target.value)}
@@ -166,11 +186,11 @@ export default function SignupPage() {
                         {isLoading ? (
                             <div className="flex items-center gap-2">
                                 <Loader2 className="h-4 w-4 animate-spin text-white" />
-                                <span>Creating Account...</span>
+                                <span>{activeTab === 'agent' ? 'Submitting Application...' : 'Creating Account...'}</span>
                             </div>
                         ) : (
                             <>
-                                Get Started <ArrowRight className="ml-2 h-4 w-4" />
+                                {activeTab === 'agent' ? 'Apply Now' : 'Get Started'} <ArrowRight className="ml-2 h-4 w-4" />
                             </>
                         )}
                     </Button>
