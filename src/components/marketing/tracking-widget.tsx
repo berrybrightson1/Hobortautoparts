@@ -12,7 +12,7 @@ export function TrackingWidget({ className }: { className?: string }) {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 0.8 }}
-            className={cn("w-full max-w-2xl relative px-4", className)}
+            className={cn("w-full max-w-2xl relative", className)}
         >
             <div className="relative group hover:border-white/20 transition-colors duration-500">
                 <div className="absolute -inset-1 bg-gradient-to-r from-brand-orange/20 to-transparent blur opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-3xl"></div>

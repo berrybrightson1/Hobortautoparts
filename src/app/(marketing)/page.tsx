@@ -11,6 +11,7 @@ import { useMediaQuery } from "@/hooks/use-media-query"
 // ... (existing imports)
 import { HeroSlider } from "@/components/marketing/hero-slider"
 import { TrackingWidget } from "@/components/marketing/tracking-widget"
+import { FAQSection } from "@/components/marketing/faq-section"
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -278,7 +279,7 @@ export default function LandingPage() {
             ))}
           </div>
 
-          <div className="pt-12 text-center">
+          <div className="pt-12 text-center md:hidden">
             <Link href="/quote">
               <Button variant="orange" size="lg" className="rounded-full px-16 h-20 text-xl font-semibold shadow-premium hover:scale-105 transition-transform text-white">
                 Start Your First Order
@@ -287,6 +288,8 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+      <FAQSection />
 
       {/* Floating Minimal Sticky CTA - Mobile */}
       <AnimatePresence>

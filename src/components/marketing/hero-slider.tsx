@@ -23,7 +23,7 @@ const slides: Slide[] = [
     {
         id: 1,
         title: "Genuine U.S. auto parts delivered globally",
-        description: "Access a massive inventory of authentic OEM and certified aftermarket components directly from the United States. We bridge the gap between American quality and international demand.",
+        description: "Access a massive inventory of authentic OEM and certified aftermarket components directly from the U.S. We bridge the gap between American quality and international demand.",
         icon: Zap,
         image: "/Hero slider white latest.jpg",
         theme: "light",
@@ -41,7 +41,7 @@ const slides: Slide[] = [
     {
         id: 3,
         title: "Fast export and seamless customs clearance",
-        description: "Navigate international shipping complexities with our specialized logistics team and established export hubs. We handle the paperwork so your parts arrive without delay.",
+        description: "Navigate international shipping complexities with our specialized logistics team and established export hubs. We handle the documentation so your parts arrive without delay.",
         icon: Truck,
         image: "/Hero slider white new.jpg",
         theme: "light",
@@ -182,13 +182,13 @@ export function HeroSlider() {
                         </div>
 
                         {/* Headline - One Line Constraint */}
-                        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-extrabold tracking-tighter text-white drop-shadow-2xl mb-6 font-display line-clamp-2 leading-[1.1]">
+                        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-extrabold tracking-tighter text-white drop-shadow-2xl mb-6 font-display leading-[1.1]">
                             {current.title}
                         </h1>
 
                         {/* Subtext - Two Line Consistency */}
                         <div className="pl-6 border-l-4 border-primary-orange/50 mb-8">
-                            <p className="text-base md:text-lg text-slate-300 max-w-xl font-medium leading-relaxed line-clamp-2">
+                            <p className="text-base md:text-lg text-slate-300 max-w-xl font-medium leading-relaxed min-h-[4.5rem] md:min-h-[5.25rem]">
                                 {current.description}
                             </p>
                         </div>
@@ -214,7 +214,7 @@ export function HeroSlider() {
                     </motion.div>
 
                     {/* Tracking Widget */}
-                    <div className="mt-8 md:mt-12">
+                    <div className="mt-4 md:mt-10">
                         <TrackingWidget />
                     </div>
                 </div>
