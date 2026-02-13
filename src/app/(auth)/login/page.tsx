@@ -26,23 +26,17 @@ export default function LoginPage() {
 
     // Auto-redirect once AuthProvider fetches the role
     useEffect(() => {
-        console.log("LoginPage: useEffect check - profile:", profile, "loading:", loading, "activeRole:", activeRole)
-
         if (loading) return // Still fetching
 
         if (profile?.role) {
             const userRole = profile.role
-            console.log("LoginPage: Profile matched. Role:", userRole, "Selected Portal:", activeRole)
 
             // Redirect to the dashboard corresponding to the user's role
-            console.log("LoginPage: Validation passed. Pushing to:", userRole)
             setRole(userRole)
 
             if (userRole === 'admin') router.push("/portal/admin")
             else if (userRole === 'agent') router.push("/portal/agent")
             else router.push("/portal/customer")
-        } else if (!loading && !profile) {
-            console.log("LoginPage: Profile search finished but no profile found.")
         }
     }, [profile, loading, router, setRole, activeRole])
 
@@ -67,7 +61,6 @@ export default function LoginPage() {
         } catch (error: any) {
             // Silently handle abort errors (common during rapid navigation or provider takeover)
             if (error.name === 'AbortError') {
-                console.log("Sign-in fetch was naturally pre-empted by AuthProvider.");
                 return;
             }
 

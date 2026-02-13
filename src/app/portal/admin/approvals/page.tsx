@@ -111,8 +111,24 @@ export default function ApprovalsPage() {
                 if (error) throw error
             }
 
+            // Send instant notification to the agent
+            const { error: notifError } = await supabase
+                .from('notifications')
+                .insert({
+                    user_id: agentId,
+                    title: '🎉 Application Approved!',
+                    message: 'Congratulations! Your partner agent application has been approved. You now have full access to the agent portal.',
+                    type: 'system',
+                    read: false
+                })
+
+            if (notifError) {
+                console.error('Error creating notification:', notifError)
+                // Don't throw - approval succeeded even if notification failed
+            }
+
             toast.success("Agent approved!", {
-                description: "The agent account has been activated and can now access the portal."
+                description: "The agent account has been activated and notified."
             })
 
             // Refresh the list
