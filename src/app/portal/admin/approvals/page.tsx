@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ShieldCheck, CheckCircle2, XCircle, Clock, User, Mail, Building2, Calendar } from "lucide-react"
+import { ShieldCheck, CheckCircle2, XCircle, Clock, User, Mail, Building2, Calendar, Loader2 } from "lucide-react"
 import { supabase } from "@/lib/supabase"
 import { toast } from "sonner"
 
@@ -112,7 +112,7 @@ export default function ApprovalsPage() {
             }
 
             toast.success("Agent approved!", {
-                description: "The agent account has been activated."
+                description: "The agent account has been activated and can now access the portal."
             })
 
             // Refresh the list
@@ -138,8 +138,8 @@ export default function ApprovalsPage() {
 
             if (error) throw error
 
-            toast.success("Agent rejected", {
-                description: "The application has been declined and removed."
+            toast.success("Application rejected", {
+                description: "The agent application has been declined and removed."
             })
 
             // Refresh the list
@@ -156,63 +156,77 @@ export default function ApprovalsPage() {
 
     if (isLoading) {
         return (
-            <div className="space-y-8 animate-in fade-in duration-500 max-w-7xl mx-auto pb-10">
-                <div className="flex flex-col gap-2">
-                    <h2 className="text-3xl font-semibold tracking-tight text-slate-900 flex items-center gap-4">
-                        Agent Approvals <ShieldCheck className="h-8 w-8 text-primary-orange" />
-                    </h2>
-                    <p className="text-slate-500 font-medium">Review and approve agent affiliate applications.</p>
+            <div className="space-y-8 animate-in fade-in duration-500">
+                <div className="flex flex-col gap-3">
+                    <h2 className="text-3xl font-bold text-slate-900">Agent Approvals</h2>
+                    <p className="text-slate-600">Review and approve agent affiliate applications</p>
                 </div>
-                <div className="flex items-center justify-center py-20">
-                    <div className="animate-spin h-8 w-8 border-4 border-primary-orange border-t-transparent rounded-full"></div>
+                <div className="flex items-center justify-center py-32">
+                    <Loader2 className="h-10 w-10 animate-spin text-primary-blue" />
                 </div>
             </div>
         )
     }
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-500 max-w-7xl mx-auto pb-10">
-            <div className="flex flex-col gap-2">
-                <h2 className="text-3xl font-semibold tracking-tight text-slate-900 flex items-center gap-4">
-                    Agent Approvals <ShieldCheck className="h-8 w-8 text-primary-orange" />
-                </h2>
-                <p className="text-slate-500 font-medium">Review and approve agent affiliate applications.</p>
+        <div className="space-y-8 animate-in fade-in duration-500">
+            {/* Header */}
+            <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-3">
+                    <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/30">
+                        <ShieldCheck className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                        <h2 className="text-3xl font-bold text-slate-900">Agent Approvals</h2>
+                        <p className="text-slate-600">Review and approve agent affiliate applications</p>
+                    </div>
+                </div>
+                {pendingAgents.length > 0 && (
+                    <div className="flex items-center gap-2 mt-2">
+                        <Badge className="bg-amber-100 text-amber-700 border-amber-200 px-3 py-1">
+                            {pendingAgents.length} Pending Application{pendingAgents.length !== 1 ? 's' : ''}
+                        </Badge>
+                    </div>
+                )}
             </div>
 
+            {/* Applications Grid */}
             {pendingAgents.length > 0 ? (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {pendingAgents.map((agent) => (
-                        <Card key={agent.id} className="border-slate-100 shadow-xl shadow-slate-200/40 rounded-3xl overflow-hidden bg-white group hover:shadow-2xl hover:shadow-slate-300/50 transition-all duration-500 border-l-4 border-l-amber-400">
-                            <CardHeader className="bg-gradient-to-br from-slate-50 to-white pb-4">
+                        <Card key={agent.id} className="border-slate-200 shadow-lg hover:shadow-xl rounded-3xl overflow-hidden bg-white group transition-all duration-300 hover:-translate-y-1">
+                            <CardHeader className="bg-gradient-to-br from-slate-50 to-white border-b border-slate-100 pb-5">
                                 <div className="flex items-start justify-between">
-                                    <div className="space-y-1">
+                                    <div className="space-y-2">
                                         <CardTitle className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                                            <User className="h-5 w-5 text-primary-orange" />
+                                            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary-blue to-blue-600 flex items-center justify-center text-white font-bold text-sm shadow-lg">
+                                                {agent.full_name.charAt(0)}
+                                            </div>
                                             {agent.full_name}
                                         </CardTitle>
-                                        <CardDescription className="flex items-center gap-2 text-sm">
+                                        <CardDescription className="flex items-center gap-2 text-sm pl-12">
                                             <Mail className="h-4 w-4" />
                                             {agent.email}
                                         </CardDescription>
                                     </div>
-                                    <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 gap-1">
-                                        <Clock className="h-3 w-3" />
+                                    <Badge className="bg-amber-50 text-amber-700 border-amber-200 gap-1.5 px-3 py-1">
+                                        <Clock className="h-3.5 w-3.5" />
                                         Pending
                                     </Badge>
                                 </div>
                             </CardHeader>
 
-                            <CardContent className="pt-6 space-y-4">
+                            <CardContent className="pt-6 space-y-5">
                                 <div className="space-y-3 text-sm">
                                     {agent.company_name && (
-                                        <div className="flex items-center gap-2 text-slate-600">
+                                        <div className="flex items-center gap-3 text-slate-700 bg-slate-50 rounded-xl p-3">
                                             <Building2 className="h-4 w-4 text-slate-400" />
                                             <span className="font-medium">{agent.company_name}</span>
                                         </div>
                                     )}
-                                    <div className="flex items-center gap-2 text-slate-600">
+                                    <div className="flex items-center gap-3 text-slate-700 bg-slate-50 rounded-xl p-3">
                                         <Calendar className="h-4 w-4 text-slate-400" />
-                                        <span>Applied {new Date(agent.created_at).toLocaleDateString()}</span>
+                                        <span>Applied on {new Date(agent.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
                                     </div>
                                 </div>
 
@@ -220,18 +234,26 @@ export default function ApprovalsPage() {
                                     <Button
                                         onClick={() => handleApprove(agent.id)}
                                         disabled={processingId === agent.id}
-                                        className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl gap-2"
+                                        className="flex-1 h-11 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-2xl gap-2 shadow-lg shadow-emerald-500/30 font-semibold"
                                     >
-                                        <CheckCircle2 className="h-4 w-4" />
+                                        {processingId === agent.id ? (
+                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                        ) : (
+                                            <CheckCircle2 className="h-4 w-4" />
+                                        )}
                                         Approve
                                     </Button>
                                     <Button
                                         onClick={() => handleReject(agent.id)}
                                         disabled={processingId === agent.id}
                                         variant="outline"
-                                        className="flex-1 border-red-200 text-red-600 hover:bg-red-50 rounded-xl gap-2"
+                                        className="flex-1 h-11 border-2 border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 rounded-2xl gap-2 font-semibold"
                                     >
-                                        <XCircle className="h-4 w-4" />
+                                        {processingId === agent.id ? (
+                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                        ) : (
+                                            <XCircle className="h-4 w-4" />
+                                        )}
                                         Reject
                                     </Button>
                                 </div>
@@ -240,15 +262,15 @@ export default function ApprovalsPage() {
                     ))}
                 </div>
             ) : (
-                <Card className="border-slate-100 shadow-xl shadow-slate-200/40 rounded-3xl overflow-hidden bg-white py-20">
-                    <CardContent className="flex flex-col items-center justify-center text-center space-y-6">
-                        <div className="h-24 w-24 rounded-full bg-slate-50 flex items-center justify-center text-slate-200">
-                            <ShieldCheck className="h-12 w-12" />
+                <Card className="border-slate-200 shadow-lg rounded-3xl overflow-hidden bg-white">
+                    <CardContent className="flex flex-col items-center justify-center text-center space-y-6 py-32">
+                        <div className="h-24 w-24 rounded-full bg-gradient-to-br from-slate-100 to-slate-50 flex items-center justify-center">
+                            <ShieldCheck className="h-12 w-12 text-slate-300" />
                         </div>
                         <div className="space-y-2">
-                            <h3 className="text-2xl font-semibold text-slate-900">All caught up!</h3>
-                            <p className="text-slate-500 font-medium max-w-sm mx-auto">
-                                There are no pending agent applications at this time.
+                            <h3 className="text-2xl font-bold text-slate-900">All Caught Up!</h3>
+                            <p className="text-slate-600 max-w-md mx-auto">
+                                There are no pending agent applications at this time. New applications will appear here for review.
                             </p>
                         </div>
                     </CardContent>

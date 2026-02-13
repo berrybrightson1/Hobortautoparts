@@ -32,11 +32,13 @@ import {
 import { supabase } from "@/lib/supabase"
 import { useAuth } from "@/components/auth/auth-provider"
 import { format } from "date-fns"
+import { PendingApproval } from "@/components/portal/pending-approval"
 
 export default function AgentDashboard() {
     const { user } = useAuth()
     const [searchTerm, setSearchTerm] = useState('')
     const [isLoading, setIsLoading] = useState(true)
+    const [agentStatus, setAgentStatus] = useState<string | null>(null)
     const [orders, setOrders] = useState<any[]>([])
     const [stats, setStats] = useState([
         { label: "Total Commission", value: "$0.00", change: "0%", trend: "up" },
@@ -49,6 +51,26 @@ export default function AgentDashboard() {
         if (!user) return
         setIsLoading(true)
         try {
+            // Check agent status first
+            const { data: agentData, error: agentError } = await supabase
+                .from('agents')
+                .select('status')
+                .eq('id', user.id)
+                .single()
+
+            if (agentError && agentError.code !== 'PGRST116') {
+                console.error("Error fetching agent status:", agentError)
+            }
+
+            const status = agentData?.status || 'pending'
+            setAgentStatus(status)
+
+            // If pending, don't fetch other data
+            if (status === 'pending' || !agentData) {
+                setIsLoading(false)
+                return
+            }
+
             // 1. Fetch Assigned Orders
             const { data: ordersData, error: ordersError } = await supabase
                 .from('orders')
@@ -94,7 +116,7 @@ export default function AgentDashboard() {
             ])
 
             setOrders(ordersData || [])
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error fetching agent dashboard data:", error)
         } finally {
             setIsLoading(false)
@@ -104,6 +126,19 @@ export default function AgentDashboard() {
     useEffect(() => {
         fetchAgentData()
     }, [user])
+
+    // Show pending approval screen if agent is not approved
+    if (isLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-primary-blue" />
+            </div>
+        )
+    }
+
+    if (agentStatus === 'pending' || agentStatus === null) {
+        return <PendingApproval />
+    }
 
     const filteredOrders = orders.filter(order =>
         order.profiles?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -118,11 +153,6 @@ export default function AgentDashboard() {
                     <h2 className="text-4xl font-bold tracking-tighter text-slate-900 leading-none">Agent Command</h2>
                     <p className="text-slate-500 font-medium text-lg pt-2">Overview of your sourcing activities and performance.</p>
                 </div>
-                {isLoading && (
-                    <div className="flex items-center gap-2 text-primary-blue font-bold text-[10px] uppercase tracking-widest bg-blue-50 px-4 py-2 rounded-full border border-blue-100">
-                        <Loader2 className="h-4 w-4 animate-spin" /> Live Syncing...
-                    </div>
-                )}
             </div>
 
             {/* Stats Grid */}
@@ -206,16 +236,7 @@ export default function AgentDashboard() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {isLoading ? (
-                                    <TableRow>
-                                        <TableCell colSpan={6} className="h-48 text-center">
-                                            <div className="flex flex-col items-center justify-center gap-4 opacity-50">
-                                                <Loader2 className="h-8 w-8 animate-spin text-primary-blue" />
-                                                <p className="text-[10px] font-bold uppercase tracking-widest">Hydrating Orders...</p>
-                                            </div>
-                                        </TableCell>
-                                    </TableRow>
-                                ) : filteredOrders.length === 0 ? (
+                                {filteredOrders.length === 0 ? (
                                     <TableRow>
                                         <TableCell colSpan={6} className="h-48 text-center">
                                             <div className="flex flex-col items-center justify-center gap-4 opacity-50">
