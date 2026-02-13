@@ -6,7 +6,7 @@ import { Menu, X, Search, User } from "lucide-react"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { usePortalStore } from "@/lib/store"
+import { useAuth } from "@/components/auth/auth-provider"
 
 const NAV_LINKS = [
     { name: "Home", href: "/" },
@@ -23,13 +23,14 @@ const AUTH_LINKS = [
 export function Navbar() {
     const [isOpen, setIsOpen] = React.useState(false)
     const pathname = usePathname()
-    const { role } = usePortalStore()
+    const { user, profile } = useAuth()
 
     // Since role is persisted and defaults to customer, we might want to check 
     // if we are on the portal or if we've explicitly set it.
     // For this demo, let's assume we show "Dashboard" if we are not on the login page 
     // and a role is present.
-    const isAuthenticated = !!role
+    const isAuthenticated = !!user
+    const role = profile?.role || 'customer'
 
     return (
         <nav className="fixed top-0 left-0 right-0 z-50 w-full bg-white border-b border-slate-100 shadow-sm h-20 flex items-center">

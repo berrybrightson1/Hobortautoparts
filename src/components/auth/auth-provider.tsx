@@ -71,6 +71,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const signOut = async () => {
         await supabase.auth.signOut()
+        // Clear legacy state and local storage to prevent ghost "Dashboard" links
+        localStorage.clear()
+        // We can't directly call setRole here without importing the store, 
+        // but clearing localStorage will reset it on next load if it's persisted.
+        window.location.href = '/'
     }
 
     return (

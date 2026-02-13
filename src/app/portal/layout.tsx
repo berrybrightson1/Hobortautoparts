@@ -16,9 +16,7 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { Toaster } from "sonner"
-import { usePortalStore } from "@/lib/store"
-import { SimulationEngine } from "@/components/portal/simulation-engine"
+import { useAuth } from "@/components/auth/auth-provider"
 import { NotificationDrawer } from "@/components/portal/notification-drawer"
 import { ResponsiveModal } from "@/components/ui/responsive-modal"
 
@@ -46,20 +44,39 @@ const NAV_ITEMS = {
 export default function PortalLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname()
     const router = useRouter()
-    const { role, setRole } = usePortalStore()
+    const { user, profile, loading, signOut } = useAuth()
     const [sidebarOpen, setSidebarOpen] = React.useState(true)
     const [showLogoutDialog, setShowLogoutDialog] = React.useState(false)
 
-    const currentNav = (role ? NAV_ITEMS[role as keyof typeof NAV_ITEMS] : null) || NAV_ITEMS.customer
+    const role = profile?.role || 'customer'
+
+    React.useEffect(() => {
+        if (!loading && !user) {
+            router.push('/login')
+        }
+    }, [user, loading, router])
+
+    if (loading) {
+        return (
+            <div className="h-screen w-full flex items-center justify-center bg-slate-50">
+                <div className="h-8 w-8 border-4 border-primary-blue border-t-transparent rounded-full animate-spin" />
+            </div>
+        )
+    }
+
+    const currentNav = NAV_ITEMS[role as keyof typeof NAV_ITEMS] || NAV_ITEMS.customer
+
+    const handleSignOut = async () => {
+        await signOut()
+    }
 
     return (
         <div className="flex h-screen bg-slate-50">
             {/* Sidebar */}
             <aside className={cn(
                 "bg-white border-r border-slate-200 transition-all duration-300 flex flex-col z-50",
-                sidebarOpen ? "w-64" : "w-18" // Reduced collapsed width slightly to standard 72px or keep 20 (80px) but fix padding
+                sidebarOpen ? "w-64" : "w-20"
             )}>
-                {/* Keep w-20 (80px) for now if used elsewhere, but w-20 is 5rem=80px. */}
                 <div className={cn("flex items-center", sidebarOpen ? "p-6 justify-between" : "p-4 justify-center")}>
                     {sidebarOpen ? (
                         <img src="/Hobort auto express logo Main.png" alt="Hobort" className="h-12 w-auto transition-all" />
@@ -69,7 +86,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
                 </div>
 
                 <div className="flex-1 overflow-y-auto no-scrollbar py-2 space-y-2">
-                    {currentNav.map((item) => {
+                    {currentNav.map((item: any) => {
                         const isActive = pathname === item.href
                         return (
                             <Link
@@ -125,7 +142,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
                         <NotificationDrawer />
 
                         <div className="text-right hidden sm:block">
-                            <p className="text-xs font-semibold text-primary-blue">Testing User</p>
+                            <p className="text-xs font-semibold text-primary-blue">{profile?.full_name || user?.email?.split('@')[0] || 'User'}</p>
                             <p className="text-[10px] text-slate-400 uppercase font-semibold tracking-widest">{role}</p>
                         </div>
                         <div className="h-10 w-10 rounded-full bg-slate-100 border-2 border-white shadow-sm flex items-center justify-center overflow-hidden">
@@ -138,8 +155,6 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
                     {children}
                 </section>
             </main>
-            <Toaster position="top-right" />
-            <SimulationEngine />
 
             <ResponsiveModal
                 open={showLogoutDialog}
@@ -160,7 +175,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
                     <div className="flex gap-2 shrink-0">
                         <Button
                             className="h-10 px-6 rounded-full bg-slate-900 text-white text-[10px] font-semibold uppercase tracking-widest hover:bg-slate-800 transition-all border-none"
-                            onClick={() => router.push('/login')}
+                            onClick={handleSignOut}
                         >
                             Confirm
                         </Button>

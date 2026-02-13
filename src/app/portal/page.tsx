@@ -2,19 +2,22 @@
 
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { usePortalStore } from "@/lib/store"
+import { useAuth } from "@/components/auth/auth-provider"
 import { Loader2 } from "lucide-react"
 
 export default function PortalRouter() {
     const router = useRouter()
-    const { role } = usePortalStore()
+    const { profile, loading } = useAuth()
 
     useEffect(() => {
-        if (!role) {
+        if (loading) return
+
+        if (!profile?.role) {
             router.push("/login")
             return
         }
 
+        const role = profile.role
         switch (role) {
             case "admin":
                 router.push("/portal/admin")
@@ -28,7 +31,7 @@ export default function PortalRouter() {
             default:
                 router.push("/login")
         }
-    }, [role, router])
+    }, [profile, loading, router])
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen gap-4">
