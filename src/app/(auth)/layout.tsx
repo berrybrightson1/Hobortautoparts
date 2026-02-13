@@ -29,6 +29,14 @@ export default function AuthLayout({
                 description: "Experience the standard in automotive supply chain excellence and specialized logistics."
             }
         }
+        if (pathname === '/forgot-password' || pathname === '/reset-password') {
+            return {
+                image: '/auth-hero-concept-bubbles.webp',
+                heading: "Secure Access",
+                highlight: "Recovery Shield.",
+                description: "Restore your specialized portal access through our encrypted security verification system."
+            }
+        }
         return {
             image: '/auth-customer.webp',
             heading: "The Hub for Premium",

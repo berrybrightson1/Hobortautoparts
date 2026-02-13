@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import { usePortalStore } from "@/lib/store"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { PasswordInput } from "@/components/ui/password-input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -136,14 +137,13 @@ export default function SignupPage() {
 
                     <div className="grid gap-2">
                         <Label htmlFor="password" university-link="true" className="ml-1 text-primary-blue/80 font-semibold text-xs uppercase tracking-wider">Password</Label>
-                        <Input
+                        <PasswordInput
                             id="password"
-                            type="password"
-                            className="h-11 rounded-xl bg-primary-blue/5 border-primary-blue/10 font-medium"
                             required
                             disabled={isLoading}
                             value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
+                            showStrength={true}
                         />
                     </div>
 
