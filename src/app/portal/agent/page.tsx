@@ -15,10 +15,11 @@ import {
     MoreHorizontal,
     FileText,
     Truck,
-    Inbox
+    Inbox,
+    Loader2
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
 import {
     Table,
@@ -28,81 +29,139 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
+import { supabase } from "@/lib/supabase"
+import { useAuth } from "@/components/auth/auth-provider"
+import { format } from "date-fns"
 
 export default function AgentDashboard() {
+    const { user } = useAuth()
     const [searchTerm, setSearchTerm] = useState('')
-    const [activeTab, setActiveTab] = useState('all')
-
-    const stats = [
+    const [isLoading, setIsLoading] = useState(true)
+    const [orders, setOrders] = useState<any[]>([])
+    const [stats, setStats] = useState([
         { label: "Total Commission", value: "$0.00", change: "0%", trend: "up" },
         { label: "Active Requests", value: "0", change: "0%", trend: "up" },
         { label: "Completion Rate", value: "0%", change: "0%", trend: "up" },
         { label: "Direct Leads", value: "0", change: "0%", trend: "up" }
-    ]
+    ])
 
-    const orders: any[] = [] // Future: fetch assigned orders from Supabase
+    const fetchAgentData = async () => {
+        if (!user) return
+        setIsLoading(true)
+        try {
+            // 1. Fetch Assigned Orders
+            const { data: ordersData, error: ordersError } = await supabase
+                .from('orders')
+                .select(`
+                    id,
+                    status,
+                    created_at,
+                    profiles:user_id (
+                        full_name
+                    ),
+                    quotes (
+                        total_amount,
+                        sourcing_requests (
+                            vehicle_info,
+                            part_name
+                        )
+                    )
+                `)
+                .eq('agent_id', user.id)
+                .order('created_at', { ascending: false })
+
+            if (ordersError) throw ordersError
+
+            // 2. Fetch Commissions
+            const { data: commissionsData } = await supabase
+                .from('commissions')
+                .select('amount_earned')
+                .eq('agent_id', user.id)
+
+            const totalCommission = (commissionsData || []).reduce((acc, curr) => acc + (parseFloat(String(curr.amount_earned).replace(/[^0-9.-]+/g, "")) || 0), 0)
+
+            // 3. Calculate Stats
+            const totalOrders = ordersData?.length || 0
+            const activeOrders = ordersData?.filter(o => o.status !== 'completed' && o.status !== 'cancelled').length || 0
+            const completedOrders = ordersData?.filter(o => o.status === 'completed').length || 0
+            const completionRate = totalOrders > 0 ? (completedOrders / totalOrders * 100).toFixed(0) : 0
+
+            setStats([
+                { label: "Total Commission", value: `$${totalCommission.toLocaleString()}`, change: "+12%", trend: "up" },
+                { label: "Active Requests", value: activeOrders.toString(), change: "+2", trend: "up" },
+                { label: "Completion Rate", value: `${completionRate}%`, change: "stable", trend: "up" },
+                { label: "Direct Leads", value: "0", change: "0%", trend: "up" }
+            ])
+
+            setOrders(ordersData || [])
+        } catch (error) {
+            console.error("Error fetching agent dashboard data:", error)
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        fetchAgentData()
+    }, [user])
 
     const filteredOrders = orders.filter(order =>
-        order.customer_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        order.id?.toLowerCase().includes(searchTerm.toLowerCase())
+        order.profiles?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.quotes?.sourcing_requests?.vehicle_info?.toLowerCase().includes(searchTerm.toLowerCase())
     )
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-500 max-w-7xl mx-auto pb-10">
+        <div className="space-y-8 animate-in fade-in duration-700 max-w-7xl mx-auto pb-10">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-                <div>
-                    <h2 className="text-3xl font-semibold tracking-tight text-slate-900">Agent Dashboard</h2>
-                    <p className="text-slate-500 font-medium">Overview of your sourcing activities and performance.</p>
+                <div className="space-y-1">
+                    <h2 className="text-4xl font-bold tracking-tighter text-slate-900 leading-none">Agent Command</h2>
+                    <p className="text-slate-500 font-medium text-lg pt-2">Overview of your sourcing activities and performance.</p>
                 </div>
-                <div className="flex items-center gap-2">
-                    <Button className="rounded-xl bg-primary-blue hover:bg-blue-700 text-white shadow-lg shadow-blue-900/20">
-                        <ShoppingCart className="mr-2 h-4 w-4" /> New Sourcing Request
-                    </Button>
-                </div>
+                {isLoading && (
+                    <div className="flex items-center gap-2 text-primary-blue font-bold text-[10px] uppercase tracking-widest bg-blue-50 px-4 py-2 rounded-full border border-blue-100">
+                        <Loader2 className="h-4 w-4 animate-spin" /> Live Syncing...
+                    </div>
+                )}
             </div>
 
             {/* Stats Grid */}
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
                 {stats.map((stat, i) => (
                     <Card key={i} className={cn(
-                        "border-slate-100 shadow-xl shadow-slate-200/40 rounded-[2rem] overflow-hidden transition-transform duration-300 hover:-translate-y-1",
-                        i === 0 ? "bg-gradient-to-br from-green-50 to-white" :
-                            i === 1 ? "bg-gradient-to-br from-blue-50 to-white" :
-                                i === 2 ? "bg-gradient-to-br from-purple-50 to-white" : "bg-gradient-to-br from-orange-50 to-white"
+                        "border-slate-100 shadow-xl shadow-slate-200/40 rounded-[2.5rem] overflow-hidden transition-all duration-300 hover:-translate-y-1 bg-white ring-1 ring-slate-100/50",
+                        i === 0 ? "hover:border-green-100" :
+                            i === 1 ? "hover:border-blue-100" :
+                                i === 2 ? "hover:border-purple-100" : "hover:border-orange-100"
                     )}>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-semibold uppercase tracking-wider text-slate-500">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+                            <CardTitle className="text-[10px] font-bold uppercase tracking-widest text-slate-500">
                                 {stat.label}
                             </CardTitle>
                             <div className={cn(
-                                "h-8 w-8 rounded-full flex items-center justify-center",
-                                i === 0 ? "bg-green-100 text-green-600" :
-                                    i === 1 ? "bg-blue-100 text-blue-600" :
-                                        i === 2 ? "bg-purple-100 text-purple-600" : "bg-orange-100 text-orange-600"
+                                "h-10 w-10 rounded-2xl flex items-center justify-center shadow-inner",
+                                i === 0 ? "bg-green-50 text-green-600" :
+                                    i === 1 ? "bg-blue-50 text-blue-600" :
+                                        i === 2 ? "bg-purple-50 text-purple-600" : "bg-orange-50 text-orange-600"
                             )}>
-                                {i === 0 ? <DollarSign className="h-4 w-4" /> :
-                                    i === 1 ? <ShoppingCart className="h-4 w-4" /> :
-                                        i === 2 ? <Activity className="h-4 w-4" /> :
-                                            <Users className="h-4 w-4" />}
+                                {i === 0 ? <DollarSign className="h-5 w-5" /> :
+                                    i === 1 ? <ShoppingCart className="h-5 w-5" /> :
+                                        i === 2 ? <Activity className="h-5 w-5" /> :
+                                            <Users className="h-5 w-5" />}
                             </div>
                         </CardHeader>
                         <CardContent>
-                            <div className={cn(
-                                "text-3xl font-semibold",
-                                i === 0 ? "text-green-900" :
-                                    i === 1 ? "text-blue-900" :
-                                        i === 2 ? "text-purple-900" : "text-orange-900"
-                            )}>{stat.value}</div>
-                            <div className="flex items-center text-xs mt-2 font-semibold">
+                            <div className="text-3xl font-bold tracking-tighter text-slate-900">{stat.value}</div>
+                            <div className="flex items-center text-[10px] mt-3 font-bold uppercase tracking-tight">
                                 {stat.trend === 'up' ? (
                                     <ArrowUpRight className="mr-1 h-3 w-3 text-emerald-600" />
                                 ) : (
                                     <ArrowDownRight className="mr-1 h-3 w-3 text-red-600" />
                                 )}
-                                <span className={stat.trend === 'up' ? "text-emerald-600 bg-emerald-100 px-1.5 py-0.5 rounded-md" : "text-red-600 bg-red-100 px-1.5 py-0.5 rounded-md"}>
+                                <span className={stat.trend === 'up' ? "text-emerald-600" : "text-red-600"}>
                                     {stat.change}
                                 </span>
-                                <span className="text-slate-400 ml-2 font-medium">from last month</span>
+                                <span className="text-slate-400 ml-2">from last month</span>
                             </div>
                         </CardContent>
                     </Card>
@@ -110,93 +169,113 @@ export default function AgentDashboard() {
             </div>
 
             {/* Recent Orders */}
-            <Card className="border-slate-100 shadow-xl shadow-slate-200/40 rounded-[2.5rem] overflow-hidden bg-white">
-                <CardHeader className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-50 p-8">
-                    <div>
-                        <CardTitle className="text-xl font-semibold text-slate-900">Assigned Orders</CardTitle>
-                        <CardDescription className="text-slate-500 font-medium mt-1">Recent orders assigned to you for sourcing.</CardDescription>
+            <Card className="border-slate-100 shadow-xl shadow-slate-200/40 rounded-[2.5rem] overflow-hidden bg-white ring-1 ring-slate-100/50">
+                <CardHeader className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-50 p-10">
+                    <div className="space-y-1">
+                        <CardTitle className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-3">
+                            <ShoppingCart className="h-6 w-6 text-primary-blue" /> Assigned Workflow
+                        </CardTitle>
+                        <CardDescription className="text-slate-500 font-medium pt-1">Recent orders assigned to you for sourcing management.</CardDescription>
                     </div>
                     <div className="flex items-center gap-3">
-                        <div className="relative">
-                            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                        <div className="relative group">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-primary-blue transition-colors" />
                             <Input
-                                placeholder="Search orders..."
-                                className="pl-10 w-[240px] h-10 rounded-xl border-slate-200 bg-slate-50 focus:bg-white transition-all"
+                                placeholder="Search by name or ID..."
+                                className="pl-12 w-[300px] h-12 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white focus:ring-4 focus:ring-blue-100/50 transition-all font-medium"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
                         </div>
-                        <Button variant="outline" className="h-10 rounded-xl border-slate-200 text-slate-600 hover:text-slate-900 gap-2">
-                            <Filter className="h-4 w-4" />
-                            Filter
+                        <Button variant="outline" className="h-12 w-12 rounded-2xl border-slate-100 text-slate-400 hover:text-slate-900 transition-all active:scale-90">
+                            <Filter className="h-5 w-5" />
                         </Button>
                     </div>
                 </CardHeader>
                 <CardContent className="p-0">
                     <div className="overflow-x-auto">
                         <Table>
-                            <TableHeader className="bg-slate-50/50">
+                            <TableHeader className="bg-slate-50/30">
                                 <TableRow className="hover:bg-transparent border-slate-100">
-                                    <TableHead className="font-semibold text-slate-500 text-xs uppercase tracking-wider pl-8 h-12">Order ID</TableHead>
-                                    <TableHead className="font-semibold text-slate-500 text-xs uppercase tracking-wider h-12">Customer</TableHead>
-                                    <TableHead className="font-semibold text-slate-500 text-xs uppercase tracking-wider h-12">Vehicle</TableHead>
-                                    <TableHead className="font-semibold text-slate-500 text-xs uppercase tracking-wider h-12">Details</TableHead>
-                                    <TableHead className="font-semibold text-slate-500 text-xs uppercase tracking-wider h-12">Status</TableHead>
-                                    <TableHead className="text-right font-semibold text-slate-500 text-xs uppercase tracking-wider pr-8 h-12">Actions</TableHead>
+                                    <TableHead className="font-bold text-slate-400 text-[10px] uppercase tracking-widest pl-10 h-14">Identity</TableHead>
+                                    <TableHead className="font-bold text-slate-400 text-[10px] uppercase tracking-widest h-14 text-center">Stakeholder</TableHead>
+                                    <TableHead className="font-bold text-slate-400 text-[10px] uppercase tracking-widest h-14">Inventory Details</TableHead>
+                                    <TableHead className="font-bold text-slate-400 text-[10px] uppercase tracking-widest h-14">Timeline</TableHead>
+                                    <TableHead className="font-bold text-slate-400 text-[10px] uppercase tracking-widest h-14">Status</TableHead>
+                                    <TableHead className="text-right font-bold text-slate-400 text-[10px] uppercase tracking-widest pr-10 h-14">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {filteredOrders.length === 0 ? (
+                                {isLoading ? (
                                     <TableRow>
-                                        <TableCell colSpan={6} className="h-32 text-center text-slate-500">
-                                            No assigned orders found.
+                                        <TableCell colSpan={6} className="h-48 text-center">
+                                            <div className="flex flex-col items-center justify-center gap-4 opacity-50">
+                                                <Loader2 className="h-8 w-8 animate-spin text-primary-blue" />
+                                                <p className="text-[10px] font-bold uppercase tracking-widest">Hydrating Orders...</p>
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                ) : filteredOrders.length === 0 ? (
+                                    <TableRow>
+                                        <TableCell colSpan={6} className="h-48 text-center">
+                                            <div className="flex flex-col items-center justify-center gap-4 opacity-50">
+                                                <Inbox className="h-10 w-10 text-slate-200" />
+                                                <p className="text-[10px] font-bold uppercase tracking-widest">No assigned orders found.</p>
+                                            </div>
                                         </TableCell>
                                     </TableRow>
                                 ) : (
                                     filteredOrders.map((order) => (
-                                        <TableRow key={order.id} className="hover:bg-blue-50/30 transition-colors border-slate-50 group cursor-pointer">
-                                            <TableCell className="font-semibold text-slate-900 pl-8 py-5">
-                                                <div className="flex items-center gap-2">
-                                                    <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 group-hover:bg-white group-hover:shadow-sm transition-all">
-                                                        <FileText className="h-4 w-4" />
-                                                    </div>
-                                                    {order.id}
-                                                </div>
-                                            </TableCell>
-                                            <TableCell className="py-5">
+                                        <TableRow key={order.id} className="hover:bg-blue-50/20 transition-all border-slate-50 group cursor-pointer">
+                                            <TableCell className="pl-10 py-6">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="h-8 w-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-xs font-semibold border border-blue-100">
-                                                        {order.customerName.charAt(0)}
+                                                    <div className="h-10 w-10 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-white group-hover:shadow-lg group-hover:shadow-blue-900/10 transition-all duration-300">
+                                                        <FileText className="h-5 w-5" />
                                                     </div>
-                                                    <span className="font-medium text-slate-700">{order.customerName}</span>
+                                                    <div className="flex flex-col">
+                                                        <span className="font-bold text-slate-900 leading-tight">Order #{order.id.slice(0, 8).toUpperCase()}</span>
+                                                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Sourcing Chain #442</span>
+                                                    </div>
                                                 </div>
                                             </TableCell>
-                                            <TableCell className="text-slate-600 py-5 font-medium">
-                                                <div className="flex items-center gap-2">
-                                                    <Truck className="h-4 w-4 text-slate-400" />
-                                                    {order.vehicleInfo}
+                                            <TableCell className="py-6">
+                                                <div className="flex flex-col items-center gap-1">
+                                                    <div className="h-10 w-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-xs font-bold border border-blue-100 ring-4 ring-blue-50 group-hover:ring-blue-100 transition-all">
+                                                        {order.profiles?.full_name?.charAt(0)}
+                                                    </div>
+                                                    <span className="text-[10px] font-bold text-slate-600 uppercase tracking-tighter">{order.profiles?.full_name}</span>
                                                 </div>
                                             </TableCell>
-                                            <TableCell className="py-5">
-                                                <div className="text-sm">
-                                                    <span className="font-semibold text-slate-900">{order.parts.length} parts</span>
-                                                    <p className="text-xs text-slate-500">{new Date(order.createdAt).toLocaleDateString()}</p>
+                                            <TableCell className="py-6">
+                                                <div className="flex flex-col space-y-1 max-w-[200px]">
+                                                    <div className="flex items-center gap-2">
+                                                        <Truck className="h-4 w-4 text-primary-blue/60" />
+                                                        <span className="font-bold text-slate-800 text-sm truncate">{order.quotes?.sourcing_requests?.vehicle_info}</span>
+                                                    </div>
+                                                    <span className="text-[10px] font-bold text-slate-400 uppercase truncate pl-6">{order.quotes?.sourcing_requests?.part_name}</span>
                                                 </div>
                                             </TableCell>
-                                            <TableCell className="py-5">
+                                            <TableCell className="py-6">
+                                                <div className="flex flex-col">
+                                                    <span className="font-bold text-slate-900 text-sm">{format(new Date(order.created_at), 'MMM dd')}</span>
+                                                    <span className="text-[10px] font-bold text-slate-400 uppercase">{format(new Date(order.created_at), 'p')}</span>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="py-6">
                                                 <Badge variant="secondary" className={cn(
-                                                    "capitalize rounded-lg px-2.5 py-0.5 font-semibold transition-colors",
-                                                    order.status === 'pending' ? "bg-orange-50 text-orange-700 border-orange-100 group-hover:bg-orange-100" :
-                                                        order.status === 'quoted' ? "bg-blue-50 text-blue-700 border-blue-100 group-hover:bg-blue-100" :
-                                                            order.status === 'delivered' ? "bg-emerald-50 text-emerald-700 border-emerald-100 group-hover:bg-emerald-100" :
-                                                                "bg-slate-100 text-slate-700 border-slate-200 group-hover:bg-slate-200"
+                                                    "capitalize rounded-xl px-4 py-1.5 font-bold text-[10px] uppercase tracking-widest border-0 transition-all",
+                                                    order.status === 'pending_payment' ? "bg-orange-50 text-orange-600" :
+                                                        order.status === 'paid' ? "bg-blue-50 text-blue-600" :
+                                                            order.status === 'processing' ? "bg-purple-50 text-purple-600" :
+                                                                order.status === 'completed' ? "bg-emerald-50 text-emerald-600" :
+                                                                    "bg-slate-100 text-slate-600"
                                                 )}>
-                                                    {order.status}
+                                                    {order.status.replace('_', ' ')}
                                                 </Badge>
                                             </TableCell>
-                                            <TableCell className="text-right pr-8 py-5">
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors">
-                                                    <MoreHorizontal className="h-4 w-4" />
+                                            <TableCell className="text-right pr-10 py-6">
+                                                <Button variant="ghost" size="icon" className="h-10 w-10 rounded-2xl hover:bg-white hover:shadow-lg text-slate-300 hover:text-primary-blue transition-all active:scale-90">
+                                                    <MoreHorizontal className="h-5 w-5" />
                                                 </Button>
                                             </TableCell>
                                         </TableRow>
