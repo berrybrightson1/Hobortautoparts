@@ -209,5 +209,3 @@ export function NotificationDrawer() {
         </Sheet>
     )
 }
-    )
-}
