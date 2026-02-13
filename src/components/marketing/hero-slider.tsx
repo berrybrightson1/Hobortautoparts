@@ -233,18 +233,11 @@ export function HeroSlider() {
                             </p>
                         </div>
 
-                        <div className="flex flex-col sm:flex-row gap-3 md:gap-4 w-full sm:w-auto pt-4">
+                        <div className="flex flex-row gap-3 md:gap-5 w-full sm:w-auto pt-4">
                             <Link href="/signup" className="flex-1 sm:flex-none">
                                 <Button className="w-full h-14 md:h-16 px-6 md:px-10 rounded-full bg-primary-orange hover:bg-orange-600 text-white font-bold text-sm md:text-lg shadow-[0_0_40px_-10px_rgba(249,115,22,0.3)] hover:shadow-orange-500/40 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2 group whitespace-nowrap border-none">
                                     Get Started
                                     <ChevronRight className="w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:translate-x-1" />
-                                </Button>
-                            </Link>
-
-                            <Link href="/signup?tab=agent" className="flex-1 sm:flex-none">
-                                <Button className="w-full h-14 md:h-16 px-6 md:px-10 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm md:text-lg shadow-[0_0_40px_-10px_rgba(16,185,129,0.3)] hover:shadow-emerald-500/40 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2 group whitespace-nowrap border-none">
-                                    <Briefcase className="w-4 h-4 md:w-5 md:h-5" />
-                                    Become a Partner
                                 </Button>
                             </Link>
 

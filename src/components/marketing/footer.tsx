@@ -17,6 +17,11 @@ export function Footer() {
                     <p className="text-[11px] text-white/60 uppercase font-medium tracking-widest leading-relaxed">
                         Intercontinental Supply Chain • Global Inventory
                     </p>
+                    <Link href="/signup?tab=agent" className="mt-2">
+                        <button className="px-6 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold uppercase tracking-wider rounded-full transition-all hover:scale-105 shadow-lg shadow-emerald-500/20">
+                            Become a Partner
+                        </button>
+                    </Link>
                 </div>
 
                 <div className="flex flex-wrap items-start justify-center md:justify-end gap-12 text-[10px] font-medium uppercase tracking-widest text-white/80 flex-1">
