@@ -5,8 +5,10 @@ import { motion } from "framer-motion"
 import { Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { useRouter } from "next/navigation"
 
 export function TrackingWidget({ className }: { className?: string }) {
+    const router = useRouter()
     return (
         <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -25,12 +27,11 @@ export function TrackingWidget({ className }: { className?: string }) {
                             <input
                                 type="text"
                                 placeholder="Trace Shipment ID"
-                                className="w-full h-12 md:h-14 bg-black/20 border border-white/5 rounded-2xl pl-10 md:pl-12 pr-4 text-white placeholder-slate-400 text-base md:text-base focus:outline-none focus:bg-black/40 focus:ring-1 focus:ring-primary-orange/50 transition-all"
-                                onChange={(e) => window.localStorage.setItem('temp_track_id', e.target.value)}
+                                className="w-full h-12 md:h-14 bg-black/20 border border-white/5 rounded-2xl pl-10 md:pl-12 pr-4 text-white placeholder-slate-400 text-base md:text-base focus:outline-none focus:bg-black/40 focus:ring-1 focus:ring-primary-orange/50 transition-all font-medium"
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter') {
                                         const val = (e.currentTarget as HTMLInputElement).value
-                                        if (val) window.location.href = `/track/${val}`
+                                        if (val) router.push(`/track/${val}`)
                                     }
                                 }}
                             />
@@ -38,9 +39,9 @@ export function TrackingWidget({ className }: { className?: string }) {
                         <Button
                             variant="orange"
                             className="h-12 md:h-14 px-5 md:px-8 bg-white text-primary-blue font-bold rounded-2xl md:rounded-2xl text-sm md:text-base hover:bg-slate-200 transition-colors shadow-lg whitespace-nowrap flex items-center gap-2"
-                            onClick={() => {
-                                const val = window.localStorage.getItem('temp_track_id')
-                                if (val) window.location.href = `/track/${val}`
+                            onClick={(e) => {
+                                const input = e.currentTarget.parentElement?.querySelector('input')
+                                if (input?.value) router.push(`/track/${input.value}`)
                             }}
                         >
                             <span className="hidden sm:inline">Track Now</span>

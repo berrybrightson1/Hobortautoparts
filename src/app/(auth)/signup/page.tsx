@@ -11,24 +11,54 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { User, Briefcase, Truck, ArrowRight, Loader2 } from "lucide-react"
 
+import { toast } from "sonner"
+import { supabase } from "@/lib/supabase"
+
 export default function SignupPage() {
     const router = useRouter()
     const { setRole } = usePortalStore()
     const [isLoading, setIsLoading] = useState(false)
     const [activeTab, setActiveTab] = useState("customer")
+    const [firstName, setFirstName] = useState("")
+    const [lastName, setLastName] = useState("")
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const [company, setCompany] = useState("")
 
     async function onSubmit(event: React.SyntheticEvent) {
         event.preventDefault()
         setIsLoading(true)
 
-        // Simulate API call
-        setTimeout(() => {
-            setIsLoading(false)
+        try {
+            const fullName = `${firstName} ${lastName}`.trim()
 
-            // Set the global role state for the demo
-            if (activeTab === 'customer') setRole('customer')
-            else if (activeTab === 'agent') setRole('agent')
-            // else if (activeTab === 'fleet') setRole('fleet') // Assuming fleet maps to something or customer for now
+            const { data, error } = await supabase.auth.signUp({
+                email,
+                password,
+                options: {
+                    data: {
+                        full_name: fullName,
+                        role: activeTab === 'agent' ? 'agent' : 'customer',
+                        company_name: activeTab === 'agent' ? company : null
+                    }
+                }
+            })
+
+            if (error) throw error
+
+            if (data?.user?.identities?.length === 0) {
+                toast.warning("Email already exists", {
+                    description: "Please try signing in instead."
+                })
+                return
+            }
+
+            toast.success("Account created successfully!", {
+                description: "You've been registered as a " + (activeTab === 'agent' ? 'Partner' : 'Customer') + "."
+            })
+
+            // Set role for local state
+            setRole(activeTab === 'agent' ? 'agent' : 'customer')
 
             // Redirect
             if (activeTab === 'agent') {
@@ -36,7 +66,13 @@ export default function SignupPage() {
             } else {
                 router.push("/portal/customer")
             }
-        }, 1000)
+        } catch (error: any) {
+            toast.error("Signup failed", {
+                description: error.message || "An error occurred during registration."
+            })
+        } finally {
+            setIsLoading(false)
+        }
     }
 
     return (
@@ -60,36 +96,83 @@ export default function SignupPage() {
                     <div className="grid grid-cols-2 gap-4">
                         <div className="grid gap-2">
                             <Label htmlFor="first-name" className="ml-1 text-primary-blue/80 font-semibold text-xs uppercase tracking-wider">First Name</Label>
-                            <Input id="first-name" placeholder="John" className="h-11 rounded-xl bg-primary-blue/5 border-primary-blue/10 font-medium" required disabled={isLoading} />
+                            <Input
+                                id="first-name"
+                                placeholder="John"
+                                className="h-11 rounded-xl bg-primary-blue/5 border-primary-blue/10 font-medium"
+                                required
+                                disabled={isLoading}
+                                value={firstName}
+                                onChange={(e) => setFirstName(e.target.value)}
+                            />
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="last-name" className="ml-1 text-primary-blue/80 font-semibold text-xs uppercase tracking-wider">Last Name</Label>
-                            <Input id="last-name" placeholder="Doe" className="h-11 rounded-xl bg-primary-blue/5 border-primary-blue/10 font-medium" required disabled={isLoading} />
+                            <Input
+                                id="last-name"
+                                placeholder="Doe"
+                                className="h-11 rounded-xl bg-primary-blue/5 border-primary-blue/10 font-medium"
+                                required
+                                disabled={isLoading}
+                                value={lastName}
+                                onChange={(e) => setLastName(e.target.value)}
+                            />
                         </div>
                     </div>
 
                     <div className="grid gap-2">
                         <Label htmlFor="email" className="ml-1 text-primary-blue/80 font-semibold text-xs uppercase tracking-wider">Email Address</Label>
-                        <Input id="email" type="email" placeholder="name@company.com" className="h-11 rounded-xl bg-primary-blue/5 border-primary-blue/10 font-medium" required disabled={isLoading} />
+                        <Input
+                            id="email"
+                            type="email"
+                            placeholder="name@company.com"
+                            className="h-11 rounded-xl bg-primary-blue/5 border-primary-blue/10 font-medium"
+                            required
+                            disabled={isLoading}
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
                     </div>
 
                     <div className="grid gap-2">
-                        <Label htmlFor="password" className="ml-1 text-primary-blue/80 font-semibold text-xs uppercase tracking-wider">Password</Label>
-                        <Input id="password" type="password" className="h-11 rounded-xl bg-primary-blue/5 border-primary-blue/10 font-medium" required disabled={isLoading} />
+                        <Label htmlFor="password" university-link="true" className="ml-1 text-primary-blue/80 font-semibold text-xs uppercase tracking-wider">Password</Label>
+                        <Input
+                            id="password"
+                            type="password"
+                            className="h-11 rounded-xl bg-primary-blue/5 border-primary-blue/10 font-medium"
+                            required
+                            disabled={isLoading}
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
                     </div>
 
                     {activeTab === 'agent' && (
                         <div className="grid gap-2 animate-in fade-in slide-in-from-top-2 duration-300">
                             <Label htmlFor="company" className="ml-1 text-primary-blue/80 font-semibold text-xs uppercase tracking-wider">Company Name</Label>
-                            <Input id="company" placeholder="Auto Pros Ltd" className="h-11 rounded-xl bg-primary-blue/5 border-primary-blue/10 font-medium" required disabled={isLoading} />
+                            <Input
+                                id="company"
+                                placeholder="Auto Pros Ltd"
+                                className="h-11 rounded-xl bg-primary-blue/5 border-primary-blue/10 font-medium"
+                                required
+                                disabled={isLoading}
+                                value={company}
+                                onChange={(e) => setCompany(e.target.value)}
+                            />
                         </div>
                     )}
 
-                    <Button className="w-full mt-2 h-12 rounded-xl font-semibold text-base shadow-xl shadow-primary-blue/10 bg-primary-blue hover:bg-hobort-blue-dark transition-all hover:scale-[1.01] active:scale-[0.99] text-white" disabled={isLoading}>
-                        {isLoading && (
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin text-white" />
+                    <Button type="submit" className="w-full mt-2 h-12 rounded-xl font-semibold text-base shadow-xl shadow-primary-blue/10 bg-primary-blue hover:bg-hobort-blue-dark transition-all hover:scale-[1.01] active:scale-[0.99] text-white" disabled={isLoading}>
+                        {isLoading ? (
+                            <div className="flex items-center gap-2">
+                                <Loader2 className="h-4 w-4 animate-spin text-white" />
+                                <span>Creating Account...</span>
+                            </div>
+                        ) : (
+                            <>
+                                Get Started <ArrowRight className="ml-2 h-4 w-4" />
+                            </>
                         )}
-                        Get Started <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                 </form>
             </Tabs>

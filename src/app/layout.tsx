@@ -12,6 +12,9 @@ export const metadata: Metadata = {
   description: "Ghana's specialized Request for Quote (RFQ) platform for US auto parts.",
 };
 
+import { AuthProvider } from "@/components/auth/auth-provider";
+import { Toaster } from "sonner";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -19,8 +22,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} font-sans antialiased`}>
-        {children}
+      <body className={`${inter.variable} font-sans antialiased text-slate-900`}>
+        <AuthProvider>
+          {children}
+          <Toaster position="top-center" richColors />
+        </AuthProvider>
       </body>
     </html>
   );

@@ -3,10 +3,30 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { DEMO_TOOLS } from "@/lib/demo-data"
 import { ArrowRight, Wrench, Search, Truck, DollarSign, FileText, Settings, Plus } from "lucide-react"
 
 export default function ToolsPage() {
+    const tools = [
+        {
+            name: "V-Decode Pro",
+            description: "Advanced VIN decoder with parts catalog integration.",
+            icon: "Search",
+            status: "Active"
+        },
+        {
+            name: "ShipTracker DB",
+            description: "Real-time logistics and freight management system.",
+            icon: "Truck",
+            status: "Active"
+        },
+        {
+            name: "QuoteGen AI",
+            description: "Automated parts quoting and margin calculator.",
+            icon: "DollarSign",
+            status: "Beta"
+        }
+    ]
+
     // Helper to map string icon naming to actual component
     const getIcon = (name: string) => {
         switch (name) {
@@ -26,7 +46,7 @@ export default function ToolsPage() {
             </div>
 
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                {DEMO_TOOLS.map((tool) => (
+                {tools.map((tool) => (
                     <Card key={tool.name} className="border-slate-100 shadow-xl shadow-slate-200/40 hover:shadow-2xl hover:shadow-slate-200/50 transition-all duration-300 transform hover:-translate-y-1 cursor-pointer group rounded-[2.5rem] overflow-hidden bg-white">
                         <CardHeader className="p-8 pb-4">
                             <div className="flex justify-between items-start">

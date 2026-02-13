@@ -20,24 +20,14 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Search, Filter, MoreHorizontal, Truck, Ship, Plane, CheckCircle, Clock, AlertCircle } from "lucide-react"
-import { DEMO_ORDERS } from "@/lib/demo-data"
+import { Search, Filter, MoreHorizontal, Truck, Ship, Plane, CheckCircle, Clock, AlertCircle, Inbox } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 
-// Mock function to simulate updating status
-// In a real app, this would be an API call
-const updateStatus = (id: string, newStatus: string) => {
-    toast.success(`Order ${id} updated to ${newStatus}`)
-    // For demo purposes, we can't easily write back to the file on the fly without an API,
-    // but the UI will reflect the action.
-}
-
 export default function ShipmentManagerPage() {
     const [searchTerm, setSearchTerm] = useState('')
-    // Local state to simulate updates for this session
-    const [orders, setOrders] = useState(DEMO_ORDERS)
+    const [orders, setOrders] = useState<any[]>([])
 
     const handleStatusUpdate = (orderId: string, newStatus: any) => {
         setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o))
@@ -45,9 +35,9 @@ export default function ShipmentManagerPage() {
     }
 
     const filteredOrders = orders.filter(order =>
-        order.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        order.vin.toLowerCase().includes(searchTerm.toLowerCase())
+        order.customer_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.vin?.toLowerCase().includes(searchTerm.toLowerCase())
     )
 
     return (
@@ -58,7 +48,7 @@ export default function ShipmentManagerPage() {
                     <p className="text-slate-500 font-medium">Update tracking statuses and manage global logistics.</p>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Button variant="outline" className="rounded-xl border-slate-200 text-slate-600 hover:text-slate-900">
+                    <Button variant="outline" className="rounded-xl border-slate-200 text-slate-600 hover:text-slate-900" disabled={orders.length === 0}>
                         <Filter className="mr-2 h-4 w-4" /> Filter Views
                     </Button>
                     <Button className="rounded-xl bg-primary-blue hover:bg-blue-700 text-white shadow-lg shadow-blue-900/20">
@@ -71,36 +61,36 @@ export default function ShipmentManagerPage() {
                 <Card className="bg-gradient-to-br from-blue-50 to-white border-blue-100 rounded-3xl shadow-sm">
                     <CardHeader className="pb-2">
                         <CardDescription className="text-blue-600 font-semibold uppercase tracking-wider text-[10px]">In Transit (Air)</CardDescription>
-                        <CardTitle className="text-4xl font-semibold text-blue-900">8</CardTitle>
+                        <CardTitle className="text-4xl font-semibold text-blue-900">0</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="flex items-center text-xs text-blue-600 font-semibold bg-blue-100/50 w-fit px-2 py-1 rounded-lg">
+                        <div className="flex items-center text-xs text-blue-400 font-semibold bg-blue-50 w-fit px-2 py-1 rounded-lg">
                             <Plane className="h-3.5 w-3.5 mr-1.5" />
-                            Arriving in 3-5 days
+                            No active air freights
                         </div>
                     </CardContent>
                 </Card>
                 <Card className="bg-gradient-to-br from-orange-50 to-white border-orange-100 rounded-3xl shadow-sm">
                     <CardHeader className="pb-2">
                         <CardDescription className="text-orange-600 font-semibold uppercase tracking-wider text-[10px]">Pending Customs</CardDescription>
-                        <CardTitle className="text-4xl font-semibold text-orange-900">12</CardTitle>
+                        <CardTitle className="text-4xl font-semibold text-orange-900">0</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="flex items-center text-xs text-orange-600 font-semibold bg-orange-100/50 w-fit px-2 py-1 rounded-lg">
+                        <div className="flex items-center text-xs text-orange-400 font-semibold bg-orange-50 w-fit px-2 py-1 rounded-lg">
                             <AlertCircle className="h-3.5 w-3.5 mr-1.5" />
-                            Action Required
+                            Clearance queue empty
                         </div>
                     </CardContent>
                 </Card>
                 <Card className="bg-gradient-to-br from-emerald-50 to-white border-emerald-100 rounded-3xl shadow-sm">
                     <CardHeader className="pb-2">
                         <CardDescription className="text-emerald-600 font-semibold uppercase tracking-wider text-[10px]">Delivered Today</CardDescription>
-                        <CardTitle className="text-4xl font-semibold text-emerald-900">4</CardTitle>
+                        <CardTitle className="text-4xl font-semibold text-emerald-900">0</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="flex items-center text-xs text-emerald-600 font-semibold bg-emerald-100/50 w-fit px-2 py-1 rounded-lg">
+                        <div className="flex items-center text-xs text-emerald-400 font-semibold bg-emerald-50 w-fit px-2 py-1 rounded-lg">
                             <CheckCircle className="h-3.5 w-3.5 mr-1.5" />
-                            100% On Time
+                            Awaiting daily log
                         </div>
                     </CardContent>
                 </Card>
@@ -132,88 +122,107 @@ export default function ShipmentManagerPage() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {filteredOrders.map((order) => (
-                                    <TableRow key={order.id} className="hover:bg-blue-50/30 transition-colors border-slate-50 group cursor-pointer">
-                                        <TableCell className="font-semibold text-slate-900 pl-6 py-4">
-                                            <span className="bg-slate-100 text-slate-600 px-2 py-1 rounded-md text-xs group-hover:bg-white group-hover:shadow-sm transition-all">
-                                                {order.id}
-                                            </span>
-                                        </TableCell>
-                                        <TableCell className="py-4">
-                                            <div className="flex flex-col">
-                                                <span className="font-semibold text-slate-800">{order.customerName}</span>
-                                                <span className="text-xs font-medium text-slate-400">{order.vehicleInfo}</span>
+                                {filteredOrders.length > 0 ? (
+                                    filteredOrders.map((order) => (
+                                        <TableRow key={order.id} className="hover:bg-blue-50/30 transition-colors border-slate-50 group cursor-pointer">
+                                            <TableCell className="font-semibold text-slate-900 pl-6 py-4">
+                                                <span className="bg-slate-100 text-slate-600 px-2 py-1 rounded-md text-xs group-hover:bg-white group-hover:shadow-sm transition-all">
+                                                    {order.id}
+                                                </span>
+                                            </TableCell>
+                                            <TableCell className="py-4">
+                                                <div className="flex flex-col">
+                                                    <span className="font-semibold text-slate-800">{order.customer_name}</span>
+                                                    <span className="text-xs font-medium text-slate-400">{order.vehicle_info}</span>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="py-4">
+                                                <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 bg-slate-50 w-fit px-2 py-1 rounded-full border border-slate-100">
+                                                    <span className="h-1.5 w-1.5 rounded-full bg-slate-400"></span>
+                                                    {order.origin || 'N/A'}
+                                                    <span className="text-slate-300">→</span>
+                                                    {order.destination || 'N/A'}
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="py-4">
+                                                <Badge variant="secondary" className={cn(
+                                                    "capitalize font-semibold border-0 px-2 py-0.5 shadow-none",
+                                                    order.status === 'pending' ? "bg-orange-100 text-orange-700" :
+                                                        order.status === 'quoted' ? "bg-blue-100 text-blue-700" :
+                                                            order.status === 'shipped' ? "bg-purple-100 text-purple-700" :
+                                                                order.status === 'delivered' ? "bg-emerald-100 text-emerald-700" :
+                                                                    "bg-slate-100 text-slate-700"
+                                                )}>
+                                                    {order.status}
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell className="text-slate-500 text-xs font-medium py-4">
+                                                {order.estimated_delivery ? new Date(order.estimated_delivery).toLocaleDateString() : 'N/A'}
+                                            </TableCell>
+                                            <TableCell className="text-right pr-6 py-4">
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors">
+                                                            <MoreHorizontal className="h-4 w-4" />
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end" className="w-56 p-2 bg-white/95 backdrop-blur-sm border-slate-200 shadow-xl shadow-slate-200/50 rounded-2xl">
+                                                        <DropdownMenuLabel className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-3 py-2">Update Status</DropdownMenuLabel>
+
+                                                        <DropdownMenuItem
+                                                            onClick={() => handleStatusUpdate(order.id, 'quoted')}
+                                                            className="rounded-xl px-3 py-2.5 mb-1 cursor-pointer hover:bg-blue-50 focus:bg-blue-50 text-slate-600 focus:text-blue-700 group transition-colors"
+                                                        >
+                                                            <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center mr-3 group-hover:bg-white group-hover:shadow-sm transition-all">
+                                                                <Clock className="h-4 w-4 text-blue-600" />
+                                                            </div>
+                                                            <span className="font-medium">Mark Quoted</span>
+                                                        </DropdownMenuItem>
+
+                                                        <DropdownMenuItem
+                                                            onClick={() => handleStatusUpdate(order.id, 'shipped')}
+                                                            className="rounded-xl px-3 py-2.5 mb-1 cursor-pointer hover:bg-purple-50 focus:bg-purple-50 text-slate-600 focus:text-purple-700 group transition-colors"
+                                                        >
+                                                            <div className="h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center mr-3 group-hover:bg-white group-hover:shadow-sm transition-all">
+                                                                <Ship className="h-4 w-4 text-purple-600" />
+                                                            </div>
+                                                            <span className="font-medium">Mark Shipped</span>
+                                                        </DropdownMenuItem>
+
+                                                        <DropdownMenuSeparator className="my-1 bg-slate-100" />
+
+                                                        <DropdownMenuItem
+                                                            onClick={() => handleStatusUpdate(order.id, 'delivered')}
+                                                            className="rounded-xl px-3 py-2.5 cursor-pointer hover:bg-emerald-50 focus:bg-emerald-50 text-slate-600 focus:text-emerald-700 group transition-colors"
+                                                        >
+                                                            <div className="h-8 w-8 rounded-full bg-emerald-100 flex items-center justify-center mr-3 group-hover:bg-white group-hover:shadow-sm transition-all">
+                                                                <CheckCircle className="h-4 w-4 text-emerald-600" />
+                                                            </div>
+                                                            <span className="font-medium">Mark Delivered</span>
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                ) : (
+                                    <TableRow>
+                                        <TableCell colSpan={6} className="h-64 py-10">
+                                            <div className="flex flex-col items-center justify-center text-center gap-4">
+                                                <div className="h-16 w-16 rounded-full bg-slate-50 flex items-center justify-center text-slate-300">
+                                                    <Inbox className="h-8 w-8" />
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <p className="text-lg font-semibold text-slate-900">No shipments found</p>
+                                                    <p className="text-sm text-slate-500 font-medium max-w-xs mx-auto">Active shipments will appear here once they are initialized in the system.</p>
+                                                </div>
+                                                <Button size="sm" variant="outline" className="rounded-xl border-slate-200 mt-2">
+                                                    Refresh Registry
+                                                </Button>
                                             </div>
-                                        </TableCell>
-                                        <TableCell className="py-4">
-                                            <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 bg-slate-50 w-fit px-2 py-1 rounded-full border border-slate-100">
-                                                <span className="h-1.5 w-1.5 rounded-full bg-slate-400"></span>
-                                                NJ Hub
-                                                <span className="text-slate-300">→</span>
-                                                Tema
-                                            </div>
-                                        </TableCell>
-                                        <TableCell className="py-4">
-                                            <Badge variant="secondary" className={cn(
-                                                "capitalize font-semibold border-0 px-2 py-0.5 shadow-none",
-                                                order.status === 'pending' ? "bg-orange-100 text-orange-700" :
-                                                    order.status === 'quoted' ? "bg-blue-100 text-blue-700" :
-                                                        order.status === 'shipped' ? "bg-purple-100 text-purple-700" :
-                                                            order.status === 'delivered' ? "bg-emerald-100 text-emerald-700" :
-                                                                "bg-slate-100 text-slate-700"
-                                            )}>
-                                                {order.status}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell className="text-slate-500 text-xs font-medium py-4">
-                                            {new Date(new Date(order.createdAt).getTime() + 439200000).toLocaleDateString()}
-                                        </TableCell>
-                                        <TableCell className="text-right pr-6 py-4">
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors">
-                                                        <MoreHorizontal className="h-4 w-4" />
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end" className="w-56 p-2 bg-white/95 backdrop-blur-sm border-slate-200 shadow-xl shadow-slate-200/50 rounded-2xl">
-                                                    <DropdownMenuLabel className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-3 py-2">Update Status</DropdownMenuLabel>
-
-                                                    <DropdownMenuItem
-                                                        onClick={() => handleStatusUpdate(order.id, 'quoted')}
-                                                        className="rounded-xl px-3 py-2.5 mb-1 cursor-pointer hover:bg-blue-50 focus:bg-blue-50 text-slate-600 focus:text-blue-700 group transition-colors"
-                                                    >
-                                                        <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center mr-3 group-hover:bg-white group-hover:shadow-sm transition-all">
-                                                            <Clock className="h-4 w-4 text-blue-600" />
-                                                        </div>
-                                                        <span className="font-medium">Mark Quoted</span>
-                                                    </DropdownMenuItem>
-
-                                                    <DropdownMenuItem
-                                                        onClick={() => handleStatusUpdate(order.id, 'shipped')}
-                                                        className="rounded-xl px-3 py-2.5 mb-1 cursor-pointer hover:bg-purple-50 focus:bg-purple-50 text-slate-600 focus:text-purple-700 group transition-colors"
-                                                    >
-                                                        <div className="h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center mr-3 group-hover:bg-white group-hover:shadow-sm transition-all">
-                                                            <Ship className="h-4 w-4 text-purple-600" />
-                                                        </div>
-                                                        <span className="font-medium">Mark Shipped</span>
-                                                    </DropdownMenuItem>
-
-                                                    <DropdownMenuSeparator className="my-1 bg-slate-100" />
-
-                                                    <DropdownMenuItem
-                                                        onClick={() => handleStatusUpdate(order.id, 'delivered')}
-                                                        className="rounded-xl px-3 py-2.5 cursor-pointer hover:bg-emerald-50 focus:bg-emerald-50 text-slate-600 focus:text-emerald-700 group transition-colors"
-                                                    >
-                                                        <div className="h-8 w-8 rounded-full bg-emerald-100 flex items-center justify-center mr-3 group-hover:bg-white group-hover:shadow-sm transition-all">
-                                                            <CheckCircle className="h-4 w-4 text-emerald-600" />
-                                                        </div>
-                                                        <span className="font-medium">Mark Delivered</span>
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
                                         </TableCell>
                                     </TableRow>
-                                ))}
+                                )}
                             </TableBody>
                         </Table>
                     </div>

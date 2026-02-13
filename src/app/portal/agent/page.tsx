@@ -14,9 +14,9 @@ import {
     Filter,
     MoreHorizontal,
     FileText,
-    Truck
+    Truck,
+    Inbox
 } from "lucide-react"
-import { DEMO_ORDERS, DEMO_STATS } from "@/lib/demo-data"
 import { Input } from "@/components/ui/input"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
@@ -31,10 +31,20 @@ import {
 
 export default function AgentDashboard() {
     const [searchTerm, setSearchTerm] = useState('')
+    const [activeTab, setActiveTab] = useState('all')
 
-    const filteredOrders = DEMO_ORDERS.filter(order =>
-        order.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        order.id.toLowerCase().includes(searchTerm.toLowerCase())
+    const stats = [
+        { label: "Total Commission", value: "$0.00", change: "0%", trend: "up" },
+        { label: "Active Requests", value: "0", change: "0%", trend: "up" },
+        { label: "Completion Rate", value: "0%", change: "0%", trend: "up" },
+        { label: "Direct Leads", value: "0", change: "0%", trend: "up" }
+    ]
+
+    const orders: any[] = [] // Future: fetch assigned orders from Supabase
+
+    const filteredOrders = orders.filter(order =>
+        order.customer_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.id?.toLowerCase().includes(searchTerm.toLowerCase())
     )
 
     return (
@@ -53,7 +63,7 @@ export default function AgentDashboard() {
 
             {/* Stats Grid */}
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-                {DEMO_STATS.map((stat, i) => (
+                {stats.map((stat, i) => (
                     <Card key={i} className={cn(
                         "border-slate-100 shadow-xl shadow-slate-200/40 rounded-[2rem] overflow-hidden transition-transform duration-300 hover:-translate-y-1",
                         i === 0 ? "bg-gradient-to-br from-green-50 to-white" :

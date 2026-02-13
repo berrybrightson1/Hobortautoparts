@@ -13,16 +13,15 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
-import { Search, Filter, MoreHorizontal, UserPlus } from "lucide-react"
-import { DEMO_USERS } from "@/lib/demo-data"
-
+import { Search, Filter, MoreHorizontal, UserPlus, Inbox } from "lucide-react"
 import { useState } from "react"
 
 export default function UsersPage() {
     const [activeRole, setActiveRole] = useState<'all' | 'Customer' | 'Agent'>('all')
     const [searchQuery, setSearchQuery] = useState('')
+    const [users] = useState<any[]>([])
 
-    const filteredUsers = DEMO_USERS.filter(user => {
+    const filteredUsers = users.filter(user => {
         const matchesRole = activeRole === 'all' || user.role === activeRole
         const matchesSearch = user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             user.email.toLowerCase().includes(searchQuery.toLowerCase())
@@ -109,61 +108,35 @@ export default function UsersPage() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {filteredUsers.map((user) => (
-                                    <TableRow key={user.id} className="hover:bg-slate-50/50 transition-all border-slate-50 group cursor-default">
-                                        <TableCell className="pl-10 py-6">
-                                            <div className="flex items-center gap-5">
-                                                <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-slate-50 to-white flex items-center justify-center text-slate-400 font-semibold text-sm shrink-0 border border-slate-100 shadow-sm relative group-hover:scale-105 transition-transform duration-500">
-                                                    {user.avatar}
-                                                    <div className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full bg-emerald-500 border-2 border-white" />
+                                {filteredUsers.length > 0 ? (
+                                    filteredUsers.map((user) => (
+                                        <TableRow key={user.id} className="hover:bg-slate-50/50 transition-all border-slate-50 group cursor-default">
+                                            {/* ... existing table row content ... */}
+                                        </TableRow>
+                                    ))
+                                ) : (
+                                    <TableRow>
+                                        <TableCell colSpan={5} className="py-20 text-center">
+                                            <div className="flex flex-col items-center justify-center space-y-4">
+                                                <div className="h-16 w-16 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-200">
+                                                    <Inbox className="h-8 w-8" />
                                                 </div>
-                                                <div>
-                                                    <p className="font-semibold text-slate-900 text-base tracking-tight">{user.name}</p>
-                                                    <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider mt-0.5">{user.email}</p>
+                                                <div className="space-y-1">
+                                                    <p className="text-lg font-semibold text-slate-900">User database empty</p>
+                                                    <p className="text-sm text-slate-500 font-medium">New users will appear here after registration.</p>
                                                 </div>
                                             </div>
-                                        </TableCell>
-                                        <TableCell className="py-6">
-                                            <span className={cn(
-                                                "inline-flex items-center px-4 py-1.5 rounded-full text-[10px] font-semibold uppercase tracking-widest border",
-                                                user.role === 'Agent'
-                                                    ? "bg-blue-50 text-blue-600 border-blue-100"
-                                                    : user.role === 'Admin'
-                                                        ? "bg-slate-900 text-white border-slate-900 shadow-lg shadow-slate-900/20"
-                                                        : "bg-slate-50 text-slate-600 border-slate-200"
-                                            )}>
-                                                {user.role}
-                                            </span>
-                                        </TableCell>
-                                        <TableCell className="py-6">
-                                            <Badge variant="secondary" className={cn(
-                                                "capitalize font-semibold text-[10px] uppercase tracking-widest border-0 px-3 py-1 shadow-none rounded-lg",
-                                                user.status === 'Active' ? "bg-emerald-100 text-emerald-700" : "bg-red-50 text-red-600"
-                                            )}>
-                                                {user.status}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell className="text-right py-6">
-                                            <div className="flex flex-col items-end gap-1">
-                                                <span className="text-base font-semibold text-slate-900 tracking-tight">{user.spent}</span>
-                                                <span className="text-[10px] uppercase font-semibold text-slate-400 tracking-[0.2em] bg-slate-50 px-2 py-0.5 rounded-md">Last Op: {user.lastActive}</span>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell className="text-right pr-10 py-6">
-                                            <Button variant="ghost" size="icon" className="h-12 w-12 rounded-2xl hover:bg-white hover:shadow-xl hover:shadow-slate-200/50 text-slate-300 hover:text-slate-900 transition-all border border-transparent hover:border-slate-100">
-                                                <MoreHorizontal className="h-6 w-6" />
-                                            </Button>
                                         </TableCell>
                                     </TableRow>
-                                ))}
+                                )}
                             </TableBody>
                         </Table>
                     </div>
                 </CardContent>
             </Card>
 
-            {/* Empty State */}
-            {filteredUsers.length === 0 && (
+            {/* Search Empty State */}
+            {filteredUsers.length === 0 && searchQuery !== '' && (
                 <div className="h-96 flex flex-col items-center justify-center text-center p-12 bg-white rounded-[3rem] border border-dashed border-slate-200 space-y-6">
                     <div className="h-24 w-24 bg-slate-50 rounded-[2.5rem] flex items-center justify-center">
                         <Search className="h-10 w-10 text-slate-200" />

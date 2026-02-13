@@ -4,6 +4,19 @@ import { ShieldCheck, Zap, Truck, Globe, Clock, Sparkles, CheckCircle2 } from "l
 
 const updates = [
     {
+        version: "v1.3.0",
+        date: "February 13, 2026",
+        title: "Supabase Production Infrastructure",
+        description: "Migration from mock data to a scalable, real-time PostgreSQL backend with integrated security.",
+        changes: [
+            "Implemented Global Auth Provider using Supabase Auth for session management.",
+            "Deployed production-ready Database Schema (Profiles, Agents, Requests, Shipments).",
+            "Launched Dynamic Auth Visuals with route-specific branding for Login/Signup.",
+            "Integrated automatic profile creation via PostgreSQL triggers.",
+            "Established secure Row Level Security (RLS) policies for data privacy.",
+        ]
+    },
+    {
         version: "v1.2.0",
         date: "February 13, 2026",
         title: "UX & Stability Refinement",

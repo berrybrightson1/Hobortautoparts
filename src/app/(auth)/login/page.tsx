@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Eye, EyeOff, Loader2 } from "lucide-react"
+import { toast } from "sonner"
+import { supabase } from "@/lib/supabase"
 import { usePortalStore } from "@/lib/store"
 
 export default function LoginPage() {
@@ -16,22 +18,48 @@ export default function LoginPage() {
     const [isLoading, setIsLoading] = useState(false)
     const [showPassword, setShowPassword] = useState(false)
     const [activeRole, setActiveRole] = useState("customer")
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
 
     async function onSubmit(event: React.SyntheticEvent) {
         event.preventDefault()
         setIsLoading(true)
 
-        // Simulate API call
-        setTimeout(() => {
-            setIsLoading(false)
-            // Set role for demo
-            setRole(activeRole as any)
+        try {
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email,
+                password,
+            })
+
+            if (error) throw error
+
+            // Fetch profile to determine role
+            const { data: profile, error: profileError } = await supabase
+                .from('profiles')
+                .select('role')
+                .eq('id', data.user.id)
+                .single()
+
+            if (profileError) throw profileError
+
+            const userRole = profile.role
+            setRole(userRole)
+            toast.success("Welcome back!", {
+                description: `Successfully signed in as ${userRole}.`
+            })
 
             // Redirect based on role
-            if (activeRole === 'admin') router.push("/portal/admin")
-            else if (activeRole === 'agent') router.push("/portal/agent")
+            if (userRole === 'admin') router.push("/portal/admin")
+            else if (userRole === 'agent') router.push("/portal/agent")
             else router.push("/portal/customer")
-        }, 1000)
+
+        } catch (error: any) {
+            toast.error("Sign in failed", {
+                description: error.message || "Please check your credentials and try again."
+            })
+        } finally {
+            setIsLoading(false)
+        }
     }
 
     return (
@@ -65,12 +93,15 @@ export default function LoginPage() {
                             autoComplete="email"
                             autoCorrect="off"
                             disabled={isLoading}
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
                             className="h-12 rounded-xl border-primary-blue/10 bg-primary-blue/5 focus:bg-white transition-all font-medium"
                         />
                     </div>
                     <div className="grid gap-2">
                         <div className="flex items-center justify-between">
-                            <Label htmlFor="password" className="ml-1 text-primary-blue/80 font-semibold text-xs uppercase tracking-wider">Password</Label>
+                            <Label htmlFor="password" university-link="true" className="ml-1 text-primary-blue/80 font-semibold text-xs uppercase tracking-wider">Password</Label>
                             <Link href="/forgot-password" university-link="true" className="text-xs font-semibold text-primary-orange hover:text-orange-600 transition-colors">
                                 Forgot?
                             </Link>
@@ -80,6 +111,9 @@ export default function LoginPage() {
                                 id="password"
                                 type={showPassword ? "text" : "password"}
                                 disabled={isLoading}
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
                                 className="h-12 rounded-xl border-primary-blue/10 bg-primary-blue/5 focus:bg-white transition-all font-medium pr-10"
                             />
                             <button
@@ -91,11 +125,15 @@ export default function LoginPage() {
                             </button>
                         </div>
                     </div>
-                    <Button className="w-full h-12 rounded-xl font-semibold text-base shadow-xl shadow-primary-blue/10 bg-primary-blue hover:bg-hobort-blue-dark transition-all hover:scale-[1.01] active:scale-[0.99] text-white" disabled={isLoading}>
-                        {isLoading && (
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Button type="submit" className="w-full h-12 rounded-xl font-semibold text-base shadow-xl shadow-primary-blue/10 bg-primary-blue hover:bg-hobort-blue-dark transition-all hover:scale-[1.01] active:scale-[0.99] text-white" disabled={isLoading}>
+                        {isLoading ? (
+                            <div className="flex items-center gap-2">
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                                <span>Signing in...</span>
+                            </div>
+                        ) : (
+                            "Continue"
                         )}
-                        Continue
                     </Button>
                 </form>
             </Tabs>

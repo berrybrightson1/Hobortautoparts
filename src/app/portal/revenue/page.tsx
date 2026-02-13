@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
-import { REVENUE_DATA, DEMO_STATS } from "@/lib/demo-data"
+import { Inbox } from "lucide-react"
 
 export default function RevenuePage() {
     return (
@@ -18,11 +18,8 @@ export default function RevenuePage() {
                         <CardTitle className="text-[10px] font-semibold uppercase tracking-widest text-indigo-500">Total Earnings</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-4xl font-semibold text-indigo-900">{DEMO_STATS[0].value}</div>
-                        <p className="text-xs text-emerald-600 mt-2 font-semibold bg-emerald-100 w-fit px-2 py-1 rounded-lg flex items-center gap-1">
-                            <span className="text-emerald-500">↑</span>
-                            {DEMO_STATS[0].change} from last month
-                        </p>
+                        <div className="text-4xl font-semibold text-indigo-900">$0.00</div>
+                        <p className="text-xs text-slate-400 mt-2 font-medium">Tracking since inception</p>
                     </CardContent>
                 </Card>
                 <Card className="bg-gradient-to-br from-pink-50 to-white border-pink-100 shadow-sm rounded-3xl hover:shadow-xl hover:shadow-pink-900/10 transition-all duration-300">
@@ -30,8 +27,8 @@ export default function RevenuePage() {
                         <CardTitle className="text-[10px] font-semibold uppercase tracking-widest text-pink-500">Outstanding Invoices</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-4xl font-semibold text-pink-900">$2,340.00</div>
-                        <p className="text-xs text-slate-400 mt-2 font-medium">3 invoices pending payment</p>
+                        <div className="text-4xl font-semibold text-pink-900">$0.00</div>
+                        <p className="text-xs text-slate-400 mt-2 font-medium">0 invoices pending payment</p>
                     </CardContent>
                 </Card>
                 <Card className="bg-gradient-to-br from-cyan-50 to-white border-cyan-100 shadow-sm rounded-3xl hover:shadow-xl hover:shadow-cyan-900/10 transition-all duration-300">
@@ -39,11 +36,8 @@ export default function RevenuePage() {
                         <CardTitle className="text-[10px] font-semibold uppercase tracking-widest text-cyan-600">Avg. Order Value</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-4xl font-semibold text-cyan-900">$2,544.12</div>
-                        <p className="text-xs text-emerald-600 mt-2 font-semibold bg-emerald-100 w-fit px-2 py-1 rounded-lg flex items-center gap-1">
-                            <span className="text-emerald-500">↑</span>
-                            +5.2% from last month
-                        </p>
+                        <div className="text-4xl font-semibold text-cyan-900">$0.00</div>
+                        <p className="text-xs text-slate-400 mt-2 font-medium">Awaiting first transactions</p>
                     </CardContent>
                 </Card>
             </div>
@@ -53,42 +47,14 @@ export default function RevenuePage() {
                     <CardTitle className="text-xl font-semibold text-slate-900">Revenue Overview</CardTitle>
                 </CardHeader>
                 <CardContent className="p-6">
-                    <div className="h-[400px] w-full">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={REVENUE_DATA} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                                <XAxis
-                                    dataKey="name"
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fill: '#64748b', fontSize: 12, fontWeight: 600 }}
-                                    dy={10}
-                                />
-                                <YAxis
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fill: '#64748b', fontSize: 12, fontWeight: 600 }}
-                                    tickFormatter={(value) => `$${value}`}
-                                    dx={-10}
-                                />
-                                <Tooltip
-                                    cursor={{ fill: '#f8fafc' }}
-                                    contentStyle={{
-                                        borderRadius: '16px',
-                                        border: '1px solid #e2e8f0',
-                                        boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
-                                        padding: '12px'
-                                    }}
-                                />
-                                <Bar
-                                    dataKey="total"
-                                    fill="#2563eb"
-                                    radius={[8, 8, 8, 8]}
-                                    barSize={50}
-                                    className="hover:opacity-80 transition-opacity cursor-pointer"
-                                />
-                            </BarChart>
-                        </ResponsiveContainer>
+                    <div className="h-[400px] w-full flex flex-col items-center justify-center text-slate-400 gap-4">
+                        <div className="h-20 w-20 rounded-full bg-slate-50 flex items-center justify-center">
+                            <Inbox className="h-10 w-10 text-slate-200" />
+                        </div>
+                        <div className="text-center space-y-1">
+                            <p className="font-semibold text-slate-600">No data to visualize</p>
+                            <p className="text-sm">Revenue charts will generate automatically as sales are recorded.</p>
+                        </div>
                     </div>
                 </CardContent>
             </Card>
