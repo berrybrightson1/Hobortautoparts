@@ -25,7 +25,7 @@ export function TrackingWidget({ className }: { className?: string }) {
                             <input
                                 type="text"
                                 placeholder="Trace Shipment ID"
-                                className="w-full h-12 md:h-14 bg-black/20 border border-white/5 rounded-2xl pl-10 md:pl-12 pr-4 text-white placeholder-slate-400 text-sm md:text-base focus:outline-none focus:bg-black/40 focus:ring-1 focus:ring-primary-orange/50 transition-all"
+                                className="w-full h-12 md:h-14 bg-black/20 border border-white/5 rounded-2xl pl-10 md:pl-12 pr-4 text-white placeholder-slate-400 text-base md:text-base focus:outline-none focus:bg-black/40 focus:ring-1 focus:ring-primary-orange/50 transition-all"
                                 onChange={(e) => window.localStorage.setItem('temp_track_id', e.target.value)}
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter') {
