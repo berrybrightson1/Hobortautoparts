@@ -49,7 +49,9 @@ interface Shipment {
     actual_delivery?: string
     created_at: string
     orders?: {
-        customer_name?: string
+        profiles?: {
+            full_name: string | null
+        }
         vehicle_info?: string
     }
 }
@@ -79,8 +81,10 @@ export default function ShipmentManagerPage() {
                 .select(`
                     *,
                     orders (
-                        customer_name,
-                        vehicle_info
+                        vehicle_info,
+                        profiles (
+                            full_name
+                        )
                     )
                 `)
                 .order('created_at', { ascending: false })
@@ -167,7 +171,7 @@ export default function ShipmentManagerPage() {
     const filteredShipments = shipments.filter(shipment =>
         shipment.tracking_number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         shipment.carrier?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        shipment.orders?.customer_name?.toLowerCase().includes(searchTerm.toLowerCase())
+        shipment.orders?.profiles?.full_name?.toLowerCase().includes(searchTerm.toLowerCase())
     )
 
     // Calculate stats
@@ -312,7 +316,7 @@ export default function ShipmentManagerPage() {
                     <div className="relative flex-1 md:max-w-md">
                         <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                         <Input
-                            placeholder="Search shipments by tracking, carrier, or customer..."
+                            placeholder="Search shipments by tracking, carrier, or customer profile..."
                             className="pl-10 h-11 rounded-2xl border-slate-200 bg-slate-50 focus:bg-white transition-all"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
@@ -353,7 +357,7 @@ export default function ShipmentManagerPage() {
                                             <TableCell className="py-4">
                                                 <div className="flex flex-col">
                                                     <span className="font-semibold text-slate-800">{shipment.carrier}</span>
-                                                    <span className="text-xs font-medium text-slate-400">{shipment.orders?.customer_name || 'N/A'}</span>
+                                                    <span className="text-xs font-medium text-slate-400">{shipment.orders?.profiles?.full_name || 'N/A'}</span>
                                                 </div>
                                             </TableCell>
                                             <TableCell className="py-4">

@@ -26,6 +26,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 
 const ADMIN_NAV_ITEMS = [
     { name: "Overview", href: "/portal/admin", icon: LayoutDashboard },
+    { name: "Sourcing Requests", href: "/portal/admin/requests", icon: PackageSearch },
     { name: "Approvals", href: "/portal/admin/approvals", icon: ShieldCheck },
     { name: "Shipments", href: "/portal/admin/shipments", icon: PackageSearch },
     { name: "Users", href: "/portal/users", icon: Users },
