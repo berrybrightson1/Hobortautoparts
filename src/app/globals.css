@@ -27,13 +27,89 @@
       transform: translateY(0);
     }
   }
+
+  /* Shadcn UI Variable Mapping for Tailwind v4 */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
 }
 
 :root {
   --background: #ffffff;
   --foreground: #1b4e6f;
+
+  --card: #ffffff;
+  --card-foreground: #1b4e6f;
+
+  --popover: #ffffff;
+  --popover-foreground: #1b4e6f;
+
   --primary: #fe8323;
   --primary-foreground: #ffffff;
+
+  --secondary: #f1f5f9;
+  --secondary-foreground: #1b4e6f;
+
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+
+  --accent: #f1f5f9;
+  --accent-foreground: #1b4e6f;
+
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #1b4e6f;
+
+  --radius: 0.75rem;
+}
+
+.dark {
+  --background: #020617;
+  --foreground: #f8fafc;
+
+  --card: #020617;
+  --card-foreground: #f8fafc;
+
+  --popover: #020617;
+  --popover-foreground: #f8fafc;
+
+  --primary: #fe8323;
+  --primary-foreground: #ffffff;
+
+  --secondary: #1e293b;
+  --secondary-foreground: #f8fafc;
+
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
+
+  --accent: #1e293b;
+  --accent-foreground: #f8fafc;
+
+  --destructive: #7f1d1d;
+  --destructive-foreground: #f8fafc;
+
+  --border: #1e293b;
+  --input: #1e293b;
+  --ring: #3b82f6;
 }
 
 body {

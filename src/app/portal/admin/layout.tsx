@@ -14,7 +14,8 @@ import {
     Users,
     DollarSign,
     Bell,
-    X
+    X,
+    Loader2
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -43,12 +44,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         if (!loading && !user) {
             router.push('/login')
         }
-    }, [user, loading, router])
+        if (!loading && user && profile && profile.role !== 'admin') {
+            router.push('/portal') // Redirect non-admins to main portal
+        }
+    }, [user, profile, loading, router])
 
-    if (loading) {
+    if (loading || !user || (profile && profile.role !== 'admin')) {
         return (
-            <div className="h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
-                <div className="h-10 w-10 border-4 border-primary-blue border-t-transparent rounded-full animate-spin" />
+            <div className="flex h-screen items-center justify-center bg-slate-50">
+                <Loader2 className="h-8 w-8 animate-spin text-primary-blue" />
             </div>
         )
     }

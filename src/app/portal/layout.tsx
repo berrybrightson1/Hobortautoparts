@@ -59,7 +59,21 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
         if (!loading && !user) {
             router.push('/login')
         }
-    }, [user, loading, router])
+
+        // Strict Role-Based Path Enforcement
+        if (!loading && user && profile) {
+            const path = pathname
+            const role = profile.role
+
+            if (path.startsWith('/portal/admin') && role !== 'admin') {
+                router.push('/portal')
+            } else if (path.startsWith('/portal/agent') && role !== 'agent' && role !== 'admin') {
+                router.push('/portal/customer')
+            } else if (path.startsWith('/portal/customer') && role === 'agent') {
+                router.push('/portal/agent')
+            }
+        }
+    }, [user, profile, loading, router, pathname])
 
     if (loading) {
         return (

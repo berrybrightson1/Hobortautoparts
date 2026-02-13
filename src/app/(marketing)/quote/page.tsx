@@ -12,6 +12,10 @@ import { cn } from "@/lib/utils"
 import { BrandedSelect } from "@/components/marketing/branded-select"
 import { Loader2, AlertCircle } from "lucide-react"
 import { motion } from "framer-motion"
+import { useAuth } from "@/components/auth/auth-provider"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
+import { supabase } from "@/lib/supabase"
 
 // VIN Validation Helper
 function validateVIN(vin: string) {
@@ -43,6 +47,8 @@ const COMMON_ENGINES = ["2.0L I4", "2.4L I4", "2.5L I4", "3.0L V6", "3.5L V6", "
 const COMMON_TRIMS = ["Base", "Standard", "Premium", "Luxury", "Sport", "LE", "XLE", "SE", "XSE", "Limited", "Platinum", "AMG Line", "M Sport"]
 
 export default function QuotePage() {
+    const { user } = useAuth()
+    const router = useRouter()
     const [isLoading, setIsLoading] = useState(false)
     const [isSubmitted, setIsSubmitted] = useState(false)
     const [step, setStep] = useState(1)
@@ -122,11 +128,38 @@ export default function QuotePage() {
         event.preventDefault()
         setIsLoading(true)
 
-        // Simulate API call
-        setTimeout(() => {
+        if (!user) {
+            toast.error("Please sign in or create an account to submit a request.", {
+                description: "This ensures you can track your request status."
+            })
             setIsLoading(false)
+            router.push('/login?redirect=/quote')
+            return
+        }
+
+        try {
+            const vehicle_info = `${formData.year} ${formData.make} ${formData.model} (${formData.submodel})`
+            const { error } = await supabase
+                .from('sourcing_requests')
+                .insert({
+                    user_id: user.id,
+                    vin: formData.vin,
+                    part_name: (document.getElementById('parts') as HTMLTextAreaElement).value,
+                    vehicle_info: vehicle_info,
+                    status: 'pending'
+                })
+
+            if (error) throw error
+
             setIsSubmitted(true)
-        }, 1500)
+        } catch (error: any) {
+            console.error("Error submitting sourcing request:", error)
+            toast.error("Failed to submit request", {
+                description: error.message
+            })
+        } finally {
+            setIsLoading(false)
+        }
     }
 
     if (isSubmitted) {

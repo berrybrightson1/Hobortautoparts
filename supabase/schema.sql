@@ -141,11 +141,11 @@ RETURNS TRIGGER AS $$
 BEGIN
   INSERT INTO public.profiles (id, full_name, role)
   VALUES (
-    new.id, 
-    new.raw_user_meta_data->>'full_name', 
-    COALESCE((new.raw_user_meta_data->>'role')::user_role, 'customer')
+    NEW.id, 
+    NEW.raw_user_meta_data->>'full_name', 
+    COALESCE(NEW.raw_user_meta_data->>'role', 'customer')
   );
-  RETURN new;
+  RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 

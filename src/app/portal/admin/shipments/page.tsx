@@ -204,56 +204,61 @@ export default function ShipmentManagerPage() {
                             </DialogHeader>
                             <div className="grid gap-4 py-4">
                                 <div className="grid gap-2">
-                                    <Label htmlFor="tracking">Tracking Number *</Label>
+                                    <Label htmlFor="tracking" className="text-sm font-semibold text-slate-700">Tracking Number *</Label>
                                     <Input
                                         id="tracking"
                                         value={newShipment.tracking_number}
                                         onChange={(e) => setNewShipment({ ...newShipment, tracking_number: e.target.value })}
                                         placeholder="TRK-123456"
+                                        className="h-11 rounded-xl bg-slate-50 focus:bg-white"
                                     />
                                 </div>
                                 <div className="grid gap-2">
-                                    <Label htmlFor="carrier">Carrier *</Label>
+                                    <Label htmlFor="carrier" className="text-sm font-semibold text-slate-700">Carrier *</Label>
                                     <Input
                                         id="carrier"
                                         value={newShipment.carrier}
                                         onChange={(e) => setNewShipment({ ...newShipment, carrier: e.target.value })}
                                         placeholder="DHL, FedEx, UPS, etc."
+                                        className="h-11 rounded-xl bg-slate-50 focus:bg-white"
                                     />
                                 </div>
                                 <div className="grid gap-2">
-                                    <Label htmlFor="origin">Origin</Label>
+                                    <Label htmlFor="origin" className="text-sm font-semibold text-slate-700">Origin</Label>
                                     <Input
                                         id="origin"
                                         value={newShipment.origin}
                                         onChange={(e) => setNewShipment({ ...newShipment, origin: e.target.value })}
                                         placeholder="Dubai, UAE"
+                                        className="h-11 rounded-xl bg-slate-50 focus:bg-white"
                                     />
                                 </div>
                                 <div className="grid gap-2">
-                                    <Label htmlFor="destination">Destination</Label>
+                                    <Label htmlFor="destination" className="text-sm font-semibold text-slate-700">Destination</Label>
                                     <Input
                                         id="destination"
                                         value={newShipment.destination}
                                         onChange={(e) => setNewShipment({ ...newShipment, destination: e.target.value })}
                                         placeholder="Accra, Ghana"
+                                        className="h-11 rounded-xl bg-slate-50 focus:bg-white"
                                     />
                                 </div>
                                 <div className="grid gap-2">
-                                    <Label htmlFor="eta">Estimated Delivery</Label>
+                                    <Label htmlFor="eta" className="text-sm font-semibold text-slate-700">Estimated Delivery</Label>
                                     <Input
                                         id="eta"
                                         type="date"
                                         value={newShipment.estimated_delivery}
                                         onChange={(e) => setNewShipment({ ...newShipment, estimated_delivery: e.target.value })}
+                                        className="h-11 rounded-xl bg-slate-50 focus:bg-white"
                                     />
                                 </div>
                             </div>
-                            <DialogFooter>
-                                <Button variant="outline" onClick={() => setShowCreateDialog(false)}>
+                            <DialogFooter className="gap-2 sm:gap-0">
+                                <Button variant="outline" className="rounded-xl border-slate-200" onClick={() => setShowCreateDialog(false)}>
                                     Cancel
                                 </Button>
-                                <Button onClick={handleCreateShipment} disabled={isCreating}>
+                                <Button onClick={handleCreateShipment} disabled={isCreating} className="rounded-xl bg-primary-blue hover:bg-blue-700 text-white">
                                     {isCreating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                     Create Shipment
                                 </Button>
