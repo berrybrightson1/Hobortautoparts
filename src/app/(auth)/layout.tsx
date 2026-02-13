@@ -1,11 +1,44 @@
+"use client"
+
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 
 export default function AuthLayout({
     children,
 }: {
     children: React.ReactNode
 }) {
+    const pathname = usePathname()
+
+    // Map routes to specific content for a unique branding experience
+    const getBrandingContent = () => {
+        if (pathname === '/login') {
+            return {
+                image: '/auth-customer.webp',
+                heading: "The Hub for Premium",
+                highlight: "Auto Parts Logistics.",
+                description: "Efficient sourcing, real-time tracking, and seamless logistics for auto parts worldwide."
+            }
+        }
+        if (pathname === '/signup') {
+            return {
+                image: '/signup_customer_experience.webp',
+                heading: "Join our Global",
+                highlight: "Service Network.",
+                description: "Experience the standard in automotive supply chain excellence and specialized logistics."
+            }
+        }
+        return {
+            image: '/auth-customer.webp',
+            heading: "The Hub for Premium",
+            highlight: "Auto Parts Logistics.",
+            description: "Efficient sourcing, real-time tracking, and seamless logistics for auto parts worldwide."
+        }
+    }
+
+    const { image, heading, highlight, description } = getBrandingContent()
+
     return (
         <div className="min-h-screen grid lg:grid-cols-2">
             {/* Left side: Form */}
@@ -30,25 +63,26 @@ export default function AuthLayout({
 
             {/* Right side: Branding area */}
             <div className="hidden lg:block relative bg-slate-900 overflow-hidden border-l border-slate-100">
-                {/* Background Image with Parallax-ready feel */}
+                {/* Background Image with Dynamic Source */}
                 <div
-                    className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-[10s] hover:scale-110 lg:scale-105"
-                    style={{ backgroundImage: "url('/auth-customer.webp')" }}
+                    key={image} // Force re-animation on route change
+                    className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-[2.5s] animate-in fade-in zoom-in-105"
+                    style={{ backgroundImage: `url('${image}')` }}
                 />
 
                 {/* Rich Gradient Overlay for readability */}
-                <div className="absolute inset-0 bg-gradient-to-t from-primary-blue via-primary-blue/40 to-transparent z-10 opacity-90" />
+                <div className="absolute inset-0 bg-gradient-to-t from-primary-blue via-primary-blue/30 to-transparent z-10 opacity-90" />
                 <div className="absolute inset-0 bg-gradient-to-br from-primary-blue/20 via-transparent to-primary-orange/20 z-10" />
 
                 <div className="absolute inset-0 z-20 p-16 flex flex-col justify-end">
                     <div className="space-y-4 max-w-lg">
                         <div className="h-1.5 w-12 bg-primary-orange rounded-full shadow-lg" />
                         <h2 className="text-4xl font-black text-white leading-tight tracking-tight drop-shadow-sm">
-                            The Hub for Premium <br />
-                            <span className="text-primary-orange">Auto Parts Logistics.</span>
+                            {heading} <br />
+                            <span className="text-primary-orange">{highlight}</span>
                         </h2>
-                        <p className="text-white/80 font-bold text-lg leading-relaxed max-w-md">
-                            Efficient sourcing, real-time tracking, and seamless logistics for auto parts worldwide.
+                        <p className="text-white/80 font-bold text-lg leading-relaxed max-w-sm">
+                            {description}
                         </p>
                     </div>
                 </div>
