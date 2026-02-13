@@ -263,6 +263,37 @@ export function HeroSlider() {
                                 <div className="text-sm font-bold text-white">Arriving in 2 Days</div>
                             </div>
                         </div>
+
+                        {/* Moved & Minimized Slider Indicators (Circled Place) */}
+                        <div className="absolute bottom-4 right-10 flex items-center gap-4">
+                            {slides.map((_, index) => (
+                                <button
+                                    key={index}
+                                    onClick={() => goToSlide(index)}
+                                    className="group/btn relative h-10 flex flex-col justify-center pointer-events-auto"
+                                    onMouseEnter={() => setIsPaused(true)}
+                                    onMouseLeave={() => setIsPaused(false)}
+                                >
+                                    <div className="flex items-center">
+                                        <div className={cn(
+                                            "h-0.5 rounded-full transition-all duration-700",
+                                            currentSlide === index ? "w-8 bg-primary-orange" : "w-3 bg-slate-200/20 group-hover/btn:bg-slate-300/40"
+                                        )} />
+                                    </div>
+                                    <AnimatePresence>
+                                        {currentSlide === index && !isPaused && (
+                                            <motion.div
+                                                className="absolute bottom-0 left-0 right-0 h-[1px] bg-primary-orange/50"
+                                                initial={{ scaleX: 0 }}
+                                                animate={{ scaleX: 1 }}
+                                                transition={{ duration: 8, ease: "linear" }}
+                                                style={{ originX: 0 }}
+                                            />
+                                        )}
+                                    </AnimatePresence>
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -299,37 +330,6 @@ export function HeroSlider() {
                         </div>
                     </div>
 
-                    {/* Center Section: Modern Pagination Indicators */}
-                    <div className="flex items-center gap-6 lg:gap-8">
-                        {slides.map((_, index) => (
-                            <button
-                                key={index}
-                                onClick={() => goToSlide(index)}
-                                className="group/btn relative h-10 flex flex-col justify-center"
-                                onMouseEnter={() => setIsPaused(true)}
-                                onMouseLeave={() => setIsPaused(false)}
-                            >
-                                <div className="flex items-center">
-                                    <div className={cn(
-                                        "h-0.5 rounded-full transition-all duration-700",
-                                        currentSlide === index ? "w-12 bg-primary-orange" : "w-6 bg-slate-200/20 group-hover/btn:bg-slate-300/40"
-                                    )} />
-                                </div>
-                                <AnimatePresence>
-                                    {currentSlide === index && !isPaused && (
-                                        <motion.div
-                                            className="absolute bottom-0 left-0 right-0 h-[1px] bg-primary-orange/50"
-                                            initial={{ scaleX: 0 }}
-                                            animate={{ scaleX: 1 }}
-                                            transition={{ duration: 8, ease: "linear" }}
-                                            style={{ originX: 0 }}
-                                        />
-                                    )}
-                                </AnimatePresence>
-                            </button>
-                        ))}
-                    </div>
-
                     {/* Right side: Premium Brand Logos with Mobile Marquee */}
                     <div className="flex items-center gap-6 w-full md:w-auto overflow-hidden">
                         <div className="hidden xl:flex flex-col items-end mr-2 shrink-0">
@@ -337,10 +337,10 @@ export function HeroSlider() {
                             <span className="text-[10px] font-black text-white/90 tracking-widest uppercase whitespace-nowrap">Brand Partners</span>
                         </div>
 
-                        {/* Logo Container - Adjusted for smaller, sharper look */}
+                        {/* Logo Container - Enlarged for Desktop "Full Logos" */}
                         <div className="relative flex-1 md:flex-none overflow-hidden">
                             <motion.div
-                                className="flex items-center gap-4 md:gap-6"
+                                className="flex items-center gap-4 md:gap-8"
                                 animate={isMobile ? {
                                     x: [0, -1000],
                                 } : {}}
@@ -356,7 +356,7 @@ export function HeroSlider() {
                                 {/* Double logos on mobile for seamless loop */}
                                 {[...BRANDS, ...(isMobile ? BRANDS : [])].map((brand, idx) => (
                                     <div key={`${brand.name}-${idx}`} className="flex flex-col items-center group/brand relative shrink-0">
-                                        <div className="h-8 md:h-10 w-16 md:w-20 relative grayscale opacity-40 group-hover/brand:grayscale-0 group-hover/brand:opacity-100 transition-all duration-500 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-1.5 md:p-2">
+                                        <div className="h-8 md:h-12 w-16 md:w-28 relative grayscale opacity-40 md:grayscale-0 md:opacity-100 group-hover/brand:grayscale-0 group-hover/brand:opacity-100 transition-all duration-500 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-1.5 md:p-1">
                                             <Image
                                                 src={brand.src}
                                                 alt={brand.name}
