@@ -80,7 +80,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
                 <div className={cn("flex items-center", sidebarOpen ? "p-6 justify-between" : "p-4 justify-center")}>
                     {sidebarOpen ? (
                         <Link href={NAV_ITEMS[role as keyof typeof NAV_ITEMS][0].href} className="transition-all hover:scale-105 active:scale-95">
-                            <img src="/Hobort auto express logo Main.png" alt="Hobort" className="h-16 w-auto" />
+                            <img src="/Hobort auto express logo Main.png" alt="Hobort" className="h-14 w-auto" />
                         </Link>
                     ) : (
                         <div className="h-10 w-10 bg-primary-blue rounded-xl flex items-center justify-center text-white font-semibold text-xs shrink-0">H</div>

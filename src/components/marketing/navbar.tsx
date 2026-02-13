@@ -109,8 +109,8 @@ export function Navbar() {
             {/* Mobile Menu - Premium Drawer Style */}
             {
                 isOpen && (
-                    <div className="fixed inset-x-4 top-24 z-50 rounded-3xl border border-slate-100 bg-white/95 p-8 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-md md:hidden">
-                        <div className="grid gap-8">
+                    <div className="fixed inset-x-4 top-24 z-50 rounded-3xl border border-slate-100 bg-white/95 p-6 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-md md:hidden">
+                        <div className="grid gap-6">
                             {[...NAV_LINKS, { name: "New Sourcing Request", href: "/quote" }, ...(isAuthenticated ? [{ name: "Dashboard", href: "/portal" }] : AUTH_LINKS)].map((link) => {
                                 const isActive = pathname === link.href
                                 return (
@@ -118,12 +118,12 @@ export function Navbar() {
                                         key={link.href}
                                         href={link.href}
                                         className={cn(
-                                            "text-2xl font-semibold transition-all flex items-center gap-3",
+                                            "text-lg font-semibold transition-all flex items-center gap-3",
                                             isActive ? "text-primary-orange" : "text-primary-blue/80 hover:text-primary-orange"
                                         )}
                                         onClick={() => setIsOpen(false)}
                                     >
-                                        {isActive && <div className="h-2 w-2 rounded-full bg-primary-orange" />}
+                                        {isActive && <div className="h-1.5 w-1.5 rounded-full bg-primary-orange" />}
                                         {link.name}
                                     </Link>
                                 )
