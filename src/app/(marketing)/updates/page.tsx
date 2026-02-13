@@ -4,8 +4,35 @@ import { ShieldCheck, Zap, Truck, Globe, Clock, Sparkles, CheckCircle2 } from "l
 
 const updates = [
     {
+        version: "v1.5.0",
+        date: "February 13, 2026",
+        time: "10:54 AM",
+        title: "Advanced Password Recovery",
+        description: "Implemented a secure, multi-stage password recovery system to prevent user lockout.",
+        changes: [
+            "Launched /forgot-password request page with email validation.",
+            "Created /reset-password landing page for secure credential updates.",
+            "Integrated Supabase Auth recovery link protocol with custom redirection.",
+            "Enforced unified security standards across all recovery routes.",
+        ]
+    },
+    {
+        version: "v1.4.0",
+        date: "February 13, 2026",
+        time: "10:52 AM",
+        title: "Intelligent Password Security",
+        description: "Enhanced authentication security with real-time feedback and visibility controls.",
+        changes: [
+            "Developed unified PasswordInput component with high-fidelity Eye toggle.",
+            "Integrated real-time Password Strength Meter with 5-point verification.",
+            "Added dynamic visual feedback (Weak, Medium, Strong) using brand color palettes.",
+            "Enforced mobile-safe input standards for all security fields.",
+        ]
+    },
+    {
         version: "v1.3.0",
         date: "February 13, 2026",
+        time: "10:36 AM",
         title: "Supabase Production Infrastructure",
         description: "Migration from mock data to a scalable, real-time PostgreSQL backend with integrated security.",
         changes: [
@@ -19,31 +46,33 @@ const updates = [
     {
         version: "v1.2.0",
         date: "February 13, 2026",
+        time: "09:45 AM",
         title: "UX & Stability Refinement",
         description: "Focus on mobile responsiveness and input stability to ensure a professional experience on all devices.",
         changes: [
-            "Enforced 16px font-size on all mobile inputs to prevent automatic browser zoom-in (common iOS issue).",
+            "Enforced 16px font-size on all mobile inputs to prevent automatic browser zoom-in.",
             "Resolved hydration mismatches in phone inputs by implementing mounting guards.",
-            "Standardized hero subtext to a 3-line rhythm, ensuring a stable layout during slide transitions.",
-            "Optimized hero copy phrases (e.g., 'international demand') for better visual balance.",
-            "Optimized tracking widget alignment to perfectly match CTA buttons on all screens.",
+            "Standardized hero subtext to a 3-line rhythm for visual stability.",
+            "Optimized tracking widget alignment to perfectly match CTA buttons.",
         ]
     },
     {
         version: "v1.1.0",
         date: "February 12, 2026",
+        time: "06:30 PM",
         title: "Premium Hero & Verification System",
         description: "Introduction of high-fidelity design elements and critical vehicle data validation features.",
         changes: [
-            "Launched Dynamic Dual-Theme Hero Slider with auto-switching lighting/dark modes.",
+            "Launched Dynamic Dual-Theme Hero Slider (Light/Dark mode).",
             "Implemented 17-point VIN syntax and checksum validation system.",
-            "Added NHTSA-powered vehicle decoding with mandatory profile confirmation step.",
-            "Integrated industrial-luxury brand showcase with Mercedes, BMW, and Toyota logos.",
+            "Added NHTSA-powered vehicle decoding with mandatory profile confirmation.",
+            "Integrated industrial-luxury brand showcase with automotive leader logos.",
         ]
     },
     {
         version: "v1.0.0",
         date: "February 11, 2026",
+        time: "12:00 PM",
         title: "Initial Platform Launch",
         description: "The core foundation of Hobort Auto Parts Express, establishing the intercontinental supply chain link.",
         changes: [
@@ -82,7 +111,7 @@ export default function UpdatesPage() {
                                         {update.version}
                                     </span>
                                     <span className="text-sm font-medium text-slate-400">
-                                        {update.date}
+                                        {update.date} • {update.time}
                                     </span>
                                 </div>
 
