@@ -268,16 +268,44 @@ export function HeroSlider() {
             </div>
 
             {/* Rebuilt Bottom Section (Branding & Navigation) */}
-            <div className="absolute bottom-0 left-0 w-full z-30 md:bg-primary-blue/5 md:backdrop-blur-sm border-t border-white/10 py-6 md:py-8">
-                <div className="container max-w-[1400px] mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="absolute bottom-0 left-0 w-full z-30 bg-slate-900/40 backdrop-blur-md border-t border-white/10 py-4 md:py-6">
+                <div className="max-w-[1400px] mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-8 md:gap-4">
 
-                    {/* Left side: Pagination/Progress Links (Desktop Only) */}
-                    <div className="hidden md:flex gap-6 lg:gap-8 min-w-[300px]">
+                    {/* Left side: Identify | Source | Deliver (High Fidelity) */}
+                    <div className="flex items-center gap-4 lg:gap-8 shrink-0">
+                        <div className="flex items-center gap-3 group cursor-default">
+                            <div className="w-8 h-8 rounded-full bg-primary-orange/20 flex items-center justify-center border border-primary-orange/30 transition-all group-hover:bg-primary-orange/30">
+                                <CheckCircle2 className="w-4 h-4 text-primary-orange" />
+                            </div>
+                            <span className="text-[10px] md:text-xs font-black tracking-[0.2em] uppercase text-white/90 group-hover:text-white transition-colors">Identify</span>
+                        </div>
+
+                        <div className="h-4 w-px bg-white/10" />
+
+                        <div className="flex items-center gap-3 group cursor-default">
+                            <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center border border-blue-500/30 transition-all group-hover:bg-blue-500/30">
+                                <Globe2 className="w-4 h-4 text-blue-400" />
+                            </div>
+                            <span className="text-[10px] md:text-xs font-black tracking-[0.2em] uppercase text-white/90 group-hover:text-white transition-colors">Source</span>
+                        </div>
+
+                        <div className="h-4 w-px bg-white/10" />
+
+                        <div className="flex items-center gap-3 group cursor-default">
+                            <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30 transition-all group-hover:bg-emerald-500/30">
+                                <Truck className="w-4 h-4 text-emerald-400" />
+                            </div>
+                            <span className="text-[10px] md:text-xs font-black tracking-[0.2em] uppercase text-white/90 group-hover:text-white transition-colors">Deliver</span>
+                        </div>
+                    </div>
+
+                    {/* Center Section: Modern Pagination Indicators */}
+                    <div className="flex items-center gap-6 lg:gap-8">
                         {slides.map((_, index) => (
                             <button
                                 key={index}
                                 onClick={() => goToSlide(index)}
-                                className="group/btn relative py-2"
+                                className="group/btn relative h-10 flex flex-col justify-center"
                                 onMouseEnter={() => setIsPaused(true)}
                                 onMouseLeave={() => setIsPaused(false)}
                             >
@@ -289,14 +317,14 @@ export function HeroSlider() {
                                         {(index + 1).toString().padStart(2, '0')}
                                     </div>
                                     <div className={cn(
-                                        "h-1 rounded-full transition-all duration-700",
-                                        currentSlide === index ? "w-12 bg-primary-orange" : "w-6 bg-slate-200 group-hover/btn:bg-slate-300"
+                                        "h-0.5 rounded-full transition-all duration-700",
+                                        currentSlide === index ? "w-10 bg-primary-orange" : "w-4 bg-slate-200/20 group-hover/btn:bg-slate-300/40"
                                     )} />
                                 </div>
                                 <AnimatePresence>
                                     {currentSlide === index && !isPaused && (
                                         <motion.div
-                                            className="absolute inset-x-0 -bottom-1 h-0.5 bg-primary-orange/30"
+                                            className="absolute bottom-0 left-0 right-0 h-[1px] bg-primary-orange/50"
                                             initial={{ scaleX: 0 }}
                                             animate={{ scaleX: 1 }}
                                             transition={{ duration: 8, ease: "linear" }}
@@ -310,15 +338,15 @@ export function HeroSlider() {
 
                     {/* Right side: Premium Brand Logos with Mobile Marquee */}
                     <div className="flex items-center gap-6 w-full md:w-auto overflow-hidden">
-                        <div className="hidden sm:flex flex-col items-end mr-4 shrink-0">
-                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-0.5">Authentic</span>
-                            <span className="text-xs font-bold text-white tracking-wider whitespace-nowrap">Brand Partners</span>
+                        <div className="hidden xl:flex flex-col items-end mr-2 shrink-0">
+                            <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-slate-500 mb-0.5">Authentic</span>
+                            <span className="text-[10px] font-black text-white/90 tracking-widest uppercase whitespace-nowrap">Brand Partners</span>
                         </div>
 
-                        {/* Logo Row - Conditional Marquee on Mobile */}
+                        {/* Logo Container - Adjusted for smaller, sharper look */}
                         <div className="relative flex-1 md:flex-none overflow-hidden">
                             <motion.div
-                                className="flex items-center gap-4 md:gap-8"
+                                className="flex items-center gap-4 md:gap-6"
                                 animate={isMobile ? {
                                     x: [0, -1000],
                                 } : {}}
@@ -331,10 +359,10 @@ export function HeroSlider() {
                                     },
                                 } : {}}
                             >
-                                {/* Double the logos on mobile for seamless loop */}
+                                {/* Double logos on mobile for seamless loop */}
                                 {[...BRANDS, ...(isMobile ? BRANDS : [])].map((brand, idx) => (
                                     <div key={`${brand.name}-${idx}`} className="flex flex-col items-center group/brand relative shrink-0">
-                                        <div className="h-10 md:h-12 w-20 md:w-24 relative grayscale opacity-40 group-hover/brand:grayscale-0 group-hover/brand:opacity-100 transition-all duration-500 bg-white/5 backdrop-blur-sm border border-white/10 rounded-[2rem] p-1.5 md:p-2">
+                                        <div className="h-8 md:h-10 w-16 md:w-20 relative grayscale opacity-40 group-hover/brand:grayscale-0 group-hover/brand:opacity-100 transition-all duration-500 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-1.5 md:p-2">
                                             <Image
                                                 src={brand.src}
                                                 alt={brand.name}
@@ -342,7 +370,6 @@ export function HeroSlider() {
                                                 className="object-contain"
                                             />
                                         </div>
-                                        <div className="hidden md:block h-0.5 w-0 bg-primary-orange group-hover/brand:w-full transition-all duration-500 absolute -bottom-2" />
                                     </div>
                                 ))}
                             </motion.div>
