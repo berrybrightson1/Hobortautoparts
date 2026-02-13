@@ -47,7 +47,7 @@ const COMMON_ENGINES = ["2.0L I4", "2.4L I4", "2.5L I4", "3.0L V6", "3.5L V6", "
 const COMMON_TRIMS = ["Base", "Standard", "Premium", "Luxury", "Sport", "LE", "XLE", "SE", "XSE", "Limited", "Platinum", "AMG Line", "M Sport"]
 
 export default function QuotePage() {
-    const { user } = useAuth()
+    const { user, loading: authLoading } = useAuth()
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(false)
     const [isSubmitted, setIsSubmitted] = useState(false)
@@ -128,7 +128,16 @@ export default function QuotePage() {
         event.preventDefault()
         setIsLoading(true)
 
-        if (!user) {
+        if (authLoading) return; // Wait for auth to resolve
+
+        let currentUser = user;
+        if (!currentUser) {
+            // Double check session in case state hasn't updated
+            const { data: { session } } = await supabase.auth.getSession();
+            currentUser = session?.user || null;
+        }
+
+        if (!currentUser) {
             toast.error("Please sign in or create an account to submit a request.", {
                 description: "This ensures you can track your request status."
             })
@@ -142,7 +151,7 @@ export default function QuotePage() {
             const { error } = await supabase
                 .from('sourcing_requests')
                 .insert({
-                    user_id: user.id,
+                    user_id: currentUser.id,
                     vin: formData.vin,
                     part_name: (document.getElementById('parts') as HTMLTextAreaElement).value,
                     vehicle_info: vehicle_info,
@@ -184,21 +193,28 @@ export default function QuotePage() {
                                 </div>
                                 <div className="relative z-10 space-y-4">
                                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-orange/10 text-primary-orange text-[10px] font-medium uppercase tracking-widest">
-                                        <ShieldCheck className="h-3 w-3" /> Important Step
+                                        <ShieldCheck className="h-3 w-3" /> {user ? "Next Steps" : "Important Step"}
                                     </div>
                                     <h3 className="text-2xl font-semibold text-primary-blue leading-tight">
-                                        Create an account to <span className="text-primary-orange">track your order</span> and save this request.
+                                        {user ? (
+                                            <>Track this request in your <span className="text-primary-orange">Dashboard</span> profile.</>
+                                        ) : (
+                                            <>Create an account to <span className="text-primary-orange">track your order</span> and save this request.</>
+                                        )}
                                     </h3>
                                     <p className="text-primary-blue/70 font-medium">
-                                        Join over 5,000 auto professionals getting live updates on their sourcing requests.
+                                        {user
+                                            ? "You will receive notifications as soon as an agent updates your quote status."
+                                            : "Join over 5,000 auto professionals getting live updates on their sourcing requests."
+                                        }
                                     </p>
                                     <div className="pt-4 flex flex-col sm:flex-row gap-4">
-                                        <Link href="/signup" className="flex-1">
+                                        <Link href={user ? "/portal" : "/signup"} className="flex-1 w-full">
                                             <Button className="w-full bg-primary-orange hover:bg-orange-600 text-white font-semibold h-14 rounded-xl shadow-lg shadow-primary-orange/20 text-lg transition-transform hover:scale-[1.02] active:scale-[0.98]">
-                                                Create Account <ArrowRight className="ml-2 h-5 w-5" />
+                                                {user ? "Go to Dashboard" : "Create Account"} <ArrowRight className="ml-2 h-5 w-5" />
                                             </Button>
                                         </Link>
-                                        <Link href="/" className="flex-1">
+                                        <Link href="/" className="flex-1 w-full">
                                             <Button variant="outline" className="w-full border-primary-blue/10 text-primary-blue/60 hover:text-primary-blue hover:bg-primary-blue/5 font-medium h-14 rounded-xl">
                                                 Back to Home
                                             </Button>
@@ -229,19 +245,19 @@ export default function QuotePage() {
     }
 
     return (
-        <div className="min-h-screen bg-white flex flex-col items-center justify-center p-4">
+        <div className="min-h-screen bg-white flex flex-col items-center justify-start p-4 pt-20 pb-10 overflow-y-auto">
             <div className="w-full max-w-2xl animate-in fade-in duration-500">
-                <div className="text-center mb-12 space-y-2 relative">
+                <div className="text-center mb-10 md:mb-12 space-y-2 relative px-4">
                     <div className="flex items-center justify-center gap-4">
                         <Link href="/" className="group p-2 rounded-full hover:bg-primary-blue/5 transition-all outline-none">
                             <ArrowLeft className="h-6 w-6 text-primary-blue/30 group-hover:text-primary-blue group-hover:-translate-x-1 transition-all" />
                         </Link>
-                        <h1 className="text-4xl font-semibold text-primary-blue tracking-tighter">New Sourcing Request</h1>
+                        <h1 className="text-2xl md:text-4xl font-semibold text-primary-blue tracking-tighter">New Sourcing Request</h1>
                     </div>
-                    <p className="text-primary-blue/60 font-medium">Get a premium price estimate in record time.</p>
+                    <p className="text-primary-blue/60 font-medium text-sm md:text-base">Get a premium price estimate in record time.</p>
                 </div>
 
-                <Card className="border-primary-blue/10 shadow-2xl shadow-primary-blue/5 overflow-hidden rounded-3xl relative">
+                <Card className="border-primary-blue/10 shadow-2xl shadow-primary-blue/5 overflow-hidden rounded-3xl relative mx-auto w-full">
                     {/* Progress Indicator */}
                     <div className="absolute top-0 left-0 right-0 h-1.5 bg-primary-blue/5 flex">
                         <div
@@ -250,27 +266,27 @@ export default function QuotePage() {
                         />
                     </div>
 
-                    <CardHeader className="bg-primary-blue/5 border-b border-primary-blue/5 pb-8 pt-12 px-10">
+                    <CardHeader className="bg-primary-blue/5 border-b border-primary-blue/5 pb-6 pt-10 px-6 md:px-10">
                         <div className="flex justify-between items-center mb-2">
                             <span className="text-[10px] font-semibold text-primary-orange uppercase tracking-[0.2em]">Step {step} of 2</span>
                             <span className="text-[10px] font-semibold text-primary-blue/40 uppercase tracking-[0.2em]">{step === 1 ? "Vehicle Details" : "Parts Specification"}</span>
                         </div>
-                        <div className="flex items-center gap-5">
-                            <div className="h-14 w-14 rounded-2xl bg-primary-blue text-white flex items-center justify-center shadow-xl shadow-primary-blue/20">
-                                {step === 1 ? <Car className="h-7 w-7" /> : <Package className="h-7 w-7" />}
+                        <div className="flex items-center gap-4 md:gap-5">
+                            <div className="h-12 w-12 md:h-14 md:w-14 rounded-2xl bg-primary-blue text-white flex items-center justify-center shadow-xl shadow-primary-blue/20 shrink-0">
+                                {step === 1 ? <Car className="h-6 w-6 md:h-7 md:w-7" /> : <Package className="h-6 w-6 md:h-7 md:w-7" />}
                             </div>
                             <div>
-                                <CardTitle className="text-2xl font-semibold text-primary-blue tracking-tight">
+                                <CardTitle className="text-xl md:text-2xl font-semibold text-primary-blue tracking-tight">
                                     {step === 1 ? "Vehicle Details" : "Parts Specification"}
                                 </CardTitle>
-                                <CardDescription className="text-primary-blue/60 font-medium text-sm">
+                                <CardDescription className="text-primary-blue/60 font-medium text-xs md:text-sm">
                                     {step === 1 ? "Every detail counts for an accurate quote." : "List exactly what you need."}
                                 </CardDescription>
                             </div>
                         </div>
                     </CardHeader>
 
-                    <CardContent className="p-10">
+                    <CardContent className="p-5 md:p-10">
                         <form onSubmit={onSubmit} className="space-y-8">
                             {step === 1 ? (
                                 <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
@@ -354,17 +370,17 @@ export default function QuotePage() {
                                         <motion.div
                                             initial={{ opacity: 0, height: 0 }}
                                             animate={{ opacity: 1, height: "auto" }}
-                                            className="bg-primary-blue/5 rounded-2xl p-6 border border-primary-blue/10 overflow-hidden"
+                                            className="bg-primary-blue/5 rounded-2xl p-4 md:p-6 border border-primary-blue/10 overflow-hidden"
                                         >
-                                            <div className="flex items-start gap-4">
-                                                <div className="h-10 w-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500 border border-emerald-500/20">
+                                            <div className="flex flex-col sm:flex-row items-start gap-4">
+                                                <div className="h-10 w-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500 border border-emerald-500/20 shrink-0">
                                                     <ShieldCheck className="h-5 w-5" />
                                                 </div>
-                                                <div className="flex-1">
-                                                    <h4 className="text-xs font-bold uppercase tracking-widest text-primary-blue/40 mb-1">Identified Vehicle Profile</h4>
-                                                    <p className="text-lg font-bold text-primary-blue leading-tight mb-4">
+                                                <div className="flex-1 min-w-0">
+                                                    <h4 className="text-[10px] font-bold uppercase tracking-widest text-primary-blue/40 mb-1">Identified Vehicle Profile</h4>
+                                                    <p className="text-base md:text-lg font-bold text-primary-blue leading-tight mb-4 break-words">
                                                         {formData.year} {formData.make} {formData.model}
-                                                        <span className="block text-sm font-medium text-primary-blue/60 mt-0.5">{formData.submodel} • {formData.engine}</span>
+                                                        <span className="block text-xs md:text-sm font-medium text-primary-blue/60 mt-1">{formData.submodel} • {formData.engine}</span>
                                                     </p>
 
                                                     {!isVehicleConfirmed ? (

@@ -11,8 +11,11 @@ export const metadata: Metadata = {
   title: "Hobort Auto Parts Express",
   description: "Ghana's specialized Request for Quote (RFQ) platform for US auto parts.",
   icons: {
-    icon: "/Asset 10@288x.png",
-    apple: "/Asset 10@288x.png",
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png", sizes: "32x32" },
+    ],
+    apple: "/icon.png",
   },
   openGraph: {
     title: "Hobort Auto Parts Express",
