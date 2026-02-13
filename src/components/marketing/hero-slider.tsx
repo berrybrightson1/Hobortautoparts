@@ -67,11 +67,29 @@ const slides: Slide[] = [
     },
 ]
 
+const BRANDS = [
+    { name: "summit", src: "/summit.png" },
+    { name: "rockland", src: "/rockland.png" },
+    { name: "autozone", src: "/autozone.png" },
+    { name: "advance", src: "/advance.png" },
+    { name: "autopart", src: "/autopart.png" },
+    { name: "ebay", src: "/ebay.png" }
+]
+
 export function HeroSlider() {
     const [currentSlide, setCurrentSlide] = useState(0)
     const [direction, setDirection] = useState(0)
+    const [isPaused, setIsPaused] = useState(false)
+    const [isMobile, setIsMobile] = useState(false)
 
-    // Safety check: Reset index if it's out of bounds (useful during development/HMR)
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768)
+        checkMobile()
+        window.addEventListener('resize', checkMobile)
+        return () => window.removeEventListener('resize', checkMobile)
+    }, [])
+
+    // Safety check: Reset index if it's out of bounds
     if (currentSlide >= slides.length) {
         setCurrentSlide(0)
     }
@@ -99,19 +117,24 @@ export function HeroSlider() {
         })
     }
 
+    const goToSlide = (index: number) => {
+        setDirection(index > currentSlide ? 1 : -1)
+        setCurrentSlide(index)
+    }
+
     const paginate = (newDirection: number) => {
         setDirection(newDirection)
         setCurrentSlide((prev) => (prev + newDirection + slides.length) % slides.length)
     }
 
     useEffect(() => {
+        if (isPaused) return
         const timer = setInterval(() => {
             paginate(1)
         }, 8000)
         return () => clearInterval(timer)
-    }, [])
+    }, [isPaused, currentSlide])
 
-    // Safety fallback for current slide
     const current = slides[currentSlide] || slides[0]
 
     return (
@@ -139,7 +162,7 @@ export function HeroSlider() {
                                 className="object-cover object-center"
                                 priority
                             />
-                            {/* Gradient Overlays matching prototype */}
+                            {/* Gradient Overlays */}
                             <div className="absolute inset-0 bg-gradient-to-r from-slate-900/95 via-slate-900/70 to-slate-900/30" />
                             <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-slate-900/20" />
                         </>
@@ -153,7 +176,6 @@ export function HeroSlider() {
             </div>
 
             <div className="relative z-20 max-w-[1400px] mx-auto px-6 h-full grid lg:grid-cols-2 gap-12 items-center pt-32 pb-40 lg:py-0 min-h-[100dvh]">
-
                 {/* Text Content */}
                 <div className="flex flex-col justify-center space-y-8">
                     <motion.div
@@ -162,11 +184,9 @@ export function HeroSlider() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2, duration: 0.8, ease: "easeOut" }}
                     >
-                        {/* Premium Hero Badge (Redesigned) */}
+                        {/* Premium Hero Badge */}
                         <div className="relative inline-flex items-center gap-4 mb-10 group cursor-default">
-                            {/* Accent Line - Adjusted for flush alignment */}
                             <div className="absolute -left-4 w-2 h-[1px] bg-primary-orange/50 group-hover:w-4 group-hover:bg-primary-orange transition-all duration-500"></div>
-
                             <div className="flex items-center gap-3">
                                 <div className="relative">
                                     <div className="w-1.5 h-1.5 rounded-full bg-primary-orange shadow-[0_0_10px_rgba(254,131,35,0.8)]"></div>
@@ -176,24 +196,21 @@ export function HeroSlider() {
                                     {current.badge}
                                 </span>
                             </div>
-
-                            {/* Glass background elements */}
-                            <div className="absolute -inset-x-4 -inset-y-2 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-sm -z-10"></div>
                         </div>
 
-                        {/* Headline - One Line Constraint */}
+                        {/* Headline */}
                         <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-extrabold tracking-tighter text-white drop-shadow-2xl mb-6 font-display leading-[1.1]">
                             {current.title}
                         </h1>
 
-                        {/* Subtext - Two Line Consistency */}
+                        {/* Subtext */}
                         <div className="pl-6 border-l-4 border-primary-orange/50 mb-8">
                             <p className="text-base md:text-lg text-slate-300 max-w-xl font-medium leading-relaxed min-h-[4.5rem] md:min-h-[5.25rem]">
                                 {current.description}
                             </p>
                         </div>
 
-                        {/* Buttons: Side-by-Side Mobile Layout */}
+                        {/* Buttons */}
                         <div className="flex flex-row gap-3 md:gap-5 w-full sm:w-auto pt-4">
                             <Link href="/signup" className="flex-1 sm:flex-none">
                                 <Button className="w-full h-14 md:h-16 px-6 md:px-10 rounded-full bg-primary-orange hover:bg-orange-600 text-white font-bold text-sm md:text-lg shadow-[0_0_40px_-10px_rgba(249,115,22,0.3)] hover:shadow-orange-500/40 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2 group whitespace-nowrap border-none">
@@ -221,14 +238,13 @@ export function HeroSlider() {
 
                 {/* Right Visual (Desktop Only) */}
                 <div className="hidden lg:flex relative h-full min-h-[600px] items-center justify-center pointer-events-none select-none px-10">
-                    {/* Orbital System */}
                     <div className="relative w-[500px] h-[500px]">
                         <div className="absolute inset-0 border border-white/5 rounded-full animate-spin-slow"></div>
                         <div className="absolute inset-12 border border-white/5 rounded-full animate-spin-reverse opacity-50"></div>
                         <div className="absolute inset-24 border border-dashed border-white/10 rounded-full animate-spin-slow opacity-30"></div>
 
-                        {/* Floating Card 1 */}
-                        <div className="absolute top-[10%] right-[10%] bg-white/10 backdrop-blur-md border border-white/20 p-4 pr-6 rounded-2xl flex items-center gap-4 animate-bounce hover:scale-105 transition-transform cursor-default pointer-events-auto">
+                        {/* Floating Cards */}
+                        <div className="absolute top-[10%] right-[10%] bg-white/10 backdrop-blur-md border border-white/20 p-4 pr-6 rounded-2xl flex items-center gap-4 animate-bounce">
                             <div className="h-10 w-10 bg-emerald-500/20 rounded-full flex items-center justify-center text-emerald-400 border border-emerald-500/20">
                                 <ShieldCheck className="w-5 h-5" />
                             </div>
@@ -238,8 +254,7 @@ export function HeroSlider() {
                             </div>
                         </div>
 
-                        {/* Floating Card 2 */}
-                        <div className="absolute bottom-[20%] left-[0%] bg-white/10 backdrop-blur-md border border-white/20 p-4 pr-6 rounded-2xl flex items-center gap-4 animate-bounce hover:scale-105 transition-transform cursor-default pointer-events-auto" style={{ animationDelay: '1s' }}>
+                        <div className="absolute bottom-[20%] left-[0%] bg-white/10 backdrop-blur-md border border-white/20 p-4 pr-6 rounded-2xl flex items-center gap-4 animate-bounce" style={{ animationDelay: '1s' }}>
                             <div className="h-10 w-10 bg-primary-orange/20 rounded-full flex items-center justify-center text-primary-orange border border-primary-orange/20">
                                 <Truck className="w-5 h-5" />
                             </div>
@@ -252,92 +267,85 @@ export function HeroSlider() {
                 </div>
             </div>
 
-            {/* Rebuilt Bottom Section */}
-            <div className="absolute bottom-0 left-0 w-full z-20 pb-8 md:pb-12 border-t border-white/5 bg-slate-900/20 backdrop-blur-sm">
-                <div className="max-w-[1400px] mx-auto px-6 h-full flex flex-col md:flex-row justify-between items-center gap-6 pt-8">
+            {/* Rebuilt Bottom Section (Branding & Navigation) */}
+            <div className="absolute bottom-0 left-0 w-full z-30 md:bg-primary-blue/5 md:backdrop-blur-sm border-t border-white/10 py-6 md:py-8">
+                <div className="container max-w-[1400px] mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
 
-                    {/* Left side: Identify, Source, Deliver (Minimal) */}
-                    <div className="flex items-center gap-6 md:gap-10">
-                        <div className="flex items-center gap-2 group cursor-default">
-                            <div className="w-8 h-8 rounded-full bg-primary-orange/10 flex items-center justify-center border border-primary-orange/20 transition-all group-hover:bg-primary-orange/20">
-                                <CheckCircle2 className="w-4 h-4 text-primary-orange" />
-                            </div>
-                            <span className="text-xs md:text-sm font-bold tracking-widest uppercase text-slate-400 group-hover:text-white transition-colors">Identify</span>
-                        </div>
-                        <div className="hidden sm:block w-px h-4 bg-white/10"></div>
-                        <div className="flex items-center gap-2 group cursor-default">
-                            <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center border border-blue-500/20 transition-all group-hover:bg-blue-500/20">
-                                <Globe2 className="w-4 h-4 text-blue-400" />
-                            </div>
-                            <span className="text-xs md:text-sm font-bold tracking-widest uppercase text-slate-400 group-hover:text-white transition-colors">Source</span>
-                        </div>
-                        <div className="hidden sm:block w-px h-4 bg-white/10"></div>
-                        <div className="flex items-center gap-2 group cursor-default">
-                            <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20 transition-all group-hover:bg-emerald-500/20">
-                                <PackageCheck className="w-4 h-4 text-emerald-400" />
-                            </div>
-                            <span className="text-xs md:text-sm font-bold tracking-widest uppercase text-slate-400 group-hover:text-white transition-colors">Deliver</span>
-                        </div>
+                    {/* Left side: Pagination/Progress Links (Desktop Only) */}
+                    <div className="hidden md:flex gap-6 lg:gap-8 min-w-[300px]">
+                        {slides.map((_, index) => (
+                            <button
+                                key={index}
+                                onClick={() => goToSlide(index)}
+                                className="group/btn relative py-2"
+                                onMouseEnter={() => setIsPaused(true)}
+                                onMouseLeave={() => setIsPaused(false)}
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className={cn(
+                                        "text-[10px] font-black tracking-tighter transition-all duration-500",
+                                        currentSlide === index ? "text-primary-blue scale-110" : "text-slate-400 opacity-40 group-hover/btn:opacity-100"
+                                    )}>
+                                        {(index + 1).toString().padStart(2, '0')}
+                                    </div>
+                                    <div className={cn(
+                                        "h-1 rounded-full transition-all duration-700",
+                                        currentSlide === index ? "w-12 bg-primary-orange" : "w-6 bg-slate-200 group-hover/btn:bg-slate-300"
+                                    )} />
+                                </div>
+                                <AnimatePresence>
+                                    {currentSlide === index && !isPaused && (
+                                        <motion.div
+                                            className="absolute inset-x-0 -bottom-1 h-0.5 bg-primary-orange/30"
+                                            initial={{ scaleX: 0 }}
+                                            animate={{ scaleX: 1 }}
+                                            transition={{ duration: 8, ease: "linear" }}
+                                            style={{ originX: 0 }}
+                                        />
+                                    )}
+                                </AnimatePresence>
+                            </button>
+                        ))}
                     </div>
 
-                    {/* Enhanced Slider Indicators (Centered on Mobile, In-between on MD) */}
-                    <div className="flex gap-4 items-center">
-                        <div className="flex gap-2.5">
-                            {slides.map((_, index) => (
-                                <button
-                                    key={index}
-                                    onClick={() => {
-                                        setDirection(index > currentSlide ? 1 : -1)
-                                        setCurrentSlide(index)
-                                    }}
-                                    aria-label={`Go to slide ${index + 1}`}
-                                    className="relative h-1.5 transition-all duration-500 overflow-hidden rounded-full bg-white/10 hover:bg-white/20"
-                                    style={{ width: index === currentSlide ? '40px' : '12px' }}
-                                >
-                                    <AnimatePresence initial={false}>
-                                        {index === currentSlide && (
-                                            <motion.div
-                                                className="absolute inset-0 bg-primary-orange"
-                                                initial={{ scaleX: 0 }}
-                                                animate={{ scaleX: 1 }}
-                                                transition={{ duration: 8, ease: "linear" }}
-                                                style={{ originX: 0 }}
-                                            />
-                                        )}
-                                    </AnimatePresence>
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Right side: Premium Brand Logos */}
-                    <div className="flex items-center gap-8">
-                        <div className="hidden sm:flex flex-col items-end mr-2">
-                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-1">Authentic</span>
+                    {/* Right side: Premium Brand Logos with Mobile Marquee */}
+                    <div className="flex items-center gap-6 w-full md:w-auto overflow-hidden">
+                        <div className="hidden sm:flex flex-col items-end mr-4 shrink-0">
+                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-0.5">Authentic</span>
                             <span className="text-xs font-bold text-white tracking-wider whitespace-nowrap">Brand Partners</span>
                         </div>
-                        <div className="flex items-center gap-4 md:gap-6 overflow-hidden">
-                            {/* Brand Logos (Real Logos with Premium Styling) */}
-                            {[
-                                { name: "summit", src: "/summit.png" },
-                                { name: "rockland", src: "/rockland.png" },
-                                { name: "autozone", src: "/autozone.png" },
-                                { name: "advance", src: "/advance.png" },
-                                { name: "autopart", src: "/autopart.png" },
-                                { name: "ebay", src: "/ebay.png" }
-                            ].map((brand) => (
-                                <div key={brand.name} className="flex flex-col items-center group/brand relative">
-                                    <div className="h-12 md:h-14 w-24 md:w-28 relative grayscale opacity-40 group-hover/brand:grayscale-0 group-hover/brand:opacity-100 transition-all duration-500 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-1.5 md:p-2">
-                                        <Image
-                                            src={brand.src}
-                                            alt={brand.name}
-                                            fill
-                                            className="object-contain"
-                                        />
+
+                        {/* Logo Row - Conditional Marquee on Mobile */}
+                        <div className="relative flex-1 md:flex-none overflow-hidden">
+                            <motion.div
+                                className="flex items-center gap-4 md:gap-8"
+                                animate={isMobile ? {
+                                    x: [0, -1000],
+                                } : {}}
+                                transition={isMobile ? {
+                                    x: {
+                                        repeat: Infinity,
+                                        repeatType: "loop",
+                                        duration: 25,
+                                        ease: "linear",
+                                    },
+                                } : {}}
+                            >
+                                {/* Double the logos on mobile for seamless loop */}
+                                {[...BRANDS, ...(isMobile ? BRANDS : [])].map((brand, idx) => (
+                                    <div key={`${brand.name}-${idx}`} className="flex flex-col items-center group/brand relative shrink-0">
+                                        <div className="h-10 md:h-12 w-20 md:w-24 relative grayscale opacity-40 group-hover/brand:grayscale-0 group-hover/brand:opacity-100 transition-all duration-500 bg-white/5 backdrop-blur-sm border border-white/10 rounded-[2rem] p-1.5 md:p-2">
+                                            <Image
+                                                src={brand.src}
+                                                alt={brand.name}
+                                                fill
+                                                className="object-contain"
+                                            />
+                                        </div>
+                                        <div className="hidden md:block h-0.5 w-0 bg-primary-orange group-hover/brand:w-full transition-all duration-500 absolute -bottom-2" />
                                     </div>
-                                    <div className="h-0.5 w-0 bg-primary-orange group-hover/brand:w-full transition-all duration-500 absolute -bottom-2" />
-                                </div>
-                            ))}
+                                ))}
+                            </motion.div>
                         </div>
                     </div>
 
