@@ -65,7 +65,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <>
             {/* Logo */}
             <div className="p-6 border-b border-slate-100">
-                <Link href="/portal/admin" className="block transition-all hover:scale-105 active:scale-95">
+                <Link href="/" className="block transition-all hover:scale-105 active:scale-95">
                     <img src="/Hobort auto express logo Main.png" alt="Hobort" className="h-12 w-auto" />
                 </Link>
             </div>
@@ -106,7 +106,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 </div>
                 <Button
                     variant="ghost"
-                    className="w-full justify-start gap-3 px-4 text-red-500 hover:bg-red-50 hover:text-red-600 rounded-2xl transition-all group"
+                    className="w-full justify-start gap-3 px-4 h-12 text-red-500 hover:bg-red-50 hover:text-red-600 rounded-2xl transition-all group mt-2"
                     onClick={() => {
                         setSidebarOpen(false)
                         setShowLogoutDialog(true)
@@ -143,6 +143,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         <button
                             onClick={() => setSidebarOpen(true)}
                             className="lg:hidden p-2 hover:bg-slate-100 rounded-xl text-slate-600 transition-all"
+                            aria-label="Toggle Sidebar"
+                            title="Toggle Sidebar"
                         >
                             <Menu className="h-6 w-6" />
                         </button>

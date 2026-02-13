@@ -277,13 +277,13 @@ export default function QuotePage() {
                                     <div className="space-y-6">
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <div className="space-y-2.5 relative">
-                                                <Label htmlFor="vin" className="ml-1 text-[10px] font-medium text-primary-blue/80 uppercase tracking-widest">VIN Number</Label>
+                                                <Label htmlFor="vin" className="ml-1 text-[10px] font-medium text-primary-blue/80 uppercase tracking-widest leading-none mb-1">VIN Number</Label>
                                                 <div className="relative">
                                                     <Input
                                                         id="vin"
                                                         placeholder="17-CHARACTER VIN"
                                                         className={cn(
-                                                            "h-14 pr-12 rounded-2xl border-primary-blue/10 bg-primary-blue/5 focus:bg-white transition-all font-mono uppercase font-semibold placeholder:normal-case placeholder:font-medium",
+                                                            "h-14 pr-12 rounded-2xl border-primary-blue/10 bg-primary-blue/5 focus:bg-white transition-all font-mono uppercase font-semibold placeholder:normal-case placeholder:font-medium text-sm md:text-base",
                                                             vinError && "border-red-500 bg-red-50"
                                                         )}
                                                         required
@@ -406,19 +406,19 @@ export default function QuotePage() {
                                             required
                                         />
                                     </div>
-                                    <div className="flex gap-4">
+                                    <div className="flex flex-col sm:flex-row gap-4">
                                         <Button
                                             type="button"
                                             variant="outline"
                                             onClick={() => setStep(1)}
-                                            className="h-16 px-8 rounded-2xl border-primary-blue/10 text-primary-blue font-semibold hover:bg-primary-blue/5"
+                                            className="h-16 px-8 rounded-2xl border-primary-blue/10 text-primary-blue font-semibold hover:bg-primary-blue/5 order-2 sm:order-1"
                                         >
                                             <ArrowLeft className="mr-2 h-5 w-5" /> Back
                                         </Button>
                                         <Button
                                             type="submit"
                                             disabled={isLoading}
-                                            className="flex-1 bg-primary-blue hover:bg-hobort-blue-dark text-white font-semibold h-16 rounded-2xl shadow-2xl shadow-primary-blue/20 text-lg transition-all hover:scale-[1.01] active:scale-[0.99]"
+                                            className="flex-1 bg-primary-blue hover:bg-hobort-blue-dark text-white font-semibold h-16 rounded-2xl shadow-2xl shadow-primary-blue/20 text-lg transition-all hover:scale-[1.01] active:scale-[0.99] order-1 sm:order-2"
                                         >
                                             {isLoading ? (
                                                 <Loader2 className="mr-2 h-6 w-6 animate-spin" />

@@ -12,6 +12,7 @@ const NAV_LINKS = [
     { name: "Home", href: "/" },
     { name: "About", href: "/about" },
     { name: "Services", href: "/services" },
+    { name: "Pricing", href: "/#pricing" },
     { name: "Contact", href: "/contact" },
 ]
 
@@ -80,7 +81,7 @@ export function Navbar() {
                         {isAuthenticated ? (
                             <Link href="/portal" className="text-sm font-medium text-primary-orange transition-colors flex items-center gap-2">
                                 <User className="h-4 w-4" />
-                                Dashboard
+                                {profile?.full_name ? `${profile.full_name.split(' ')[0]}'s Dashboard` : 'Dashboard'}
                             </Link>
                         ) : (
                             AUTH_LINKS.map((link) => (
