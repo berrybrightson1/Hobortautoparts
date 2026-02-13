@@ -29,22 +29,25 @@ export default function AuthLayout({
             </div>
 
             {/* Right side: Branding area */}
-            <div className="hidden lg:block relative bg-white overflow-hidden border-l border-slate-100">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary-blue/5 via-transparent to-primary-orange/5 z-10" />
+            <div className="hidden lg:block relative bg-slate-900 overflow-hidden border-l border-slate-100">
+                {/* Background Image with Parallax-ready feel */}
+                <div
+                    className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-[10s] hover:scale-110 lg:scale-105"
+                    style={{ backgroundImage: "url('/auth-customer.webp')" }}
+                />
 
-                {/* Image Placeholder */}
-                <div className="absolute inset-0 flex items-center justify-center bg-slate-50">
-                    <span className="text-primary-blue/10 font-black text-4xl uppercase tracking-tighter">Image Placeholder</span>
-                </div>
+                {/* Rich Gradient Overlay for readability */}
+                <div className="absolute inset-0 bg-gradient-to-t from-primary-blue via-primary-blue/40 to-transparent z-10 opacity-90" />
+                <div className="absolute inset-0 bg-gradient-to-br from-primary-blue/20 via-transparent to-primary-orange/20 z-10" />
 
                 <div className="absolute inset-0 z-20 p-16 flex flex-col justify-end">
                     <div className="space-y-4 max-w-lg">
-                        <div className="h-1.5 w-12 bg-primary-orange rounded-full" />
-                        <h2 className="text-4xl font-black text-primary-blue leading-tight tracking-tight">
+                        <div className="h-1.5 w-12 bg-primary-orange rounded-full shadow-lg" />
+                        <h2 className="text-4xl font-black text-white leading-tight tracking-tight drop-shadow-sm">
                             The Hub for Premium <br />
                             <span className="text-primary-orange">Auto Parts Logistics.</span>
                         </h2>
-                        <p className="text-primary-blue/70 font-bold text-lg leading-relaxed">
+                        <p className="text-white/80 font-bold text-lg leading-relaxed max-w-md">
                             Efficient sourcing, real-time tracking, and seamless logistics for auto parts worldwide.
                         </p>
                     </div>
