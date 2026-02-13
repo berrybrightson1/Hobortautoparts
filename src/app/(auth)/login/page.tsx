@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -12,6 +12,7 @@ import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import { supabase } from "@/lib/supabase"
 import { usePortalStore } from "@/lib/store"
+import { useAuth } from "@/components/auth/auth-provider"
 
 export default function LoginPage() {
     const router = useRouter()
@@ -21,6 +22,19 @@ export default function LoginPage() {
     const [activeRole, setActiveRole] = useState("customer")
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const { profile, loading } = useAuth()
+
+    // Auto-redirect once AuthProvider fetches the role
+    useEffect(() => {
+        if (profile?.role) {
+            const userRole = profile.role
+            setRole(userRole)
+
+            if (userRole === 'admin') router.push("/portal/admin")
+            else if (userRole === 'agent') router.push("/portal/agent")
+            else router.push("/portal/customer")
+        }
+    }, [profile, router, setRole])
 
     async function onSubmit(event: React.SyntheticEvent) {
         event.preventDefault()
@@ -34,27 +48,20 @@ export default function LoginPage() {
 
             if (error) throw error
 
-            // Fetch profile to determine role
-            const { data: profile, error: profileError } = await supabase
-                .from('profiles')
-                .select('role')
-                .eq('id', data.user.id)
-                .single()
-
-            if (profileError) throw profileError
-
-            const userRole = profile.role
-            setRole(userRole)
-            toast.success("Welcome back!", {
-                description: `Successfully signed in as ${userRole}.`
+            // Wait a brief moment for the AuthProvider to catch the session change
+            // This prevents the 'AbortError' collision by letting the provider lead
+            toast.success("Identity verified", {
+                description: "Synchronizing your portal access..."
             })
 
-            // Redirect based on role
-            if (userRole === 'admin') router.push("/portal/admin")
-            else if (userRole === 'agent') router.push("/portal/agent")
-            else router.push("/portal/customer")
-
         } catch (error: any) {
+            // Silently handle abort errors (common during rapid navigation or provider takeover)
+            if (error.name === 'AbortError') {
+                console.log("Sign-in fetch was naturally pre-empted by AuthProvider.");
+                return;
+            }
+
+            console.error("Sign-in process failed:", error);
             toast.error("Sign in failed", {
                 description: error.message || "Please check your credentials and try again."
             })
