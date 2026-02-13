@@ -28,13 +28,23 @@ export default function LoginPage() {
     useEffect(() => {
         if (profile?.role) {
             const userRole = profile.role
+
+            // SECURITY: Ensure the user's role matches the portal they are trying to access
+            if (userRole !== activeRole) {
+                toast.error("Portal access denied", {
+                    description: `This account is registered as a ${userRole}. Please select the ${userRole.toUpperCase()} portal.`
+                })
+                setIsLoading(false)
+                return
+            }
+
             setRole(userRole)
 
             if (userRole === 'admin') router.push("/portal/admin")
             else if (userRole === 'agent') router.push("/portal/agent")
             else router.push("/portal/customer")
         }
-    }, [profile, router, setRole])
+    }, [profile, router, setRole, activeRole])
 
     async function onSubmit(event: React.SyntheticEvent) {
         event.preventDefault()
