@@ -309,16 +309,10 @@ export function HeroSlider() {
                                 onMouseEnter={() => setIsPaused(true)}
                                 onMouseLeave={() => setIsPaused(false)}
                             >
-                                <div className="flex items-center gap-3">
-                                    <div className={cn(
-                                        "text-[10px] font-black tracking-tighter transition-all duration-500",
-                                        currentSlide === index ? "text-primary-blue scale-110" : "text-slate-400 opacity-40 group-hover/btn:opacity-100"
-                                    )}>
-                                        {(index + 1).toString().padStart(2, '0')}
-                                    </div>
+                                <div className="flex items-center">
                                     <div className={cn(
                                         "h-0.5 rounded-full transition-all duration-700",
-                                        currentSlide === index ? "w-10 bg-primary-orange" : "w-4 bg-slate-200/20 group-hover/btn:bg-slate-300/40"
+                                        currentSlide === index ? "w-12 bg-primary-orange" : "w-6 bg-slate-200/20 group-hover/btn:bg-slate-300/40"
                                     )} />
                                 </div>
                                 <AnimatePresence>
