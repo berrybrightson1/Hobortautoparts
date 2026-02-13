@@ -34,16 +34,7 @@ export default function LoginPage() {
             const userRole = profile.role
             console.log("LoginPage: Profile matched. Role:", userRole, "Selected Portal:", activeRole)
 
-            // SECURITY: Ensure the user's role matches the portal they are trying to access
-            if (userRole !== activeRole) {
-                console.warn("LoginPage: Portal mismatch for user role:", userRole)
-                toast.error("Portal access denied", {
-                    description: `This account is registered as a ${userRole}. Please select the ${userRole.toUpperCase()} portal.`
-                })
-                setIsLoading(false)
-                return
-            }
-
+            // Redirect to the dashboard corresponding to the user's role
             console.log("LoginPage: Validation passed. Pushing to:", userRole)
             setRole(userRole)
 

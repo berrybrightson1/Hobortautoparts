@@ -8,6 +8,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { TrackingWidget } from "@/components/marketing/tracking-widget"
 import { cn } from "@/lib/utils"
+import { VideoModal } from "@/components/marketing/video-modal"
 
 interface Slide {
     id: number
@@ -79,6 +80,7 @@ export function HeroSlider() {
     const [currentSlide, setCurrentSlide] = useState(0)
     const [direction, setDirection] = useState(0)
     const [isPaused, setIsPaused] = useState(false)
+    const [isVideoOpen, setIsVideoOpen] = useState(false)
     const [isMobile, setIsMobile] = useState(false)
 
     useEffect(() => {
@@ -239,14 +241,17 @@ export function HeroSlider() {
                                 </Button>
                             </Link>
 
-                            <Link href="/how-it-works" className="flex-1 sm:flex-none">
-                                <Button className="w-full h-14 md:h-16 px-6 md:px-10 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 backdrop-blur-sm text-white font-bold text-sm md:text-lg hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2 whitespace-nowrap group">
+                            <div className="flex-1 sm:flex-none">
+                                <Button
+                                    onClick={() => setIsVideoOpen(true)}
+                                    className="w-full h-14 md:h-16 px-6 md:px-10 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 backdrop-blur-sm text-white font-bold text-sm md:text-lg hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2 whitespace-nowrap group"
+                                >
                                     <div className="h-6 w-6 rounded-full bg-white flex items-center justify-center group-hover:scale-110 transition-transform">
                                         <Play className="w-2.5 h-2.5 ml-0.5 text-slate-900 fill-current" />
                                     </div>
                                     <span>How it Works</span>
                                 </Button>
-                            </Link>
+                            </div>
                         </div>
                     </motion.div>
 
@@ -354,6 +359,8 @@ export function HeroSlider() {
                     </div>
                 </div>
             </div>
+
+            <VideoModal open={isVideoOpen} onOpenChange={setIsVideoOpen} />
         </section>
     )
 }
