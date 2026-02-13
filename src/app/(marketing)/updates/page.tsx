@@ -4,6 +4,20 @@ import { ShieldCheck, Zap, Truck, Globe, Clock, Sparkles, CheckCircle2 } from "l
 
 const updates = [
     {
+        version: "v1.6.0",
+        date: "February 13, 2026",
+        time: "07:34 PM",
+        title: "Complete Portal Ecosystem",
+        description: "Launched the full-scale portal experience with integrated logistics, finance, and personalized settings.",
+        changes: [
+            "Deployed Integrated Shipments Manager with real-time DHL/FedEx tracking sync.",
+            "Launched Financial Analytics Dashboard with live revenue/quote metric tracking.",
+            "Implemented Advanced User Preferences for Dark Mode and Layout Density.",
+            "Integrated Instant Push Notifications for Agent Approval workflows.",
+            "Deployed Production Database Schema for Logistics and Transaction monitoring.",
+        ]
+    },
+    {
         version: "v1.5.0",
         date: "February 13, 2026",
         time: "10:54 AM",
