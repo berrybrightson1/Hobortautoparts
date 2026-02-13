@@ -66,13 +66,15 @@ export function ResponsiveModal({
     return (
         <Drawer open={open} onOpenChange={onOpenChange}>
             <DrawerContent className="rounded-t-[2.5rem] border-none bg-white/95 backdrop-blur-xl">
-                {title && (
+                {title ? (
                     <DrawerHeader className="text-left px-6 pt-6">
                         <DrawerTitle>{title}</DrawerTitle>
                         {description && (
                             <DrawerDescription>{description}</DrawerDescription>
                         )}
                     </DrawerHeader>
+                ) : (
+                    <DrawerTitle className="sr-only">Notification</DrawerTitle>
                 )}
                 <div className="px-6 pb-12 pt-4">{children}</div>
             </DrawerContent>
