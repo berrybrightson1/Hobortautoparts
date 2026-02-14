@@ -201,7 +201,7 @@ export function HeroSlider() {
                 style={{ backgroundImage: `url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIi8+CjxjaXJjbGUgY3g9IjEiIGN5PSIxIiByPSIxIiBmaWxsPSIjMDAwIi8+Cjwvc3ZnPg==')` }}>
             </div>
 
-            <div className="relative z-20 max-w-[1400px] mx-auto px-6 h-full grid lg:grid-cols-2 gap-12 items-center pt-20 md:pt-32 pb-40 lg:pb-0 min-h-[100dvh]">
+            <div className="relative z-20 max-w-[1400px] mx-auto px-6 h-full grid lg:grid-cols-2 gap-12 items-center lg:-translate-y-12 pt-20 md:pt-32 pb-40 lg:pb-0 min-h-[100dvh]">
                 <div className="flex flex-col justify-center space-y-8">
                     <motion.div
                         key={currentSlide + "content"}
@@ -254,11 +254,8 @@ export function HeroSlider() {
                                 </Button>
                             </div>
                         </div>
-                    </motion.div>
 
-                    <div className="mt-8 md:mt-12 w-full max-w-xl mx-auto lg:mx-0">
-                        <TrackingWidget />
-                    </div>
+                    </motion.div>
                 </div>
 
                 <div className="hidden lg:flex relative h-full min-h-[600px] items-center justify-center pointer-events-none select-none px-10">
@@ -290,73 +287,38 @@ export function HeroSlider() {
                 </div>
             </div>
 
-            {/* Bottom Section (Branding & Navigation) */}
-            <div className="absolute bottom-0 left-0 w-full z-30 bg-slate-900/60 backdrop-blur-xl border-t border-white/10 py-6 md:py-8">
-                <div className="max-w-[1400px] mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-10 md:gap-4">
-                    <div className="flex items-center gap-4 lg:gap-8 shrink-0">
-                        <div className="flex flex-col md:flex-row items-start md:items-center gap-4 group cursor-default">
-                            <div className="flex items-center gap-3">
-                                <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-primary-orange/20 flex items-center justify-center border border-primary-orange/30 transition-all group-hover:bg-primary-orange/30">
-                                    <CheckCircle2 className="w-3 h-3 md:w-4 md:h-4 text-primary-orange" />
-                                </div>
-                                <span className="text-[10px] md:text-sm font-black tracking-[0.2em] uppercase text-white/90 group-hover:text-white transition-colors">Identify</span>
-                            </div>
-                        </div>
-                        <div className="h-4 w-px bg-white/10" />
-                        <div className="flex flex-col md:flex-row items-start md:items-center gap-4 group cursor-default">
-                            <div className="flex items-center gap-3">
-                                <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-blue-500/20 flex items-center justify-center border border-blue-500/30 transition-all group-hover:bg-blue-500/30">
-                                    <Globe2 className="w-3 h-3 md:w-4 md:h-4 text-blue-400" />
-                                </div>
-                                <span className="text-[10px] md:text-sm font-black tracking-[0.2em] uppercase text-white/90 group-hover:text-white transition-colors">Source</span>
-                            </div>
-                        </div>
-                        <div className="h-4 w-px bg-white/10 hidden md:block" />
-                        <div className="flex flex-col md:flex-row items-start md:items-center gap-4 group cursor-default">
-                            <div className="flex items-center gap-3">
-                                <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30 transition-all group-hover:bg-emerald-500/30">
-                                    <Truck className="w-3 h-3 md:w-4 md:h-4 text-emerald-400" />
-                                </div>
-                                <span className="text-[10px] md:text-sm font-black tracking-[0.2em] uppercase text-white/90 group-hover:text-white transition-colors">Deliver</span>
-                            </div>
-                        </div>
+            {/* Bottom Section (Branding & Navigation) - Floating at the bottom */}
+            <div className="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 w-[92%] md:w-[95%] max-w-[1400px] z-30 bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-2xl md:rounded-3xl py-4 md:py-6 shadow-2xl transition-all duration-500">
+                <div className="max-w-[1400px] mx-auto px-4 md:px-6 h-full flex flex-col md:flex-row items-center justify-between gap-6 md:gap-16">
+                    <div className="w-full md:w-1/4 flex items-center shrink-0">
+                        <TrackingWidget showIndicators={false} />
                     </div>
 
-                    {/* Vertical Separator (Desktop) */}
-                    <div className="hidden md:block w-px h-12 bg-gradient-to-b from-transparent via-white/20 to-transparent shrink-0 mx-4" />
-
-                    {/* Right side: Premium Brand Logos with Specialized Mobile Layout (2 per slide) */}
-                    <div className="flex items-center gap-6 w-full md:w-auto overflow-hidden">
-                        <div className="hidden xl:flex flex-col items-end mr-4 shrink-0">
-                            <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-slate-500 mb-0.5">Authentic</span>
-                            <span className="text-[11px] font-black text-white tracking-widest uppercase whitespace-nowrap">Brand Partners</span>
-                        </div>
-
-                        <div className="relative flex-1 md:flex-none overflow-hidden pb-2">
+                    {/* Right side: Premium Brand Logos (Visible on mobile, horizontal scroll/marquee) */}
+                    <div className="w-full md:flex-1 flex items-center overflow-hidden h-full">
+                        <div className="relative w-full overflow-hidden pb-1">
                             <motion.div
-                                className="flex items-center gap-8 md:gap-12"
-                                animate={isMobile ? {
-                                    x: [`0%`, `-${100 * (BRANDS.length / 2)}%`],
-                                } : {
-                                    x: [0, -1200],
+                                className="flex items-center gap-8 md:gap-16"
+                                animate={{
+                                    x: [0, -600],
                                 }}
                                 transition={{
                                     x: {
                                         repeat: Infinity,
                                         repeatType: "loop",
-                                        duration: isMobile ? 12 : 30,
+                                        duration: 25,
                                         ease: "linear",
                                     },
                                 }}
                             >
-                                {[...BRANDS, ...BRANDS, ...BRANDS, ...BRANDS].map((brand, idx) => (
+                                {[...BRANDS, ...BRANDS].map((brand, idx) => (
                                     <div key={`${brand.name}-${idx}`} className="flex flex-col items-center group/brand relative shrink-0">
-                                        <div className="h-20 md:h-16 w-48 md:w-40 relative transition-all duration-500 flex items-center justify-center scale-125 md:scale-125">
+                                        <div className="h-10 md:h-14 w-24 md:w-32 relative transition-all duration-500 flex items-center justify-center">
                                             <Image
                                                 src={brand.src}
                                                 alt={brand.name}
                                                 fill
-                                                className="object-contain p-2 md:p-1"
+                                                className="object-contain p-1"
                                             />
                                         </div>
                                     </div>
