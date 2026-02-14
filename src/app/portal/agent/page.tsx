@@ -35,14 +35,15 @@ import { useAuth } from "@/components/auth/auth-provider"
 import { format } from "date-fns"
 import { PendingApproval } from "@/components/portal/pending-approval"
 import { toast } from "sonner"
+import { StatsSkeleton, CardSkeleton, Skeleton } from "@/components/portal/skeletons"
 
 export default function AgentDashboard() {
-    const { user } = useAuth()
+    const { profile, user } = useAuth()
     const [searchTerm, setSearchTerm] = useState('')
-    const [isLoading, setIsLoading] = useState(true)
-    const [agentStatus, setAgentStatus] = useState<string | null>(null)
     const [orders, setOrders] = useState<any[]>([])
     const [sourcingRequests, setSourcingRequests] = useState<any[]>([])
+    const [agentStatus, setAgentStatus] = useState<string | null>(null)
+    const [isLoading, setIsLoading] = useState(true)
     const [stats, setStats] = useState([
         { label: "Total Commission", value: "$0.00", change: "0%", trend: "up" },
         { label: "Active Requests", value: "0", change: "0%", trend: "up" },
@@ -95,9 +96,7 @@ export default function AgentDashboard() {
                 .from('sourcing_requests')
                 .select(`
                     *,
-                    profiles:user_id (
-                        full_name
-                    )
+                    profiles:user_id (full_name, email)
                 `)
                 .eq('agent_id', user.id)
                 .order('created_at', { ascending: false })
@@ -109,52 +108,34 @@ export default function AgentDashboard() {
             const { data: ordersData, error: ordersError } = await supabase
                 .from('orders')
                 .select(`
-                    id,
-                    status,
-                    created_at,
-                    profiles:user_id (
-                        full_name
-                    ),
-                    quotes (
-                        total_amount,
-                        sourcing_requests (
-                            vehicle_info,
-                            part_name
-                        )
-                    )
+                    *,
+                    profiles:user_id (full_name, email),
+                    quotes:quote_id (*)
                 `)
                 .eq('agent_id', user.id)
                 .order('created_at', { ascending: false })
 
             if (ordersError) throw ordersError
+            setOrders(ordersData || [])
 
-            // 3. Fetch Commissions
-            const { data: commissionsData } = await supabase
-                .from('commissions')
-                .select('amount_earned')
-                .eq('agent_id', user.id)
-
-            const totalCommission = (commissionsData || []).reduce((acc, curr) => acc + (parseFloat(String(curr.amount_earned).replace(/[^0-9.-]+/g, "")) || 0), 0)
-
-            // 4. Calculate Stats
+            // 3. Calculate Stats
             const totalOrders = ordersData?.length || 0
-            const activeSourcing = sourcingData?.filter(r => r.status === 'pending' || r.status === 'processing').length || 0
-            const activeOrders = ordersData?.filter(o => o.status !== 'completed' && o.status !== 'cancelled').length || 0
-            const completedOrders = ordersData?.filter(o => o.status === 'completed').length || 0
+            const activeSourcing = sourcingData?.filter(r => r.status === 'pending' || r.status === 'processing' || r.status === 'sourcing').length || 0
+            const completedOrders = ordersData?.filter(o => o.status === 'delivered' || o.status === 'completed').length || 0
             const completionRate = totalOrders > 0 ? (completedOrders / totalOrders * 100).toFixed(0) : 0
+            const totalCommission = 0 // Future implementation
 
             setStats([
-                { label: "Total Commission", value: `$${totalCommission.toLocaleString()}`, change: "+12%", trend: "up" },
-                { label: "Active Requests", value: (activeSourcing + activeOrders).toString(), change: `+${activeSourcing}`, trend: "up" },
+                { label: "Total Commission", value: `$${totalCommission.toLocaleString()}`, change: "+0%", trend: "up" },
+                { label: "Active Requests", value: (activeSourcing).toString(), change: `+${activeSourcing}`, trend: "up" },
                 { label: "Completion Rate", value: `${completionRate}%`, change: "stable", trend: "up" },
-                { label: "Direct Leads", value: "0", change: "0%", trend: "up" }
+                { label: "Direct Leads", value: totalOrders.toString(), change: "0%", trend: "up" }
             ])
 
-            setOrders(ordersData || [])
         } catch (error: any) {
-            console.error("Error fetching agent dashboard data:", error)
+            console.error("Error fetching agent dashboard data:", error?.message || error)
             toast.error("Connectivity issue", {
-                description: "Failed to synchronize your dashboard data."
+                description: error?.message || "Failed to synchronize your dashboard data."
             })
         } finally {
             setIsLoading(false)

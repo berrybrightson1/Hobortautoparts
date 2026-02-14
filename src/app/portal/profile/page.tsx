@@ -248,88 +248,34 @@ export default function UnifiedSettingsPage() {
                 </TabsContent>
 
                 <TabsContent value="hub">
-                    <Card className="border-slate-100/50 shadow-2xl shadow-slate-200/40 rounded-[3rem] overflow-hidden bg-white/60 backdrop-blur-2xl">
-                        <CardHeader className="p-10 pb-6">
-                            <CardTitle className="text-3xl font-black text-slate-900">Portal Preferences</CardTitle>
-                            <CardDescription className="text-slate-500 text-lg font-medium">Configure your interaction experience and visual language.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="p-10 space-y-8">
-                            <div className="flex items-center justify-between p-8 bg-slate-50/40 rounded-[2.5rem] border border-slate-100/50 hover:bg-white transition-all duration-500 group">
-                                <div className="flex items-center gap-6">
-                                    <div className="h-16 w-16 rounded-3xl bg-indigo-500/10 flex items-center justify-center text-indigo-600 transition-all group-hover:scale-105 group-hover:rotate-6">
-                                        <Moon className="h-8 w-8" />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <h4 className="font-black text-xl text-slate-900">Visual Midnight Mode</h4>
-                                        <p className="text-sm text-slate-500 font-medium leading-relaxed italic">Apply deep-space theme to the entire portal dashboard.</p>
-                                    </div>
-                                </div>
-                                <Switch
-                                    checked={prefs.dark_mode}
-                                    onCheckedChange={v => togglePref('dark_mode', v)}
-                                    className="data-[state=checked]:bg-primary-orange h-8 w-14"
-                                />
+                    <Card className="border-slate-100 shadow-2xl shadow-slate-200/50 rounded-[3rem] overflow-hidden bg-white/80 backdrop-blur-xl min-h-[400px] flex items-center justify-center">
+                        <CardContent className="p-10 text-center space-y-6">
+                            <div className="h-24 w-24 rounded-[2rem] bg-indigo-50 flex items-center justify-center text-indigo-600 mx-auto shadow-inner border border-indigo-100">
+                                <Globe className="h-10 w-10 animate-pulse" />
                             </div>
-                            <div className="flex items-center justify-between p-8 bg-slate-50/40 rounded-[2.5rem] border border-slate-100/50 hover:bg-white transition-all duration-500 group">
-                                <div className="flex items-center gap-6">
-                                    <div className="h-16 w-16 rounded-3xl bg-cyan-500/10 flex items-center justify-center text-cyan-600 transition-all group-hover:scale-105 group-hover:-rotate-6">
-                                        <Minimize2 className="h-8 w-8" />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <h4 className="font-black text-xl text-slate-900">Condensed Architecture</h4>
-                                        <p className="text-sm text-slate-500 font-medium leading-relaxed italic">High-density layout optimization for sourcing experts.</p>
-                                    </div>
-                                </div>
-                                <Switch
-                                    checked={prefs.compact_mode}
-                                    onCheckedChange={v => togglePref('compact_mode', v)}
-                                    className="data-[state=checked]:bg-primary-orange h-8 w-14"
-                                />
+                            <div className="space-y-2">
+                                <h3 className="text-3xl font-black text-slate-900 uppercase tracking-tighter italic">Sovereign Innovation</h3>
+                                <p className="text-slate-500 font-bold text-sm tracking-widest uppercase opacity-60">Portal Hub Overhaul: Coming Soon</p>
+                            </div>
+                            <div className="pt-4">
+                                <Badge className="bg-indigo-50 text-indigo-600 border border-indigo-100 px-6 py-2">Version 3.0 Pipeline</Badge>
                             </div>
                         </CardContent>
                     </Card>
                 </TabsContent>
 
                 <TabsContent value="system">
-                    <Card className="border-slate-100 shadow-2xl shadow-slate-200/50 rounded-[3rem] overflow-hidden bg-[#0c1425] text-white">
-                        <CardHeader className="p-10 pb-6 border-b border-white/5">
-                            <CardTitle className="text-2xl font-black text-white flex items-center gap-3">
-                                <Settings2 className="h-6 w-6 text-orange-500" /> Platform Console
-                            </CardTitle>
-                            <CardDescription className="text-slate-400 text-base">Global administrative configurations and system health status.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="p-10 space-y-8">
-                            <div className="grid grid-cols-2 gap-6">
-                                <div className="p-6 bg-white/5 rounded-3xl border border-white/10 space-y-4">
-                                    <div className="flex items-center justify-between">
-                                        <Globe className="h-8 w-8 text-blue-400" />
-                                        <Badge className="bg-emerald-500/20 text-emerald-400 border-0 font-black">ACTIVE</Badge>
-                                    </div>
-                                    <div className="space-y-1">
-                                        <h5 className="font-bold">Edge Protocol</h5>
-                                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest leading-loose">Automated Traffic Routing & CDN Status Verified.</p>
-                                    </div>
-                                </div>
-                                <div className="p-6 bg-white/5 rounded-3xl border border-white/10 space-y-4">
-                                    <div className="flex items-center justify-between">
-                                        <Shield className="h-8 w-8 text-orange-400" />
-                                        <Badge className="bg-orange-500/20 text-orange-400 border-0 font-black">SECURE</Badge>
-                                    </div>
-                                    <div className="space-y-1">
-                                        <h5 className="font-bold">Database Fortress</h5>
-                                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest leading-loose">Supabase RLS & Encrypted Sync Active.</p>
-                                    </div>
-                                </div>
+                    <Card className="border-slate-100 shadow-2xl shadow-slate-200/50 rounded-[3rem] overflow-hidden bg-[#0c1425] text-white min-h-[400px] flex items-center justify-center">
+                        <CardContent className="p-10 text-center space-y-6">
+                            <div className="h-24 w-24 rounded-[2rem] bg-orange-600/10 flex items-center justify-center text-orange-500 mx-auto border border-orange-500/20 shadow-2xl shadow-orange-500/10">
+                                <Server className="h-10 w-10 animate-bounce" />
                             </div>
-
-                            <div className="p-8 rounded-[2rem] bg-orange-600/10 border border-orange-600/20 text-orange-200 flex items-center gap-6">
-                                <div className="h-14 w-14 rounded-2xl bg-orange-600 flex items-center justify-center text-white shadow-lg shadow-orange-600/20 shrink-0">
-                                    <Server className="h-7 w-7" />
-                                </div>
-                                <div className="space-y-1">
-                                    <p className="text-xs font-black uppercase tracking-[0.1em]">Engine Update v2.1.0 Ready</p>
-                                    <p className="text-sm font-medium opacity-80">Platform settings are currently locked to Global Defaults. Advanced overrides coming in next deployment.</p>
-                                </div>
+                            <div className="space-y-2">
+                                <h3 className="text-3xl font-black text-white uppercase tracking-tighter italic">Edge Intelligence</h3>
+                                <p className="text-slate-400 font-bold text-sm tracking-widest uppercase opacity-60">System Console: Coming Soon</p>
+                            </div>
+                            <div className="pt-4">
+                                <Badge className="bg-orange-600/20 text-orange-500 border border-orange-500/20 px-6 py-2">Deployment Cycle Locked</Badge>
                             </div>
                         </CardContent>
                     </Card>

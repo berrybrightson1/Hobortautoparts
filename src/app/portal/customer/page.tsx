@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation"
 import { ResponsiveModal } from "@/components/ui/responsive-modal"
 import { toast } from "sonner"
 import { ShieldCheck, Info, CreditCard, DollarSign } from "lucide-react"
+import { StatsSkeleton, CardSkeleton, Skeleton } from "@/components/portal/skeletons"
 
 export default function CustomerDashboard() {
     const { profile, user } = useAuth()

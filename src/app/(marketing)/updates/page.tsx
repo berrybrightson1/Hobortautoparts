@@ -4,6 +4,20 @@ import { ShieldCheck, Zap, Truck, Globe, Clock, Sparkles, CheckCircle2 } from "l
 
 const updates = [
     {
+        version: "v1.8.0",
+        date: "February 14, 2026",
+        time: "01:00 PM",
+        title: "Optimistic UI & UX Polish",
+        description: "Enhanced perceived performance with Skeleton UI and streamlined navigation for a smoother portal experience.",
+        changes: [
+            "Implemented High-Fidelity Skeleton UI across all dashboards (Customer, Agent, Admin).",
+            "Removed redundant 'Homepage' link from sidebar to maximize focus and space.",
+            "Simplified Admin Settings with premium 'Coming Soon' placeholders for future modules.",
+            "Resolved Agent Dashboard data synchronization regressions.",
+            "Optimized global loading states for industrial-scale speed.",
+        ]
+    },
+    {
         version: "v1.7.0",
         date: "February 14, 2026",
         time: "04:05 AM",

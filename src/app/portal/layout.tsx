@@ -35,13 +35,11 @@ const NAV_ITEMS = {
         { name: "Dashboard", href: "/portal/customer", icon: LayoutDashboard },
         { name: "New Request", href: "/quote", icon: Plus },
         { name: "My Account", href: "/portal/profile", icon: UserCircle },
-        { name: "Homepage", href: "/", icon: Home },
     ],
     agent: [
         { name: "Sourcing Queue", href: "/portal/agent", icon: PackageSearch },
         { name: "All Orders", href: "/portal/orders", icon: LayoutDashboard },
         { name: "Account Details", href: "/portal/profile", icon: UserCircle },
-        { name: "Homepage", href: "/", icon: Home },
     ],
     admin: [
         { name: "Overview", href: "/portal/admin", icon: LayoutDashboard },

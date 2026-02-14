@@ -18,6 +18,7 @@ import { DemandHeatmap } from "@/components/admin/demand-heatmap"
 import Link from "next/link"
 import { supabase } from "@/lib/supabase"
 import { format, subMonths, startOfMonth, endOfMonth, eachMonthOfInterval } from "date-fns"
+import { StatsSkeleton, CardSkeleton, Skeleton } from "@/components/portal/skeletons"
 
 export default function AdminPortal() {
     const [isLoading, setIsLoading] = React.useState(true)
@@ -111,7 +112,7 @@ export default function AdminPortal() {
             setRequestData(mockRequestVolume)
 
         } catch (error) {
-            console.error("Dashboard hydration error:", error)
+            console.error("Error fetching admin data:", error)
         } finally {
             setIsLoading(false)
         }
@@ -120,6 +121,26 @@ export default function AdminPortal() {
     React.useEffect(() => {
         fetchData()
     }, [])
+
+    if (isLoading) {
+        return (
+            <div className="flex flex-col gap-10 max-w-7xl mx-auto pb-10 animate-in fade-in duration-500">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                    <div className="flex flex-col gap-2">
+                        <Skeleton className="h-10 w-64" />
+                        <Skeleton className="h-4 w-96" />
+                    </div>
+                </div>
+                <StatsSkeleton />
+                <div className="grid grid-cols-1 gap-8">
+                    <CardSkeleton />
+                </div>
+                <div className="grid grid-cols-1 gap-8">
+                    <CardSkeleton />
+                </div>
+            </div>
+        )
+    }
 
     return (
         <div className="flex flex-col gap-10 max-w-7xl mx-auto pb-10 animate-in fade-in duration-700">
