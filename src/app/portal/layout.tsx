@@ -27,6 +27,7 @@ import { useAuth } from "@/components/auth/auth-provider"
 import { NotificationDrawer } from "@/components/portal/notification-drawer"
 import { ResponsiveModal } from "@/components/ui/responsive-modal"
 import { Sheet, SheetContent } from "@/components/ui/sheet"
+import { toast } from "sonner"
 
 const NAV_ITEMS = {
     customer: [
@@ -99,7 +100,17 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
     const currentNav = NAV_ITEMS[role as keyof typeof NAV_ITEMS] || NAV_ITEMS.customer
 
     const handleSignOut = async () => {
-        await signOut()
+        try {
+            await signOut()
+            toast.success("Identity Disconnected", {
+                description: "Your session has been securely terminated."
+            })
+            router.push('/login')
+        } catch (error: any) {
+            toast.error("Logout Failed", {
+                description: error.message
+            })
+        }
     }
 
     const SidebarContent = () => (
@@ -223,32 +234,33 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
             <ResponsiveModal
                 open={showLogoutDialog}
                 onOpenChange={setShowLogoutDialog}
-                variant="bottom"
             >
-                <div className="flex flex-col items-center gap-6 py-6 w-full px-6">
-                    <div className="flex flex-col items-center text-center gap-3">
-                        <div className="h-16 w-16 rounded-3xl bg-red-50 flex items-center justify-center text-red-500 border-2 border-red-100 shadow-lg">
-                            <ShieldAlert className="h-8 w-8" />
+                <div className="flex flex-col items-center gap-8 py-10 w-full px-8 bg-white rounded-[3rem]">
+                    <div className="flex flex-col items-center text-center gap-4">
+                        <div className="h-16 w-16 rounded-[1.5rem] bg-slate-50 flex items-center justify-center text-primary-blue border border-slate-100 shadow-inner">
+                            <LogOut className="h-8 w-8" />
                         </div>
-                        <h3 className="text-lg font-bold text-slate-900">Confirm Logout</h3>
-                        <p className="text-sm text-slate-500 max-w-xs">
-                            Are you sure you want to end your session? You'll need to sign in again to access the portal.
-                        </p>
+                        <div className="space-y-1">
+                            <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tight">Identity Offline</h3>
+                            <p className="text-sm text-slate-500 font-bold max-w-xs italic">
+                                Termination will clear all active authenticated caches. Confirm secure exit sequence?
+                            </p>
+                        </div>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row gap-3 w-full max-w-sm">
-                        <Button
-                            className="flex-1 h-12 rounded-2xl bg-slate-900 text-white font-semibold hover:bg-slate-800 transition-all shadow-xl"
-                            onClick={handleSignOut}
-                        >
-                            Yes, Logout
-                        </Button>
+                    <div className="flex flex-col sm:flex-row gap-4 w-full">
                         <Button
                             variant="outline"
-                            className="flex-1 h-12 rounded-2xl border-2 border-slate-200 text-slate-600 font-semibold hover:bg-slate-50 transition-all"
+                            className="flex-1 h-16 rounded-[1.25rem] border-2 border-slate-100 text-slate-400 font-black uppercase tracking-widest text-[10px] hover:bg-slate-50 hover:text-slate-900 transition-all"
                             onClick={() => setShowLogoutDialog(false)}
                         >
-                            Cancel
+                            Abort Signal
+                        </Button>
+                        <Button
+                            className="flex-1 h-16 rounded-[1.25rem] bg-[#0c1425] text-white font-black uppercase tracking-widest text-[10px] hover:bg-black transition-all shadow-2xl shadow-slate-900/20"
+                            onClick={handleSignOut}
+                        >
+                            Execute Logout
                         </Button>
                     </div>
                 </div>

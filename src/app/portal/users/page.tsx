@@ -32,6 +32,13 @@ import {
 } from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
 import { Search, Filter, MoreHorizontal, UserPlus, Inbox, ShieldCheck, User as UserIcon, Briefcase, Loader2 } from "lucide-react"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
 import { useState, useEffect } from "react"
 import { supabase, supabaseAdmin } from "@/lib/supabase"
 import { toast } from "sonner"
@@ -138,7 +145,7 @@ export default function UsersPage() {
         }
     }
 
-    const filteredUsers = users.filter(user => {
+    const filteredUsers = users.filter((user: any) => {
         const matchesRole = activeRole === 'all' || user.role === activeRole
         const name = user.full_name || 'Anonymous'
         const matchesSearch = name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -173,64 +180,74 @@ export default function UsersPage() {
                             <UserPlus className="mr-3 h-5 w-5 group-hover:scale-110 transition-transform" /> Create New Account
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-[500px] rounded-[3rem] p-0 overflow-hidden border-0 shadow-2xl">
-                        <DialogHeader className="p-8 pt-10 bg-slate-50/50">
-                            <DialogTitle className="text-2xl font-black text-slate-900 uppercase tracking-tight">Create Entity</DialogTitle>
-                            <DialogDescription className="text-slate-500 font-medium">Provision new credentials for the portal ecosystem.</DialogDescription>
+                    <DialogContent className="sm:max-w-[500px] rounded-[3rem] p-0 overflow-hidden border-0 shadow-2xl bg-white">
+                        <DialogHeader className="p-10 pt-12 text-left relative bg-slate-50/50 border-b border-slate-100">
+                            <div className="flex items-center gap-4">
+                                <div className="h-12 w-12 rounded-2xl bg-primary-blue/10 flex items-center justify-center text-primary-blue">
+                                    <UserPlus className="h-6 w-6" />
+                                </div>
+                                <div className="space-y-1">
+                                    <DialogTitle className="text-3xl font-black text-slate-900 uppercase tracking-tighter leading-none">Create Entity</DialogTitle>
+                                    <DialogDescription className="text-slate-500 font-bold text-sm italic">Provision new credentials for the portal ecosystem.</DialogDescription>
+                                </div>
+                            </div>
                         </DialogHeader>
-                        <div className="p-8 space-y-6">
-                            <div className="space-y-2">
-                                <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Full Legal Name</Label>
+                        <div className="p-10 space-y-8">
+                            <div className="space-y-3">
+                                <Label className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-400 ml-1">Full Legal Name</Label>
                                 <Input
-                                    placeholder="John Doe"
-                                    className="h-14 rounded-2xl bg-slate-50/50 border-slate-200 focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all font-bold"
+                                    placeholder="Enter full legal name"
+                                    className="h-16 rounded-[1.25rem] bg-slate-50 border-slate-100 focus:bg-white focus:ring-8 focus:ring-blue-500/10 transition-all font-bold text-lg px-6"
                                     value={newUser.full_name}
                                     onChange={(e) => setNewUser({ ...newUser, full_name: e.target.value })}
                                 />
                             </div>
-                            <div className="space-y-2">
-                                <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Secure Email</Label>
+                            <div className="space-y-3">
+                                <Label className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-400 ml-1">Secure Email</Label>
                                 <Input
                                     type="email"
-                                    placeholder="john@example.com"
-                                    className="h-14 rounded-2xl bg-slate-50/50 border-slate-200 focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all font-bold"
+                                    placeholder="node@hobort.sys"
+                                    className="h-16 rounded-[1.25rem] bg-slate-50 border-slate-100 focus:bg-white focus:ring-8 focus:ring-blue-500/10 transition-all font-bold text-lg px-6"
                                     value={newUser.email}
                                     onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
                                 />
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Password</Label>
+                            <div className="grid grid-cols-2 gap-6">
+                                <div className="space-y-3">
+                                    <Label className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-400 ml-1">Access Key</Label>
                                     <Input
                                         type="password"
-                                        className="h-14 rounded-2xl bg-slate-50/50 border-slate-200 focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all font-bold"
+                                        placeholder="••••••••"
+                                        className="h-16 rounded-[1.25rem] bg-slate-50 border-slate-100 focus:bg-white focus:ring-8 focus:ring-blue-500/10 transition-all font-bold text-lg px-6"
                                         value={newUser.password}
                                         onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
                                     />
                                 </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="newUserRole" className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Security Class (Role)</Label>
-                                    <select
-                                        id="newUserRole"
-                                        title="Select Security Class"
-                                        className="w-full h-14 px-4 rounded-2xl bg-slate-50/50 border-slate-200 focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all font-bold text-sm outline-none"
+                                <div className="space-y-3">
+                                    <Label className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-400 ml-1">Security Class</Label>
+                                    <Select
                                         value={newUser.role}
-                                        onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
+                                        onValueChange={(v: any) => setNewUser({ ...newUser, role: v })}
                                     >
-                                        <option value="customer">Customer</option>
-                                        <option value="agent">Agent</option>
-                                        <option value="admin">Admin</option>
-                                    </select>
+                                        <SelectTrigger className="h-16 rounded-[1.25rem] bg-slate-50 border-slate-100 focus:bg-white focus:ring-8 focus:ring-blue-500/10 font-bold text-lg px-6">
+                                            <SelectValue placeholder="Select Class" />
+                                        </SelectTrigger>
+                                        <SelectContent className="rounded-[2rem] border-slate-100 shadow-2xl bg-white">
+                                            <SelectItem value="customer">Customer Node</SelectItem>
+                                            <SelectItem value="agent">Strategic Agent</SelectItem>
+                                            <SelectItem value="admin">System Architect</SelectItem>
+                                        </SelectContent>
+                                    </Select>
                                 </div>
                             </div>
                         </div>
-                        <DialogFooter className="p-8 bg-slate-50/50 flex justify-end">
+                        <DialogFooter className="p-10 pt-6 pb-12 bg-slate-50/50 border-t border-slate-100 flex justify-end">
                             <Button
                                 onClick={handleCreateUser}
                                 disabled={isCreating}
-                                className="h-14 px-10 rounded-2xl bg-primary-blue hover:bg-blue-700 shadow-xl shadow-blue-500/20 font-black gap-3 transition-all active:scale-95 text-white"
+                                className="h-18 px-12 rounded-[2rem] bg-[#0c1425] hover:bg-black shadow-[0_20px_40px_-12px_rgba(0,0,0,0.2)] font-black text-xl gap-4 transition-all active:scale-95 text-white group"
                             >
-                                {isCreating ? <Loader2 className="animate-spin h-5 w-5" /> : <UserPlus className="h-5 w-5" />}
+                                {isCreating ? <Loader2 className="animate-spin h-6 w-6" /> : <UserPlus className="h-6 w-6 group-hover:scale-110 transition-transform" />}
                                 Authorize Entry
                             </Button>
                         </DialogFooter>
