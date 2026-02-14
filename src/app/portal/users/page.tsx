@@ -180,8 +180,8 @@ export default function UsersPage() {
                             <UserPlus className="mr-3 h-5 w-5 group-hover:scale-110 transition-transform" /> Create New Account
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-[500px] w-[95vw] rounded-[2rem] sm:rounded-[3rem] p-0 overflow-hidden border-0 shadow-2xl bg-white max-h-[90vh] overflow-y-auto">
-                        <DialogHeader className="p-6 sm:p-10 sm:pt-12 text-left relative bg-white border-b border-slate-100">
+                    <DialogContent className="sm:max-w-[500px] w-[95vw] rounded-[2rem] sm:rounded-[3rem] p-0 overflow-hidden border-0 shadow-2xl bg-white dark:bg-white max-h-[90vh] overflow-y-auto gap-0">
+                        <DialogHeader className="p-6 sm:p-10 sm:pt-12 text-left relative bg-white dark:bg-white border-b border-slate-100">
                             <div className="flex items-center gap-4">
                                 <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl sm:rounded-2xl bg-primary-blue/10 flex items-center justify-center text-primary-blue shrink-0 shadow-inner">
                                     <UserPlus className="h-5 w-5 sm:h-6 sm:w-6" />
@@ -241,11 +241,11 @@ export default function UsersPage() {
                                 </div>
                             </div>
                         </div>
-                        <DialogFooter className="p-6 sm:p-10 sm:pt-6 sm:pb-12 bg-slate-50/30 border-t border-slate-100 flex flex-col sm:flex-row justify-end">
+                        <DialogFooter className="p-6 sm:p-10 sm:pt-6 sm:pb-12 bg-white dark:bg-white border-t border-slate-100 flex flex-col sm:flex-row justify-end">
                             <Button
                                 onClick={handleCreateUser}
                                 disabled={isCreating}
-                                className="h-14 sm:h-18 w-full sm:w-auto px-12 rounded-xl sm:rounded-[2rem] bg-primary-blue hover:bg-blue-700 shadow-[0_20px_40px_-12px_rgba(27,78,111,0.3)] font-black text-lg sm:text-xl gap-4 transition-all active:scale-95 text-white group"
+                                className="h-14 sm:h-18 w-full sm:w-auto px-12 rounded-xl sm:rounded-[2rem] bg-[#0c1425] hover:bg-black shadow-[0_20px_40px_-12px_rgba(0,0,0,0.2)] font-black text-lg sm:text-xl gap-4 transition-all active:scale-95 text-white group"
                             >
                                 {isCreating ? <Loader2 className="animate-spin h-6 w-6" /> : <UserPlus className="h-6 w-6 group-hover:scale-110 transition-transform" />}
                                 Authorize Entry
