@@ -45,10 +45,10 @@ export default function AgentDashboard() {
     const [agentStatus, setAgentStatus] = useState<string | null>(null)
     const [isLoading, setIsLoading] = useState(true)
     const [stats, setStats] = useState([
-        { label: "Total Commission", value: "$0.00", change: "0%", trend: "up" },
         { label: "Active Requests", value: "0", change: "0%", trend: "up" },
-        { label: "Completion Rate", value: "0%", change: "0%", trend: "up" },
-        { label: "Direct Leads", value: "0", change: "0%", trend: "up" }
+        { label: "Responses Provided", value: "0", change: "0%", trend: "up" },
+        { label: "Pending Review", value: "0", change: "0%", trend: "up" },
+        { label: "Completed Sourcing", value: "0", change: "0%", trend: "up" }
     ])
 
     const fetchAgentData = async () => {
@@ -119,17 +119,16 @@ export default function AgentDashboard() {
             setOrders(ordersData || [])
 
             // 3. Calculate Stats
-            const totalOrders = ordersData?.length || 0
-            const activeSourcing = sourcingData?.filter(r => r.status === 'pending' || r.status === 'processing' || r.status === 'sourcing').length || 0
-            const completedOrders = ordersData?.filter(o => o.status === 'delivered' || o.status === 'completed').length || 0
-            const completionRate = totalOrders > 0 ? (completedOrders / totalOrders * 100).toFixed(0) : 0
-            const totalCommission = 0 // Future implementation
+            const totalRequests = sourcingData?.length || 0
+            const activeRequests = sourcingData?.filter(r => r.status === 'pending' || r.status === 'processing').length || 0
+            const quotedRequests = sourcingData?.filter(r => r.status === 'quoted').length || 0
+            const completedRequests = sourcingData?.filter(r => r.status === 'completed' || r.status === 'shipped').length || 0
 
             setStats([
-                { label: "Total Commission", value: `$${totalCommission.toLocaleString()}`, change: "+0%", trend: "up" },
-                { label: "Active Requests", value: (activeSourcing).toString(), change: `+${activeSourcing}`, trend: "up" },
-                { label: "Completion Rate", value: `${completionRate}%`, change: "stable", trend: "up" },
-                { label: "Direct Leads", value: totalOrders.toString(), change: "0%", trend: "up" }
+                { label: "Active Requests", value: activeRequests.toString(), change: "Live", trend: "up" },
+                { label: "Responses Provided", value: quotedRequests.toString(), change: "View all", trend: "up" },
+                { label: "Pending Review", value: (totalRequests - quotedRequests - completedRequests).toString(), change: "Action needed", trend: "up" },
+                { label: "Completed Sourcing", value: completedRequests.toString(), change: "Total", trend: "up" }
             ])
 
         } catch (error: any) {
@@ -291,115 +290,6 @@ export default function AgentDashboard() {
                 </CardContent>
             </Card>
 
-            {/* Recent Orders */}
-            <Card className="border-slate-100 shadow-xl shadow-slate-200/40 rounded-[2.5rem] overflow-hidden bg-white ring-1 ring-slate-100/50">
-                <CardHeader className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-50 p-10">
-                    <div className="space-y-1">
-                        <CardTitle className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-3">
-                            <ShoppingCart className="h-6 w-6 text-primary-blue" /> Assigned Workflow
-                        </CardTitle>
-                        <CardDescription className="text-slate-500 font-medium pt-1">Recent orders assigned to you for sourcing management.</CardDescription>
-                    </div>
-                    <div className="flex items-center gap-3">
-                        <div className="relative group">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-primary-blue transition-colors" />
-                            <Input
-                                placeholder="Search by name or ID..."
-                                className="pl-12 w-[300px] h-12 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white focus:ring-4 focus:ring-blue-100/50 transition-all font-medium"
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                            />
-                        </div>
-                        <Button variant="outline" className="h-12 w-12 rounded-2xl border-slate-100 text-slate-400 hover:text-slate-900 transition-all active:scale-90">
-                            <Filter className="h-5 w-5" />
-                        </Button>
-                    </div>
-                </CardHeader>
-                <CardContent className="p-0">
-                    <div className="overflow-x-auto">
-                        <Table>
-                            <TableHeader className="bg-slate-50/30">
-                                <TableRow className="hover:bg-transparent border-slate-100">
-                                    <TableHead className="font-bold text-slate-400 text-[10px] uppercase tracking-widest pl-10 h-14">Identity</TableHead>
-                                    <TableHead className="font-bold text-slate-400 text-[10px] uppercase tracking-widest h-14 text-center">Stakeholder</TableHead>
-                                    <TableHead className="font-bold text-slate-400 text-[10px] uppercase tracking-widest h-14">Inventory Details</TableHead>
-                                    <TableHead className="font-bold text-slate-400 text-[10px] uppercase tracking-widest h-14">Timeline</TableHead>
-                                    <TableHead className="font-bold text-slate-400 text-[10px] uppercase tracking-widest h-14">Status</TableHead>
-                                    <TableHead className="text-right font-bold text-slate-400 text-[10px] uppercase tracking-widest pr-10 h-14">Actions</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {filteredOrders.length === 0 ? (
-                                    <TableRow>
-                                        <TableCell colSpan={6} className="h-48 text-center">
-                                            <div className="flex flex-col items-center justify-center gap-4 opacity-50">
-                                                <Inbox className="h-10 w-10 text-slate-200" />
-                                                <p className="text-[10px] font-bold uppercase tracking-widest">No assigned orders found.</p>
-                                            </div>
-                                        </TableCell>
-                                    </TableRow>
-                                ) : (
-                                    filteredOrders.map((order) => (
-                                        <TableRow key={order.id} className="hover:bg-blue-50/20 transition-all border-slate-50 group cursor-pointer">
-                                            <TableCell className="pl-10 py-6">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="h-10 w-10 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-white group-hover:shadow-lg group-hover:shadow-blue-900/10 transition-all duration-300">
-                                                        <FileText className="h-5 w-5" />
-                                                    </div>
-                                                    <div className="flex flex-col">
-                                                        <span className="font-bold text-slate-900 leading-tight">Order #{order.id.slice(0, 8).toUpperCase()}</span>
-                                                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Sourcing Chain #442</span>
-                                                    </div>
-                                                </div>
-                                            </TableCell>
-                                            <TableCell className="py-6">
-                                                <div className="flex flex-col items-center gap-1">
-                                                    <div className="h-10 w-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-xs font-bold border border-blue-100 ring-4 ring-blue-50 group-hover:ring-blue-100 transition-all">
-                                                        {order.profiles?.full_name?.charAt(0)}
-                                                    </div>
-                                                    <span className="text-[10px] font-bold text-slate-600 uppercase tracking-tighter">{order.profiles?.full_name}</span>
-                                                </div>
-                                            </TableCell>
-                                            <TableCell className="py-6">
-                                                <div className="flex flex-col space-y-1 max-w-[200px]">
-                                                    <div className="flex items-center gap-2">
-                                                        <Truck className="h-4 w-4 text-primary-blue/60" />
-                                                        <span className="font-bold text-slate-800 text-sm truncate">{order.quotes?.sourcing_requests?.vehicle_info}</span>
-                                                    </div>
-                                                    <span className="text-[10px] font-bold text-slate-400 uppercase truncate pl-6">{order.quotes?.sourcing_requests?.part_name}</span>
-                                                </div>
-                                            </TableCell>
-                                            <TableCell className="py-6">
-                                                <div className="flex flex-col">
-                                                    <span className="font-bold text-slate-900 text-sm">{format(new Date(order.created_at), 'MMM dd')}</span>
-                                                    <span className="text-[10px] font-bold text-slate-400 uppercase">{format(new Date(order.created_at), 'p')}</span>
-                                                </div>
-                                            </TableCell>
-                                            <TableCell className="py-6">
-                                                <Badge variant="secondary" className={cn(
-                                                    "capitalize rounded-xl px-4 py-1.5 font-bold text-[10px] uppercase tracking-widest border-0 transition-all",
-                                                    order.status === 'pending_payment' ? "bg-orange-50 text-orange-600" :
-                                                        order.status === 'paid' ? "bg-blue-50 text-blue-600" :
-                                                            order.status === 'processing' ? "bg-purple-50 text-purple-600" :
-                                                                order.status === 'completed' ? "bg-emerald-50 text-emerald-600" :
-                                                                    "bg-slate-100 text-slate-600"
-                                                )}>
-                                                    {order.status.replace('_', ' ')}
-                                                </Badge>
-                                            </TableCell>
-                                            <TableCell className="text-right pr-10 py-6">
-                                                <Button variant="ghost" size="icon" className="h-10 w-10 rounded-2xl hover:bg-white hover:shadow-lg text-slate-300 hover:text-primary-blue transition-all active:scale-90">
-                                                    <MoreHorizontal className="h-5 w-5" />
-                                                </Button>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))
-                                )}
-                            </TableBody>
-                        </Table>
-                    </div>
-                </CardContent>
-            </Card>
         </div>
     )
 }

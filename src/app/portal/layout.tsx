@@ -37,9 +37,8 @@ const NAV_ITEMS = {
         { name: "My Account", href: "/portal/profile", icon: UserCircle },
     ],
     agent: [
-        { name: "Sourcing Queue", href: "/portal/agent", icon: PackageSearch },
-        { name: "All Orders", href: "/portal/orders", icon: LayoutDashboard },
-        { name: "Account Details", href: "/portal/profile", icon: UserCircle },
+        { name: "Active Requests", href: "/portal/agent", icon: PackageSearch },
+        { name: "My Account", href: "/portal/profile", icon: UserCircle },
     ],
     admin: [
         { name: "Overview", href: "/portal/admin", icon: LayoutDashboard },

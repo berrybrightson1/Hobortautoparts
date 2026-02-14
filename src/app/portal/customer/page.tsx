@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Plus, Package, Car, Clock, ChevronRight, Inbox, Loader2 } from "lucide-react"
+import { Plus, Package, Car, Clock, ChevronRight, Inbox, Loader2, Activity } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/components/auth/auth-provider"
 import { useState, useEffect } from "react"
@@ -47,56 +47,11 @@ export default function CustomerDashboard() {
         }
     }
 
-    const handleViewQuote = (request: any) => {
+    const handleViewRequest = (request: any) => {
+        setSelectedRequest(request)
         const activeQuote = request.quotes?.[0]
-        if (activeQuote) {
-            setQuote(activeQuote)
-            setSelectedRequest(request)
-            setIsQuoteModalOpen(true)
-        } else {
-            router.push(`/portal/tracking/${request.id}`)
-        }
-    }
-
-    const handleAcceptQuote = async () => {
-        if (!quote || !user) return
-        setIsAccepting(true)
-        try {
-            // 1. Create the Order
-            const { data: order, error: orderError } = await supabase
-                .from('orders')
-                .insert({
-                    user_id: user.id,
-                    quote_id: quote.id,
-                    status: 'paid', // For now, we simulate immediate success
-                    payment_method: 'Manual Verification',
-                })
-                .select()
-                .single()
-
-            if (orderError) throw orderError
-
-            // 2. Update the Request Status
-            const { error: requestError } = await supabase
-                .from('sourcing_requests')
-                .update({ status: 'shipped' }) // Or another status
-                .eq('id', selectedRequest.id)
-
-            if (requestError) throw requestError
-
-            toast.success("Quote Accepted!", {
-                description: "Your order has been finalized. Logistics initialization is underway."
-            })
-            setIsQuoteModalOpen(false)
-            fetchOrders()
-            router.push('/portal/orders') // Move to orders control to see result (simulating flow)
-        } catch (error: any) {
-            toast.error("Process Failed", {
-                description: error.message
-            })
-        } finally {
-            setIsAccepting(false)
-        }
+        setQuote(activeQuote)
+        setIsQuoteModalOpen(true)
     }
 
     useEffect(() => {
@@ -190,14 +145,14 @@ export default function CustomerDashboard() {
                                                 </div>
 
                                                 <Button
-                                                    onClick={() => handleViewQuote(order)}
+                                                    onClick={() => handleViewRequest(order)}
                                                     variant="outline"
                                                     className={cn(
                                                         "w-full sm:w-auto rounded-xl border-slate-200 text-[10px] font-bold uppercase tracking-widest transition-all active:scale-95 shrink-0",
-                                                        order.status === 'quoted' ? "bg-purple-600 border-purple-600 text-white hover:bg-purple-700 hover:text-white" : "hover:text-primary-blue hover:border-blue-200 hover:bg-blue-50"
+                                                        order.status === 'quoted' ? "bg-primary-orange border-primary-orange text-white hover:bg-orange-600 hover:text-white" : "hover:text-primary-blue hover:border-blue-200 hover:bg-blue-50"
                                                     )}
                                                 >
-                                                    {order.status === 'quoted' ? "Review Quote" : "View Lifecycle"}
+                                                    {order.status === 'quoted' ? "View Feedback" : "View Details"}
                                                 </Button>
                                             </div>
                                         </div>
@@ -225,48 +180,25 @@ export default function CustomerDashboard() {
                     </div>
                 </div>
 
-                {/* Sidebar: My Vehicles */}
-                <div className="space-y-6">
-                    <div className="flex items-center justify-between px-1">
-                        <h3 className="text-xl font-semibold text-slate-900 flex items-center gap-3">
-                            <Car className="h-6 w-6 text-primary-orange" /> My Garage
-                        </h3>
-                        <Button variant="ghost" size="sm" className="h-10 w-10 p-0 rounded-2xl hover:bg-slate-100 text-slate-400 transition-all">
-                            <Plus className="h-5 w-5" />
+
+                <Card className="bg-slate-900 text-white border-none shadow-2xl shadow-slate-900/20 rounded-[2.5rem] overflow-hidden relative group">
+                    {/* Decorative background effects */}
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary-orange/20 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl group-hover:bg-primary-orange/30 transition-colors" />
+                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-primary-blue/20 rounded-full translate-y-1/2 -translate-x-1/2 blur-2xl group-hover:bg-primary-blue/30 transition-colors" />
+
+                    <CardHeader className="relative z-10 pb-2">
+                        <CardTitle className="text-2xl font-bold tracking-tight">Need Help?</CardTitle>
+                    </CardHeader>
+                    <CardContent className="text-slate-400 text-sm space-y-8 relative z-10">
+                        <p className="font-medium leading-relaxed">Our expert agents are ready to assist you with finding the exact parts for your vehicle.</p>
+                        <Button className="w-full bg-white text-slate-900 hover:bg-primary-orange hover:text-white font-bold uppercase tracking-widest text-xs h-14 rounded-2xl shadow-xl shadow-black/10 border-0 transition-all active:scale-95">
+                            Contact Support
                         </Button>
-                    </div>
-
-                    <Card className="border-slate-100 shadow-xl shadow-slate-200/40 bg-white rounded-[2.5rem] overflow-hidden group">
-                        <CardContent className="p-10 flex flex-col items-center justify-center text-center gap-6">
-                            <div className="h-16 w-16 bg-slate-50 rounded-[1.5rem] flex items-center justify-center text-slate-200 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-inner">
-                                <Car className="h-8 w-8" />
-                            </div>
-                            <div className="space-y-2">
-                                <p className="text-lg font-bold text-slate-900 leading-none">Your garage is empty</p>
-                                <p className="text-xs text-slate-400 font-semibold leading-relaxed">Add vehicles to speed up your sourcing requests.</p>
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    <Card className="bg-slate-900 text-white border-none shadow-2xl shadow-slate-900/20 rounded-[2.5rem] overflow-hidden relative group">
-                        {/* Decorative background effects */}
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-primary-orange/20 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl group-hover:bg-primary-orange/30 transition-colors" />
-                        <div className="absolute bottom-0 left-0 w-24 h-24 bg-primary-blue/20 rounded-full translate-y-1/2 -translate-x-1/2 blur-2xl group-hover:bg-primary-blue/30 transition-colors" />
-
-                        <CardHeader className="relative z-10 pb-2">
-                            <CardTitle className="text-2xl font-bold tracking-tight">Need Help?</CardTitle>
-                        </CardHeader>
-                        <CardContent className="text-slate-400 text-sm space-y-8 relative z-10">
-                            <p className="font-medium leading-relaxed">Our expert agents are ready to assist you with finding the exact parts for your vehicle.</p>
-                            <Button className="w-full bg-white text-slate-900 hover:bg-primary-orange hover:text-white font-bold uppercase tracking-widest text-xs h-14 rounded-2xl shadow-xl shadow-black/10 border-0 transition-all active:scale-95">
-                                Contact Support
-                            </Button>
-                        </CardContent>
-                    </Card>
-                </div>
+                    </CardContent>
+                </Card>
             </div>
 
-            {/* Quote Acceptance Modal */}
+            {/* Request Details Modal */}
             <ResponsiveModal
                 open={isQuoteModalOpen}
                 onOpenChange={setIsQuoteModalOpen}
@@ -275,62 +207,75 @@ export default function CustomerDashboard() {
                 <div className="p-10 flex flex-col gap-10">
                     <div className="flex flex-col gap-3">
                         <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 rounded-2xl bg-purple-100 flex items-center justify-center text-purple-600">
-                                <ShieldCheck className="h-6 w-6" />
+                            <div className="h-10 w-10 rounded-2xl bg-orange-100 flex items-center justify-center text-primary-orange">
+                                <Activity className="h-6 w-6" />
                             </div>
-                            <h3 className="text-3xl font-bold tracking-tight text-slate-900">Finalized Quote</h3>
+                            <h3 className="text-3xl font-bold tracking-tight text-slate-900">Request Details</h3>
                         </div>
-                        <p className="text-slate-500 font-medium">Please review the financial breakdown for <strong>{selectedRequest?.part_name}</strong>.</p>
+                        <p className="text-slate-500 font-medium">Tracking the lifecycle of <strong>{selectedRequest?.part_name}</strong>.</p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-slate-50 p-8 rounded-[2.5rem] border border-slate-100 shadow-inner">
-                        <div className="space-y-6">
-                            <div className="space-y-1">
-                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Market Value (USA)</p>
-                                <p className="text-3xl font-black text-slate-900 leading-none">${quote?.item_price}</p>
-                            </div>
-                            <div className="space-y-1">
-                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Logistics & Freight</p>
-                                <p className="text-2xl font-bold text-slate-900 leading-none">${quote?.shipping_cost}</p>
-                            </div>
+                    <div className="space-y-6">
+                        <div className="flex flex-col gap-2 p-6 bg-slate-50 rounded-3xl border border-slate-100">
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Sourcing Status</p>
+                            <Badge className={cn("w-fit rounded-lg px-3 py-1 border-0 shadow-sm font-bold text-[10px] uppercase tracking-wider", getStatusColor(selectedRequest?.status))}>
+                                {selectedRequest?.status}
+                            </Badge>
                         </div>
-                        <div className="space-y-6 md:border-l md:border-slate-200 md:pl-8 flex flex-col justify-end">
-                            <div className="space-y-1">
-                                <p className="text-[10px] font-bold text-primary-orange uppercase tracking-widest">Total Landing Cost</p>
-                                <p className="text-4xl font-black text-slate-900 tracking-tighter leading-none">${quote?.total_amount}</p>
+
+                        {quote ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-slate-900 text-white p-8 rounded-[2.5rem] border border-slate-800 shadow-2xl">
+                                <div className="space-y-6">
+                                    <div className="space-y-1">
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Target Item Price</p>
+                                        <p className="text-3xl font-black text-white leading-none">${quote.item_price}</p>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Logistics Estimate</p>
+                                        <p className="text-2xl font-bold text-white leading-none">${quote.shipping_cost}</p>
+                                    </div>
+                                </div>
+                                <div className="space-y-6 md:border-l md:border-white/10 md:pl-8 flex flex-col justify-end">
+                                    <div className="space-y-1">
+                                        <p className="text-[10px] font-bold text-primary-orange uppercase tracking-widest">Total Sourcing Value</p>
+                                        <p className="text-4xl font-black text-white tracking-tighter leading-none">${quote.total_amount}</p>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                        ) : (
+                            <div className="p-8 bg-blue-50 rounded-[2.5rem] border border-blue-100 flex items-center gap-5">
+                                <div className="h-12 w-12 rounded-2xl bg-white flex items-center justify-center text-blue-500 shadow-sm">
+                                    <Info className="h-6 w-6" />
+                                </div>
+                                <div className="space-y-1">
+                                    <p className="text-sm font-bold text-blue-900">Our agents are searching for this item.</p>
+                                    <p className="text-xs font-medium text-blue-600">Once a match is found and priced, details will appear here.</p>
+                                </div>
+                            </div>
+                        )}
+
+                        {quote?.notes && (
+                            <div className="space-y-2">
+                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Agent Feedback</p>
+                                <p className="text-slate-600 font-medium leading-relaxed bg-slate-50 p-6 rounded-3xl border border-slate-100">{quote.notes}</p>
+                            </div>
+                        )}
                     </div>
 
                     <div className="flex flex-col sm:flex-row gap-4">
                         <Button
-                            className="flex-1 h-16 rounded-2xl bg-slate-900 text-white font-bold uppercase tracking-widest text-xs hover:bg-slate-800 transition-all shadow-2xl shadow-slate-900/20"
-                            onClick={handleAcceptQuote}
-                            disabled={isAccepting}
+                            variant="outline"
+                            className="flex-1 h-14 rounded-2xl border-2 border-slate-200 text-slate-600 font-bold uppercase tracking-widest text-xs hover:bg-slate-50 transition-all"
+                            onClick={() => setIsQuoteModalOpen(false)}
                         >
-                            {isAccepting ? (
-                                <Loader2 className="h-5 w-5 animate-spin" />
-                            ) : (
-                                <>
-                                    <CreditCard className="mr-3 h-5 w-5" /> Accept & Pay Now
-                                </>
-                            )}
+                            Close Details
                         </Button>
                         <Button
-                            variant="outline"
-                            className="flex-1 h-16 rounded-2xl border-2 border-slate-200 text-slate-600 font-bold uppercase tracking-widest text-xs hover:bg-slate-50 transition-all"
-                            onClick={() => setIsQuoteModalOpen(false)}
-                            disabled={isAccepting}
+                            className="flex-1 h-14 rounded-2xl bg-primary-blue text-white font-bold uppercase tracking-widest text-xs hover:bg-blue-700 transition-all shadow-xl shadow-blue-900/20"
+                            onClick={() => router.push(`/contact?ref=${selectedRequest?.id}`)}
                         >
-                            Decline
+                            Inquire with Agent
                         </Button>
-                    </div>
-
-                    <div className="flex items-center gap-4 p-6 bg-blue-50 rounded-3xl border border-blue-100">
-                        <Info className="h-6 w-6 text-blue-500 shrink-0" />
-                        <p className="text-[11px] font-semibold text-blue-700 leading-relaxed uppercase tracking-tight">
-                            By accepting, you authorize Hobort to proceed with local US procurement. Total amount includes all clearing and handling fees.
-                        </p>
                     </div>
                 </div>
             </ResponsiveModal>
@@ -355,7 +300,7 @@ function Calendar(props: any) {
             <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
             <line x1="16" x2="16" y1="2" y2="6" />
             <line x1="8" x2="8" y1="2" y2="6" />
-            <line x1="3" x2="21" y1="10" border-slate-100 />
+            <line x1="3" x2="21" y1="10" />
         </svg>
     )
 }
