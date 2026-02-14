@@ -52,7 +52,6 @@ interface Shipment {
         profiles?: {
             full_name: string | null
         }
-        vehicle_info?: string
     }
 }
 
@@ -81,7 +80,6 @@ export default function ShipmentManagerPage() {
                 .select(`
                     *,
                     orders (
-                        vehicle_info,
                         profiles (
                             full_name
                         )
