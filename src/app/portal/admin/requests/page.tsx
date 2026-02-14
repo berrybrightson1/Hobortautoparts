@@ -20,12 +20,13 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Search, Filter, MoreHorizontal, Package, CheckCircle2, Clock, AlertCircle, Inbox, Loader2, ArrowRight, DollarSign, Calculator, Info, Users } from "lucide-react"
+import { Search, Filter, MoreHorizontal, Package, CheckCircle2, Clock, AlertCircle, Inbox, Loader2, ArrowRight, DollarSign, Calculator, Info, Users, Truck } from "lucide-react"
 import { useState, useEffect, useMemo } from "react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { supabase } from "@/lib/supabase"
 import { format } from "date-fns"
+import { useSearchParams } from "next/navigation"
 import {
     Dialog,
     DialogContent,
@@ -36,6 +37,7 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { useAuth } from "@/components/auth/auth-provider"
+import { useRouter } from "next/navigation"
 
 interface SourcingRequest {
     id: string
@@ -52,6 +54,7 @@ interface SourcingRequest {
 
 export default function SourcingRequestsPage() {
     const { user } = useAuth()
+    const router = useRouter()
     const [searchTerm, setSearchTerm] = useState('')
     const [requests, setRequests] = useState<SourcingRequest[]>([])
     const [isLoading, setIsLoading] = useState(true)
@@ -350,12 +353,45 @@ export default function SourcingRequestsPage() {
 
                                                         <DropdownMenuItem
                                                             onClick={() => openQuoteModal(request)}
-                                                            className="rounded-xl px-3 py-2.5 cursor-pointer hover:bg-orange-50 focus:bg-orange-50 text-slate-600 focus:text-orange-700 group transition-colors"
+                                                            className="rounded-xl px-3 py-2.5 mb-1 cursor-pointer hover:bg-orange-50 focus:bg-orange-50 text-slate-600 focus:text-orange-700 group transition-colors"
                                                         >
                                                             <div className="h-8 w-8 rounded-full bg-orange-100 flex items-center justify-center mr-3 group-hover:bg-white group-hover:shadow-sm transition-all">
                                                                 <ArrowRight className="h-4 w-4 text-orange-600" />
                                                             </div>
                                                             <span className="font-medium">Create Quote</span>
+                                                        </DropdownMenuItem>
+
+                                                        <DropdownMenuItem
+                                                            onClick={async () => {
+                                                                // Find the order for this request
+                                                                const { data: quote } = await supabase
+                                                                    .from('quotes')
+                                                                    .select('id')
+                                                                    .eq('request_id', request.id)
+                                                                    .single()
+
+                                                                if (quote) {
+                                                                    const { data: order } = await supabase
+                                                                        .from('orders')
+                                                                        .select('id')
+                                                                        .eq('quote_id', quote.id)
+                                                                        .single()
+
+                                                                    if (order) {
+                                                                        router.push(`/portal/admin/shipments?order_id=${order.id}`)
+                                                                    } else {
+                                                                        toast.error("No accepted order found for this request.")
+                                                                    }
+                                                                } else {
+                                                                    toast.error("No quote found for this request.")
+                                                                }
+                                                            }}
+                                                            className="rounded-xl px-3 py-2.5 cursor-pointer hover:bg-blue-50 focus:bg-blue-50 text-slate-600 focus:text-blue-700 group transition-colors"
+                                                        >
+                                                            <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center mr-3 group-hover:bg-white group-hover:shadow-sm transition-all">
+                                                                <Truck className="h-4 w-4 text-blue-600" />
+                                                            </div>
+                                                            <span className="font-medium">Initiate Shipment</span>
                                                         </DropdownMenuItem>
                                                     </DropdownMenuContent>
                                                 </DropdownMenu>

@@ -30,19 +30,20 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
-import { Search, Filter, MoreHorizontal, Truck, Ship, Plane, CheckCircle, Clock, AlertCircle, Inbox, Plus, Loader2, ArrowRight, Info, Package } from "lucide-react"
+import { Search, Filter, MoreHorizontal, Truck, Ship, Plane, CheckCircle, Clock, AlertCircle, Inbox, Plus, Loader2, ArrowRight, Info, Package, MapPin } from "lucide-react"
 import { useState, useEffect } from "react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { supabase } from "@/lib/supabase"
 import { format } from "date-fns"
+import { useSearchParams } from "next/navigation"
 
 interface Shipment {
     id: string
     order_id: string
     tracking_number: string
     carrier: string
-    status: 'pending' | 'in_transit' | 'customs' | 'delivered'
+    status: 'received_at_hub' | 'in_transit_air' | 'in_transit_sea' | 'clearing_customs' | 'ready_for_pickup' | 'delivered'
     origin: string
     destination: string
     estimated_delivery: string
@@ -62,9 +63,12 @@ export default function ShipmentManagerPage() {
     const [isCreating, setIsCreating] = useState(false)
     const [showCreateDialog, setShowCreateDialog] = useState(false)
     const [updatingId, setUpdatingId] = useState<string | null>(null)
+    const searchParams = useSearchParams()
+    const orderIdFromUrl = searchParams.get('order_id')
 
     // New shipment form
     const [newShipment, setNewShipment] = useState({
+        order_id: '',
         tracking_number: '',
         carrier: '',
         origin: '',
@@ -100,7 +104,12 @@ export default function ShipmentManagerPage() {
 
     useEffect(() => {
         fetchShipments()
-    }, [])
+
+        if (orderIdFromUrl) {
+            setNewShipment(prev => ({ ...prev, order_id: orderIdFromUrl }))
+            setShowCreateDialog(true)
+        }
+    }, [orderIdFromUrl])
 
     const handleStatusUpdate = async (shipmentId: string, newStatus: Shipment['status']) => {
         setUpdatingId(shipmentId)
@@ -142,7 +151,7 @@ export default function ShipmentManagerPage() {
                 .from('shipments')
                 .insert({
                     ...newShipment,
-                    status: 'pending'
+                    status: 'received_at_hub'
                 })
 
             if (error) throw error
@@ -150,6 +159,7 @@ export default function ShipmentManagerPage() {
             toast.success("Shipment created successfully!")
             setShowCreateDialog(false)
             setNewShipment({
+                order_id: '',
                 tracking_number: '',
                 carrier: '',
                 origin: '',
@@ -174,8 +184,8 @@ export default function ShipmentManagerPage() {
 
     // Calculate stats
     const stats = {
-        inTransit: shipments.filter(s => s.status === 'in_transit').length,
-        customs: shipments.filter(s => s.status === 'customs').length,
+        inTransit: shipments.filter(s => s.status === 'in_transit_air' || s.status === 'in_transit_sea').length,
+        customs: shipments.filter(s => s.status === 'clearing_customs').length,
         delivered: shipments.filter(s => s.status === 'delivered' &&
             new Date(s.actual_delivery || '').toDateString() === new Date().toDateString()).length
     }
@@ -408,13 +418,15 @@ export default function ShipmentManagerPage() {
                                             <TableCell className="py-4">
                                                 <Badge variant="secondary" className={cn(
                                                     "capitalize font-semibold border-0 px-2 py-0.5 shadow-none",
-                                                    shipment.status === 'pending' ? "bg-orange-100 text-orange-700" :
-                                                        shipment.status === 'in_transit' ? "bg-blue-100 text-blue-700" :
-                                                            shipment.status === 'customs' ? "bg-purple-100 text-purple-700" :
-                                                                shipment.status === 'delivered' ? "bg-emerald-100 text-emerald-700" :
-                                                                    "bg-slate-100 text-slate-700"
+                                                    shipment.status === 'received_at_hub' ? "bg-slate-100 text-slate-700" :
+                                                        shipment.status === 'in_transit_air' ? "bg-blue-100 text-blue-700" :
+                                                            shipment.status === 'in_transit_sea' ? "bg-indigo-100 text-indigo-700" :
+                                                                shipment.status === 'clearing_customs' ? "bg-purple-100 text-purple-700" :
+                                                                    shipment.status === 'ready_for_pickup' ? "bg-orange-100 text-orange-700" :
+                                                                        shipment.status === 'delivered' ? "bg-emerald-100 text-emerald-700" :
+                                                                            "bg-slate-50 text-slate-500"
                                                 )}>
-                                                    {shipment.status.replace('_', ' ')}
+                                                    {shipment.status.replace(/_/g, ' ')}
                                                 </Badge>
                                             </TableCell>
                                             <TableCell className="text-slate-500 text-xs font-medium py-4">
@@ -435,32 +447,62 @@ export default function ShipmentManagerPage() {
                                                         <DropdownMenuLabel className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-3 py-2">Update Status</DropdownMenuLabel>
 
                                                         <DropdownMenuItem
-                                                            onClick={() => handleStatusUpdate(shipment.id, 'in_transit')}
-                                                            className="rounded-xl px-3 py-2.5 mb-1 cursor-pointer hover:bg-blue-50 focus:bg-blue-50 text-slate-600 focus:text-blue-700 group transition-colors"
+                                                            onClick={() => handleStatusUpdate(shipment.id, 'received_at_hub')}
+                                                            className="rounded-xl px-3 py-2.5 mb-1 cursor-pointer hover:bg-slate-50 text-slate-600 focus:text-slate-900 group"
                                                         >
-                                                            <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center mr-3 group-hover:bg-white group-hover:shadow-sm transition-all">
-                                                                <Plane className="h-4 w-4 text-blue-600" />
+                                                            <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center mr-3">
+                                                                <Package className="h-4 w-4" />
                                                             </div>
-                                                            <span className="font-medium">Mark In Transit</span>
+                                                            <span className="font-medium">Received at Hub</span>
                                                         </DropdownMenuItem>
 
                                                         <DropdownMenuItem
-                                                            onClick={() => handleStatusUpdate(shipment.id, 'customs')}
-                                                            className="rounded-xl px-3 py-2.5 mb-1 cursor-pointer hover:bg-purple-50 focus:bg-purple-50 text-slate-600 focus:text-purple-700 group transition-colors"
+                                                            onClick={() => handleStatusUpdate(shipment.id, 'in_transit_air')}
+                                                            className="rounded-xl px-3 py-2.5 mb-1 cursor-pointer hover:bg-blue-50 focus:bg-blue-50 text-slate-600 focus:text-blue-700 group"
                                                         >
-                                                            <div className="h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center mr-3 group-hover:bg-white group-hover:shadow-sm transition-all">
+                                                            <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                                                                <Plane className="h-4 w-4 text-blue-600" />
+                                                            </div>
+                                                            <span className="font-medium">In Transit (Air)</span>
+                                                        </DropdownMenuItem>
+
+                                                        <DropdownMenuItem
+                                                            onClick={() => handleStatusUpdate(shipment.id, 'in_transit_sea')}
+                                                            className="rounded-xl px-3 py-2.5 mb-1 cursor-pointer hover:bg-indigo-50 focus:bg-indigo-50 text-slate-600 focus:text-indigo-700 group"
+                                                        >
+                                                            <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center mr-3">
+                                                                <Ship className="h-4 w-4 text-indigo-600" />
+                                                            </div>
+                                                            <span className="font-medium">In Transit (Sea)</span>
+                                                        </DropdownMenuItem>
+
+                                                        <DropdownMenuItem
+                                                            onClick={() => handleStatusUpdate(shipment.id, 'clearing_customs')}
+                                                            className="rounded-xl px-3 py-2.5 mb-1 cursor-pointer hover:bg-purple-50 focus:bg-purple-50 text-slate-600 focus:text-purple-700 group"
+                                                        >
+                                                            <div className="h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center mr-3">
                                                                 <AlertCircle className="h-4 w-4 text-purple-600" />
                                                             </div>
-                                                            <span className="font-medium">Mark At Customs</span>
+                                                            <span className="font-medium">Clearing Customs</span>
+                                                        </DropdownMenuItem>
+
+                                                        <DropdownMenuItem
+                                                            onClick={() => handleStatusUpdate(shipment.id, 'ready_for_pickup')}
+                                                            className="rounded-xl px-3 py-2.5 mb-1 cursor-pointer hover:bg-orange-50 focus:bg-orange-50 text-slate-600 focus:text-orange-700 group"
+                                                        >
+                                                            <div className="h-8 w-8 rounded-full bg-orange-100 flex items-center justify-center mr-3">
+                                                                <MapPin className="h-4 w-4 text-orange-600" />
+                                                            </div>
+                                                            <span className="font-medium">Ready for Pickup</span>
                                                         </DropdownMenuItem>
 
                                                         <DropdownMenuSeparator className="my-1 bg-slate-100" />
 
                                                         <DropdownMenuItem
                                                             onClick={() => handleStatusUpdate(shipment.id, 'delivered')}
-                                                            className="rounded-xl px-3 py-2.5 cursor-pointer hover:bg-emerald-50 focus:bg-emerald-50 text-slate-600 focus:text-emerald-700 group transition-colors"
+                                                            className="rounded-xl px-3 py-2.5 cursor-pointer hover:bg-emerald-50 focus:bg-emerald-50 text-slate-600 focus:text-emerald-700 group"
                                                         >
-                                                            <div className="h-8 w-8 rounded-full bg-emerald-100 flex items-center justify-center mr-3 group-hover:bg-white group-hover:shadow-sm transition-all">
+                                                            <div className="h-8 w-8 rounded-full bg-emerald-100 flex items-center justify-center mr-3">
                                                                 <CheckCircle className="h-4 w-4 text-emerald-600" />
                                                             </div>
                                                             <span className="font-medium">Mark Delivered</span>
