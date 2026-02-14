@@ -201,13 +201,14 @@ export function HeroSlider() {
                 style={{ backgroundImage: `url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIi8+CjxjaXJjbGUgY3g9IjEiIGN5PSIxIiByPSIxIiBmaWxsPSIjMDAwIi8+Cjwvc3ZnPg==')` }}>
             </div>
 
-            <div className="relative z-20 max-w-[1400px] mx-auto px-6 h-full grid lg:grid-cols-2 gap-12 items-center pt-24 pb-48 lg:pb-0 min-h-[100dvh]">
+            <div className="relative z-20 max-w-[1400px] mx-auto px-6 h-full grid lg:grid-cols-2 gap-12 items-center pt-20 md:pt-32 pb-40 lg:pb-0 min-h-[100dvh]">
                 <div className="flex flex-col justify-center space-y-8">
                     <motion.div
                         key={currentSlide + "content"}
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2, duration: 0.8, ease: "easeOut" }}
+                        className="flex flex-col items-center lg:items-start text-center lg:text-left"
                     >
                         {/* Premium Hero Badge */}
                         <div className="relative inline-flex items-center gap-4 mb-6 group cursor-default">
@@ -223,28 +224,28 @@ export function HeroSlider() {
                             </div>
                         </div>
                         {/* Headline */}
-                        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-extrabold tracking-tighter text-white drop-shadow-2xl mb-4 font-display leading-[1.1]">
+                        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tighter text-white drop-shadow-2xl mb-6 font-display leading-[1.1] max-w-2xl mx-auto lg:mx-0">
                             {current.title}
                         </h1>
                         {/* Subtext */}
-                        <div className="pl-6 border-l-4 border-primary-orange/50 mb-6">
-                            <p className="text-base md:text-lg text-slate-300 max-w-xl font-medium leading-relaxed min-h-[4.5rem] md:min-h-[5.25rem]">
+                        <div className="pl-0 lg:pl-6 border-l-0 lg:border-l-4 border-primary-orange/50 mb-8 max-w-xl mx-auto lg:mx-0">
+                            <p className="text-base md:text-lg text-slate-300 font-medium leading-relaxed min-h-[4.5rem] md:min-h-[5.25rem]">
                                 {current.description}
                             </p>
                         </div>
 
-                        <div className="flex flex-row gap-3 md:gap-5 w-full sm:w-auto pt-4">
-                            <Link href="/signup" className="flex-1 sm:flex-none">
-                                <Button className="w-full h-14 md:h-16 px-6 md:px-10 rounded-full bg-primary-orange hover:bg-orange-600 text-white font-bold text-sm md:text-lg shadow-[0_0_40px_-10px_rgba(249,115,22,0.3)] hover:shadow-orange-500/40 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2 group whitespace-nowrap border-none">
+                        <div className="flex flex-col sm:flex-row gap-4 md:gap-5 w-full sm:w-auto pt-6 px-4 sm:px-0">
+                            <Link href="/signup" className="w-full sm:w-auto">
+                                <Button className="w-full h-14 md:h-16 px-8 md:px-12 rounded-full bg-primary-orange hover:bg-orange-600 text-white font-bold text-sm md:text-lg shadow-[0_0_40px_-10px_rgba(249,115,22,0.3)] hover:shadow-orange-500/40 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2 group whitespace-nowrap border-none">
                                     Get Started
                                     <ChevronRight className="w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:translate-x-1" />
                                 </Button>
                             </Link>
 
-                            <div className="flex-1 sm:flex-none">
+                            <div className="w-full sm:w-auto">
                                 <Button
                                     onClick={() => setIsVideoOpen(true)}
-                                    className="w-full h-14 md:h-16 px-6 md:px-10 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 backdrop-blur-sm text-white font-bold text-sm md:text-lg hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2 whitespace-nowrap group"
+                                    className="w-full h-14 md:h-16 px-8 md:px-12 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 backdrop-blur-sm text-white font-bold text-sm md:text-lg hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2 whitespace-nowrap group"
                                 >
                                     <div className="h-6 w-6 rounded-full bg-white flex items-center justify-center group-hover:scale-110 transition-transform">
                                         <Play className="w-2.5 h-2.5 ml-0.5 text-slate-900 fill-current" />
@@ -255,7 +256,7 @@ export function HeroSlider() {
                         </div>
                     </motion.div>
 
-                    <div className="mt-4 md:mt-10">
+                    <div className="mt-8 md:mt-12 w-full max-w-xl mx-auto lg:mx-0">
                         <TrackingWidget />
                     </div>
                 </div>
@@ -293,25 +294,31 @@ export function HeroSlider() {
             <div className="absolute bottom-0 left-0 w-full z-30 bg-slate-900/60 backdrop-blur-xl border-t border-white/10 py-6 md:py-8">
                 <div className="max-w-[1400px] mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-10 md:gap-4">
                     <div className="flex items-center gap-4 lg:gap-8 shrink-0">
-                        <div className="flex items-center gap-3 group cursor-default">
-                            <div className="w-8 h-8 rounded-full bg-primary-orange/20 flex items-center justify-center border border-primary-orange/30 transition-all group-hover:bg-primary-orange/30">
-                                <CheckCircle2 className="w-4 h-4 text-primary-orange" />
+                        <div className="flex flex-col md:flex-row items-start md:items-center gap-4 group cursor-default">
+                            <div className="flex items-center gap-3">
+                                <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-primary-orange/20 flex items-center justify-center border border-primary-orange/30 transition-all group-hover:bg-primary-orange/30">
+                                    <CheckCircle2 className="w-3 h-3 md:w-4 md:h-4 text-primary-orange" />
+                                </div>
+                                <span className="text-[10px] md:text-sm font-black tracking-[0.2em] uppercase text-white/90 group-hover:text-white transition-colors">Identify</span>
                             </div>
-                            <span className="text-[10px] md:text-sm font-black tracking-[0.2em] uppercase text-white/90 group-hover:text-white transition-colors">Identify</span>
                         </div>
                         <div className="h-4 w-px bg-white/10" />
-                        <div className="flex items-center gap-3 group cursor-default">
-                            <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center border border-blue-500/30 transition-all group-hover:bg-blue-500/30">
-                                <Globe2 className="w-4 h-4 text-blue-400" />
+                        <div className="flex flex-col md:flex-row items-start md:items-center gap-4 group cursor-default">
+                            <div className="flex items-center gap-3">
+                                <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-blue-500/20 flex items-center justify-center border border-blue-500/30 transition-all group-hover:bg-blue-500/30">
+                                    <Globe2 className="w-3 h-3 md:w-4 md:h-4 text-blue-400" />
+                                </div>
+                                <span className="text-[10px] md:text-sm font-black tracking-[0.2em] uppercase text-white/90 group-hover:text-white transition-colors">Source</span>
                             </div>
-                            <span className="text-[10px] md:text-sm font-black tracking-[0.2em] uppercase text-white/90 group-hover:text-white transition-colors">Source</span>
                         </div>
-                        <div className="h-4 w-px bg-white/10" />
-                        <div className="flex items-center gap-3 group cursor-default">
-                            <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30 transition-all group-hover:bg-emerald-500/30">
-                                <Truck className="w-4 h-4 text-emerald-400" />
+                        <div className="h-4 w-px bg-white/10 hidden md:block" />
+                        <div className="flex flex-col md:flex-row items-start md:items-center gap-4 group cursor-default">
+                            <div className="flex items-center gap-3">
+                                <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30 transition-all group-hover:bg-emerald-500/30">
+                                    <Truck className="w-3 h-3 md:w-4 md:h-4 text-emerald-400" />
+                                </div>
+                                <span className="text-[10px] md:text-sm font-black tracking-[0.2em] uppercase text-white/90 group-hover:text-white transition-colors">Deliver</span>
                             </div>
-                            <span className="text-[10px] md:text-sm font-black tracking-[0.2em] uppercase text-white/90 group-hover:text-white transition-colors">Deliver</span>
                         </div>
                     </div>
 

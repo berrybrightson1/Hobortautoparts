@@ -387,57 +387,61 @@ export default function SourcingRequestsPage() {
 
             {/* Quote Builder Modal */}
             <Dialog open={showQuoteModal} onOpenChange={setShowQuoteModal}>
-                <DialogContent className="sm:max-w-[550px] p-0 overflow-hidden border-0 shadow-2xl rounded-[2.5rem] bg-white">
+                <DialogContent className="sm:max-w-[550px] p-0 overflow-hidden border-0 shadow-2xl rounded-[2.5rem] bg-[#0c1425] text-white">
                     <DialogHeader className="p-8 pb-0">
-                        <DialogTitle className="text-2xl font-bold tracking-tight text-slate-900 group flex items-center gap-3">
-                            <div className="h-10 w-10 rounded-2xl bg-orange-100 flex items-center justify-center text-orange-600 transition-transform group-hover:scale-110">
-                                <DollarSign className="h-6 w-6" />
+                        <DialogTitle className="text-2xl font-bold tracking-tight text-white group flex items-center gap-4">
+                            <div className="h-12 w-12 rounded-2xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-500 transition-transform group-hover:scale-110 shadow-[0_0_20px_rgba(249,115,22,0.1)]">
+                                <DollarSign className="h-7 w-7" />
                             </div>
                             Generate Official Quote
                         </DialogTitle>
-                        <DialogDescription className="text-slate-500 font-medium pt-2">
-                            Create a detailed financial breakdown for <span className="text-slate-900 font-bold italic">"{selectedRequest?.part_name}"</span>.
+                        <DialogDescription className="text-slate-400 font-medium pt-3 text-base">
+                            Create a detailed financial breakdown for <span className="text-white font-bold italic">"{selectedRequest?.part_name}"</span>.
                         </DialogDescription>
                     </DialogHeader>
 
                     <div className="p-8 pt-6 space-y-6">
                         {/* Request Summary Card */}
-                        <div className="bg-slate-50/50 rounded-3xl p-5 border border-slate-100 space-y-3">
+                        <div className="bg-white/5 backdrop-blur-md rounded-3xl p-6 border border-white/10 space-y-4">
                             <div className="flex items-center justify-between">
-                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Customer Entity</span>
-                                <Badge variant="outline" className="rounded-full bg-white text-slate-600 border-slate-200">
+                                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">Customer Entity</span>
+                                <Badge variant="outline" className="rounded-full bg-white text-slate-900 border-none px-4 py-1 font-bold">
                                     {selectedRequest?.profiles?.full_name || 'Anonymous'}
                                 </Badge>
                             </div>
                             <div className="flex items-center justify-between">
-                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Vehicle Instance</span>
-                                <span className="text-xs font-semibold text-slate-600">{selectedRequest?.vehicle_info || 'Global Sync'}</span>
+                                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">Vehicle Instance</span>
+                                <span className="text-sm font-bold text-slate-300 tracking-tight">{selectedRequest?.vehicle_info || 'Global Sync'}</span>
                             </div>
                         </div>
 
                         {/* Input Fields */}
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Item Net Price ($)</Label>
+                                <Label className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.15em] ml-1">Item Net Price ($)</Label>
                                 <div className="relative group">
-                                    <DollarSign className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-primary-blue transition-colors" />
+                                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-white transition-colors">
+                                        <DollarSign className="h-5 w-5" />
+                                    </div>
                                     <Input
                                         type="number"
                                         placeholder="0.00"
-                                        className="h-12 pl-10 rounded-2xl border-slate-200 bg-slate-50 focus:bg-white transition-all font-semibold"
+                                        className="h-14 pl-12 rounded-2xl border-white/5 bg-white text-slate-900 focus:bg-white transition-all font-bold text-lg shadow-inner"
                                         value={quoteData.item_price}
                                         onChange={(e) => setQuoteData({ ...quoteData, item_price: e.target.value })}
                                     />
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <Label className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Logistics / Ship ($)</Label>
+                                <Label className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.15em] ml-1">Logistics / Ship ($)</Label>
                                 <div className="relative group">
-                                    <Calculator className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-primary-blue transition-colors" />
+                                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-white transition-colors">
+                                        <Calculator className="h-5 w-5" />
+                                    </div>
                                     <Input
                                         type="number"
                                         placeholder="0.00"
-                                        className="h-12 pl-10 rounded-2xl border-slate-200 bg-slate-50 focus:bg-white transition-all font-semibold"
+                                        className="h-14 pl-12 rounded-2xl border-white/5 bg-white text-slate-900 focus:bg-white transition-all font-bold text-lg shadow-inner"
                                         value={quoteData.shipping_cost}
                                         onChange={(e) => setQuoteData({ ...quoteData, shipping_cost: e.target.value })}
                                     />
@@ -447,66 +451,71 @@ export default function SourcingRequestsPage() {
 
                         <div className="space-y-2">
                             <div className="flex items-center justify-between ml-1">
-                                <Label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Service & Platform Fee ($)</Label>
-                                <span className="text-[10px] font-bold text-blue-500 uppercase tracking-tighter flex items-center gap-1">
+                                <Label className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.15em]">Service & Platform Fee ($)</Label>
+                                <div className="px-2 py-1 rounded-md bg-blue-500/10 border border-blue-500/20 text-[9px] font-black text-blue-400 uppercase tracking-widest flex items-center gap-1.5 shadow-[0_0_15px_rgba(59,130,246,0.1)]">
                                     <Info className="h-3 w-3" /> Standard Rate Applied
-                                </span>
+                                </div>
                             </div>
                             <Input
                                 type="number"
-                                className="h-12 rounded-2xl border-slate-200 bg-slate-50 focus:bg-white transition-all font-semibold opacity-70"
+                                className="h-14 rounded-2xl border-white/5 bg-white/10 text-slate-400 transition-all font-bold text-lg opacity-80"
                                 value={quoteData.service_fee}
                                 disabled
                             />
                         </div>
 
                         <div className="space-y-2">
-                            <Label className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Operations Notes (Internal)</Label>
+                            <Label className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.15em] ml-1">Operations Notes (Internal)</Label>
                             <Input
                                 placeholder="E.g. Sourced from Dubai Hub 2. 5-day lead time."
-                                className="h-12 rounded-2xl border-slate-200 bg-slate-50 focus:bg-white transition-all px-4"
+                                className="h-14 rounded-2xl border-white/5 bg-white text-slate-900 focus:bg-white transition-all px-5 font-medium"
                                 value={quoteData.notes}
                                 onChange={(e) => setQuoteData({ ...quoteData, notes: e.target.value })}
                             />
                         </div>
 
-                        {/* Total Highlight */}
-                        <div className="bg-slate-900 rounded-3xl p-6 text-white relative overflow-hidden group">
-                            <div className="relative z-10 flex items-center justify-between">
-                                <div className="space-y-1">
-                                    <p className="text-[10px] font-bold text-white/50 uppercase tracking-[0.2em]">Aggregate Total (USD)</p>
-                                    <h4 className="text-4xl font-bold tracking-tighter">${totalAmount}</h4>
+                        {/* Total Highlight - Premium Card */}
+                        <div className="relative group mt-2">
+                            <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-3xl blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
+                            <div className="relative bg-[#161e31] rounded-3xl p-6 border border-white/5 flex items-center justify-between overflow-hidden shadow-2xl">
+                                <div className="space-y-1.5 relative z-10">
+                                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">Aggregate Total (USD)</p>
+                                    <div className="flex items-baseline gap-1">
+                                        <span className="text-4xl font-black text-white tracking-tighter">
+                                            ${totalAmount}
+                                        </span>
+                                    </div>
                                 </div>
-                                <div className="h-14 w-14 rounded-2xl bg-white/10 flex items-center justify-center backdrop-blur-md border border-white/10 transition-transform group-hover:rotate-12">
-                                    <ArrowRight className="h-6 w-6 text-white" />
+                                <div className="h-16 w-16 rounded-2xl bg-white/5 flex items-center justify-center text-white border border-white/10 group-hover:bg-blue-600 group-hover:border-blue-500 transition-all duration-500 shadow-xl relative z-10">
+                                    <ArrowRight className="h-7 w-7" />
                                 </div>
+
+                                {/* Subtle Gradient Glow */}
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
                             </div>
-                            {/* Decorative Background */}
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-primary-orange/20 rounded-full blur-3xl pointer-events-none" />
-                            <div className="absolute bottom-0 left-0 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl pointer-events-none" />
                         </div>
                     </div>
 
-                    <DialogFooter className="p-8 pt-0 gap-3 sm:gap-0">
+                    <div className="p-8 pt-0 grid grid-cols-2 gap-4">
                         <Button
                             variant="outline"
-                            className="flex-1 h-14 rounded-2xl border-2 border-slate-100 text-slate-500 font-bold hover:bg-slate-50"
+                            className="h-14 rounded-2xl border-white/10 bg-white/5 text-slate-300 font-bold hover:bg-white/10 hover:text-white transition-all backdrop-blur-sm"
                             onClick={() => setShowQuoteModal(false)}
                         >
                             Decline Edit
                         </Button>
                         <Button
-                            className="flex-1 h-14 rounded-2xl bg-gradient-to-r from-primary-blue to-blue-700 text-white font-bold shadow-xl shadow-blue-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                            className="h-14 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-500 hover:to-indigo-600 text-white font-bold shadow-[0_8px_25px_rgba(37,99,235,0.25)] hover:shadow-[0_12px_35px_rgba(37,99,235,0.4)] hover:-translate-y-0.5 active:translate-y-0 transition-all border-0"
                             onClick={handleSubmitQuote}
-                            disabled={isSubmittingQuote}
+                            disabled={isSubmittingQuote || !quoteData.item_price || !quoteData.shipping_cost}
                         >
                             {isSubmittingQuote ? (
-                                <Loader2 className="h-5 w-5 animate-spin" />
+                                <Loader2 className="h-6 w-6 animate-spin" />
                             ) : (
                                 "Disseminate Quote"
                             )}
                         </Button>
-                    </DialogFooter>
+                    </div>
                 </DialogContent>
             </Dialog>
         </div>
