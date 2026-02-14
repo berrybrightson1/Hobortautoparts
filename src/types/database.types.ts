@@ -249,6 +249,35 @@ export interface Database {
                     occurred_at?: string
                 }
             }
+            notifications: {
+                Row: {
+                    id: string
+                    user_id: string
+                    title: string
+                    message: string
+                    type: 'order' | 'promo' | 'system' | 'request'
+                    read: boolean
+                    created_at: string
+                }
+                Insert: {
+                    id?: string
+                    user_id: string
+                    title: string
+                    message: string
+                    type?: 'order' | 'promo' | 'system' | 'request'
+                    read?: boolean
+                    created_at?: string
+                }
+                Update: {
+                    id?: string
+                    user_id?: string
+                    title?: string
+                    message?: string
+                    type?: 'order' | 'promo' | 'system' | 'request'
+                    read?: boolean
+                    created_at?: string
+                }
+            }
         }
     }
 }

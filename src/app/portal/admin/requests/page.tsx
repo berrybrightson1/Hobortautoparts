@@ -38,6 +38,7 @@ import {
 import { Label } from "@/components/ui/label"
 import { useAuth } from "@/components/auth/auth-provider"
 import { useRouter } from "next/navigation"
+import { sendNotification } from "@/lib/notifications"
 
 interface SourcingRequest {
     id: string
@@ -125,6 +126,15 @@ export default function SourcingRequestsPage() {
                 .eq('id', requestId)
 
             if (error) throw error
+
+            // Notify the assigned agent
+            await sendNotification({
+                userId: agentId,
+                title: 'New Request Allocated',
+                message: `You have been assigned a new sourcing request: ${requests.find(r => r.id === requestId)?.part_name || 'Unidentified Part'}.`,
+                type: 'request'
+            })
+
             toast.success("Agent assigned successfully")
             fetchRequests()
         } catch (error: any) {
@@ -143,6 +153,17 @@ export default function SourcingRequestsPage() {
                 .eq('id', requestId)
 
             if (error) throw error
+
+            // Notify the customer
+            const request = requests.find(r => r.id === requestId)
+            if (request) {
+                await sendNotification({
+                    userId: request.user_id,
+                    title: 'Request Status Updated',
+                    message: `The status of your request for "${request.part_name}" has been updated to ${newStatus.toUpperCase()}.`,
+                    type: 'request'
+                })
+            }
 
             toast.success(`Request status updated to ${newStatus.toUpperCase()}`)
             fetchRequests()
@@ -194,6 +215,14 @@ export default function SourcingRequestsPage() {
                 .eq('id', selectedRequest.id)
 
             if (requestError) throw requestError
+
+            // Notify the customer of the new quote
+            await sendNotification({
+                userId: selectedRequest.user_id,
+                title: 'New Quote Available',
+                message: `An official quote has been generated for your request: ${selectedRequest.part_name}.`,
+                type: 'order'
+            })
 
             toast.success("Quote generated successfully!", {
                 description: "The customer will be notified of the new quote."

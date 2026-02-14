@@ -9,7 +9,7 @@ import {
     SheetTitle,
     SheetTrigger,
 } from "@/components/ui/sheet"
-import { Bell, Check, Trash2, Package, Info, Tag, Clock, CheckCheck } from "lucide-react"
+import { Bell, Check, Trash2, Package, Info, Tag, Clock, CheckCheck, PackageSearch } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
@@ -22,7 +22,7 @@ interface Notification {
     id: string
     title: string
     message: string
-    type: 'order' | 'promo' | 'system'
+    type: 'order' | 'promo' | 'system' | 'request'
     read: boolean
     created_at: string
 }
@@ -169,10 +169,12 @@ export function NotificationDrawer() {
                                         "h-10 w-10 rounded-xl flex items-center justify-center shrink-0 border border-white shadow-sm",
                                         notification.type === 'order' ? "bg-orange-100 text-orange-600" :
                                             notification.type === 'promo' ? "bg-blue-100 text-blue-600" :
-                                                "bg-slate-100 text-slate-600"
+                                                notification.type === 'request' ? "bg-emerald-100 text-emerald-600" :
+                                                    "bg-slate-100 text-slate-600"
                                     )}>
                                         {notification.type === 'order' && <Package className="h-5 w-5" />}
                                         {notification.type === 'promo' && <Tag className="h-5 w-5" />}
+                                        {notification.type === 'request' && <PackageSearch className="h-5 w-5" />}
                                         {notification.type === 'system' && <Info className="h-5 w-5" />}
                                     </div>
                                     <div className="flex-1 min-w-0 space-y-1">
