@@ -17,7 +17,10 @@ import {
     FileText,
     Truck,
     Inbox,
-    Loader2
+    Loader2,
+    Eye,
+    Info,
+    CheckCircle2
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useState, useEffect } from "react"
@@ -36,6 +39,7 @@ import { format } from "date-fns"
 import { PendingApproval } from "@/components/portal/pending-approval"
 import { toast } from "sonner"
 import { StatsSkeleton, CardSkeleton, Skeleton } from "@/components/portal/skeletons"
+import { ResponsiveModal } from "@/components/ui/responsive-modal"
 
 export default function AgentDashboard() {
     const { profile, user } = useAuth()
@@ -50,6 +54,8 @@ export default function AgentDashboard() {
         { label: "Pending Review", value: "0", change: "0%", trend: "up" },
         { label: "Completed Sourcing", value: "0", change: "0%", trend: "up" }
     ])
+    const [selectedRequest, setSelectedRequest] = useState<any>(null)
+    const [isDetailsOpen, setIsDetailsOpen] = useState(false)
 
     const fetchAgentData = async () => {
         if (!user) return
@@ -275,11 +281,17 @@ export default function AgentDashboard() {
                                                 </Badge>
                                             </TableCell>
                                             <TableCell className="text-right pr-10 py-6">
-                                                <Link href={`/quote?request=${req.id}`}>
-                                                    <Button variant="ghost" size="sm" className="rounded-xl font-bold text-blue-600 hover:text-blue-700 hover:bg-blue-50">
-                                                        Manage
-                                                    </Button>
-                                                </Link>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    className="rounded-xl font-bold text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                                                    onClick={() => {
+                                                        setSelectedRequest(req)
+                                                        setIsDetailsOpen(true)
+                                                    }}
+                                                >
+                                                    Manage
+                                                </Button>
                                             </TableCell>
                                         </TableRow>
                                     ))
@@ -290,6 +302,54 @@ export default function AgentDashboard() {
                 </CardContent>
             </Card>
 
+            {/* Request Details Modal */}
+            <ResponsiveModal
+                open={isDetailsOpen}
+                onOpenChange={setIsDetailsOpen}
+                title="Request Details"
+            >
+                <div className="p-2 space-y-8">
+                    <div className="flex items-start justify-between">
+                        <div className="space-y-1">
+                            <h3 className="text-xl font-bold text-slate-900">{selectedRequest?.part_name}</h3>
+                            <p className="text-sm text-slate-500 font-medium">{selectedRequest?.vehicle_info}</p>
+                        </div>
+                        <Badge className="bg-blue-100 text-blue-600 border-0 font-bold uppercase tracking-widest text-[10px]">
+                            {selectedRequest?.status}
+                        </Badge>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100 space-y-2">
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Customer</p>
+                            <p className="font-bold text-slate-900">{selectedRequest?.profiles?.full_name}</p>
+                        </div>
+                        <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100 space-y-2">
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">VIN Number</p>
+                            <p className="font-mono font-bold text-slate-900 break-all">{selectedRequest?.vin || 'N/A'}</p>
+                        </div>
+                    </div>
+
+                    <div className="p-8 bg-blue-50 rounded-[2.5rem] border border-blue-100 flex items-center gap-5">
+                        <div className="h-12 w-12 rounded-2xl bg-white flex items-center justify-center text-blue-500 shadow-sm shrink-0">
+                            <Info className="h-6 w-6" />
+                        </div>
+                        <div className="space-y-1">
+                            <p className="text-sm font-bold text-blue-900">Sourcing Objective</p>
+                            <p className="text-xs font-medium text-blue-600">Locate part specifications and verify pricing with US hubs.</p>
+                        </div>
+                    </div>
+
+                    <div className="flex gap-4 pt-4">
+                        <Button
+                            className="flex-1 bg-primary-blue text-white rounded-2xl h-14 font-bold uppercase tracking-widest text-xs hover:bg-blue-700 transition-all shadow-xl shadow-blue-500/20"
+                            onClick={() => setIsDetailsOpen(false)}
+                        >
+                            Got it
+                        </Button>
+                    </div>
+                </div>
+            </ResponsiveModal>
         </div>
     )
 }
