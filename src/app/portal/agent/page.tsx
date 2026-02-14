@@ -306,46 +306,75 @@ export default function AgentDashboard() {
             <ResponsiveModal
                 open={isDetailsOpen}
                 onOpenChange={setIsDetailsOpen}
-                title="Request Details"
             >
-                <div className="p-2 space-y-8">
-                    <div className="flex items-start justify-between">
-                        <div className="space-y-1">
-                            <h3 className="text-xl font-bold text-slate-900">{selectedRequest?.part_name}</h3>
-                            <p className="text-sm text-slate-500 font-medium">{selectedRequest?.vehicle_info}</p>
-                        </div>
-                        <Badge className="bg-blue-100 text-blue-600 border-0 font-bold uppercase tracking-widest text-[10px]">
-                            {selectedRequest?.status}
-                        </Badge>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100 space-y-2">
-                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Customer</p>
-                            <p className="font-bold text-slate-900">{selectedRequest?.profiles?.full_name}</p>
-                        </div>
-                        <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100 space-y-2">
-                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">VIN Number</p>
-                            <p className="font-mono font-bold text-slate-900 break-all">{selectedRequest?.vin || 'N/A'}</p>
+                <div className="flex flex-col h-full bg-white">
+                    {/* Header - Matching Create Entity Style */}
+                    <div className="p-8 sm:p-10 border-b border-slate-100">
+                        <div className="flex items-center gap-4">
+                            <div className="h-12 w-12 rounded-2xl bg-primary-blue/10 flex items-center justify-center text-primary-blue shrink-0 shadow-inner">
+                                <Activity className="h-6 w-6" />
+                            </div>
+                            <div className="space-y-1">
+                                <h3 className="text-2xl sm:text-3xl font-black text-slate-900 uppercase tracking-tighter leading-none">Sourcing Detail</h3>
+                                <p className="text-slate-500 font-bold text-xs sm:text-sm italic">Deep-dive into parts specification and verification.</p>
+                            </div>
                         </div>
                     </div>
 
-                    <div className="p-8 bg-blue-50 rounded-[2.5rem] border border-blue-100 flex items-center gap-5">
-                        <div className="h-12 w-12 rounded-2xl bg-white flex items-center justify-center text-blue-500 shadow-sm shrink-0">
-                            <Info className="h-6 w-6" />
+                    <div className="p-8 sm:p-10 space-y-10">
+                        {/* Vehicle Info Badge Section */}
+                        <div className="flex items-start justify-between bg-slate-50/50 p-6 rounded-[2rem] border border-slate-100 ring-1 ring-slate-100/50">
+                            <div className="space-y-1">
+                                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary-blue opacity-70">Target Vehicle</p>
+                                <h4 className="text-xl font-black text-slate-900 tracking-tight">{selectedRequest?.part_name}</h4>
+                                <p className="text-sm text-slate-500 font-bold">{selectedRequest?.vehicle_info}</p>
+                            </div>
+                            <Badge className="bg-primary-orange text-white border-0 font-black uppercase tracking-widest text-[9px] px-3 py-1 rounded-lg shadow-lg shadow-orange-500/20">
+                                {selectedRequest?.status}
+                            </Badge>
                         </div>
-                        <div className="space-y-1">
-                            <p className="text-sm font-bold text-blue-900">Sourcing Objective</p>
-                            <p className="text-xs font-medium text-blue-600">Locate part specifications and verify pricing with US hubs.</p>
+
+                        {/* Data Grid */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                            <div className="space-y-3">
+                                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary-blue ml-1 opacity-80">Origin Customer</p>
+                                <div className="h-16 rounded-[1.25rem] bg-slate-50/50 border border-slate-200 flex items-center px-6 transition-all hover:bg-white hover:ring-8 hover:ring-blue-500/5 group">
+                                    <p className="font-black text-slate-900 text-lg group-hover:text-primary-blue transition-colors">{selectedRequest?.profiles?.full_name}</p>
+                                </div>
+                            </div>
+                            <div className="space-y-3">
+                                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary-blue ml-1 opacity-80">Full Chassis VIN</p>
+                                <div className="h-16 rounded-[1.25rem] bg-slate-50/50 border border-slate-200 flex items-center px-6 transition-all hover:bg-white hover:ring-8 hover:ring-blue-500/5 group">
+                                    <p className="font-mono font-black text-slate-900 text-base break-all uppercase group-hover:text-primary-blue transition-colors leading-none tracking-tight">
+                                        {selectedRequest?.vin || 'NOT PROVIDED'}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Objective Card - Light Theme for no deep colors */}
+                        <div className="p-8 bg-primary-blue/5 rounded-[2.5rem] border border-primary-blue/10 flex items-center gap-6 shadow-sm relative overflow-hidden group">
+                            {/* Decorative background effects */}
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-primary-blue/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl transition-all group-hover:bg-primary-blue/20" />
+
+                            <div className="h-14 w-14 rounded-2xl bg-white flex items-center justify-center text-primary-blue shadow-sm shrink-0 border border-primary-blue/10">
+                                <Info className="h-7 w-7" />
+                            </div>
+                            <div className="space-y-2 relative z-10">
+                                <p className="text-[10px] font-black text-primary-blue uppercase tracking-[0.35em]">Agent Protocol</p>
+                                <p className="text-sm font-bold text-slate-700 leading-relaxed">Cross-reference part specs with US distribution hubs. Finalize pricing for customer review.</p>
+                            </div>
                         </div>
                     </div>
 
-                    <div className="flex gap-4 pt-4">
+                    {/* Footer */}
+                    <div className="p-8 sm:p-10 border-t border-slate-100 flex justify-end bg-white">
                         <Button
-                            className="flex-1 bg-primary-blue text-white rounded-2xl h-14 font-bold uppercase tracking-widest text-xs hover:bg-blue-700 transition-all shadow-xl shadow-blue-500/20"
+                            className="h-16 w-full sm:w-auto px-12 rounded-[2rem] bg-[#0c1425] hover:bg-black shadow-[0_20px_40px_-12px_rgba(0,0,0,0.2)] font-black text-lg uppercase tracking-widest gap-4 transition-all active:scale-95 text-white group"
                             onClick={() => setIsDetailsOpen(false)}
                         >
-                            Got it
+                            <CheckCircle2 className="h-6 w-6 group-hover:scale-110 transition-transform" />
+                            Acknowledge
                         </Button>
                     </div>
                 </div>
