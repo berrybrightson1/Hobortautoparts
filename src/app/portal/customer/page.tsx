@@ -10,12 +10,19 @@ import { useState, useEffect } from "react"
 import { supabase } from "@/lib/supabase"
 import { format } from "date-fns"
 import { useRouter } from "next/navigation"
+import { ResponsiveModal } from "@/components/ui/responsive-modal"
+import { toast } from "sonner"
+import { ShieldCheck, Info, CreditCard, DollarSign } from "lucide-react"
 
 export default function CustomerDashboard() {
     const { profile, user } = useAuth()
     const router = useRouter()
     const [orders, setOrders] = useState<any[]>([])
     const [isLoading, setIsLoading] = useState(true)
+    const [selectedRequest, setSelectedRequest] = useState<any>(null)
+    const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false)
+    const [isAccepting, setIsAccepting] = useState(false)
+    const [quote, setQuote] = useState<any>(null)
 
     const fetchOrders = async () => {
         if (!user) return
@@ -23,7 +30,10 @@ export default function CustomerDashboard() {
         try {
             const { data, error } = await supabase
                 .from('sourcing_requests')
-                .select('*')
+                .select(`
+                    *,
+                    quotes (*)
+                `)
                 .eq('user_id', user.id)
                 .order('created_at', { ascending: false })
 
@@ -33,6 +43,58 @@ export default function CustomerDashboard() {
             console.error("Error fetching orders:", error)
         } finally {
             setIsLoading(false)
+        }
+    }
+
+    const handleViewQuote = (request: any) => {
+        const activeQuote = request.quotes?.[0]
+        if (activeQuote) {
+            setQuote(activeQuote)
+            setSelectedRequest(request)
+            setIsQuoteModalOpen(true)
+        } else {
+            router.push(`/portal/tracking/${request.id}`)
+        }
+    }
+
+    const handleAcceptQuote = async () => {
+        if (!quote || !user) return
+        setIsAccepting(true)
+        try {
+            // 1. Create the Order
+            const { data: order, error: orderError } = await supabase
+                .from('orders')
+                .insert({
+                    user_id: user.id,
+                    quote_id: quote.id,
+                    status: 'paid', // For now, we simulate immediate success
+                    payment_method: 'Manual Verification',
+                })
+                .select()
+                .single()
+
+            if (orderError) throw orderError
+
+            // 2. Update the Request Status
+            const { error: requestError } = await supabase
+                .from('sourcing_requests')
+                .update({ status: 'shipped' }) // Or another status
+                .eq('id', selectedRequest.id)
+
+            if (requestError) throw requestError
+
+            toast.success("Quote Accepted!", {
+                description: "Your order has been finalized. Logistics initialization is underway."
+            })
+            setIsQuoteModalOpen(false)
+            fetchOrders()
+            router.push('/portal/admin/orders') // Move to orders control to see result (simulating flow)
+        } catch (error: any) {
+            toast.error("Process Failed", {
+                description: error.message
+            })
+        } finally {
+            setIsAccepting(false)
         }
     }
 
@@ -126,8 +188,15 @@ export default function CustomerDashboard() {
                                                     </div>
                                                 </div>
 
-                                                <Button variant="outline" className="w-full sm:w-auto rounded-xl border-slate-200 text-[10px] font-bold uppercase tracking-widest hover:text-primary-blue hover:border-blue-200 hover:bg-blue-50 transition-all active:scale-95 shrink-0">
-                                                    View Lifecycle
+                                                <Button
+                                                    onClick={() => handleViewQuote(order)}
+                                                    variant="outline"
+                                                    className={cn(
+                                                        "w-full sm:w-auto rounded-xl border-slate-200 text-[10px] font-bold uppercase tracking-widest transition-all active:scale-95 shrink-0",
+                                                        order.status === 'quoted' ? "bg-purple-600 border-purple-600 text-white hover:bg-purple-700 hover:text-white" : "hover:text-primary-blue hover:border-blue-200 hover:bg-blue-50"
+                                                    )}
+                                                >
+                                                    {order.status === 'quoted' ? "Review Quote" : "View Lifecycle"}
                                                 </Button>
                                             </div>
                                         </div>
@@ -195,6 +264,75 @@ export default function CustomerDashboard() {
                     </Card>
                 </div>
             </div>
+
+            {/* Quote Acceptance Modal */}
+            <ResponsiveModal
+                open={isQuoteModalOpen}
+                onOpenChange={setIsQuoteModalOpen}
+                variant="bottom"
+            >
+                <div className="p-10 flex flex-col gap-10">
+                    <div className="flex flex-col gap-3">
+                        <div className="flex items-center gap-3">
+                            <div className="h-10 w-10 rounded-2xl bg-purple-100 flex items-center justify-center text-purple-600">
+                                <ShieldCheck className="h-6 w-6" />
+                            </div>
+                            <h3 className="text-3xl font-bold tracking-tight text-slate-900">Finalized Quote</h3>
+                        </div>
+                        <p className="text-slate-500 font-medium">Please review the financial breakdown for <strong>{selectedRequest?.part_name}</strong>.</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-slate-50 p-8 rounded-[2.5rem] border border-slate-100 shadow-inner">
+                        <div className="space-y-6">
+                            <div className="space-y-1">
+                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Market Value (USA)</p>
+                                <p className="text-3xl font-black text-slate-900 leading-none">${quote?.item_price}</p>
+                            </div>
+                            <div className="space-y-1">
+                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Logistics & Freight</p>
+                                <p className="text-2xl font-bold text-slate-900 leading-none">${quote?.shipping_cost}</p>
+                            </div>
+                        </div>
+                        <div className="space-y-6 md:border-l md:border-slate-200 md:pl-8 flex flex-col justify-end">
+                            <div className="space-y-1">
+                                <p className="text-[10px] font-bold text-primary-orange uppercase tracking-widest">Total Landing Cost</p>
+                                <p className="text-4xl font-black text-slate-900 tracking-tighter leading-none">${quote?.total_amount}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row gap-4">
+                        <Button
+                            className="flex-1 h-16 rounded-2xl bg-slate-900 text-white font-bold uppercase tracking-widest text-xs hover:bg-slate-800 transition-all shadow-2xl shadow-slate-900/20"
+                            onClick={handleAcceptQuote}
+                            disabled={isAccepting}
+                        >
+                            {isAccepting ? (
+                                <Loader2 className="h-5 w-5 animate-spin" />
+                            ) : (
+                                <>
+                                    <CreditCard className="mr-3 h-5 w-5" /> Accept & Pay Now
+                                </>
+                            )}
+                        </Button>
+                        <Button
+                            variant="outline"
+                            className="flex-1 h-16 rounded-2xl border-2 border-slate-200 text-slate-600 font-bold uppercase tracking-widest text-xs hover:bg-slate-50 transition-all"
+                            onClick={() => setIsQuoteModalOpen(false)}
+                            disabled={isAccepting}
+                        >
+                            Decline
+                        </Button>
+                    </div>
+
+                    <div className="flex items-center gap-4 p-6 bg-blue-50 rounded-3xl border border-blue-100">
+                        <Info className="h-6 w-6 text-blue-500 shrink-0" />
+                        <p className="text-[11px] font-semibold text-blue-700 leading-relaxed uppercase tracking-tight">
+                            By accepting, you authorize Hobort to proceed with local US procurement. Total amount includes all clearing and handling fees.
+                        </p>
+                    </div>
+                </div>
+            </ResponsiveModal>
         </div>
     )
 }

@@ -4,17 +4,21 @@ import * as React from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import {
+    Plus,
+    Users,
+    DollarSign,
+    Home,
+    ShoppingBag,
+    History,
+    ShieldAlert,
     LayoutDashboard,
     PackageSearch,
     Settings,
     LogOut,
-    UserCircle,
-    ShieldAlert,
     Menu,
-    Plus,
-    Users,
-    DollarSign,
-    Home
+    ChevronRight,
+    Search,
+    Loader2
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -37,12 +41,14 @@ const NAV_ITEMS = {
         { name: "Homepage", href: "/", icon: Home },
     ],
     admin: [
-        { name: "System Overview", href: "/portal/admin", icon: ShieldAlert },
-        { name: "Compliance", href: "/portal/admin/approvals", icon: UserCircle },
-        { name: "Shipment Manager", href: "/portal/admin/shipments", icon: PackageSearch },
-        { name: "User Management", href: "/portal/users", icon: Users },
-        { name: "Revenue", href: "/portal/revenue", icon: DollarSign },
-        { name: "Settings", href: "/portal/settings", icon: Settings },
+        { name: "Overview", href: "/portal/admin", icon: LayoutDashboard },
+        { name: "Sourcing Requests", href: "/portal/admin/requests", icon: PackageSearch },
+        { name: "Orders Control", href: "/portal/admin/orders", icon: ShoppingBag },
+        { name: "Approvals", href: "/portal/admin/approvals", icon: ShieldAlert },
+        { name: "Shipments", href: "/portal/admin/shipments", icon: History },
+        { name: "User Network", href: "/portal/users", icon: Users },
+        { name: "Revenue Ops", href: "/portal/revenue", icon: DollarSign },
+        { name: "System Settings", href: "/portal/settings", icon: Settings },
     ]
 }
 
@@ -87,9 +93,10 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
     }
 
     // If admin route, render children directly (admin has its own layout)
-    if (isAdminRoute) {
-        return <>{children}</>
-    }
+    // If admin route, we no longer skip. We use the unified layout.
+    // if (isAdminRoute) {
+    //     return <>{children}</>
+    // }
 
     const currentNav = NAV_ITEMS[role as keyof typeof NAV_ITEMS] || NAV_ITEMS.customer
 
