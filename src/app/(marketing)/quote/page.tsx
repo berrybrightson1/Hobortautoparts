@@ -16,6 +16,7 @@ import { useAuth } from "@/components/auth/auth-provider"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { supabase } from "@/lib/supabase"
+import { PartLibraryPicker } from "@/components/marketing/part-library-picker"
 
 // VIN Validation Helper
 function validateVIN(vin: string) {
@@ -61,7 +62,8 @@ export default function QuotePage() {
         make: "",
         model: "",
         submodel: "",
-        engine: ""
+        engine: "",
+        part_name: ""
     })
     const [vinError, setVinError] = useState<string | null>(null)
     const [isVehicleConfirmed, setIsVehicleConfirmed] = useState(false)
@@ -154,7 +156,7 @@ export default function QuotePage() {
                     user_id: currentUser.id,
                     agent_id: profile?.role === 'agent' ? currentUser.id : null,
                     vin: formData.vin,
-                    part_name: (document.getElementById('parts') as HTMLTextAreaElement).value,
+                    part_name: formData.part_name,
                     vehicle_info: vehicle_info,
                     status: 'pending'
                 })
@@ -181,9 +183,9 @@ export default function QuotePage() {
                             <div className="inline-flex h-20 w-20 rounded-full bg-white text-primary-orange items-center justify-center shadow-xl shadow-primary-orange/20 animate-bounce">
                                 <CheckCircle2 className="h-10 w-10" />
                             </div>
-                            <div className="space-y-2">
-                                <h1 className="text-4xl font-semibold text-primary-blue tracking-tighter">Request Received!</h1>
-                                <p className="text-primary-blue/60 font-medium text-lg">Our agents are already looking for your parts.</p>
+                            <div className="space-y-2 px-4">
+                                <h1 className="text-3xl md:text-4xl font-semibold text-primary-blue tracking-tighter">Request Received!</h1>
+                                <p className="text-primary-blue/60 font-medium text-base md:text-lg px-2">Our agents are already looking for your parts.</p>
                             </div>
                         </div>
 
@@ -203,7 +205,7 @@ export default function QuotePage() {
                                             <>Create an account to <span className="text-primary-orange">track your order</span> and save this request.</>
                                         )}
                                     </h3>
-                                    <p className="text-primary-blue/70 font-medium">
+                                    <p className="text-primary-blue/70 font-medium text-sm md:text-base">
                                         {user
                                             ? "You will receive notifications as soon as an agent updates your quote status."
                                             : "Join over 5,000 auto professionals getting live updates on their sourcing requests."
@@ -230,11 +232,11 @@ export default function QuotePage() {
                                     { label: "Direct Support", icon: Car },
                                     { label: "Order History", icon: Package },
                                 ].map((item, i) => (
-                                    <div key={i} className="flex flex-col items-center text-center gap-2">
-                                        <div className="h-10 w-10 rounded-full bg-primary-blue/5 flex items-center justify-center text-primary-blue">
-                                            <item.icon className="h-5 w-5" />
+                                    <div key={i} className="flex flex-col items-center text-center gap-1.5">
+                                        <div className="h-8 w-8 md:h-10 md:w-10 rounded-full bg-primary-blue/5 flex items-center justify-center text-primary-blue shrink-0">
+                                            <item.icon className="h-4 w-4 md:h-5 md:w-5" />
                                         </div>
-                                        <span className="text-[10px] font-medium text-primary-blue/40 uppercase tracking-tighter leading-none">{item.label}</span>
+                                        <span className="text-[9px] md:text-[10px] font-bold text-primary-blue/30 uppercase tracking-tighter leading-none">{item.label}</span>
                                     </div>
                                 ))}
                             </div>
@@ -414,15 +416,42 @@ export default function QuotePage() {
                                 </div>
                             ) : (
                                 <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
-                                    <div className="space-y-2.5">
-                                        <Label htmlFor="parts" className="ml-1 text-[10px] font-medium text-primary-blue/80 uppercase tracking-widest">Detailed Description</Label>
-                                        <Textarea
-                                            id="parts"
-                                            placeholder="e.g. Front ceramic brake pads, Carbon fiber mirror caps, etc."
-                                            className="min-h-[180px] rounded-2xl border-primary-blue/10 bg-primary-blue/5 focus:bg-white transition-all font-medium p-5 resize-none placeholder:font-medium"
-                                            required
-                                        />
-                                    </div>
+                                    <PartLibraryPicker
+                                        onSelect={(name) => {
+                                            setFormData({ ...formData, part_name: name })
+                                            // Handle auto-submission or confirmation if needed
+                                        }}
+                                        onCustomPart={(notes) => {
+                                            setFormData({ ...formData, part_name: notes })
+                                        }}
+                                    />
+
+                                    {formData.part_name && (
+                                        <motion.div
+                                            initial={{ opacity: 0, height: 0 }}
+                                            animate={{ opacity: 1, height: "auto" }}
+                                            className="bg-emerald-500/5 rounded-2xl p-3 md:p-4 border border-emerald-500/10 overflow-hidden"
+                                        >
+                                            <div className="flex items-center gap-2 md:gap-3">
+                                                <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500 shrink-0">
+                                                    <CheckCircle2 className="h-4 w-4" />
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-600/60 mb-0.5">Selected Part</p>
+                                                    <p className="text-sm font-bold text-emerald-600 truncate">{formData.part_name}</p>
+                                                </div>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    className="h-8 text-[10px] font-bold uppercase tracking-widest text-emerald-600 px-2 shrink-0"
+                                                    onClick={() => setFormData({ ...formData, part_name: "" })}
+                                                >
+                                                    Change
+                                                </Button>
+                                            </div>
+                                        </motion.div>
+                                    )}
+
                                     <div className="flex flex-col sm:flex-row gap-4">
                                         <Button
                                             type="button"
@@ -434,7 +463,7 @@ export default function QuotePage() {
                                         </Button>
                                         <Button
                                             type="submit"
-                                            disabled={isLoading}
+                                            disabled={isLoading || !formData.part_name}
                                             className="flex-1 bg-primary-blue hover:bg-hobort-blue-dark text-white font-semibold h-16 rounded-2xl shadow-2xl shadow-primary-blue/20 text-lg transition-all hover:scale-[1.01] active:scale-[0.99] order-1 sm:order-2"
                                         >
                                             {isLoading ? (
