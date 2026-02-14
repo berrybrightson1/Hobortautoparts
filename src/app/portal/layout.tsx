@@ -18,7 +18,8 @@ import {
     Menu,
     ChevronRight,
     Search,
-    Loader2
+    Loader2,
+    UserCircle
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -31,12 +32,14 @@ const NAV_ITEMS = {
     customer: [
         { name: "Dashboard", href: "/portal/customer", icon: LayoutDashboard },
         { name: "New Request", href: "/quote", icon: Plus },
+        { name: "Account Settings", href: "/portal/profile", icon: UserCircle },
         { name: "Settings", href: "/portal/settings", icon: Settings },
         { name: "Homepage", href: "/", icon: Home },
     ],
     agent: [
         { name: "Sourcing Queue", href: "/portal/agent", icon: PackageSearch },
         { name: "All Orders", href: "/portal/orders", icon: LayoutDashboard },
+        { name: "Account Details", href: "/portal/profile", icon: UserCircle },
         { name: "Tools", href: "/portal/tools", icon: Settings },
         { name: "Homepage", href: "/", icon: Home },
     ],
@@ -45,6 +48,7 @@ const NAV_ITEMS = {
         { name: "Sourcing Requests", href: "/portal/admin/requests", icon: PackageSearch },
         { name: "Approvals", href: "/portal/admin/approvals", icon: ShieldAlert },
         { name: "User Network", href: "/portal/users", icon: Users },
+        { name: "Account Settings", href: "/portal/profile", icon: UserCircle },
         { name: "System Settings", href: "/portal/settings", icon: Settings },
     ]
 }
@@ -198,15 +202,15 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
 
                     <div className="flex items-center gap-4">
                         <NotificationDrawer />
-                        <div className="hidden sm:flex items-center gap-3">
-                            <div className="text-right">
-                                <p className="text-sm font-semibold text-slate-900">{profile?.full_name || user?.email?.split('@')[0] || 'User'}</p>
-                                <p className="text-xs text-slate-500 uppercase tracking-wider capitalize">{role}</p>
-                            </div>
-                            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary-blue to-blue-600 flex items-center justify-center text-white font-bold text-sm shadow-lg">
+                        <Link href="/portal/profile" className="hidden sm:flex items-center gap-3 group hover:bg-slate-50 p-1.5 pr-4 rounded-2xl transition-all border border-transparent hover:border-slate-100">
+                            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary-blue to-blue-600 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform">
                                 {profile?.full_name?.charAt(0) || user?.email?.charAt(0) || 'U'}
                             </div>
-                        </div>
+                            <div className="text-left">
+                                <p className="text-sm font-bold text-slate-900 group-hover:text-primary-blue transition-colors">{profile?.full_name || user?.email?.split('@')[0] || 'User'}</p>
+                                <p className="text-[10px] text-slate-400 uppercase tracking-widest font-black capitalize">{role}</p>
+                            </div>
+                        </Link>
                     </div>
                 </header>
 
