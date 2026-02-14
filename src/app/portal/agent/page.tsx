@@ -54,7 +54,20 @@ export default function AgentDashboard() {
         if (!user) return
         setIsLoading(true)
         try {
-            // Check agent status first
+            // Check profile role first for admin bypass
+            const { data: profileData, error: profileError } = await supabase
+                .from('profiles')
+                .select('role')
+                .eq('id', user.id)
+                .single()
+
+            if (profileError) {
+                console.error("Error fetching user role:", profileError)
+            }
+
+            const isSystemAdmin = profileData?.role === 'admin'
+
+            // Check agent status
             const { data: agentData, error: agentError } = await supabase
                 .from('agents')
                 .select('status')
@@ -65,16 +78,19 @@ export default function AgentDashboard() {
                 console.error("Error fetching agent status:", agentError)
             }
 
-            const status = agentData?.status || 'pending'
+            // Admins bypass the pending screen
+            const status = isSystemAdmin ? 'approved' : (agentData?.status || 'pending')
             setAgentStatus(status)
 
-            // If pending, don't fetch other data
-            if (status === 'pending' || !agentData) {
+            // If pending and NOT an admin, show approval screen
+            if (!isSystemAdmin && (status === 'pending' || !agentData)) {
                 setIsLoading(false)
                 return
             }
 
-            // 1. Fetch Assigned Sourcing Requests (New Assignment Logic)
+            // For admins who are NOT registered as agents, we allow them in 
+            // but they might see no data unless we fetch global data (which we won't for now to avoid bloat)
+            // 1. Fetch Assigned Sourcing Requests
             const { data: sourcingData, error: sourcingError } = await supabase
                 .from('sourcing_requests')
                 .select(`

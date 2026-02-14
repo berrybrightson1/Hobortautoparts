@@ -27,6 +27,7 @@ import { useAuth } from "@/components/auth/auth-provider"
 import { NotificationDrawer } from "@/components/portal/notification-drawer"
 import { ResponsiveModal } from "@/components/ui/responsive-modal"
 import { Sheet, SheetContent } from "@/components/ui/sheet"
+import { motion, AnimatePresence } from "framer-motion"
 import { toast } from "sonner"
 
 const NAV_ITEMS = {
@@ -230,41 +231,43 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
                 </section>
             </main>
 
-            {/* Logout Confirmation Modal */}
-            <ResponsiveModal
-                open={showLogoutDialog}
-                onOpenChange={setShowLogoutDialog}
-            >
-                <div className="flex flex-col items-center gap-8 py-10 w-full px-8 bg-white rounded-[3rem]">
-                    <div className="flex flex-col items-center text-center gap-4">
-                        <div className="h-16 w-16 rounded-[1.5rem] bg-slate-50 flex items-center justify-center text-primary-blue border border-slate-100 shadow-inner">
-                            <LogOut className="h-8 w-8" />
+            {/* Minimal Logout Confirmation (Bottom-Right) */}
+            <AnimatePresence>
+                {showLogoutDialog && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        className="fixed bottom-6 right-6 z-[100] w-[320px] bg-black border border-white/10 rounded-xl shadow-2xl p-4 flex flex-col gap-4 animate-in fade-in slide-in-from-bottom-4 duration-300"
+                    >
+                        <div className="flex items-center gap-3">
+                            <div className="h-8 w-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white">
+                                <LogOut className="h-4 w-4" />
+                            </div>
+                            <div className="space-y-0.5">
+                                <p className="text-xs font-bold text-white uppercase tracking-wider">Confirm Sign Out</p>
+                                <p className="text-[10px] font-medium text-slate-400">Securely terminate your active session?</p>
+                            </div>
                         </div>
-                        <div className="space-y-1">
-                            <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tight">Identity Offline</h3>
-                            <p className="text-sm text-slate-500 font-bold max-w-xs italic">
-                                Termination will clear all active authenticated caches. Confirm secure exit sequence?
-                            </p>
-                        </div>
-                    </div>
 
-                    <div className="flex flex-col sm:flex-row gap-4 w-full">
-                        <Button
-                            variant="outline"
-                            className="flex-1 h-16 rounded-[1.25rem] border-2 border-slate-100 text-slate-400 font-black uppercase tracking-widest text-[10px] hover:bg-slate-50 hover:text-slate-900 transition-all"
-                            onClick={() => setShowLogoutDialog(false)}
-                        >
-                            Abort Signal
-                        </Button>
-                        <Button
-                            className="flex-1 h-16 rounded-[1.25rem] bg-[#0c1425] text-white font-black uppercase tracking-widest text-[10px] hover:bg-black transition-all shadow-2xl shadow-slate-900/20"
-                            onClick={handleSignOut}
-                        >
-                            Execute Logout
-                        </Button>
-                    </div>
-                </div>
-            </ResponsiveModal>
+                        <div className="flex gap-2">
+                            <Button
+                                variant="ghost"
+                                className="flex-1 h-9 rounded-lg bg-white/5 hover:bg-white/10 text-white text-[10px] font-black uppercase tracking-widest border border-white/5 transition-all"
+                                onClick={() => setShowLogoutDialog(false)}
+                            >
+                                Abort
+                            </Button>
+                            <Button
+                                className="flex-1 h-9 rounded-lg bg-white hover:bg-slate-200 text-black text-[10px] font-black uppercase tracking-widest transition-all"
+                                onClick={handleSignOut}
+                            >
+                                Confirm
+                            </Button>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     )
 }
