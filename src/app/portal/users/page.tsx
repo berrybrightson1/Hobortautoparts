@@ -181,9 +181,9 @@ export default function UsersPage() {
                         </Button>
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[500px] w-[95vw] rounded-[2rem] sm:rounded-[3rem] p-0 overflow-hidden border-0 shadow-2xl bg-white max-h-[90vh] overflow-y-auto">
-                        <DialogHeader className="p-6 sm:p-10 sm:pt-12 text-left relative bg-slate-50/50 border-b border-slate-100">
+                        <DialogHeader className="p-6 sm:p-10 sm:pt-12 text-left relative bg-white border-b border-slate-100">
                             <div className="flex items-center gap-4">
-                                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl sm:rounded-2xl bg-primary-blue/10 flex items-center justify-center text-primary-blue shrink-0">
+                                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl sm:rounded-2xl bg-primary-blue/10 flex items-center justify-center text-primary-blue shrink-0 shadow-inner">
                                     <UserPlus className="h-5 w-5 sm:h-6 sm:w-6" />
                                 </div>
                                 <div className="space-y-1">
@@ -192,44 +192,44 @@ export default function UsersPage() {
                                 </div>
                             </div>
                         </DialogHeader>
-                        <div className="p-6 sm:p-10 space-y-6 sm:space-y-8">
+                        <div className="p-6 sm:p-10 space-y-6 sm:space-y-8 bg-white">
                             <div className="space-y-3">
-                                <Label className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.3em] text-slate-400 ml-1">Full Legal Name</Label>
+                                <Label className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.3em] text-primary-blue ml-1 opacity-80">Full Legal Name</Label>
                                 <Input
                                     placeholder="Enter full legal name"
-                                    className="h-12 sm:h-16 rounded-xl sm:rounded-[1.25rem] bg-slate-50 border-slate-100 focus:bg-white focus:ring-8 focus:ring-blue-500/10 transition-all font-bold text-base sm:text-lg px-6"
+                                    className="h-12 sm:h-16 rounded-xl sm:rounded-[1.25rem] bg-slate-50/50 border-slate-200 focus:bg-white focus:ring-8 focus:ring-blue-500/10 transition-all font-bold text-base sm:text-lg px-6 text-slate-900 placeholder:text-slate-400"
                                     value={newUser.full_name}
                                     onChange={(e) => setNewUser({ ...newUser, full_name: e.target.value })}
                                 />
                             </div>
                             <div className="space-y-3">
-                                <Label className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.3em] text-slate-400 ml-1">Secure Email</Label>
+                                <Label className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.3em] text-primary-blue ml-1 opacity-80">Secure Email</Label>
                                 <Input
                                     type="email"
                                     placeholder="node@hobort.sys"
-                                    className="h-12 sm:h-16 rounded-xl sm:rounded-[1.25rem] bg-slate-50 border-slate-100 focus:bg-white focus:ring-8 focus:ring-blue-500/10 transition-all font-bold text-base sm:text-lg px-6"
+                                    className="h-12 sm:h-16 rounded-xl sm:rounded-[1.25rem] bg-slate-50/50 border-slate-200 focus:bg-white focus:ring-8 focus:ring-blue-500/10 transition-all font-bold text-base sm:text-lg px-6 text-slate-900 placeholder:text-slate-400"
                                     value={newUser.email}
                                     onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
                                 />
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                 <div className="space-y-3">
-                                    <Label className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.3em] text-slate-400 ml-1">Access Key</Label>
+                                    <Label className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.3em] text-primary-blue ml-1 opacity-80">Access Key</Label>
                                     <Input
                                         type="password"
                                         placeholder="••••••••"
-                                        className="h-12 sm:h-16 rounded-xl sm:rounded-[1.25rem] bg-slate-50 border-slate-100 focus:bg-white focus:ring-8 focus:ring-blue-500/10 transition-all font-bold text-base sm:text-lg px-6"
+                                        className="h-12 sm:h-16 rounded-xl sm:rounded-[1.25rem] bg-slate-50/50 border-slate-200 focus:bg-white focus:ring-8 focus:ring-blue-500/10 transition-all font-bold text-base sm:text-lg px-6 text-slate-900 placeholder:text-slate-400"
                                         value={newUser.password}
                                         onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
                                     />
                                 </div>
                                 <div className="space-y-3">
-                                    <Label className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.3em] text-slate-400 ml-1">Security Class</Label>
+                                    <Label className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.3em] text-primary-blue ml-1 opacity-80">Security Class</Label>
                                     <Select
                                         value={newUser.role}
                                         onValueChange={(v: any) => setNewUser({ ...newUser, role: v })}
                                     >
-                                        <SelectTrigger className="h-12 sm:h-16 rounded-xl sm:rounded-[1.25rem] bg-slate-50 border-slate-100 focus:bg-white focus:ring-8 focus:ring-blue-500/10 font-bold text-base sm:text-lg px-6">
+                                        <SelectTrigger className="h-12 sm:h-16 rounded-xl sm:rounded-[1.25rem] bg-slate-50/50 border-slate-200 focus:bg-white focus:ring-8 focus:ring-blue-500/10 font-bold text-base sm:text-lg px-6 text-slate-900">
                                             <SelectValue placeholder="Select Class" />
                                         </SelectTrigger>
                                         <SelectContent className="rounded-[1.5rem] sm:rounded-[2rem] border-slate-100 shadow-2xl bg-white">
@@ -241,11 +241,11 @@ export default function UsersPage() {
                                 </div>
                             </div>
                         </div>
-                        <DialogFooter className="p-6 sm:p-10 sm:pt-6 sm:pb-12 bg-slate-50/50 border-t border-slate-100 flex flex-col sm:flex-row justify-end">
+                        <DialogFooter className="p-6 sm:p-10 sm:pt-6 sm:pb-12 bg-slate-50/30 border-t border-slate-100 flex flex-col sm:flex-row justify-end">
                             <Button
                                 onClick={handleCreateUser}
                                 disabled={isCreating}
-                                className="h-14 sm:h-18 w-full sm:w-auto px-12 rounded-xl sm:rounded-[2rem] bg-[#0c1425] hover:bg-black shadow-[0_20px_40px_-12px_rgba(0,0,0,0.2)] font-black text-lg sm:text-xl gap-4 transition-all active:scale-95 text-white group"
+                                className="h-14 sm:h-18 w-full sm:w-auto px-12 rounded-xl sm:rounded-[2rem] bg-primary-blue hover:bg-blue-700 shadow-[0_20px_40px_-12px_rgba(27,78,111,0.3)] font-black text-lg sm:text-xl gap-4 transition-all active:scale-95 text-white group"
                             >
                                 {isCreating ? <Loader2 className="animate-spin h-6 w-6" /> : <UserPlus className="h-6 w-6 group-hover:scale-110 transition-transform" />}
                                 Authorize Entry
