@@ -158,38 +158,38 @@ export default function UnifiedSettingsPage() {
     return (
         <div className="space-y-8 max-w-5xl mx-auto pb-20 animate-in fade-in duration-700">
             <div className="flex flex-col gap-2">
-                <h2 className="text-4xl font-extrabold tracking-tight text-slate-900 bg-gradient-to-r from-slate-900 to-slate-500 bg-clip-text text-transparent">
+                <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-slate-900 bg-gradient-to-r from-slate-900 to-slate-500 bg-clip-text text-transparent">
                     {profile?.role === 'admin' ? 'Console & Profile' : 'Account & Settings'}
                 </h2>
-                <p className="text-slate-500 font-medium text-lg">Manage your global identity, portal behavior, and security protocols.</p>
+                <p className="text-slate-500 font-medium text-base sm:text-lg">Manage your global identity, portal behavior, and security protocols.</p>
             </div>
 
             <Tabs defaultValue="account" className="w-full">
-                <TabsList className="flex w-fit mb-8 h-14 bg-slate-100/80 backdrop-blur-sm p-1.5 rounded-2xl border border-slate-200/50 shadow-inner">
-                    <TabsTrigger value="account" className="rounded-xl px-8 data-[state=active]:bg-white data-[state=active]:shadow-lg data-[state=active]:text-primary-blue font-bold transition-all">Account</TabsTrigger>
-                    <TabsTrigger value="security" className="rounded-xl px-8 data-[state=active]:bg-white data-[state=active]:shadow-lg data-[state=active]:text-primary-blue font-bold transition-all">Security</TabsTrigger>
-                    <TabsTrigger value="hub" className="rounded-xl px-8 data-[state=active]:bg-white data-[state=active]:shadow-lg data-[state=active]:text-primary-blue font-bold transition-all">Portal Hub</TabsTrigger>
+                <TabsList className="flex w-full overflow-x-auto justify-start mb-8 h-14 bg-slate-100/80 backdrop-blur-sm p-1.5 rounded-2xl border border-slate-200/50 shadow-inner no-scrollbar">
+                    <TabsTrigger value="account" className="rounded-xl px-4 sm:px-8 data-[state=active]:bg-white data-[state=active]:shadow-lg data-[state=active]:text-primary-blue font-bold transition-all shrink-0">Account</TabsTrigger>
+                    <TabsTrigger value="security" className="rounded-xl px-4 sm:px-8 data-[state=active]:bg-white data-[state=active]:shadow-lg data-[state=active]:text-primary-blue font-bold transition-all shrink-0">Security</TabsTrigger>
+                    <TabsTrigger value="hub" className="rounded-xl px-4 sm:px-8 data-[state=active]:bg-white data-[state=active]:shadow-lg data-[state=active]:text-primary-blue font-bold transition-all shrink-0">Portal Hub</TabsTrigger>
                     {profile?.role === 'admin' && (
-                        <TabsTrigger value="system" className="rounded-xl px-8 data-[state=active]:bg-white data-[state=active]:shadow-lg data-[state=active]:text-orange-600 font-bold transition-all gap-2">
+                        <TabsTrigger value="system" className="rounded-xl px-4 sm:px-8 data-[state=active]:bg-white data-[state=active]:shadow-lg data-[state=active]:text-orange-600 font-bold transition-all shrink-0 gap-2">
                             <Server className="h-4 w-4" /> System
                         </TabsTrigger>
                     )}
                 </TabsList>
 
                 <TabsContent value="account">
-                    <Card className="border-slate-100 shadow-2xl shadow-slate-200/50 rounded-[3rem] overflow-hidden bg-white/80 backdrop-blur-xl">
-                        <CardHeader className="p-10 pb-6 border-b border-slate-50">
-                            <CardTitle className="text-2xl font-bold text-slate-900">Identity Details</CardTitle>
-                            <CardDescription className="text-slate-500 text-base">Your official platform representation and core contact data.</CardDescription>
+                    <Card className="border-slate-100 shadow-2xl shadow-slate-200/50 rounded-[2rem] sm:rounded-[3rem] overflow-hidden bg-white/80 backdrop-blur-xl">
+                        <CardHeader className="p-6 sm:p-10 pb-4 sm:pb-6 border-b border-slate-50">
+                            <CardTitle className="text-xl sm:text-2xl font-bold text-slate-900">Identity Details</CardTitle>
+                            <CardDescription className="text-slate-500 text-sm sm:text-base">Your official platform representation and core contact data.</CardDescription>
                         </CardHeader>
-                        <CardContent className="p-10 space-y-10">
-                            <div className="flex items-center gap-8 bg-gradient-to-br from-slate-50 to-white p-8 rounded-[2rem] border border-slate-100 shadow-sm relative overflow-hidden group">
-                                <div className="h-28 w-28 rounded-[2rem] bg-gradient-to-br from-primary-blue to-blue-600 flex items-center justify-center text-white border-4 border-white shadow-2xl transition-transform group-hover:scale-105 duration-500">
-                                    <User className="h-12 w-12" />
+                        <CardContent className="p-6 sm:p-10 space-y-8 sm:space-y-10">
+                            <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-8 bg-gradient-to-br from-slate-50 to-white p-6 sm:p-8 rounded-[1.5rem] sm:rounded-[2rem] border border-slate-100 shadow-sm relative overflow-hidden group">
+                                <div className="h-20 w-20 sm:h-28 sm:w-28 rounded-[1.5rem] sm:rounded-[2rem] bg-gradient-to-br from-primary-blue to-blue-600 flex items-center justify-center text-white border-4 border-white shadow-2xl transition-transform group-hover:scale-105 duration-500 shrink-0">
+                                    <User className="h-10 w-10 sm:h-12 sm:w-12" />
                                 </div>
-                                <div className="space-y-2 relative z-10">
-                                    <h4 className="font-black text-xl text-slate-900">Portal Identity</h4>
-                                    <p className="text-sm text-slate-500 font-bold max-w-sm leading-relaxed">Identity is tied to encrypted email metadata. Avatars are synchronized via global protocols for: <span className="text-primary-blue">{user?.email}</span></p>
+                                <div className="space-y-2 relative z-10 text-center sm:text-left">
+                                    <h4 className="font-black text-lg sm:text-xl text-slate-900">Portal Identity</h4>
+                                    <p className="text-xs sm:text-sm text-slate-500 font-bold max-w-sm leading-relaxed">Identity is tied to encrypted email metadata. Avatars are synchronized via global protocols for: <span className="text-primary-blue break-all">{user?.email}</span></p>
                                 </div>
                                 <div className="absolute right-0 top-0 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none" />
                             </div>
@@ -205,8 +205,8 @@ export default function UnifiedSettingsPage() {
                                 </div>
                             </div>
                         </CardContent>
-                        <CardFooter className="bg-slate-50/80 p-10 flex justify-end">
-                            <Button onClick={handleUpdateProfile} disabled={isSavingProfile} className="h-14 px-10 rounded-2xl bg-primary-blue hover:bg-blue-700 shadow-xl shadow-blue-500/20 font-black gap-3 transition-all active:scale-95">
+                        <CardFooter className="bg-slate-50/80 p-6 sm:p-10 flex justify-end">
+                            <Button onClick={handleUpdateProfile} disabled={isSavingProfile} className="h-12 sm:h-14 w-full sm:w-auto px-10 rounded-xl sm:rounded-2xl bg-primary-blue hover:bg-blue-700 shadow-xl shadow-blue-500/20 font-black gap-3 transition-all active:scale-95 text-xs sm:text-base">
                                 {isSavingProfile ? <Loader2 className="animate-spin h-5 w-5" /> : <Save className="h-5 w-5" />}
                                 Synchronize Identity
                             </Button>
@@ -216,30 +216,30 @@ export default function UnifiedSettingsPage() {
 
                 <TabsContent value="security">
                     <Card className="border-slate-100 shadow-2xl shadow-slate-200/50 rounded-[3rem] overflow-hidden bg-white/80 backdrop-blur-xl">
-                        <CardHeader className="p-10 pb-6 border-b border-slate-50">
-                            <CardTitle className="text-2xl font-bold text-slate-900 flex items-center gap-3">
+                        <CardHeader className="p-6 sm:p-10 pb-4 sm:pb-6 border-b border-slate-50">
+                            <CardTitle className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-3">
                                 <Shield className="h-6 w-6 text-emerald-500" /> Security Protocol
                             </CardTitle>
-                            <CardDescription className="text-slate-500 text-base">Old password verification required for all credential shifts.</CardDescription>
+                            <CardDescription className="text-slate-500 text-sm sm:text-base">Old password verification required for all credential shifts.</CardDescription>
                         </CardHeader>
-                        <CardContent className="p-10 space-y-8">
+                        <CardContent className="p-6 sm:p-10 space-y-6 sm:space-y-8">
                             <div className="space-y-3">
                                 <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Verified Current Password</Label>
-                                <Input type="password" value={passwords.current} onChange={e => setPasswords({ ...passwords, current: e.target.value })} className="h-14 rounded-2xl bg-slate-50/50 border-slate-200 focus:bg-white font-bold" placeholder="Required to authorize changes" />
+                                <Input type="password" value={passwords.current} onChange={e => setPasswords({ ...passwords, current: e.target.value })} className="h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-slate-50/50 border-slate-200 focus:bg-white font-bold" placeholder="Required to authorize changes" />
                             </div>
-                            <div className="grid grid-cols-2 gap-8 pt-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 pt-4">
                                 <div className="space-y-3">
                                     <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">New Secure Cipher</Label>
-                                    <Input type="password" value={passwords.new} onChange={e => setPasswords({ ...passwords, new: e.target.value })} className="h-14 rounded-2xl bg-slate-50/50 border-slate-200 focus:bg-white font-bold" />
+                                    <Input type="password" value={passwords.new} onChange={e => setPasswords({ ...passwords, new: e.target.value })} className="h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-slate-50/50 border-slate-200 focus:bg-white font-bold" />
                                 </div>
                                 <div className="space-y-3">
                                     <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Confirm Cipher</Label>
-                                    <Input type="password" value={passwords.confirm} onChange={e => setPasswords({ ...passwords, confirm: e.target.value })} className="h-14 rounded-2xl bg-slate-50/50 border-slate-200 focus:bg-white font-bold" />
+                                    <Input type="password" value={passwords.confirm} onChange={e => setPasswords({ ...passwords, confirm: e.target.value })} className="h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-slate-50/50 border-slate-200 focus:bg-white font-bold" />
                                 </div>
                             </div>
                         </CardContent>
-                        <CardFooter className="bg-slate-50/80 p-10 flex justify-end">
-                            <Button onClick={handleUpdatePassword} disabled={isUpdatingPassword} className="h-14 px-10 rounded-2xl bg-slate-900 hover:bg-black shadow-xl shadow-black/20 font-black gap-3 transition-all active:scale-95">
+                        <CardFooter className="bg-slate-50/80 p-6 sm:p-10 flex justify-end">
+                            <Button onClick={handleUpdatePassword} disabled={isUpdatingPassword} className="h-12 sm:h-14 w-full sm:w-auto px-10 rounded-xl sm:rounded-2xl bg-slate-900 hover:bg-black shadow-xl shadow-black/20 font-black gap-3 transition-all active:scale-95 text-xs sm:text-base">
                                 {isUpdatingPassword ? <Loader2 className="animate-spin h-5 w-5" /> : <Unlock className="h-5 w-5" />}
                                 Authorize & Update
                             </Button>

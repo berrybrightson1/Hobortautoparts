@@ -188,13 +188,13 @@ export default function ApprovalsPage() {
         <div className="space-y-8 animate-in fade-in duration-500">
             {/* Header */}
             <div className="flex flex-col gap-3">
-                <div className="flex items-center gap-3">
-                    <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/30">
-                        <ShieldCheck className="h-6 w-6 text-white" />
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl sm:rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/30 shrink-0">
+                        <ShieldCheck className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                     </div>
                     <div>
-                        <h2 className="text-3xl font-bold text-slate-900">Agent Approvals</h2>
-                        <p className="text-slate-600">Review and approve agent affiliate applications</p>
+                        <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">Agent Approvals</h2>
+                        <p className="text-sm sm:text-base text-slate-600">Review and approve agent affiliate applications</p>
                     </div>
                 </div>
                 {pendingAgents.length > 0 && (
@@ -211,46 +211,45 @@ export default function ApprovalsPage() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {pendingAgents.map((agent) => (
                         <Card key={agent.id} className="border-slate-200 shadow-lg hover:shadow-xl rounded-3xl overflow-hidden bg-white group transition-all duration-300 hover:-translate-y-1">
-                            <CardHeader className="bg-gradient-to-br from-slate-50 to-white border-b border-slate-100 pb-5">
-                                <div className="flex items-start justify-between">
+                            <CardHeader className="bg-gradient-to-br from-slate-50 to-white border-b border-slate-100 p-5 sm:p-6 sm:pb-5">
+                                <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
                                     <div className="space-y-2">
-                                        <CardTitle className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                                            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary-blue to-blue-600 flex items-center justify-center text-white font-bold text-sm shadow-lg">
+                                        <CardTitle className="text-lg sm:text-xl font-bold text-slate-900 flex items-center gap-2">
+                                            <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-gradient-to-br from-primary-blue to-blue-600 flex items-center justify-center text-white font-bold text-xs sm:text-sm shadow-lg shrink-0">
                                                 {agent.full_name.charAt(0)}
                                             </div>
                                             {agent.full_name}
                                         </CardTitle>
-                                        <CardDescription className="flex items-center gap-2 text-sm pl-12">
-                                            <Mail className="h-4 w-4" />
+                                        <CardDescription className="flex items-center gap-2 text-xs sm:text-sm pl-10 sm:pl-12 break-all">
+                                            <Mail className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
                                             {agent.email}
                                         </CardDescription>
                                     </div>
-                                    <Badge className="bg-amber-50 text-amber-700 border-amber-200 gap-1.5 px-3 py-1">
+                                    <Badge className="bg-amber-50 text-amber-700 border-amber-200 gap-1.5 px-3 py-1 w-fit">
                                         <Clock className="h-3.5 w-3.5" />
                                         Pending
                                     </Badge>
                                 </div>
                             </CardHeader>
 
-                            <CardContent className="pt-6 space-y-5">
-                                <div className="space-y-3 text-sm">
+                            <CardContent className="p-5 sm:pt-6 space-y-5">
+                                <div className="space-y-3 text-xs sm:text-sm">
                                     {agent.company_name && (
                                         <div className="flex items-center gap-3 text-slate-700 bg-slate-50 rounded-xl p-3">
-                                            <Building2 className="h-4 w-4 text-slate-400" />
-                                            <span className="font-medium">{agent.company_name}</span>
+                                            <Building2 className="h-4 w-4 text-slate-400 shrink-0" />
+                                            <span className="font-medium truncate">{agent.company_name}</span>
                                         </div>
                                     )}
                                     <div className="flex items-center gap-3 text-slate-700 bg-slate-50 rounded-xl p-3">
-                                        <Calendar className="h-4 w-4 text-slate-400" />
+                                        <Calendar className="h-4 w-4 text-slate-400 shrink-0" />
                                         <span>Applied on {new Date(agent.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
                                     </div>
                                 </div>
-
-                                <div className="flex gap-3 pt-2">
+                                <div className="flex flex-col sm:flex-row gap-3 pt-2">
                                     <Button
                                         onClick={() => handleApprove(agent.id)}
                                         disabled={processingId === agent.id}
-                                        className="flex-1 h-11 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-2xl gap-2 shadow-lg shadow-emerald-500/30 font-semibold"
+                                        className="flex-1 h-12 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-2xl gap-2 shadow-lg shadow-emerald-500/30 font-semibold text-xs sm:text-sm"
                                     >
                                         {processingId === agent.id ? (
                                             <Loader2 className="h-4 w-4 animate-spin" />
@@ -263,7 +262,7 @@ export default function ApprovalsPage() {
                                         onClick={() => handleReject(agent.id)}
                                         disabled={processingId === agent.id}
                                         variant="outline"
-                                        className="flex-1 h-11 border-2 border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 rounded-2xl gap-2 font-semibold"
+                                        className="flex-1 h-12 border-2 border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 rounded-2xl gap-2 font-semibold text-xs sm:text-sm"
                                     >
                                         {processingId === agent.id ? (
                                             <Loader2 className="h-4 w-4 animate-spin" />

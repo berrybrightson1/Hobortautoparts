@@ -146,10 +146,10 @@ export default function AdminPortal() {
         <div className="flex flex-col gap-10 max-w-7xl mx-auto pb-10 animate-in fade-in duration-700">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div className="flex flex-col gap-2">
-                    <h2 className="text-3xl font-semibold text-slate-900 tracking-tight flex items-center gap-4">
-                        System Control <ShieldAlert className="h-8 w-8 text-primary-orange" />
+                    <h2 className="text-2xl sm:text-3xl font-semibold text-slate-900 tracking-tight flex items-center gap-4">
+                        System Control <ShieldAlert className="h-6 w-6 sm:h-8 sm:w-8 text-primary-orange" />
                     </h2>
-                    <p className="text-slate-500 font-medium">Global platform health and transaction monitoring.</p>
+                    <p className="text-slate-500 font-medium text-sm sm:text-base">Global platform health and transaction monitoring.</p>
                 </div>
                 {isLoading && (
                     <div className="flex items-center gap-2 text-primary-orange font-bold text-[10px] uppercase tracking-widest bg-orange-50 px-4 py-2 rounded-full border border-orange-100">
@@ -161,29 +161,29 @@ export default function AdminPortal() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {stats.map((stat) => (
                     <div key={stat.label} className={cn(
-                        "p-8 rounded-[2.5rem] border shadow-sm flex items-center justify-between group hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-500 bg-white",
+                        "p-6 sm:p-8 rounded-[1.5rem] sm:rounded-[2.5rem] border shadow-sm flex items-center justify-between group hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-500 bg-white",
                         stat.label.includes("Revenue") ? "hover:border-green-100" :
                             stat.label.includes("Users") ? "hover:border-blue-100" :
                                 "hover:border-orange-100"
                     )}>
                         <div className="space-y-1">
                             <p className={cn(
-                                "text-[10px] font-bold uppercase tracking-[0.2em]",
+                                "text-[10px] sm:text-[10px] font-bold uppercase tracking-[0.2em]",
                                 stat.label.includes("Revenue") ? "text-green-600" :
                                     stat.label.includes("Users") ? "text-blue-600" : "text-orange-600"
                             )}>{stat.label}</p>
                             <p className={cn(
-                                "text-4xl font-bold tracking-tighter",
+                                "text-2xl sm:text-4xl font-bold tracking-tighter",
                                 stat.label.includes("Revenue") ? "text-slate-900" :
                                     stat.label.includes("Users") ? "text-slate-900" : "text-slate-900"
                             )}>{stat.value}</p>
                         </div>
                         <div className={cn(
-                            "h-16 w-16 rounded-2xl flex items-center justify-center transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3 shadow-sm",
+                            "h-12 w-12 sm:h-16 sm:w-16 rounded-xl sm:rounded-2xl flex items-center justify-center transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3 shadow-sm",
                             stat.label.includes("Revenue") ? "bg-green-50 text-green-600" :
                                 stat.label.includes("Users") ? "bg-blue-50 text-blue-600" : "bg-orange-50 text-orange-600"
                         )}>
-                            <stat.icon className="h-8 w-8" />
+                            <stat.icon className="h-6 w-6 sm:h-8 sm:w-8" />
                         </div>
                     </div>
                 ))}
@@ -205,12 +205,12 @@ export default function AdminPortal() {
 
             <div className="grid grid-cols-1 gap-8">
                 {/* System Activity */}
-                <div className="bg-white rounded-[2.5rem] border border-slate-100 p-8 shadow-xl shadow-slate-200/40">
-                    <div className="flex items-center justify-between mb-8">
+                <div className="bg-white rounded-[1.5rem] sm:rounded-[2.5rem] border border-slate-100 p-6 sm:p-8 shadow-xl shadow-slate-200/40">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                         <h3 className="text-xl font-semibold text-slate-900 flex items-center gap-3">
-                            <Activity className="h-6 w-6 text-primary-orange" /> Real-time Activity
+                            <Activity className="h-5 w-5 sm:h-6 sm:w-6 text-primary-orange" /> Real-time Activity
                         </h3>
-                        <Link href="/portal/admin/approvals" className="text-[10px] font-bold text-blue-600 uppercase tracking-widest hover:underline">
+                        <Link href="/portal/admin/approvals" className="text-[10px] font-bold text-blue-600 uppercase tracking-widest hover:underline w-fit">
                             Approvals Queue
                         </Link>
                     </div>

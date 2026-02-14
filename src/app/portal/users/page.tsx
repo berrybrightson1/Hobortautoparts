@@ -166,73 +166,73 @@ export default function UsersPage() {
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div className="space-y-1">
                     <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-2xl bg-primary-blue/5 flex items-center justify-center text-primary-blue">
-                            <ShieldCheck className="h-6 w-6" />
+                        <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-xl sm:rounded-2xl bg-primary-blue/5 flex items-center justify-center text-primary-blue shrink-0">
+                            <ShieldCheck className="h-5 w-5 sm:h-6 sm:w-6" />
                         </div>
-                        <h2 className="text-4xl font-semibold tracking-tighter text-slate-900 uppercase leading-none">User Network</h2>
+                        <h2 className="text-2xl sm:text-4xl font-semibold tracking-tighter text-slate-900 uppercase leading-none">User Network</h2>
                     </div>
-                    <p className="text-slate-500 font-medium text-lg pt-2">Governance and account management for the Hobort ecosystem.</p>
+                    <p className="text-slate-500 font-medium text-base sm:text-lg pt-2">Governance and account management for the Hobort ecosystem.</p>
                 </div>
 
                 <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
                     <DialogTrigger asChild>
-                        <Button className="h-14 px-8 rounded-[2rem] bg-slate-900 hover:bg-black text-white shadow-xl shadow-slate-900/10 transition-all font-semibold uppercase tracking-widest text-xs group">
+                        <Button className="h-12 sm:h-14 w-full sm:w-auto px-8 rounded-xl sm:rounded-[2rem] bg-slate-900 hover:bg-black text-white shadow-xl shadow-slate-900/10 transition-all font-semibold uppercase tracking-widest text-xs group">
                             <UserPlus className="mr-3 h-5 w-5 group-hover:scale-110 transition-transform" /> Create New Account
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-[500px] rounded-[3rem] p-0 overflow-hidden border-0 shadow-2xl bg-white">
-                        <DialogHeader className="p-10 pt-12 text-left relative bg-slate-50/50 border-b border-slate-100">
+                    <DialogContent className="sm:max-w-[500px] w-[95vw] rounded-[2rem] sm:rounded-[3rem] p-0 overflow-hidden border-0 shadow-2xl bg-white max-h-[90vh] overflow-y-auto">
+                        <DialogHeader className="p-6 sm:p-10 sm:pt-12 text-left relative bg-slate-50/50 border-b border-slate-100">
                             <div className="flex items-center gap-4">
-                                <div className="h-12 w-12 rounded-2xl bg-primary-blue/10 flex items-center justify-center text-primary-blue">
-                                    <UserPlus className="h-6 w-6" />
+                                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl sm:rounded-2xl bg-primary-blue/10 flex items-center justify-center text-primary-blue shrink-0">
+                                    <UserPlus className="h-5 w-5 sm:h-6 sm:w-6" />
                                 </div>
                                 <div className="space-y-1">
-                                    <DialogTitle className="text-3xl font-black text-slate-900 uppercase tracking-tighter leading-none">Create Entity</DialogTitle>
-                                    <DialogDescription className="text-slate-500 font-bold text-sm italic">Provision new credentials for the portal ecosystem.</DialogDescription>
+                                    <DialogTitle className="text-xl sm:text-3xl font-black text-slate-900 uppercase tracking-tighter leading-none">Create Entity</DialogTitle>
+                                    <DialogDescription className="text-slate-500 font-bold text-xs sm:text-sm italic">Provision new credentials for the portal ecosystem.</DialogDescription>
                                 </div>
                             </div>
                         </DialogHeader>
-                        <div className="p-10 space-y-8">
+                        <div className="p-6 sm:p-10 space-y-6 sm:space-y-8">
                             <div className="space-y-3">
-                                <Label className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-400 ml-1">Full Legal Name</Label>
+                                <Label className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.3em] text-slate-400 ml-1">Full Legal Name</Label>
                                 <Input
                                     placeholder="Enter full legal name"
-                                    className="h-16 rounded-[1.25rem] bg-slate-50 border-slate-100 focus:bg-white focus:ring-8 focus:ring-blue-500/10 transition-all font-bold text-lg px-6"
+                                    className="h-12 sm:h-16 rounded-xl sm:rounded-[1.25rem] bg-slate-50 border-slate-100 focus:bg-white focus:ring-8 focus:ring-blue-500/10 transition-all font-bold text-base sm:text-lg px-6"
                                     value={newUser.full_name}
                                     onChange={(e) => setNewUser({ ...newUser, full_name: e.target.value })}
                                 />
                             </div>
                             <div className="space-y-3">
-                                <Label className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-400 ml-1">Secure Email</Label>
+                                <Label className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.3em] text-slate-400 ml-1">Secure Email</Label>
                                 <Input
                                     type="email"
                                     placeholder="node@hobort.sys"
-                                    className="h-16 rounded-[1.25rem] bg-slate-50 border-slate-100 focus:bg-white focus:ring-8 focus:ring-blue-500/10 transition-all font-bold text-lg px-6"
+                                    className="h-12 sm:h-16 rounded-xl sm:rounded-[1.25rem] bg-slate-50 border-slate-100 focus:bg-white focus:ring-8 focus:ring-blue-500/10 transition-all font-bold text-base sm:text-lg px-6"
                                     value={newUser.email}
                                     onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
                                 />
                             </div>
-                            <div className="grid grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                 <div className="space-y-3">
-                                    <Label className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-400 ml-1">Access Key</Label>
+                                    <Label className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.3em] text-slate-400 ml-1">Access Key</Label>
                                     <Input
                                         type="password"
                                         placeholder="••••••••"
-                                        className="h-16 rounded-[1.25rem] bg-slate-50 border-slate-100 focus:bg-white focus:ring-8 focus:ring-blue-500/10 transition-all font-bold text-lg px-6"
+                                        className="h-12 sm:h-16 rounded-xl sm:rounded-[1.25rem] bg-slate-50 border-slate-100 focus:bg-white focus:ring-8 focus:ring-blue-500/10 transition-all font-bold text-base sm:text-lg px-6"
                                         value={newUser.password}
                                         onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
                                     />
                                 </div>
                                 <div className="space-y-3">
-                                    <Label className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-400 ml-1">Security Class</Label>
+                                    <Label className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.3em] text-slate-400 ml-1">Security Class</Label>
                                     <Select
                                         value={newUser.role}
                                         onValueChange={(v: any) => setNewUser({ ...newUser, role: v })}
                                     >
-                                        <SelectTrigger className="h-16 rounded-[1.25rem] bg-slate-50 border-slate-100 focus:bg-white focus:ring-8 focus:ring-blue-500/10 font-bold text-lg px-6">
+                                        <SelectTrigger className="h-12 sm:h-16 rounded-xl sm:rounded-[1.25rem] bg-slate-50 border-slate-100 focus:bg-white focus:ring-8 focus:ring-blue-500/10 font-bold text-base sm:text-lg px-6">
                                             <SelectValue placeholder="Select Class" />
                                         </SelectTrigger>
-                                        <SelectContent className="rounded-[2rem] border-slate-100 shadow-2xl bg-white">
+                                        <SelectContent className="rounded-[1.5rem] sm:rounded-[2rem] border-slate-100 shadow-2xl bg-white">
                                             <SelectItem value="customer">Customer Node</SelectItem>
                                             <SelectItem value="agent">Strategic Agent</SelectItem>
                                             <SelectItem value="admin">System Architect</SelectItem>
@@ -241,11 +241,11 @@ export default function UsersPage() {
                                 </div>
                             </div>
                         </div>
-                        <DialogFooter className="p-10 pt-6 pb-12 bg-slate-50/50 border-t border-slate-100 flex justify-end">
+                        <DialogFooter className="p-6 sm:p-10 sm:pt-6 sm:pb-12 bg-slate-50/50 border-t border-slate-100 flex flex-col sm:flex-row justify-end">
                             <Button
                                 onClick={handleCreateUser}
                                 disabled={isCreating}
-                                className="h-18 px-12 rounded-[2rem] bg-[#0c1425] hover:bg-black shadow-[0_20px_40px_-12px_rgba(0,0,0,0.2)] font-black text-xl gap-4 transition-all active:scale-95 text-white group"
+                                className="h-14 sm:h-18 w-full sm:w-auto px-12 rounded-xl sm:rounded-[2rem] bg-[#0c1425] hover:bg-black shadow-[0_20px_40px_-12px_rgba(0,0,0,0.2)] font-black text-lg sm:text-xl gap-4 transition-all active:scale-95 text-white group"
                             >
                                 {isCreating ? <Loader2 className="animate-spin h-6 w-6" /> : <UserPlus className="h-6 w-6 group-hover:scale-110 transition-transform" />}
                                 Authorize Entry
@@ -256,14 +256,14 @@ export default function UsersPage() {
             </div>
 
             {/* Premium Controls */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center bg-white p-4 rounded-[3rem] border border-slate-100 shadow-2xl shadow-slate-200/40">
-                <div className="lg:col-span-6 flex p-2 bg-slate-50 rounded-[2rem] relative gap-1">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center bg-white p-2 sm:p-4 rounded-[1.5rem] sm:rounded-[3rem] border border-slate-100 shadow-2xl shadow-slate-200/40 overflow-hidden">
+                <div className="lg:col-span-6 flex p-1.5 bg-slate-50 rounded-[1.25rem] sm:rounded-[2rem] relative gap-1 overflow-x-auto no-scrollbar">
                     {roles.map((role) => (
                         <button
                             key={role.id}
                             onClick={() => setActiveRole(role.id as any)}
                             className={cn(
-                                "flex-1 py-3 px-2 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all duration-500 relative z-10",
+                                "flex-1 py-2.5 sm:py-3 px-3 sm:px-2 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-widest transition-all duration-500 relative z-10 whitespace-nowrap min-w-[80px]",
                                 activeRole === role.id ? "text-white" : "text-slate-400 hover:text-slate-600"
                             )}
                         >
@@ -272,7 +272,7 @@ export default function UsersPage() {
                     ))}
                     {/* Animated Glider */}
                     <div
-                        className="absolute top-2 bottom-2 bg-primary-blue rounded-full transition-all duration-500 shadow-lg shadow-blue-500/20"
+                        className="absolute top-1.5 bottom-1.5 bg-primary-blue rounded-full transition-all duration-500 shadow-lg shadow-blue-500/20 hidden sm:block"
                         style={{
                             left: activeRole === 'all' ? '0.5rem' :
                                 activeRole === 'customer' ? '25%' :
