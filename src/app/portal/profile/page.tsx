@@ -53,7 +53,12 @@ export default function UnifiedSettingsPage() {
                 .select('*')
                 .eq('user_id', user.id)
                 .single()
-            if (data) setPrefs(data)
+            if (data) {
+                setPrefs(data)
+                // Apply on load
+                if (data.dark_mode) document.documentElement.classList.add('dark')
+                if (data.compact_mode) document.documentElement.classList.add('compact-mode')
+            }
         } catch (e) {
             console.error(e)
         } finally {
@@ -116,19 +121,39 @@ export default function UnifiedSettingsPage() {
     const togglePref = async (key: string, val: boolean) => {
         if (!user) return
         setPrefs({ ...prefs, [key]: val })
+
+        // Apply class to document element for immediate feedback
+        if (key === 'dark_mode') {
+            if (val) document.documentElement.classList.add('dark')
+            else document.documentElement.classList.remove('dark')
+        }
+        if (key === 'compact_mode') {
+            if (val) document.documentElement.classList.add('compact-mode')
+            else document.documentElement.classList.remove('compact-mode')
+        }
+
         try {
             await supabase.from('user_preferences').upsert({
                 user_id: user.id,
                 [key]: val,
                 updated_at: new Date().toISOString()
             })
-            toast.success("Preference synchronized")
+            toast.success("Preference synchronized", {
+                description: "Settings are now consistent across all your devices."
+            })
         } catch (e) {
             toast.error("Sync failed")
         }
     }
 
-    if (isLoadingPrefs) return <div className="flex h-96 items-center justify-center"><Loader2 className="animate-spin h-8 w-8 text-blue-500" /></div>
+    if (isLoadingPrefs) return (
+        <div className="flex h-[80vh] items-center justify-center">
+            <div className="flex flex-col items-center gap-4">
+                <Loader2 className="animate-spin h-12 w-12 text-blue-500/20" />
+                <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Initializing Hub...</p>
+            </div>
+        </div>
+    )
 
     return (
         <div className="space-y-8 max-w-5xl mx-auto pb-20 animate-in fade-in duration-700">
@@ -223,35 +248,43 @@ export default function UnifiedSettingsPage() {
                 </TabsContent>
 
                 <TabsContent value="hub">
-                    <Card className="border-slate-100 shadow-2xl shadow-slate-200/50 rounded-[3rem] overflow-hidden bg-white/80 backdrop-blur-xl">
-                        <CardHeader className="p-10 pb-6 border-b border-slate-50">
-                            <CardTitle className="text-2xl font-bold text-slate-900">Portal Preferences</CardTitle>
-                            <CardDescription className="text-slate-500 text-base">Configure your interaction experience and visual language.</CardDescription>
+                    <Card className="border-slate-100/50 shadow-2xl shadow-slate-200/40 rounded-[3rem] overflow-hidden bg-white/60 backdrop-blur-2xl">
+                        <CardHeader className="p-10 pb-6">
+                            <CardTitle className="text-3xl font-black text-slate-900">Portal Preferences</CardTitle>
+                            <CardDescription className="text-slate-500 text-lg font-medium">Configure your interaction experience and visual language.</CardDescription>
                         </CardHeader>
-                        <CardContent className="p-10 space-y-6">
-                            <div className="flex items-center justify-between p-6 bg-slate-50/50 rounded-3xl border border-slate-100/50 hover:bg-white transition-all group">
-                                <div className="flex items-center gap-5">
-                                    <div className="h-12 w-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-600 transition-transform group-hover:scale-110">
-                                        <Moon className="h-6 w-6" />
+                        <CardContent className="p-10 space-y-8">
+                            <div className="flex items-center justify-between p-8 bg-slate-50/40 rounded-[2.5rem] border border-slate-100/50 hover:bg-white transition-all duration-500 group">
+                                <div className="flex items-center gap-6">
+                                    <div className="h-16 w-16 rounded-3xl bg-indigo-500/10 flex items-center justify-center text-indigo-600 transition-all group-hover:scale-105 group-hover:rotate-6">
+                                        <Moon className="h-8 w-8" />
                                     </div>
                                     <div className="space-y-1">
-                                        <h4 className="font-bold text-slate-900">Visual Midnight Mode</h4>
-                                        <p className="text-xs text-slate-500 font-medium italic">Apply deep-space theme to the entire portal dashboard.</p>
+                                        <h4 className="font-black text-xl text-slate-900">Visual Midnight Mode</h4>
+                                        <p className="text-sm text-slate-500 font-medium leading-relaxed italic">Apply deep-space theme to the entire portal dashboard.</p>
                                     </div>
                                 </div>
-                                <Switch checked={prefs.dark_mode} onCheckedChange={v => togglePref('dark_mode', v)} />
+                                <Switch
+                                    checked={prefs.dark_mode}
+                                    onCheckedChange={v => togglePref('dark_mode', v)}
+                                    className="data-[state=checked]:bg-primary-orange h-8 w-14"
+                                />
                             </div>
-                            <div className="flex items-center justify-between p-6 bg-slate-50/50 rounded-3xl border border-slate-100/50 hover:bg-white transition-all group">
-                                <div className="flex items-center gap-5">
-                                    <div className="h-12 w-12 rounded-2xl bg-cyan-500/10 flex items-center justify-center text-cyan-600 transition-transform group-hover:scale-110">
-                                        <Minimize2 className="h-6 w-6" />
+                            <div className="flex items-center justify-between p-8 bg-slate-50/40 rounded-[2.5rem] border border-slate-100/50 hover:bg-white transition-all duration-500 group">
+                                <div className="flex items-center gap-6">
+                                    <div className="h-16 w-16 rounded-3xl bg-cyan-500/10 flex items-center justify-center text-cyan-600 transition-all group-hover:scale-105 group-hover:-rotate-6">
+                                        <Minimize2 className="h-8 w-8" />
                                     </div>
                                     <div className="space-y-1">
-                                        <h4 className="font-bold text-slate-900">Condensed Architecture</h4>
-                                        <p className="text-xs text-slate-500 font-medium italic">High-density layout optimization for sourcing experts.</p>
+                                        <h4 className="font-black text-xl text-slate-900">Condensed Architecture</h4>
+                                        <p className="text-sm text-slate-500 font-medium leading-relaxed italic">High-density layout optimization for sourcing experts.</p>
                                     </div>
                                 </div>
-                                <Switch checked={prefs.compact_mode} onCheckedChange={v => togglePref('compact_mode', v)} />
+                                <Switch
+                                    checked={prefs.compact_mode}
+                                    onCheckedChange={v => togglePref('compact_mode', v)}
+                                    className="data-[state=checked]:bg-primary-orange h-8 w-14"
+                                />
                             </div>
                         </CardContent>
                     </Card>

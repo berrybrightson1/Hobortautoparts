@@ -48,7 +48,18 @@ export default function RootLayout({
       <body className={`${inter.variable} font-sans antialiased text-slate-900`}>
         <AuthProvider>
           {children}
-          <Toaster position="top-center" richColors />
+          <Toaster
+            position="bottom-right"
+            theme="system"
+            closeButton
+            toastOptions={{
+              classNames: {
+                toast: "rounded-2xl border-slate-200/50 shadow-2xl backdrop-blur-xl bg-white/80",
+                title: "font-black text-slate-900",
+                description: "font-bold text-slate-400"
+              }
+            }}
+          />
         </AuthProvider>
       </body>
     </html>

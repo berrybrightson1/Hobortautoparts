@@ -193,6 +193,59 @@ body {
   animation-play-state: paused;
 }
 
+/* Condensed Architecture (Compact Mode) Styles */
+.compact-mode {
+  --radius: 0.5rem;
+}
+
+.compact-mode .space-y-8>*+* {
+  margin-top: 1rem !important;
+}
+
+.compact-mode .space-y-6>*+* {
+  margin-top: 0.75rem !important;
+}
+
+.compact-mode .p-10 {
+  padding: 1.5rem !important;
+}
+
+.compact-mode .p-8 {
+  padding: 1.25rem !important;
+}
+
+.compact-mode .p-6 {
+  padding: 1rem !important;
+}
+
+.compact-mode .gap-8 {
+  gap: 1rem !important;
+}
+
+.compact-mode .gap-6 {
+  gap: 0.75rem !important;
+}
+
+.compact-mode .h-14 {
+  height: 3rem !important;
+}
+
+.compact-mode .h-16 {
+  height: 3.5rem !important;
+}
+
+.compact-mode .text-3xl {
+  font-size: 1.5rem !important;
+}
+
+.compact-mode .text-4xl {
+  font-size: 1.75rem !important;
+}
+
+.compact-mode .text-lg {
+  font-size: 0.875rem !important;
+}
+
 /* Phone Input Styles */
 .PhoneInput {
   display: flex !important;

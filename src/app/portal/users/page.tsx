@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import {
     Table,
     TableBody,
@@ -20,10 +21,19 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
 import { Search, Filter, MoreHorizontal, UserPlus, Inbox, ShieldCheck, User as UserIcon, Briefcase, Loader2 } from "lucide-react"
 import { useState, useEffect } from "react"
-import { supabase } from "@/lib/supabase"
+import { supabase, supabaseAdmin } from "@/lib/supabase"
 import { toast } from "sonner"
 import { format } from "date-fns"
 
@@ -33,6 +43,16 @@ export default function UsersPage() {
     const [users, setUsers] = useState<any[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [updatingId, setUpdatingId] = useState<string | null>(null)
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+
+    // Create User State
+    const [newUser, setNewUser] = useState({
+        full_name: "",
+        email: "",
+        password: "",
+        role: "customer"
+    })
+    const [isCreating, setIsCreating] = useState(false)
 
     const fetchUsers = async () => {
         setIsLoading(true)
@@ -56,6 +76,44 @@ export default function UsersPage() {
     useEffect(() => {
         fetchUsers()
     }, [])
+
+    const handleCreateUser = async () => {
+        if (!newUser.email || !newUser.password || !newUser.full_name) {
+            toast.error("Please fill in all required fields")
+            return
+        }
+
+        setIsCreating(true)
+        try {
+            // Use supabaseAdmin to sign up without logging out current admin
+            const { data, error: signUpError } = await supabaseAdmin.auth.signUp({
+                email: newUser.email,
+                password: newUser.password,
+                options: {
+                    data: {
+                        full_name: newUser.full_name,
+                        role: newUser.role
+                    }
+                }
+            })
+
+            if (signUpError) throw signUpError
+
+            toast.success("Identity created successfully", {
+                description: `Authorized entry established for ${newUser.full_name}.`
+            })
+
+            setIsCreateModalOpen(false)
+            setNewUser({ full_name: "", email: "", password: "", role: "customer" })
+            fetchUsers() // Refresh list
+        } catch (error: any) {
+            toast.error("Creation failed", {
+                description: error.message
+            })
+        } finally {
+            setIsCreating(false)
+        }
+    }
 
     const handleRoleChange = async (userId: string, newRole: string) => {
         setUpdatingId(userId)
@@ -83,7 +141,6 @@ export default function UsersPage() {
     const filteredUsers = users.filter(user => {
         const matchesRole = activeRole === 'all' || user.role === activeRole
         const name = user.full_name || 'Anonymous'
-        const email = user.id // In a real app, you might need to join auth.users to get email if not in profile
         const matchesSearch = name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             user.id.toLowerCase().includes(searchQuery.toLowerCase())
         return matchesRole && matchesSearch
@@ -109,9 +166,76 @@ export default function UsersPage() {
                     </div>
                     <p className="text-slate-500 font-medium text-lg pt-2">Governance and account management for the Hobort ecosystem.</p>
                 </div>
-                <Button className="h-14 px-8 rounded-[2rem] bg-slate-900 hover:bg-black text-white shadow-xl shadow-slate-900/10 transition-all font-semibold uppercase tracking-widest text-xs group">
-                    <UserPlus className="mr-3 h-5 w-5 group-hover:scale-110 transition-transform" /> Create New Account
-                </Button>
+
+                <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
+                    <DialogTrigger asChild>
+                        <Button className="h-14 px-8 rounded-[2rem] bg-slate-900 hover:bg-black text-white shadow-xl shadow-slate-900/10 transition-all font-semibold uppercase tracking-widest text-xs group">
+                            <UserPlus className="mr-3 h-5 w-5 group-hover:scale-110 transition-transform" /> Create New Account
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[500px] rounded-[3rem] p-0 overflow-hidden border-0 shadow-2xl">
+                        <DialogHeader className="p-8 pt-10 bg-slate-50/50">
+                            <DialogTitle className="text-2xl font-black text-slate-900 uppercase tracking-tight">Create Entity</DialogTitle>
+                            <DialogDescription className="text-slate-500 font-medium">Provision new credentials for the portal ecosystem.</DialogDescription>
+                        </DialogHeader>
+                        <div className="p-8 space-y-6">
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Full Legal Name</Label>
+                                <Input
+                                    placeholder="John Doe"
+                                    className="h-14 rounded-2xl bg-slate-50/50 border-slate-200 focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all font-bold"
+                                    value={newUser.full_name}
+                                    onChange={(e) => setNewUser({ ...newUser, full_name: e.target.value })}
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Secure Email</Label>
+                                <Input
+                                    type="email"
+                                    placeholder="john@example.com"
+                                    className="h-14 rounded-2xl bg-slate-50/50 border-slate-200 focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all font-bold"
+                                    value={newUser.email}
+                                    onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                                />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Password</Label>
+                                    <Input
+                                        type="password"
+                                        className="h-14 rounded-2xl bg-slate-50/50 border-slate-200 focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all font-bold"
+                                        value={newUser.password}
+                                        onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="newUserRole" className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Security Class (Role)</Label>
+                                    <select
+                                        id="newUserRole"
+                                        title="Select Security Class"
+                                        className="w-full h-14 px-4 rounded-2xl bg-slate-50/50 border-slate-200 focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all font-bold text-sm outline-none"
+                                        value={newUser.role}
+                                        onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
+                                    >
+                                        <option value="customer">Customer</option>
+                                        <option value="agent">Agent</option>
+                                        <option value="admin">Admin</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <DialogFooter className="p-8 bg-slate-50/50 flex justify-end">
+                            <Button
+                                onClick={handleCreateUser}
+                                disabled={isCreating}
+                                className="h-14 px-10 rounded-2xl bg-primary-blue hover:bg-blue-700 shadow-xl shadow-blue-500/20 font-black gap-3 transition-all active:scale-95 text-white"
+                            >
+                                {isCreating ? <Loader2 className="animate-spin h-5 w-5" /> : <UserPlus className="h-5 w-5" />}
+                                Authorize Entry
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
             </div>
 
             {/* Premium Controls */}
