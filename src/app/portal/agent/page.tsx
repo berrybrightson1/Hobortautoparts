@@ -3,6 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import Link from "next/link"
 import {
     Users,
     ShoppingCart,
@@ -40,6 +41,7 @@ export default function AgentDashboard() {
     const [isLoading, setIsLoading] = useState(true)
     const [agentStatus, setAgentStatus] = useState<string | null>(null)
     const [orders, setOrders] = useState<any[]>([])
+    const [sourcingRequests, setSourcingRequests] = useState<any[]>([])
     const [stats, setStats] = useState([
         { label: "Total Commission", value: "$0.00", change: "0%", trend: "up" },
         { label: "Active Requests", value: "0", change: "0%", trend: "up" },
@@ -71,7 +73,22 @@ export default function AgentDashboard() {
                 return
             }
 
-            // 1. Fetch Assigned Orders
+            // 1. Fetch Assigned Sourcing Requests (New Assignment Logic)
+            const { data: sourcingData, error: sourcingError } = await supabase
+                .from('sourcing_requests')
+                .select(`
+                    *,
+                    profiles:user_id (
+                        full_name
+                    )
+                `)
+                .eq('agent_id', user.id)
+                .order('created_at', { ascending: false })
+
+            if (sourcingError) throw sourcingError
+            setSourcingRequests(sourcingData || [])
+
+            // 2. Fetch Assigned Orders
             const { data: ordersData, error: ordersError } = await supabase
                 .from('orders')
                 .select(`
@@ -94,7 +111,7 @@ export default function AgentDashboard() {
 
             if (ordersError) throw ordersError
 
-            // 2. Fetch Commissions
+            // 3. Fetch Commissions
             const { data: commissionsData } = await supabase
                 .from('commissions')
                 .select('amount_earned')
@@ -102,15 +119,16 @@ export default function AgentDashboard() {
 
             const totalCommission = (commissionsData || []).reduce((acc, curr) => acc + (parseFloat(String(curr.amount_earned).replace(/[^0-9.-]+/g, "")) || 0), 0)
 
-            // 3. Calculate Stats
+            // 4. Calculate Stats
             const totalOrders = ordersData?.length || 0
+            const activeSourcing = sourcingData?.filter(r => r.status === 'pending' || r.status === 'processing').length || 0
             const activeOrders = ordersData?.filter(o => o.status !== 'completed' && o.status !== 'cancelled').length || 0
             const completedOrders = ordersData?.filter(o => o.status === 'completed').length || 0
             const completionRate = totalOrders > 0 ? (completedOrders / totalOrders * 100).toFixed(0) : 0
 
             setStats([
                 { label: "Total Commission", value: `$${totalCommission.toLocaleString()}`, change: "+12%", trend: "up" },
-                { label: "Active Requests", value: activeOrders.toString(), change: "+2", trend: "up" },
+                { label: "Active Requests", value: (activeSourcing + activeOrders).toString(), change: `+${activeSourcing}`, trend: "up" },
                 { label: "Completion Rate", value: `${completionRate}%`, change: "stable", trend: "up" },
                 { label: "Direct Leads", value: "0", change: "0%", trend: "up" }
             ])
@@ -144,6 +162,12 @@ export default function AgentDashboard() {
         order.profiles?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         order.id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         order.quotes?.sourcing_requests?.vehicle_info?.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+
+    const filteredSourcing = sourcingRequests.filter(req =>
+        req.profiles?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        req.part_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        req.vehicle_info?.toLowerCase().includes(searchTerm.toLowerCase())
     )
 
     return (
@@ -197,6 +221,74 @@ export default function AgentDashboard() {
                     </Card>
                 ))}
             </div>
+
+            {/* Sourcing Pipeline */}
+            <Card className="border-slate-100 shadow-xl shadow-slate-200/40 rounded-[2.5rem] overflow-hidden bg-white ring-1 ring-slate-100/50">
+                <CardHeader className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-50 p-10">
+                    <div className="space-y-1">
+                        <CardTitle className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-3">
+                            <Activity className="h-6 w-6 text-primary-orange" /> Sourcing Pipeline
+                        </CardTitle>
+                        <CardDescription className="text-slate-500 font-medium pt-1">Active requests assigned to you for part location and pricing.</CardDescription>
+                    </div>
+                </CardHeader>
+                <CardContent className="p-0">
+                    <div className="overflow-x-auto">
+                        <Table>
+                            <TableHeader className="bg-slate-50/30">
+                                <TableRow className="hover:bg-transparent border-slate-100">
+                                    <TableHead className="font-bold text-slate-400 text-[10px] uppercase tracking-widest pl-10 h-14">Request ID</TableHead>
+                                    <TableHead className="font-bold text-slate-400 text-[10px] uppercase tracking-widest h-14">Customer</TableHead>
+                                    <TableHead className="font-bold text-slate-400 text-[10px] uppercase tracking-widest h-14">Part & Vehicle</TableHead>
+                                    <TableHead className="font-bold text-slate-400 text-[10px] uppercase tracking-widest h-14">Status</TableHead>
+                                    <TableHead className="text-right font-bold text-slate-400 text-[10px] uppercase tracking-widest pr-10 h-14">Actions</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {filteredSourcing.length === 0 ? (
+                                    <TableRow>
+                                        <TableCell colSpan={5} className="h-32 text-center">
+                                            <p className="text-[10px] font-bold uppercase tracking-widest opacity-50">No active sourcing requests.</p>
+                                        </TableCell>
+                                    </TableRow>
+                                ) : (
+                                    filteredSourcing.map((req) => (
+                                        <TableRow key={req.id} className="hover:bg-orange-50/20 border-slate-50 group">
+                                            <TableCell className="pl-10 py-6 font-bold text-slate-900">
+                                                #{req.id.slice(0, 8).toUpperCase()}
+                                            </TableCell>
+                                            <TableCell className="py-6 font-medium text-slate-600">
+                                                {req.profiles?.full_name}
+                                            </TableCell>
+                                            <TableCell className="py-6">
+                                                <div className="flex flex-col">
+                                                    <span className="font-bold text-slate-800">{req.part_name}</span>
+                                                    <span className="text-xs text-slate-500">{req.vehicle_info}</span>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="py-6">
+                                                <Badge className={cn(
+                                                    "rounded-full px-3 py-1 font-bold text-[10px] uppercase tracking-wider",
+                                                    req.status === 'pending' ? "bg-orange-100 text-orange-600" : "bg-blue-100 text-blue-600"
+                                                )}>
+                                                    {req.status}
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell className="text-right pr-10 py-6">
+                                                <Link href={`/quote?request=${req.id}`}>
+                                                    <Button variant="ghost" size="sm" className="rounded-xl font-bold text-blue-600 hover:text-blue-700 hover:bg-blue-50">
+                                                        Manage
+                                                    </Button>
+                                                </Link>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
+                            </TableBody>
+                        </Table>
+                    </div>
+                </CardContent>
+            </Card>
 
             {/* Recent Orders */}
             <Card className="border-slate-100 shadow-xl shadow-slate-200/40 rounded-[2.5rem] overflow-hidden bg-white ring-1 ring-slate-100/50">

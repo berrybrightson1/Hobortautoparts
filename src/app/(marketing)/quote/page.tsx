@@ -47,7 +47,7 @@ const COMMON_ENGINES = ["2.0L I4", "2.4L I4", "2.5L I4", "3.0L V6", "3.5L V6", "
 const COMMON_TRIMS = ["Base", "Standard", "Premium", "Luxury", "Sport", "LE", "XLE", "SE", "XSE", "Limited", "Platinum", "AMG Line", "M Sport"]
 
 export default function QuotePage() {
-    const { user, loading: authLoading } = useAuth()
+    const { user, profile, loading: authLoading } = useAuth()
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(false)
     const [isSubmitted, setIsSubmitted] = useState(false)
@@ -152,6 +152,7 @@ export default function QuotePage() {
                 .from('sourcing_requests')
                 .insert({
                     user_id: currentUser.id,
+                    agent_id: profile?.role === 'agent' ? currentUser.id : null,
                     vin: formData.vin,
                     part_name: (document.getElementById('parts') as HTMLTextAreaElement).value,
                     vehicle_info: vehicle_info,

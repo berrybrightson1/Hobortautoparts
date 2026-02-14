@@ -20,7 +20,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Search, Filter, MoreHorizontal, Package, CheckCircle2, Clock, AlertCircle, Inbox, Loader2, ArrowRight, DollarSign, Calculator, Info } from "lucide-react"
+import { Search, Filter, MoreHorizontal, Package, CheckCircle2, Clock, AlertCircle, Inbox, Loader2, ArrowRight, DollarSign, Calculator, Info, Users } from "lucide-react"
 import { useState, useEffect, useMemo } from "react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
@@ -75,6 +75,8 @@ export default function SourcingRequestsPage() {
         return (p + s + f).toFixed(2)
     }, [quoteData])
 
+    const [agents, setAgents] = useState<any[]>([])
+
     const fetchRequests = async () => {
         setIsLoading(true)
         try {
@@ -90,6 +92,14 @@ export default function SourcingRequestsPage() {
 
             if (error) throw error
             setRequests(data || [])
+
+            // Fetch active agents for assignment
+            const { data: agentsData } = await supabase
+                .from('profiles')
+                .select('id, full_name')
+                .eq('role', 'agent')
+
+            setAgents(agentsData || [])
         } catch (error: any) {
             toast.error("Failed to fetch requests", {
                 description: error.message
@@ -102,6 +112,24 @@ export default function SourcingRequestsPage() {
     useEffect(() => {
         fetchRequests()
     }, [])
+
+    const handleAssignment = async (requestId: string, agentId: string) => {
+        setUpdatingId(requestId)
+        try {
+            const { error } = await supabase
+                .from('sourcing_requests')
+                .update({ agent_id: agentId, status: 'processing' })
+                .eq('id', requestId)
+
+            if (error) throw error
+            toast.success("Agent assigned successfully")
+            fetchRequests()
+        } catch (error: any) {
+            toast.error("Assignment failed", { description: error.message })
+        } finally {
+            setUpdatingId(null)
+        }
+    }
 
     const handleStatusUpdate = async (requestId: string, newStatus: SourcingRequest['status']) => {
         setUpdatingId(requestId)
@@ -301,6 +329,22 @@ export default function SourcingRequestsPage() {
                                                             </div>
                                                             <span className="font-medium">Mark Quoted</span>
                                                         </DropdownMenuItem>
+
+                                                        <DropdownMenuSeparator className="my-1 bg-slate-100" />
+
+                                                        <DropdownMenuLabel className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-3 py-2">Allocation</DropdownMenuLabel>
+                                                        {agents.map(agent => (
+                                                            <DropdownMenuItem
+                                                                key={agent.id}
+                                                                onClick={() => handleAssignment(request.id, agent.id)}
+                                                                className="rounded-xl px-3 py-2.5 mb-1 cursor-pointer hover:bg-slate-50 text-slate-600 focus:text-primary-blue group transition-colors"
+                                                            >
+                                                                <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center mr-3 group-hover:bg-white group-hover:shadow-sm transition-all">
+                                                                    <Users className="h-4 w-4 text-slate-400" />
+                                                                </div>
+                                                                <span className="font-medium">Assign to {agent.full_name.split(' ')[0]}</span>
+                                                            </DropdownMenuItem>
+                                                        ))}
 
                                                         <DropdownMenuSeparator className="my-1 bg-slate-100" />
 

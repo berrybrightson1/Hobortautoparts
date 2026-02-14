@@ -11,7 +11,9 @@ CREATE POLICY "Users can edit own profile" ON profiles FOR UPDATE USING (auth.ui
 
 -- 2. Sourcing Requests: Standard + Admin
 DROP POLICY IF EXISTS "Users can view own requests." ON sourcing_requests;
+DROP POLICY IF EXISTS "Users can create requests." ON sourcing_requests;
 DROP POLICY IF EXISTS "Admins can manage all sourcing requests" ON sourcing_requests;
+DROP POLICY IF EXISTS "Admins can mange all sourcing requests" ON sourcing_requests;
 
 CREATE POLICY "Users can view own requests." ON sourcing_requests FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "Users can create requests." ON sourcing_requests FOR INSERT WITH CHECK (auth.uid() = user_id);
