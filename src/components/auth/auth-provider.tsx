@@ -70,6 +70,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 return
             }
 
+            console.warn("AuthProvider: Profile not found, attempting sync...", error)
+
             // Fallback: If profile doesn't exist, create it from user metadata
             const { data: { user: authUser } } = await supabase.auth.getUser()
             if (authUser) {
@@ -80,7 +82,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                         full_name: authUser.user_metadata?.full_name || authUser.email?.split('@')[0],
                         role: authUser.user_metadata?.role || 'customer',
                         phone_number: authUser.user_metadata?.phone,
-                    })
+                    }, { onConflict: 'id' })
                     .select()
                     .single()
 
@@ -88,10 +90,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                     setProfile(newProfile)
                 } else {
                     console.error("AuthProvider: Sync error:", syncError)
+                    // If everything fails, at least set a minimal profile to avoid hanging login
+                    setProfile({ role: authUser.user_metadata?.role || 'customer' })
                 }
             }
         } catch (err) {
             console.error("AuthProvider: Unexpected sync error:", err)
+        } finally {
+            setLoading(false)
         }
     }
 

@@ -52,11 +52,20 @@ export default function LoginPage() {
 
             if (error) throw error
 
-            // Wait a brief moment for the AuthProvider to catch the session change
-            // This prevents the 'AbortError' collision by letting the provider lead
-            toast.success("Identity verified", {
-                description: "Synchronizing your portal access..."
-            })
+            // Proactive sync for faster redirection
+            const { data: { user } } = await supabase.auth.getUser()
+            if (user) {
+                const role = user.user_metadata?.role || 'customer'
+                setRole(role)
+
+                toast.success("Identity verified", {
+                    description: "Redirecting to your portal..."
+                })
+
+                if (role === 'admin') router.push("/portal/admin")
+                else if (role === 'agent') router.push("/portal/agent")
+                else router.push("/portal/customer")
+            }
 
         } catch (error: any) {
             // Silently handle abort errors (common during rapid navigation or provider takeover)
