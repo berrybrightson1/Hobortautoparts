@@ -22,17 +22,72 @@ import {
     Truck,
     Inbox
 } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
+import { supabase } from "@/lib/supabase"
+import { useAuth } from "@/components/auth/auth-provider"
+import { format } from "date-fns"
+import { toast } from "sonner"
 
 export default function OrdersPage() {
+    const { user, profile } = useAuth()
     const [searchTerm, setSearchTerm] = useState('')
-    const [orders] = useState<any[]>([])
+    const [orders, setOrders] = useState<any[]>([])
+    const [isLoading, setIsLoading] = useState(true)
+
+    const fetchOrders = async () => {
+        if (!user) return
+        setIsLoading(true)
+        try {
+            let query = supabase
+                .from('orders')
+                .select(`
+                    id,
+                    status,
+                    created_at,
+                    transaction_ref,
+                    profiles:user_id (
+                        full_name
+                    ),
+                    quotes:quote_id (
+                        total_amount,
+                        sourcing_requests:request_id (
+                            vehicle_info,
+                            part_name,
+                            vin
+                        )
+                    )
+                `)
+                .order('created_at', { ascending: false })
+
+            // If agent, only show their assigned orders
+            if (profile?.role === 'agent') {
+                query = query.eq('agent_id', user.id)
+            } else if (profile?.role === 'customer') {
+                query = query.eq('user_id', user.id)
+            }
+
+            const { data, error } = await query
+
+            if (error) throw error
+            setOrders(data || [])
+        } catch (error: any) {
+            console.error("Error fetching orders:", error)
+            toast.error("Failed to load orders")
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        fetchOrders()
+    }, [user, profile])
 
     const filteredOrders = orders.filter(order =>
-        order.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        order.vin.toLowerCase().includes(searchTerm.toLowerCase())
+        order.profiles?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.quotes?.sourcing_requests?.vin?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.quotes?.sourcing_requests?.part_name?.toLowerCase().includes(searchTerm.toLowerCase())
     )
 
     return (
@@ -98,11 +153,43 @@ export default function OrdersPage() {
                                         </TableCell>
                                     </TableRow>
                                 ) : (
-                                    filteredOrders.map((order) => (
-                                        <TableRow key={order.id} className="hover:bg-blue-50/30 transition-colors border-slate-50 group cursor-pointer">
-                                            {/* ... existing table row content ... */}
-                                        </TableRow>
-                                    ))
+                                    filteredOrders.map((order) => {
+                                        const request = order.quotes?.sourcing_requests
+                                        return (
+                                            <TableRow key={order.id} className="hover:bg-blue-50/30 transition-colors border-slate-50 group cursor-pointer">
+                                                <TableCell className="pl-6 py-4 font-bold text-slate-900">
+                                                    #{order.id.slice(0, 8).toUpperCase()}
+                                                </TableCell>
+                                                <TableCell className="py-4 font-medium text-slate-600">
+                                                    {order.profiles?.full_name || 'Anonymous'}
+                                                </TableCell>
+                                                <TableCell className="py-4 font-semibold text-slate-500">
+                                                    <div className="flex flex-col">
+                                                        <span className="text-slate-900">{request?.part_name || 'N/A'}</span>
+                                                        <span className="text-xs font-normal">{request?.vehicle_info || 'N/A'}</span>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell className="py-4">
+                                                    <Badge className={cn(
+                                                        "rounded-full px-3 py-1 font-bold text-[10px] uppercase tracking-wider",
+                                                        order.status === 'paid' ? "bg-emerald-100 text-emerald-600" :
+                                                            order.status === 'pending_payment' ? "bg-orange-100 text-orange-600" :
+                                                                "bg-blue-100 text-blue-600"
+                                                    )}>
+                                                        {order.status.replace('_', ' ')}
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell className="py-4 font-medium text-slate-500">
+                                                    {format(new Date(order.created_at), 'MMM dd, yyyy')}
+                                                </TableCell>
+                                                <TableCell className="text-right pr-6 py-4">
+                                                    <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl hover:bg-white hover:shadow-md transition-all">
+                                                        <MoreHorizontal className="h-4 w-4" />
+                                                    </Button>
+                                                </TableCell>
+                                            </TableRow>
+                                        )
+                                    })
                                 )}
                             </TableBody>
                         </Table>

@@ -34,6 +34,7 @@ import { supabase } from "@/lib/supabase"
 import { useAuth } from "@/components/auth/auth-provider"
 import { format } from "date-fns"
 import { PendingApproval } from "@/components/portal/pending-approval"
+import { toast } from "sonner"
 
 export default function AgentDashboard() {
     const { user } = useAuth()
@@ -58,7 +59,7 @@ export default function AgentDashboard() {
                 .from('agents')
                 .select('status')
                 .eq('id', user.id)
-                .single()
+                .maybeSingle()
 
             if (agentError && agentError.code !== 'PGRST116') {
                 console.error("Error fetching agent status:", agentError)
@@ -136,6 +137,9 @@ export default function AgentDashboard() {
             setOrders(ordersData || [])
         } catch (error: any) {
             console.error("Error fetching agent dashboard data:", error)
+            toast.error("Connectivity issue", {
+                description: "Failed to synchronize your dashboard data."
+            })
         } finally {
             setIsLoading(false)
         }
