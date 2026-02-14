@@ -198,24 +198,24 @@ export default function CustomerDashboard() {
                 </Card>
             </div>
 
-            {/* Request Details Modal */}
             <ResponsiveModal
                 open={isQuoteModalOpen}
                 onOpenChange={setIsQuoteModalOpen}
-                variant="bottom"
             >
-                <div className="p-10 flex flex-col gap-10">
-                    <div className="flex flex-col gap-3">
+                <div className="flex flex-col h-[85vh] sm:h-[600px] md:h-auto max-h-[85vh] sm:max-h-[90vh] bg-white">
+                    {/* Header - Sticky Solid White */}
+                    <div className="p-8 sm:p-10 border-b border-slate-100 shrink-0">
                         <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 rounded-2xl bg-orange-100 flex items-center justify-center text-primary-orange">
+                            <div className="h-10 w-10 rounded-2xl bg-orange-100 flex items-center justify-center text-primary-orange shadow-inner">
                                 <Activity className="h-6 w-6" />
                             </div>
-                            <h3 className="text-3xl font-bold tracking-tight text-slate-900">Request Details</h3>
+                            <h3 className="text-2xl sm:text-3xl font-black tracking-tighter text-slate-900 uppercase leading-none">Request Details</h3>
                         </div>
-                        <p className="text-slate-500 font-medium">Tracking the lifecycle of <strong>{selectedRequest?.part_name}</strong>.</p>
+                        <p className="text-slate-500 font-bold text-xs sm:text-sm italic pt-2">Tracking the lifecycle of <span className="text-slate-900">"{selectedRequest?.part_name}"</span>.</p>
                     </div>
 
-                    <div className="space-y-6">
+                    {/* Body - Scrollable */}
+                    <div className="flex-1 overflow-y-auto p-8 sm:p-10 space-y-8">
                         <div className="flex flex-col gap-2 p-6 bg-slate-50 rounded-3xl border border-slate-100">
                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Sourcing Status</p>
                             <Badge className={cn("w-fit rounded-lg px-3 py-1 border-0 shadow-sm font-bold text-[10px] uppercase tracking-wider", getStatusColor(selectedRequest?.status))}>
@@ -262,16 +262,17 @@ export default function CustomerDashboard() {
                         )}
                     </div>
 
-                    <div className="flex flex-col sm:flex-row gap-4">
+                    {/* Footer - Sticky Solid White */}
+                    <div className="shrink-0 p-8 sm:p-10 border-t border-slate-100 flex flex-col sm:flex-row gap-4 bg-white">
                         <Button
                             variant="outline"
-                            className="flex-1 h-14 rounded-2xl border-2 border-slate-200 text-slate-600 font-bold uppercase tracking-widest text-xs hover:bg-slate-50 transition-all"
+                            className="flex-1 h-16 rounded-2xl border-2 border-slate-200 text-slate-600 font-black uppercase tracking-widest text-[10px] hover:bg-slate-50 transition-all"
                             onClick={() => setIsQuoteModalOpen(false)}
                         >
                             Close Details
                         </Button>
                         <Button
-                            className="flex-1 h-14 rounded-2xl bg-primary-blue text-white font-bold uppercase tracking-widest text-xs hover:bg-blue-700 transition-all shadow-xl shadow-blue-900/20"
+                            className="flex-1 h-16 rounded-2xl bg-slate-900 text-white font-black uppercase tracking-widest text-[10px] hover:bg-black transition-all shadow-xl shadow-slate-900/10 active:scale-95 border-0"
                             onClick={() => router.push(`/contact?ref=${selectedRequest?.id}`)}
                         >
                             Inquire with Agent

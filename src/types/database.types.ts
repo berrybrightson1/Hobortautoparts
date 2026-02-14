@@ -84,6 +84,7 @@ export interface Database {
                     budget_min: number | null
                     budget_max: number | null
                     status: 'pending' | 'processing' | 'quoted' | 'shipped' | 'completed' | 'cancelled'
+                    agent_id: string | null
                     images: string[] | null
                     created_at: string
                 }

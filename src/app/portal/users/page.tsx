@@ -180,8 +180,8 @@ export default function UsersPage() {
                             <UserPlus className="mr-3 h-5 w-5 group-hover:scale-110 transition-transform" /> Create New Account
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-[500px] w-[95vw] rounded-[2rem] sm:rounded-[3rem] p-0 overflow-hidden border-0 shadow-2xl bg-white dark:bg-white max-h-[90vh] overflow-y-auto gap-0">
-                        <DialogHeader className="p-6 sm:p-10 sm:pt-12 text-left relative bg-white dark:bg-white border-b border-slate-100">
+                    <DialogContent className="sm:max-w-[500px] w-[95vw] rounded-[2rem] sm:rounded-[3rem] p-0 overflow-hidden border-0 shadow-2xl bg-white dark:bg-white max-h-[85vh] sm:max-h-[90vh] flex flex-col gap-0">
+                        <DialogHeader className="p-6 sm:p-10 text-left relative bg-white dark:bg-white border-b border-slate-100 shrink-0">
                             <div className="flex items-center gap-4">
                                 <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl sm:rounded-2xl bg-primary-blue/10 flex items-center justify-center text-primary-blue shrink-0 shadow-inner">
                                     <UserPlus className="h-5 w-5 sm:h-6 sm:w-6" />
@@ -192,7 +192,7 @@ export default function UsersPage() {
                                 </div>
                             </div>
                         </DialogHeader>
-                        <div className="p-6 sm:p-10 space-y-6 sm:space-y-8 bg-white">
+                        <div className="p-6 sm:p-10 space-y-6 sm:space-y-8 bg-white flex-1 overflow-y-auto">
                             <div className="space-y-3">
                                 <Label className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.3em] text-primary-blue ml-1 opacity-80">Full Legal Name</Label>
                                 <Input
@@ -241,7 +241,7 @@ export default function UsersPage() {
                                 </div>
                             </div>
                         </div>
-                        <DialogFooter className="p-6 sm:p-10 sm:pt-6 sm:pb-12 bg-white dark:bg-white border-t border-slate-100 flex flex-col sm:flex-row justify-end">
+                        <DialogFooter className="p-6 sm:p-10 sm:pt-6 sm:pb-8 bg-white dark:bg-white border-t border-slate-100 flex-none flex flex-col sm:flex-row justify-end">
                             <Button
                                 onClick={handleCreateUser}
                                 disabled={isCreating}

@@ -201,7 +201,7 @@ export function HeroSlider() {
                 style={{ backgroundImage: `url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIi8+CjxjaXJjbGUgY3g9IjEiIGN5PSIxIiByPSIxIiBmaWxsPSIjMDAwIi8+Cjwvc3ZnPg==')` }}>
             </div>
 
-            <div className="relative z-20 max-w-[1400px] mx-auto px-6 h-full grid lg:grid-cols-2 gap-12 items-center lg:-translate-y-12 pt-20 md:pt-32 pb-40 lg:pb-0 min-h-[100dvh]">
+            <div className="relative z-20 max-w-[1400px] mx-auto px-6 h-full grid lg:grid-cols-2 gap-12 items-center lg:-translate-y-12 pt-16 md:pt-32 pb-44 lg:pb-0 min-h-[100dvh]">
                 <div className="flex flex-col justify-center space-y-8">
                     <motion.div
                         key={currentSlide + "content"}
@@ -211,32 +211,32 @@ export function HeroSlider() {
                         className="flex flex-col items-center lg:items-start text-center lg:text-left"
                     >
                         {/* Premium Hero Badge */}
-                        <div className="relative inline-flex items-center gap-4 mb-6 group cursor-default">
+                        <div className="relative inline-flex items-center gap-4 mb-4 md:mb-6 group cursor-default">
                             <div className="absolute -left-4 w-2 h-[1px] bg-primary-orange/50 group-hover:w-4 group-hover:bg-primary-orange transition-all duration-500"></div>
                             <div className="flex items-center gap-3">
                                 <div className="relative">
                                     <div className="w-1.5 h-1.5 rounded-full bg-primary-orange shadow-[0_0_10px_rgba(254,131,35,0.8)]"></div>
                                     <div className="absolute inset-0 w-1.5 h-1.5 rounded-full bg-primary-orange animate-ping opacity-40"></div>
                                 </div>
-                                <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-white/90 drop-shadow-sm transition-colors group-hover:text-white">
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/90 drop-shadow-sm transition-colors group-hover:text-white">
                                     {current.badge}
                                 </span>
                             </div>
                         </div>
                         {/* Headline */}
-                        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tighter text-white drop-shadow-2xl mb-6 font-display leading-[1.1] max-w-2xl mx-auto lg:mx-0">
+                        <h1 className="text-2xl min-[400px]:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tighter text-white drop-shadow-2xl mb-4 md:mb-6 font-display leading-[1.1] max-w-2xl mx-auto lg:mx-0">
                             {current.title}
                         </h1>
                         {/* Subtext */}
-                        <div className="pl-0 lg:pl-6 border-l-0 lg:border-l-4 border-primary-orange/50 mb-8 max-w-xl mx-auto lg:mx-0">
-                            <p className="text-base md:text-lg text-slate-300 font-medium leading-relaxed min-h-[4.5rem] md:min-h-[5.25rem]">
+                        <div className="pl-0 lg:pl-6 border-l-0 lg:border-l-4 border-primary-orange/50 mb-6 md:mb-8 max-w-xl mx-auto lg:mx-0">
+                            <p className="text-sm md:text-lg text-slate-300 font-medium leading-relaxed min-h-[4rem] md:min-h-[5.25rem]">
                                 {current.description}
                             </p>
                         </div>
 
                         <div className="flex flex-col sm:flex-row gap-4 md:gap-5 w-full sm:w-auto pt-6 px-4 sm:px-0">
                             <Link href="/signup" className="w-full sm:w-auto">
-                                <Button className="w-full h-14 md:h-16 px-8 md:px-12 rounded-full bg-primary-orange hover:bg-orange-600 text-white font-bold text-sm md:text-lg shadow-[0_0_40px_-10px_rgba(249,115,22,0.3)] hover:shadow-orange-500/40 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2 group whitespace-nowrap border-none">
+                                <Button className="w-full h-12 min-[400px]:h-14 md:h-16 px-8 md:px-12 rounded-full bg-primary-orange hover:bg-orange-600 text-white font-bold text-xs min-[400px]:text-sm md:text-lg shadow-[0_0_40px_-10px_rgba(249,115,22,0.3)] hover:shadow-orange-500/40 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2 group whitespace-nowrap border-none">
                                     Get Started
                                     <ChevronRight className="w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:translate-x-1" />
                                 </Button>
@@ -245,10 +245,10 @@ export function HeroSlider() {
                             <div className="w-full sm:w-auto">
                                 <Button
                                     onClick={() => setIsVideoOpen(true)}
-                                    className="w-full h-14 md:h-16 px-8 md:px-12 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 backdrop-blur-sm text-white font-bold text-sm md:text-lg hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2 whitespace-nowrap group"
+                                    className="w-full h-12 min-[400px]:h-14 md:h-16 px-8 md:px-12 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 backdrop-blur-sm text-white font-bold text-xs min-[400px]:text-sm md:text-lg hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2 whitespace-nowrap group"
                                 >
-                                    <div className="h-6 w-6 rounded-full bg-white flex items-center justify-center group-hover:scale-110 transition-transform">
-                                        <Play className="w-2.5 h-2.5 ml-0.5 text-slate-900 fill-current" />
+                                    <div className="h-5 w-5 min-[400px]:h-6 min-[400px]:w-6 rounded-full bg-white flex items-center justify-center group-hover:scale-110 transition-transform">
+                                        <Play className="w-2 h-2 min-[400px]:w-2.5 min-[400px]:h-2.5 ml-0.5 text-slate-900 fill-current" />
                                     </div>
                                     <span>How it Works</span>
                                 </Button>
@@ -288,8 +288,8 @@ export function HeroSlider() {
             </div>
 
             {/* Bottom Section (Branding & Navigation) - Floating at the bottom */}
-            <div className="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 w-[92%] md:w-[95%] max-w-[1400px] z-30 bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-2xl md:rounded-3xl py-4 md:py-6 shadow-2xl transition-all duration-500">
-                <div className="max-w-[1400px] mx-auto px-4 md:px-6 h-full flex flex-col md:flex-row items-center justify-between gap-6 md:gap-16">
+            <div className="absolute bottom-4 md:bottom-8 left-1/2 -translate-x-1/2 w-[94%] md:w-[95%] max-w-[1400px] z-30 bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-2xl md:rounded-3xl py-3 md:py-6 shadow-2xl transition-all duration-500">
+                <div className="max-w-[1400px] mx-auto px-3 md:px-6 h-full flex flex-col md:flex-row items-center justify-between gap-4 md:gap-16">
                     <div className="w-full md:w-1/4 flex items-center shrink-0">
                         <TrackingWidget showIndicators={false} />
                     </div>

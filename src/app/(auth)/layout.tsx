@@ -50,8 +50,8 @@ export default function AuthLayout({
     return (
         <div className="min-h-screen grid lg:grid-cols-2">
             {/* Left side: Form */}
-            <div className="flex flex-col justify-center px-8 sm:px-12 lg:px-20 py-12 bg-white relative">
-                <div className="w-full max-w-sm mx-auto space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <div className="flex flex-col justify-center px-4 min-[400px]:px-8 sm:px-12 lg:px-20 py-12 bg-white relative">
+                <div className="w-full max-w-sm mx-auto space-y-8 min-[400px]:space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
                     <div className="flex justify-start">
                         <Link
                             href="/"

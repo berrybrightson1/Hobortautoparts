@@ -17,8 +17,8 @@ export function TrackingWidget({ className, showIndicators = true }: { className
             className={cn("w-full relative", className)}
         >
             <div className="relative group hover:border-white/20 transition-colors duration-500">
-                <div className="absolute -inset-1 bg-gradient-to-r from-brand-orange/20 to-transparent blur opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-2xl md:rounded-3xl"></div>
-                <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl md:rounded-3xl p-1.5 md:p-2 shadow-2xl relative">
+                <div className="absolute -inset-1 bg-gradient-to-r from-brand-orange/20 to-transparent blur opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-xl md:rounded-3xl"></div>
+                <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl md:rounded-3xl p-1 md:p-2 shadow-2xl relative">
                     <div className="flex flex-row gap-2 relative z-10">
                         <div className="relative flex-1 group/input">
                             <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within/input:text-primary-orange transition-colors">
@@ -26,8 +26,8 @@ export function TrackingWidget({ className, showIndicators = true }: { className
                             </div>
                             <input
                                 type="text"
-                                placeholder="Trace Shipment ID"
-                                className="w-full h-10 md:h-12 bg-black/20 border border-white/5 rounded-xl md:rounded-2xl pl-10 md:pl-12 pr-4 text-white placeholder-slate-400 text-sm md:text-base focus:outline-none focus:bg-black/40 focus:ring-1 focus:ring-primary-orange/50 transition-all font-medium"
+                                placeholder="Trace Shipment"
+                                className="w-full h-10 md:h-12 bg-black/20 border border-white/5 rounded-lg md:rounded-2xl pl-9 md:pl-12 pr-2 text-white placeholder-slate-400 text-xs md:text-base focus:outline-none focus:bg-black/40 focus:ring-1 focus:ring-primary-orange/50 transition-all font-medium"
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter') {
                                         const val = (e.currentTarget as HTMLInputElement).value

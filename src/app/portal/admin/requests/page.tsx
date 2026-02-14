@@ -391,8 +391,8 @@ export default function SourcingRequestsPage() {
 
             {/* Quote Builder Modal */}
             <Dialog open={showQuoteModal} onOpenChange={setShowQuoteModal}>
-                <DialogContent className="sm:max-w-[550px] p-0 overflow-hidden border-0 shadow-2xl rounded-[3rem] bg-white text-slate-900">
-                    <DialogHeader className="p-10 pt-12 text-left bg-slate-50/50 border-b border-slate-100">
+                <DialogContent className="sm:max-w-[550px] w-[95vw] p-0 overflow-hidden border-0 shadow-2xl rounded-[2.5rem] sm:rounded-[3rem] bg-white text-slate-900 max-h-[85vh] sm:max-h-[90vh] flex flex-col gap-0">
+                    <DialogHeader className="p-8 sm:p-10 sm:pt-12 text-left bg-slate-50/50 border-b border-slate-100 shrink-0">
                         <div className="flex items-center gap-4">
                             <div className="h-14 w-14 rounded-2xl bg-orange-100 flex items-center justify-center text-orange-600 shadow-sm border border-orange-200">
                                 <DollarSign className="h-8 w-8" />
@@ -406,7 +406,7 @@ export default function SourcingRequestsPage() {
                         </div>
                     </DialogHeader>
 
-                    <div className="p-10 space-y-8">
+                    <div className="p-8 sm:p-10 space-y-8 flex-1 overflow-y-auto">
                         {/* Request Summary Card */}
                         <div className="bg-slate-50 rounded-3xl p-6 border border-slate-100 space-y-4">
                             <div className="flex items-center justify-between">
@@ -492,7 +492,7 @@ export default function SourcingRequestsPage() {
                         </div>
                     </div>
 
-                    <div className="p-10 pt-4 pb-12 grid grid-cols-2 gap-4">
+                    <div className="p-8 sm:p-10 pt-4 pb-10 sm:pb-12 grid grid-cols-2 gap-4 border-t border-slate-100 bg-white shrink-0">
                         <Button
                             variant="outline"
                             className="h-16 rounded-[1.5rem] border-2 border-slate-100 text-slate-400 font-black uppercase tracking-widest text-[10px] hover:bg-slate-50 hover:text-slate-900 transition-all"

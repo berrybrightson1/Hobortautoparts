@@ -41,14 +41,14 @@ export function ResponsiveModal({
         return (
             <Dialog open={open} onOpenChange={onOpenChange}>
                 <DialogContent className={cn(
-                    "border-none shadow-[0_48px_160px_-24px_rgba(0,0,0,0.35)] p-0 overflow-hidden bg-white/95 backdrop-blur-xl ring-1 ring-black/[0.05]",
+                    "border-none shadow-[0_48px_160px_-24px_rgba(0,0,0,0.35)] p-0 bg-white dark:bg-white ring-1 ring-black/[0.05] overflow-hidden",
                     variant === "center"
-                        ? "sm:max-w-[425px] rounded-[2.5rem] top-[50%] translate-y-[-50%]"
+                        ? "w-[95vw] sm:max-w-[500px] rounded-[2.5rem] top-[50%] translate-y-[-50%] max-h-[85vh] sm:max-h-[90vh]"
                         : "sm:max-w-[600px] rounded-full top-auto bottom-8 translate-y-0",
-                    "fixed left-[50%] translate-x-[-50%] flex flex-col items-center"
+                    "fixed left-[50%] translate-x-[-50%] flex flex-col"
                 )}>
                     {title ? (
-                        <DialogHeader className="p-6 pb-0 w-full">
+                        <DialogHeader className="p-6 pb-0 shrink-0">
                             <DialogTitle>{title}</DialogTitle>
                             {description && (
                                 <DialogDescription>{description}</DialogDescription>
@@ -57,7 +57,7 @@ export function ResponsiveModal({
                     ) : (
                         <DialogTitle className="sr-only">Notification</DialogTitle>
                     )}
-                    <div className={cn("w-full", variant === "center" ? "p-6" : "p-4")}>{children}</div>
+                    <div className="flex-1 overflow-y-auto overflow-x-hidden">{children}</div>
                 </DialogContent>
             </Dialog>
         )
@@ -65,18 +65,23 @@ export function ResponsiveModal({
 
     return (
         <Drawer open={open} onOpenChange={onOpenChange}>
-            <DrawerContent className="rounded-t-[2.5rem] border-none bg-white/95 backdrop-blur-xl">
-                {title ? (
-                    <DrawerHeader className="text-left px-6 pt-6">
-                        <DrawerTitle>{title}</DrawerTitle>
-                        {description && (
-                            <DrawerDescription>{description}</DrawerDescription>
-                        )}
-                    </DrawerHeader>
-                ) : (
-                    <DrawerTitle className="sr-only">Notification</DrawerTitle>
-                )}
-                <div className="px-6 pb-12 pt-4">{children}</div>
+            <DrawerContent className="rounded-t-[2.5rem] border-none bg-white dark:bg-white pb-6 max-h-[96vh]">
+                <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-slate-200 my-4" />
+                <div className="flex flex-col flex-1 overflow-hidden">
+                    {title ? (
+                        <DrawerHeader className="text-left px-6 pt-6">
+                            <DrawerTitle>{title}</DrawerTitle>
+                            {description && (
+                                <DrawerDescription>{description}</DrawerDescription>
+                            )}
+                        </DrawerHeader>
+                    ) : (
+                        <DrawerTitle className="sr-only">Notification</DrawerTitle>
+                    )}
+                    <div className="flex-1 overflow-y-auto overflow-x-hidden min-h-0">
+                        {children}
+                    </div>
+                </div>
             </DrawerContent>
         </Drawer>
     )
