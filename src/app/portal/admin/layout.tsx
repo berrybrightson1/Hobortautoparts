@@ -15,7 +15,9 @@ import {
     DollarSign,
     Bell,
     X,
-    Loader2
+    Loader2,
+    ShoppingBag,
+    History
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -27,11 +29,12 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 const ADMIN_NAV_ITEMS = [
     { name: "Overview", href: "/portal/admin", icon: LayoutDashboard },
     { name: "Sourcing Requests", href: "/portal/admin/requests", icon: PackageSearch },
+    { name: "Orders Control", href: "/portal/admin/orders", icon: ShoppingBag },
     { name: "Approvals", href: "/portal/admin/approvals", icon: ShieldCheck },
-    { name: "Shipments", href: "/portal/admin/shipments", icon: PackageSearch },
-    { name: "Users", href: "/portal/users", icon: Users },
-    { name: "Revenue", href: "/portal/revenue", icon: DollarSign },
-    { name: "Settings", href: "/portal/settings", icon: Settings },
+    { name: "Shipments", href: "/portal/admin/shipments", icon: History },
+    { name: "User Network", href: "/portal/users", icon: Users },
+    { name: "Revenue Ops", href: "/portal/revenue", icon: DollarSign },
+    { name: "System Settings", href: "/portal/settings", icon: Settings },
 ]
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

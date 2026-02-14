@@ -30,7 +30,7 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
-import { Search, Filter, MoreHorizontal, Truck, Ship, Plane, CheckCircle, Clock, AlertCircle, Inbox, Plus, Loader2 } from "lucide-react"
+import { Search, Filter, MoreHorizontal, Truck, Ship, Plane, CheckCircle, Clock, AlertCircle, Inbox, Plus, Loader2, ArrowRight, Info, Package } from "lucide-react"
 import { useState, useEffect } from "react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
@@ -199,72 +199,111 @@ export default function ShipmentManagerPage() {
                                 <Plus className="mr-2 h-4 w-4" /> Create Shipment
                             </Button>
                         </DialogTrigger>
-                        <DialogContent className="sm:max-w-[500px]">
-                            <DialogHeader>
-                                <DialogTitle>Create New Shipment</DialogTitle>
-                                <DialogDescription>
-                                    Add a new shipment to track in the system.
+                        <DialogContent className="sm:max-w-[550px] p-0 overflow-hidden border-0 shadow-2xl rounded-[2.5rem] bg-white">
+                            <DialogHeader className="p-8 pb-0">
+                                <DialogTitle className="text-2xl font-bold tracking-tight text-slate-900 group flex items-center gap-3">
+                                    <div className="h-10 w-10 rounded-2xl bg-blue-100 flex items-center justify-center text-blue-600 transition-transform group-hover:scale-110">
+                                        <Package className="h-6 w-6" />
+                                    </div>
+                                    Initiate New Shipment
+                                </DialogTitle>
+                                <DialogDescription className="text-slate-500 font-medium pt-2">
+                                    Register a new logistics instance for global tracking.
                                 </DialogDescription>
                             </DialogHeader>
-                            <div className="grid gap-4 py-4">
-                                <div className="grid gap-2">
-                                    <Label htmlFor="tracking" className="text-sm font-semibold text-slate-700">Tracking Number *</Label>
-                                    <Input
-                                        id="tracking"
-                                        value={newShipment.tracking_number}
-                                        onChange={(e) => setNewShipment({ ...newShipment, tracking_number: e.target.value })}
-                                        placeholder="TRK-123456"
-                                        className="h-11 rounded-xl bg-slate-50 focus:bg-white"
-                                    />
+
+                            <div className="p-8 pt-6 space-y-6">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="tracking" className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Tracking ID</Label>
+                                        <div className="relative group">
+                                            <Package className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-primary-blue transition-colors" />
+                                            <Input
+                                                id="tracking"
+                                                value={newShipment.tracking_number}
+                                                onChange={(e) => setNewShipment({ ...newShipment, tracking_number: e.target.value })}
+                                                placeholder="TRK-123456"
+                                                className="h-12 pl-10 rounded-2xl border-slate-200 bg-slate-50 focus:bg-white transition-all font-semibold"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="carrier" className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Logistics Carrier</Label>
+                                        <div className="relative group">
+                                            <Ship className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-primary-blue transition-colors" />
+                                            <Input
+                                                id="carrier"
+                                                value={newShipment.carrier}
+                                                onChange={(e) => setNewShipment({ ...newShipment, carrier: e.target.value })}
+                                                placeholder="DHL / FedEx / UPS"
+                                                className="h-12 pl-10 rounded-2xl border-slate-200 bg-slate-50 focus:bg-white transition-all font-semibold"
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="carrier" className="text-sm font-semibold text-slate-700">Carrier *</Label>
-                                    <Input
-                                        id="carrier"
-                                        value={newShipment.carrier}
-                                        onChange={(e) => setNewShipment({ ...newShipment, carrier: e.target.value })}
-                                        placeholder="DHL, FedEx, UPS, etc."
-                                        className="h-11 rounded-xl bg-slate-50 focus:bg-white"
-                                    />
+
+                                <div className="grid grid-cols-2 gap-4 pt-2 relative">
+                                    {/* Link Visual */}
+                                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-0 hidden sm:block">
+                                        <ArrowRight className="h-4 w-4 text-slate-200" />
+                                    </div>
+
+                                    <div className="space-y-2 relative z-10">
+                                        <Label htmlFor="origin" className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Origin Hub</Label>
+                                        <Input
+                                            id="origin"
+                                            value={newShipment.origin}
+                                            onChange={(e) => setNewShipment({ ...newShipment, origin: e.target.value })}
+                                            placeholder="E.g. Dubai, UAE"
+                                            className="h-12 rounded-2xl border-slate-200 bg-slate-50 focus:bg-white transition-all font-medium text-sm"
+                                        />
+                                    </div>
+                                    <div className="space-y-2 relative z-10">
+                                        <Label htmlFor="destination" className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Destination Hub</Label>
+                                        <Input
+                                            id="destination"
+                                            value={newShipment.destination}
+                                            onChange={(e) => setNewShipment({ ...newShipment, destination: e.target.value })}
+                                            placeholder="E.g. Accra, Ghana"
+                                            className="h-12 rounded-2xl border-slate-200 bg-slate-50 focus:bg-white transition-all font-medium text-sm"
+                                        />
+                                    </div>
                                 </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="origin" className="text-sm font-semibold text-slate-700">Origin</Label>
-                                    <Input
-                                        id="origin"
-                                        value={newShipment.origin}
-                                        onChange={(e) => setNewShipment({ ...newShipment, origin: e.target.value })}
-                                        placeholder="Dubai, UAE"
-                                        className="h-11 rounded-xl bg-slate-50 focus:bg-white"
-                                    />
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="eta" className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Estimated Arrival (ETA)</Label>
+                                    <div className="relative group">
+                                        <Clock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-primary-blue transition-colors" />
+                                        <Input
+                                            id="eta"
+                                            type="date"
+                                            value={newShipment.estimated_delivery}
+                                            onChange={(e) => setNewShipment({ ...newShipment, estimated_delivery: e.target.value })}
+                                            className="h-12 pl-10 rounded-2xl border-slate-200 bg-slate-50 focus:bg-white transition-all font-semibold"
+                                        />
+                                    </div>
                                 </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="destination" className="text-sm font-semibold text-slate-700">Destination</Label>
-                                    <Input
-                                        id="destination"
-                                        value={newShipment.destination}
-                                        onChange={(e) => setNewShipment({ ...newShipment, destination: e.target.value })}
-                                        placeholder="Accra, Ghana"
-                                        className="h-11 rounded-xl bg-slate-50 focus:bg-white"
-                                    />
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="eta" className="text-sm font-semibold text-slate-700">Estimated Delivery</Label>
-                                    <Input
-                                        id="eta"
-                                        type="date"
-                                        value={newShipment.estimated_delivery}
-                                        onChange={(e) => setNewShipment({ ...newShipment, estimated_delivery: e.target.value })}
-                                        className="h-11 rounded-xl bg-slate-50 focus:bg-white"
-                                    />
+
+                                <div className="bg-slate-50/50 rounded-3xl p-4 border border-dashed border-slate-200 flex items-start gap-4">
+                                    <div className="h-8 w-8 rounded-full bg-blue-50 flex items-center justify-center shrink-0 mt-0.5">
+                                        <Info className="h-4 w-4 text-blue-500" />
+                                    </div>
+                                    <p className="text-[11px] font-medium text-slate-500 leading-relaxed">
+                                        Initializing a shipment will automatically notify the customer and provide them with a tracking link in their portal. Please ensure the <span className="text-slate-900 font-bold">Tracking ID</span> is accurate.
+                                    </p>
                                 </div>
                             </div>
-                            <DialogFooter className="gap-2 sm:gap-0">
-                                <Button variant="outline" className="rounded-xl border-slate-200" onClick={() => setShowCreateDialog(false)}>
-                                    Cancel
+
+                            <DialogFooter className="p-8 pt-0 gap-3 sm:gap-0">
+                                <Button variant="outline" className="flex-1 h-14 rounded-2xl border-2 border-slate-100 text-slate-500 font-bold hover:bg-slate-50" onClick={() => setShowCreateDialog(false)}>
+                                    Discard Entry
                                 </Button>
-                                <Button onClick={handleCreateShipment} disabled={isCreating} className="rounded-xl bg-primary-blue hover:bg-blue-700 text-white">
-                                    {isCreating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                    Create Shipment
+                                <Button onClick={handleCreateShipment} disabled={isCreating} className="flex-1 h-14 rounded-2xl bg-gradient-to-r from-primary-blue to-blue-700 text-white font-bold shadow-xl shadow-blue-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
+                                    {isCreating ? (
+                                        <Loader2 className="h-5 w-5 animate-spin" />
+                                    ) : (
+                                        "Commit Shipment"
+                                    )}
                                 </Button>
                             </DialogFooter>
                         </DialogContent>
