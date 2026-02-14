@@ -361,38 +361,6 @@ export default function SourcingRequestsPage() {
                                                             <span className="font-medium">Create Quote</span>
                                                         </DropdownMenuItem>
 
-                                                        <DropdownMenuItem
-                                                            onClick={async () => {
-                                                                // Find the order for this request
-                                                                const { data: quote } = await supabase
-                                                                    .from('quotes')
-                                                                    .select('id')
-                                                                    .eq('request_id', request.id)
-                                                                    .single()
-
-                                                                if (quote) {
-                                                                    const { data: order } = await supabase
-                                                                        .from('orders')
-                                                                        .select('id')
-                                                                        .eq('quote_id', quote.id)
-                                                                        .single()
-
-                                                                    if (order) {
-                                                                        router.push(`/portal/admin/shipments?order_id=${order.id}`)
-                                                                    } else {
-                                                                        toast.error("No accepted order found for this request.")
-                                                                    }
-                                                                } else {
-                                                                    toast.error("No quote found for this request.")
-                                                                }
-                                                            }}
-                                                            className="rounded-xl px-3 py-2.5 cursor-pointer hover:bg-blue-50 focus:bg-blue-50 text-slate-600 focus:text-blue-700 group transition-colors"
-                                                        >
-                                                            <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center mr-3 group-hover:bg-white group-hover:shadow-sm transition-all">
-                                                                <Truck className="h-4 w-4 text-blue-600" />
-                                                            </div>
-                                                            <span className="font-medium">Initiate Shipment</span>
-                                                        </DropdownMenuItem>
                                                     </DropdownMenuContent>
                                                 </DropdownMenu>
                                             </TableCell>

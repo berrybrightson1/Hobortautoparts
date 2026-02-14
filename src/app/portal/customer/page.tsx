@@ -88,7 +88,7 @@ export default function CustomerDashboard() {
             })
             setIsQuoteModalOpen(false)
             fetchOrders()
-            router.push('/portal/admin/orders') // Move to orders control to see result (simulating flow)
+            router.push('/portal/orders') // Move to orders control to see result (simulating flow)
         } catch (error: any) {
             toast.error("Process Failed", {
                 description: error.message

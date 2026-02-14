@@ -190,7 +190,7 @@ export default function AdminPortal() {
                             <Activity className="h-6 w-6 text-primary-orange" /> Real-time Activity
                         </h3>
                         <Link href="/portal/admin/approvals" className="text-[10px] font-bold text-blue-600 uppercase tracking-widest hover:underline">
-                            Queue Details
+                            Approvals Queue
                         </Link>
                     </div>
                     <div className="space-y-4">
