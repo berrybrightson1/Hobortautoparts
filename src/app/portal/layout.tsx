@@ -32,15 +32,13 @@ const NAV_ITEMS = {
     customer: [
         { name: "Dashboard", href: "/portal/customer", icon: LayoutDashboard },
         { name: "New Request", href: "/quote", icon: Plus },
-        { name: "Account Settings", href: "/portal/profile", icon: UserCircle },
-        { name: "Settings", href: "/portal/settings", icon: Settings },
+        { name: "My Account", href: "/portal/profile", icon: UserCircle },
         { name: "Homepage", href: "/", icon: Home },
     ],
     agent: [
         { name: "Sourcing Queue", href: "/portal/agent", icon: PackageSearch },
         { name: "All Orders", href: "/portal/orders", icon: LayoutDashboard },
         { name: "Account Details", href: "/portal/profile", icon: UserCircle },
-        { name: "Tools", href: "/portal/tools", icon: Settings },
         { name: "Homepage", href: "/", icon: Home },
     ],
     admin: [
@@ -48,8 +46,7 @@ const NAV_ITEMS = {
         { name: "Sourcing Requests", href: "/portal/admin/requests", icon: PackageSearch },
         { name: "Approvals", href: "/portal/admin/approvals", icon: ShieldAlert },
         { name: "User Network", href: "/portal/users", icon: Users },
-        { name: "Account Settings", href: "/portal/profile", icon: UserCircle },
-        { name: "System Settings", href: "/portal/settings", icon: Settings },
+        { name: "Console & Profile", href: "/portal/profile", icon: Settings },
     ]
 }
 
