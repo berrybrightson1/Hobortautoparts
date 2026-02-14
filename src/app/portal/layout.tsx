@@ -43,11 +43,8 @@ const NAV_ITEMS = {
     admin: [
         { name: "Overview", href: "/portal/admin", icon: LayoutDashboard },
         { name: "Sourcing Requests", href: "/portal/admin/requests", icon: PackageSearch },
-        { name: "Orders Control", href: "/portal/admin/orders", icon: ShoppingBag },
-        { name: "Approvals", href: "/portal/admin/approvals", icon: ShieldAlert },
-        { name: "Shipments", href: "/portal/admin/shipments", icon: History },
+        { name: "Compliance", href: "/portal/admin/approvals", icon: ShieldAlert },
         { name: "User Network", href: "/portal/users", icon: Users },
-        { name: "Revenue Ops", href: "/portal/revenue", icon: DollarSign },
         { name: "System Settings", href: "/portal/settings", icon: Settings },
     ]
 }

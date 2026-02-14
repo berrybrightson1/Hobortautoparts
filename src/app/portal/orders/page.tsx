@@ -94,8 +94,8 @@ export default function OrdersPage() {
         <div className="space-y-8 animate-in fade-in duration-500 max-w-7xl mx-auto pb-10">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
-                    <h2 className="text-3xl font-semibold tracking-tight text-slate-900">All Orders</h2>
-                    <p className="text-slate-500 font-medium">Manage and track all sourcing requests across the platform.</p>
+                    <h2 className="text-3xl font-semibold tracking-tight text-slate-900">Orders Ledger</h2>
+                    <p className="text-slate-500 font-medium">Manage and track finalized transactions and commissions.</p>
                 </div>
                 <div className="flex items-center gap-2">
                     <Button variant="outline" className="rounded-xl border-slate-200 text-slate-600 hover:text-slate-900 shadow-sm">

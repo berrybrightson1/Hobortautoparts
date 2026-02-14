@@ -4,6 +4,19 @@ import { ShieldCheck, Zap, Truck, Globe, Clock, Sparkles, CheckCircle2 } from "l
 
 const updates = [
     {
+        version: "v1.7.0",
+        date: "February 14, 2026",
+        time: "04:05 AM",
+        title: "Core Operations Focus",
+        description: "Simplified the Administrative suite to focus purely on sourcing efficiency and professional quoting.",
+        changes: [
+            "De-cluttered the Admin Sidebar: Removed Revenue, Orders, and Shipment management for future restructuring.",
+            "Optimized Admin Overview: Replaced financial metrics with Active Sourcing volume and platform growth tracking.",
+            "Unified Portal Navigation: Eliminated layout glitches by consolidating all roles into a single stable architecture.",
+            "Launched 'Accept & Pay' Bridge: Enabled customers to finalize quotes, initializing the order lifecycle.",
+        ]
+    },
+    {
         version: "v1.6.0",
         date: "February 13, 2026",
         time: "07:34 PM",
