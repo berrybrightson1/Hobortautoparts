@@ -96,7 +96,7 @@ export default function AgentDashboard() {
                 .from('sourcing_requests')
                 .select(`
                     *,
-                    profiles:user_id (full_name, email)
+                    profiles:user_id (full_name)
                 `)
                 .eq('agent_id', user.id)
                 .order('created_at', { ascending: false })
@@ -109,7 +109,7 @@ export default function AgentDashboard() {
                 .from('orders')
                 .select(`
                     *,
-                    profiles:user_id (full_name, email),
+                    profiles:user_id (full_name),
                     quotes:quote_id (*)
                 `)
                 .eq('agent_id', user.id)

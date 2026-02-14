@@ -50,29 +50,29 @@ export default function ServicesPage() {
             </section>
 
             <section className="container max-w-[1400px] mx-auto px-6 pb-32">
-                <div className="rounded-[4rem] bg-primary-blue p-16 md:p-24 overflow-hidden relative shadow-premium text-center flex flex-col items-center">
-                    <div className="relative z-10 flex flex-col items-center gap-10 max-w-2xl mx-auto">
-                        <div className="text-white">
-                            <h2 className="text-4xl font-semibold mb-6 tracking-tight md:text-5xl">Partner Network Onboarding</h2>
-                            <p className="text-xl text-blue-100/80 leading-relaxed font-medium">
-                                Running a transportation company or looking to join our logistics network? Choose your path below to get started.
+                <div className="rounded-[2.5rem] md:rounded-[4rem] bg-[#0c1425] p-10 md:p-24 overflow-hidden relative shadow-premium text-center flex flex-col items-center border border-white/5">
+                    <div className="relative z-10 flex flex-col items-center gap-8 md:gap-12 max-w-2xl mx-auto">
+                        <div className="text-white space-y-4 md:space-y-6">
+                            <h2 className="text-4xl md:text-7xl font-black tracking-tighter leading-[0.85] text-balance">Join the Global <span className="text-primary-orange">Sourcing</span> Network</h2>
+                            <p className="text-base md:text-xl text-blue-100/70 leading-relaxed font-medium max-w-xl mx-auto text-balance">
+                                Bridge the gap between international suppliers and local markets. Join our network of professional agents and power the future of auto parts logistics.
                             </p>
                         </div>
-                        <div className="flex flex-col sm:flex-row gap-6">
-                            <Link href="/register/fleet">
-                                <Button variant="orange" size="lg" className="rounded-full px-12 h-16 text-lg font-medium shadow-premium hover:scale-105 transition-transform bg-white text-primary-blue hover:bg-slate-50">
-                                    Register Fleet Account
+                        <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                            <Link href="/register/agent" className="w-full sm:w-auto">
+                                <Button className="rounded-2xl md:rounded-full px-12 h-14 md:h-20 text-base md:text-xl font-black shadow-2xl hover:scale-105 transition-all text-white w-full sm:w-auto uppercase tracking-widest bg-primary-orange hover:bg-orange-600 border-0">
+                                    Launch Agent Partnership
                                 </Button>
                             </Link>
-                            <Link href="/register/agent">
-                                <Button variant="orange" size="lg" className="rounded-full px-12 h-16 text-lg font-medium shadow-premium hover:scale-105 transition-transform text-white">
-                                    Join Agent Network
+                            <Link href="/contact" className="w-full sm:w-auto">
+                                <Button variant="outline" className="rounded-2xl md:rounded-full px-12 h-14 md:h-20 text-base md:text-xl font-black transition-all hover:bg-white/10 text-white border-white/20 w-full sm:w-auto uppercase tracking-widest bg-transparent">
+                                    Contact Support
                                 </Button>
                             </Link>
                         </div>
                     </div>
-                    <div className="absolute top-0 right-0 w-full h-full opacity-5 pointer-events-none">
-                        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(#ffffff_2px,transparent_1px)] [background-size:64px_64px]" />
+                    <div className="absolute top-0 right-0 w-full h-full opacity-[0.03] pointer-events-none">
+                        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(#ffffff_2px,transparent_1px)] [background-size:48px_48px]" />
                     </div>
                 </div>
             </section>
