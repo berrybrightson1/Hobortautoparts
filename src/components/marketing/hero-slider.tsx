@@ -197,9 +197,7 @@ export function HeroSlider() {
             </div>
 
             {/* Noise Texture */}
-            <div className="absolute inset-0 z-0 opacity-[0.04] pointer-events-none mix-blend-overlay"
-                style={{ backgroundImage: `url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIi8+CjxjaXJjbGUgY3g9IjEiIGN5PSIxIiByPSIxIiBmaWxsPSIjMDAwIi8+Cjwvc3ZnPg==')` }}>
-            </div>
+            <div className="absolute inset-0 z-0 opacity-[0.04] pointer-events-none mix-blend-overlay bg-noise" />
 
             <div className="relative z-20 max-w-[1400px] mx-auto px-6 h-full grid lg:grid-cols-2 gap-12 items-center lg:-translate-y-12 pt-16 md:pt-32 pb-44 lg:pb-0 min-h-[100dvh]">
                 <div className="flex flex-col justify-center space-y-8">
@@ -274,7 +272,7 @@ export function HeroSlider() {
                             </div>
                         </div>
 
-                        <div className="absolute bottom-[20%] left-[0%] bg-white/10 backdrop-blur-md border border-white/20 p-4 pr-6 rounded-2xl flex items-center gap-4 animate-bounce" style={{ animationDelay: '1s' }}>
+                        <div className="absolute bottom-[20%] left-[0%] bg-white/10 backdrop-blur-md border border-white/20 p-4 pr-6 rounded-2xl flex items-center gap-4 animate-bounce delay-1000">
                             <div className="h-10 w-10 bg-primary-orange/20 rounded-full flex items-center justify-center text-primary-orange border border-primary-orange/20">
                                 <Truck className="w-5 h-5" />
                             </div>

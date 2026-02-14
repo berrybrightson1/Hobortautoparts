@@ -26,14 +26,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     useEffect(() => {
         // Get initial session
         const initAuth = async () => {
-            const { data: { session } } = await supabase.auth.getSession()
+            try {
+                const { data: { session }, error } = await supabase.auth.getSession()
 
-            if (session?.user) {
-                setUser(session.user)
-                await fetchProfile(session.user.id)
+                if (error) {
+                    console.error("AuthProvider: Initial session error:", error)
+                    // If refresh token is explicitly invalid/missing, clear everything
+                    if (error.message?.includes("refresh_token_not_found") || error.message?.includes("Refresh Token Not Found")) {
+                        await signOut()
+                        return
+                    }
+                }
+
+                if (session?.user) {
+                    setUser(session.user)
+                    await fetchProfile(session.user.id)
+                }
+            } catch (err) {
+                console.error("AuthProvider: initAuth unexpected error:", err)
+            } finally {
+                setLoading(false)
             }
-
-            setLoading(false)
         }
 
         initAuth()
@@ -41,6 +54,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         // Listen for auth changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
             async (event, session) => {
+                if (event === 'SIGNED_OUT') {
+                    setUser(null)
+                    setProfile(null)
+                    setLoading(false)
+                    return
+                }
+
                 if (session?.user) {
                     setUser(session.user)
                     await fetchProfile(session.user.id)

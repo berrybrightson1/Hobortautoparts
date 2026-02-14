@@ -35,11 +35,20 @@ export function PartLibraryPicker({ onSelect, onCustomPart }: PartLibraryPickerP
 
     const handlePartSelect = (part: PartItem) => {
         onSelect(part.name)
+        // Reset state so the picker "closes" and returns to main grid
+        setSearchQuery("")
+        setSelectedCategory(null)
+        setIsOther(false)
     }
 
     const handleCustomSubmit = () => {
         if (customNotes.trim()) {
             onCustomPart(customNotes)
+            // Reset state
+            setSearchQuery("")
+            setSelectedCategory(null)
+            setIsOther(false)
+            setCustomNotes("")
         }
     }
 
@@ -75,6 +84,7 @@ export function PartLibraryPicker({ onSelect, onCustomPart }: PartLibraryPickerP
                                     {filteredSearchParts.map((part) => (
                                         <button
                                             key={part.id}
+                                            type="button"
                                             onClick={() => handlePartSelect(part)}
                                             className="flex items-center justify-between p-4 rounded-xl bg-primary-blue/5 hover:bg-primary-blue hover:text-white transition-all group text-left"
                                         >
@@ -135,6 +145,7 @@ export function PartLibraryPicker({ onSelect, onCustomPart }: PartLibraryPickerP
                                 {selectedCategory.parts.map((part) => (
                                     <button
                                         key={part.id}
+                                        type="button"
                                         onClick={() => handlePartSelect(part)}
                                         className="flex items-center justify-between p-3.5 md:p-4 rounded-2xl bg-white border border-primary-blue/5 hover:border-primary-orange/30 hover:shadow-xl hover:shadow-primary-orange/5 transition-all group text-left"
                                     >
@@ -145,6 +156,7 @@ export function PartLibraryPicker({ onSelect, onCustomPart }: PartLibraryPickerP
                                     </button>
                                 ))}
                                 <button
+                                    type="button"
                                     onClick={() => setIsOther(true)}
                                     className="flex items-center justify-between p-3.5 md:p-4 rounded-2xl bg-primary-orange/5 border border-primary-orange/10 hover:bg-primary-orange hover:text-white transition-all group text-left border-dashed"
                                 >
@@ -206,6 +218,7 @@ export function PartLibraryPicker({ onSelect, onCustomPart }: PartLibraryPickerP
                             {PART_LIBRARY.map((category) => (
                                 <button
                                     key={category.id}
+                                    type="button"
                                     onClick={() => setSelectedCategory(category)}
                                     className="flex flex-col items-center justify-center p-4 md:p-6 rounded-3xl bg-white border border-primary-blue/5 shadow-sm hover:border-primary-blue hover:shadow-xl hover:shadow-primary-blue/5 transition-all group"
                                 >
@@ -218,6 +231,7 @@ export function PartLibraryPicker({ onSelect, onCustomPart }: PartLibraryPickerP
                                 </button>
                             ))}
                             <button
+                                type="button"
                                 onClick={() => setIsOther(true)}
                                 className="flex flex-col items-center justify-center p-4 md:p-6 rounded-3xl bg-primary-orange/5 border border-primary-orange/10 border-dashed hover:bg-primary-orange hover:text-white transition-all group"
                             >

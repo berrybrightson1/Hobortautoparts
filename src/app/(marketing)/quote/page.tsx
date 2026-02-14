@@ -264,8 +264,10 @@ export default function QuotePage() {
                     {/* Progress Indicator */}
                     <div className="absolute top-0 left-0 right-0 h-1.5 bg-primary-blue/5 flex">
                         <div
-                            className="h-full bg-primary-orange transition-all duration-500 ease-out"
-                            style={{ width: `${(step / 2) * 100}%` }}
+                            className={cn(
+                                "h-full bg-primary-orange transition-all duration-500 ease-out",
+                                step === 1 ? "w-1/2" : "w-full"
+                            )}
                         />
                     </div>
 
