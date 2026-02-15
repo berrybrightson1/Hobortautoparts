@@ -17,7 +17,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { supabase } from "@/lib/supabase"
 import { PartLibraryPicker } from "@/components/marketing/part-library-picker"
-import { sendNotification } from "@/lib/notifications"
+import { sendNotification, notifyAdmins } from "@/lib/notifications"
 
 // VIN Validation Helper
 function validateVIN(vin: string) {
@@ -191,22 +191,13 @@ export default function QuotePage() {
             if (error) throw error
             console.log('--- REQUEST SUBMITTED SUCCESSFULLY ---')
 
-            // Notify Admin of new request
+            // Notify all Admins of new request
             try {
-                const { data: admins } = await supabase
-                    .from('profiles')
-                    .select('id')
-                    .eq('role', 'admin')
-                    .limit(1)
-
-                if (admins && admins.length > 0) {
-                    await sendNotification({
-                        userId: admins[0].id,
-                        title: 'New Sourcing Request',
-                        message: `New request submitted for ${formData.part_name} (${vehicle_info})`,
-                        type: 'system'
-                    })
-                }
+                await notifyAdmins({
+                    title: 'New Sourcing Request',
+                    message: `New request submitted for ${formData.part_name} (${vehicle_info})`,
+                    type: 'system'
+                })
             } catch (notifyErr) {
                 console.warn('Non-blocking notification failure:', notifyErr)
             }

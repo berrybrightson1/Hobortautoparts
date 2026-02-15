@@ -38,7 +38,7 @@ import {
 import { Label } from "@/components/ui/label"
 import { useAuth } from "@/components/auth/auth-provider"
 import { useRouter } from "next/navigation"
-import { sendNotification } from "@/lib/notifications"
+import { sendNotification, notifyAdmins } from "@/lib/notifications"
 import { FeedbackPanel } from "@/components/portal/feedback-panel"
 import { ResponsiveModal } from "@/components/ui/responsive-modal"
 import { Activity } from "lucide-react"
@@ -62,7 +62,7 @@ interface SourcingRequest {
 }
 
 export default function SourcingRequestsPage() {
-    const { user } = useAuth()
+    const { user, profile } = useAuth()
     const router = useRouter()
     const searchParams = useSearchParams()
     const requestIdParam = searchParams.get('id')
@@ -156,15 +156,21 @@ export default function SourcingRequestsPage() {
 
     // Filter and paginate requests
     const filteredRequests = requests.filter((request) => {
-        if (!debouncedSearch) return true
+        const filterType = searchParams.get('filter')
+        const matchesFilter = filterType === 'unassigned' ? (request.agent_id === null && request.status === 'pending') : true
+
+        if (!debouncedSearch) return matchesFilter
+
         const searchLower = debouncedSearch.toLowerCase()
-        return (
+        const matchesSearch = (
             request.part_name?.toLowerCase().includes(searchLower) ||
             request.vehicle_info?.toLowerCase().includes(searchLower) ||
             request.vin?.toLowerCase().includes(searchLower) ||
             request.profiles?.full_name?.toLowerCase().includes(searchLower) ||
             request.id?.toLowerCase().includes(searchLower)
         )
+
+        return matchesFilter && matchesSearch
     })
 
     const totalPages = Math.ceil(filteredRequests.length / pageSize)
@@ -349,7 +355,14 @@ export default function SourcingRequestsPage() {
                     message: `An official quote has been generated for your request: ${selectedRequest.part_name}.`,
                     type: 'order'
                 })
-                console.log('--- NOTIFICATION SENT ---')
+
+                // Relay to all Admins
+                await notifyAdmins({
+                    title: 'Quote Sent to Customer',
+                    message: `A new quote has been generated for ${selectedRequest.part_name} by ${profile?.full_name || 'an Agent'}.`,
+                    type: 'order'
+                })
+                console.log('--- NOTIFICATIONS SENT ---')
             } catch (notifyErr) {
                 console.warn('Non-blocking notification failure:', notifyErr)
             }

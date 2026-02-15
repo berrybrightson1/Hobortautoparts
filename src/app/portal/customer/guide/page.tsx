@@ -1,7 +1,7 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { BookOpen, Search, Package, ShieldCheck, Truck, MessageSquare, Zap, ArrowRight, HelpCircle } from "lucide-react"
+import { BookOpen, Search, Package, ShieldCheck, Truck, MessageSquare, Zap, ArrowRight, HelpCircle, BellRing } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -85,7 +85,10 @@ export default function PlatformGuidePage() {
                         </p>
                     </div>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-                        <Button className="w-full sm:w-auto h-16 px-10 rounded-2xl bg-white text-slate-900 font-bold uppercase tracking-widest text-xs hover:bg-primary-orange hover:text-white transition-all">
+                        <Button
+                            onClick={() => window.location.href = '/contact'}
+                            className="w-full sm:w-auto h-16 px-10 rounded-2xl bg-white text-slate-900 font-bold uppercase tracking-widest text-xs hover:bg-primary-orange hover:text-white transition-all"
+                        >
                             Chat with Support
                         </Button>
                         <Button variant="ghost" className="w-full sm:w-auto h-16 px-10 rounded-2xl text-white font-bold uppercase tracking-widest text-xs border border-white/10 hover:bg-white/5">
@@ -99,7 +102,7 @@ export default function PlatformGuidePage() {
             <div className="grid gap-6 md:grid-cols-3">
                 {[
                     { title: "VIN Accuracy", text: "Providing a clear VIN photo reduces sourcing time by up to 40%.", icon: Zap },
-                    { title: "Global Hubs", text: "Switch between air and sea freight during the negotiation stage.", icon: Truck },
+                    { title: "Real-time Alerts", text: "You will receive instant notifications when an agent updates your quote or sends a message.", icon: BellRing },
                     { title: "Verified Parts", text: "Every part undergoes a 5-point quality audit before shipping.", icon: ShieldCheck }
                 ].map((tip, i) => (
                     <div key={i} className="p-8 bg-slate-50 rounded-[2rem] border border-slate-100 flex flex-col gap-4">

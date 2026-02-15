@@ -18,8 +18,9 @@ import { FeedbackPanel } from "@/components/portal/feedback-panel"
 import { X, Truck, AlertCircle } from "lucide-react"
 import { getShipmentByOrderId } from "@/app/actions/shipment-actions"
 import { ShipmentTimeline } from "@/components/portal/shipment-timeline"
-import { sendNotification } from "@/lib/notifications"
+import { sendNotification, notifyAdmins } from "@/lib/notifications"
 import { SearchBar } from "@/components/portal/search-bar"
+import { Pagination } from "@/components/portal/pagination"
 
 export default function CustomerDashboard() {
     const { profile, user } = useAuth()
@@ -34,6 +35,10 @@ export default function CustomerDashboard() {
     const [isLoadingShipment, setIsLoadingShipment] = useState(false)
     const [searchQuery, setSearchQuery] = useState('')
     const [debouncedSearch, setDebouncedSearch] = useState('')
+
+    // Pagination state
+    const [currentPage, setCurrentPage] = useState(1)
+    const [pageSize] = useState(10) // Small page size for dashboard view
 
     const fetchOrders = async () => {
         if (!user) return
@@ -91,6 +96,7 @@ export default function CustomerDashboard() {
     useEffect(() => {
         const timer = setTimeout(() => {
             setDebouncedSearch(searchQuery)
+            setCurrentPage(1) // Reset to first page on new search
         }, 300)
         return () => clearTimeout(timer)
     }, [searchQuery])
@@ -106,6 +112,17 @@ export default function CustomerDashboard() {
             order.vin?.toLowerCase().includes(searchLower)
         )
     })
+
+    // Stat counts
+    const stats = {
+        active: orders.filter(o => ['pending', 'processing'].includes(o.status)).length,
+        offers: orders.filter(o => o.status === 'quoted').length,
+        transit: orders.filter(o => o.status === 'shipped').length
+    }
+
+    const totalPages = Math.ceil(filteredOrders.length / pageSize)
+    const startIndex = (currentPage - 1) * pageSize
+    const paginatedOrders = filteredOrders.slice(startIndex, startIndex + pageSize)
 
 
     const handleAcceptQuote = async () => {
@@ -150,21 +167,12 @@ export default function CustomerDashboard() {
 
             // 3. Notify Admin and Agent
             try {
-                // Notify admin (get first admin from profiles)
-                const { data: admins } = await supabase
-                    .from('profiles')
-                    .select('id')
-                    .eq('role', 'admin')
-                    .limit(1)
-
-                if (admins && admins.length > 0) {
-                    await sendNotification({
-                        userId: admins[0].id,
-                        title: 'Quote Accepted',
-                        message: `Customer accepted quote for ${selectedRequest.part_name}`,
-                        type: 'order'
-                    })
-                }
+                // Notify all Admins
+                await notifyAdmins({
+                    title: 'New Order Payment',
+                    message: `Customer accepted quote and paid for ${selectedRequest.part_name}.`,
+                    type: 'order'
+                })
 
                 // Notify assigned agent if exists
                 if (selectedRequest.agent_id) {
@@ -238,12 +246,44 @@ export default function CustomerDashboard() {
 
             {/* SEARCH BAR */}
             {orders.length > 0 && (
-                <SearchBar
-                    value={searchQuery}
-                    onChange={setSearchQuery}
-                    placeholder="Search by part name, vehicle, order ID, or VIN..."
-                    className="max-w-2xl"
-                />
+                <div className="grid gap-6 md:grid-cols-4 items-center">
+                    <div className="md:col-span-3">
+                        <SearchBar
+                            value={searchQuery}
+                            onChange={setSearchQuery}
+                            placeholder="Search by part name, vehicle, order ID, or VIN..."
+                            className="max-w-2xl"
+                        />
+                    </div>
+                </div>
+            )}
+
+            {/* QUICK STATS */}
+            {orders.length > 0 && (
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
+                    {[
+                        { label: "Active Requests", count: stats.active, icon: Activity, color: "blue" },
+                        { label: "Offers Ready", count: stats.offers, icon: DollarSign, color: "orange" },
+                        { label: "In Transit", count: stats.transit, icon: Truck, color: "emerald" }
+                    ].map((s, i) => (
+                        <Card key={i} className="border-slate-100 shadow-xl shadow-slate-200/30 rounded-3xl overflow-hidden bg-white/80 backdrop-blur-sm group hover:scale-[1.02] transition-all">
+                            <CardContent className="p-6 flex items-center gap-4">
+                                <div className={cn(
+                                    "h-14 w-14 rounded-2xl flex items-center justify-center border shadow-sm",
+                                    s.color === 'blue' ? "bg-blue-50 text-blue-600 border-blue-100" :
+                                        s.color === 'orange' ? "bg-orange-50 text-orange-600 border-orange-100" :
+                                            "bg-emerald-50 text-emerald-600 border-emerald-100"
+                                )}>
+                                    <s.icon className="h-7 w-7" />
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{s.label}</p>
+                                    <p className="text-3xl font-black text-slate-900 leading-none mt-1">{s.count}</p>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
             )}
 
             {/* PROMINENT TRACKING NUMBER CARD */}
@@ -319,90 +359,104 @@ export default function CustomerDashboard() {
                                 <Loader2 className="h-8 w-8 text-primary-orange animate-spin" />
                                 <p className="mt-4 text-xs font-bold uppercase tracking-widest text-slate-400">Syncing Sourcing Feed...</p>
                             </div>
-                        ) : filteredOrders.length > 0 ? (
-                            filteredOrders.map((order) => (
-                                <Card key={order.id} className="border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden hover:shadow-2xl hover:shadow-slate-200/50 transition-all duration-300 group rounded-[2rem] md:rounded-[2.5rem] bg-white ring-1 ring-slate-100/50">
-                                    <CardContent className="p-0">
-                                        <div className="flex flex-col sm:flex-row">
-                                            {/* Status Indicator Strip */}
-                                            <div className={cn("w-full sm:w-2 h-2 sm:h-auto transition-colors duration-300",
-                                                order.status === 'pending' ? "bg-yellow-400" :
-                                                    order.status === 'processing' ? "bg-blue-400" :
-                                                        order.status === 'quoted' ? "bg-purple-400" :
-                                                            order.status === 'shipped' ? "bg-orange-400" :
-                                                                order.status === 'completed' ? "bg-emerald-400" : "bg-slate-300"
-                                            )} />
+                        ) : paginatedOrders.length > 0 ? (
+                            <div className="space-y-4">
+                                {paginatedOrders.map((order) => (
+                                    <Card key={order.id} className="border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden hover:shadow-2xl hover:shadow-slate-200/50 transition-all duration-300 group rounded-[2rem] md:rounded-[2.5rem] bg-white ring-1 ring-slate-100/50">
+                                        <CardContent className="p-0">
+                                            <div className="flex flex-col sm:flex-row">
+                                                {/* Status Indicator Strip */}
+                                                <div className={cn("w-full sm:w-2 h-2 sm:h-auto transition-colors duration-300",
+                                                    order.status === 'pending' ? "bg-yellow-400" :
+                                                        order.status === 'processing' ? "bg-blue-400" :
+                                                            order.status === 'quoted' ? "bg-purple-400" :
+                                                                order.status === 'shipped' ? "bg-orange-400" :
+                                                                    order.status === 'completed' ? "bg-emerald-400" : "bg-slate-300"
+                                                )} />
 
-                                            <div className="flex-1 p-6 md:p-8 flex flex-col sm:flex-row gap-6 items-start sm:items-center">
-                                                <div className="h-12 w-12 md:h-14 md:w-14 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 shrink-0 group-hover:bg-primary-blue group-hover:text-white transition-all duration-300 shadow-inner group-hover:shadow-lg group-hover:shadow-blue-900/20">
-                                                    <Package className="h-6 w-6 md:h-7 md:w-7" />
-                                                </div>
+                                                <div className="flex-1 p-6 md:p-8 flex flex-col sm:flex-row gap-6 items-start sm:items-center">
+                                                    <div className="h-12 w-12 md:h-14 md:w-14 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 shrink-0 group-hover:bg-primary-blue group-hover:text-white transition-all duration-300 shadow-inner group-hover:shadow-lg group-hover:shadow-blue-900/20">
+                                                        <Package className="h-6 w-6 md:h-7 md:w-7" />
+                                                    </div>
 
-                                                <div className="flex-1 space-y-1.5 min-w-0 w-full">
-                                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
-                                                        <p className="font-bold text-lg md:text-xl text-slate-900 truncate tracking-tight">{order.vehicle_info || order.part_name}</p>
-                                                        {order.status === 'pending' ? (
-                                                            <Badge variant="outline" className="w-fit shrink-0 font-mono text-[10px] bg-slate-50 text-slate-400 border-slate-100 cursor-not-allowed opacity-70">
-                                                                Running Checks...
+                                                    <div className="flex-1 space-y-1.5 min-w-0 w-full">
+                                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
+                                                            <p className="font-bold text-lg md:text-xl text-slate-900 truncate tracking-tight">{order.vehicle_info || order.part_name}</p>
+                                                            {order.status === 'pending' ? (
+                                                                <Badge variant="outline" className="w-fit shrink-0 font-mono text-[10px] bg-slate-50 text-slate-400 border-slate-100 cursor-not-allowed opacity-70">
+                                                                    Running Checks...
+                                                                </Badge>
+                                                            ) : (
+                                                                <Badge
+                                                                    variant="outline"
+                                                                    className="w-fit shrink-0 font-mono text-[10px] cursor-pointer hover:bg-slate-100 transition-colors flex items-center gap-1.5 pr-2.5 bg-slate-50 border-slate-100 text-slate-400"
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation() // Prevent card click
+                                                                        if (order.id) {
+                                                                            navigator.clipboard.writeText(order.id)
+                                                                            toast.success("Tracking ID copied to clipboard")
+                                                                        }
+                                                                    }}
+                                                                >
+                                                                    Ref: {order.id.slice(0, 8)}
+                                                                    <CopyIcon className="h-3 w-3 text-slate-400" />
+                                                                </Badge>
+                                                            )}
+                                                        </div>
+                                                        <div className="flex items-center gap-2 text-sm text-slate-500 font-medium truncate">
+                                                            <span>{order.part_name}</span>
+                                                        </div>
+                                                        <div className="flex flex-wrap items-center gap-3 pt-2">
+                                                            <Badge className={cn("rounded-lg px-3 py-1 border-0 shadow-sm font-bold text-[10px] uppercase tracking-wider", getStatusColor(order.status))}>
+                                                                {order.status}
                                                             </Badge>
-                                                        ) : (
-                                                            <Badge
-                                                                variant="outline"
-                                                                className="w-fit shrink-0 font-mono text-[10px] cursor-pointer hover:bg-slate-100 transition-colors flex items-center gap-1.5 pr-2.5 bg-slate-50 border-slate-100 text-slate-400"
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation() // Prevent card click
-                                                                    if (order.id) {
-                                                                        navigator.clipboard.writeText(order.id)
-                                                                        toast.success("Tracking ID copied to clipboard")
-                                                                    }
-                                                                }}
-                                                            >
-                                                                Ref: {order.id.slice(0, 8)}
-                                                                <CopyIcon className="h-3 w-3 text-slate-400" />
-                                                            </Badge>
-                                                        )}
+                                                            <span className="text-[10px] text-slate-400 flex items-center font-bold uppercase tracking-widest">
+                                                                <Calendar className="h-3 w-3 mr-1.5" />
+                                                                {format(new Date(order.created_at), 'MMM dd, yyyy')}
+                                                            </span>
+                                                        </div>
                                                     </div>
-                                                    <div className="flex items-center gap-2 text-sm text-slate-500 font-medium truncate">
-                                                        <span>{order.part_name}</span>
-                                                    </div>
-                                                    <div className="flex flex-wrap items-center gap-3 pt-2">
-                                                        <Badge className={cn("rounded-lg px-3 py-1 border-0 shadow-sm font-bold text-[10px] uppercase tracking-wider", getStatusColor(order.status))}>
-                                                            {order.status}
-                                                        </Badge>
-                                                        <span className="text-[10px] text-slate-400 flex items-center font-bold uppercase tracking-widest">
-                                                            <Calendar className="h-3 w-3 mr-1.5" />
-                                                            {format(new Date(order.created_at), 'MMM dd, yyyy')}
-                                                        </span>
-                                                    </div>
-                                                </div>
 
-                                                <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                                                    <Button
-                                                        onClick={() => handleViewRequest(order)}
-                                                        variant="outline"
-                                                        className={cn(
-                                                            "w-full sm:w-auto rounded-xl border-slate-200 text-[10px] font-bold uppercase tracking-widest transition-all active:scale-95 shrink-0 h-12 sm:h-10",
-                                                            order.status === 'quoted' ? "bg-white border-primary-orange text-primary-orange hover:bg-orange-50" : "hover:text-primary-blue hover:border-blue-200 hover:bg-blue-50"
-                                                        )}
-                                                    >
-                                                        Details
-                                                    </Button>
-                                                    <Button
-                                                        onClick={() => handleViewRequest(order)}
-                                                        className={cn(
-                                                            "w-full sm:w-auto rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all active:scale-95 shrink-0 h-12 sm:h-10 px-6 flex items-center gap-2 shadow-lg",
-                                                            order.status === 'quoted' ? "bg-primary-orange text-white hover:bg-orange-600 shadow-orange-900/20" : "bg-primary-blue text-white hover:bg-blue-600 shadow-blue-900/20"
-                                                        )}
-                                                    >
-                                                        <MessageSquare className="h-4 w-4" />
-                                                        Chat
-                                                    </Button>
+                                                    <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                                                        <Button
+                                                            onClick={() => handleViewRequest(order)}
+                                                            variant="outline"
+                                                            className={cn(
+                                                                "w-full sm:w-auto rounded-xl border-slate-200 text-[10px] font-bold uppercase tracking-widest transition-all active:scale-95 shrink-0 h-12 sm:h-10",
+                                                                order.status === 'quoted' ? "bg-white border-primary-orange text-primary-orange hover:bg-orange-50" : "hover:text-primary-blue hover:border-blue-200 hover:bg-blue-50"
+                                                            )}
+                                                        >
+                                                            Details
+                                                        </Button>
+                                                        <Button
+                                                            onClick={() => handleViewRequest(order)}
+                                                            className={cn(
+                                                                "w-full sm:w-auto rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all active:scale-95 shrink-0 h-12 sm:h-10 px-6 flex items-center gap-2 shadow-lg",
+                                                                order.status === 'quoted' ? "bg-primary-orange text-white hover:bg-orange-600 shadow-orange-900/20" : "bg-primary-blue text-white hover:bg-blue-600 shadow-blue-900/20"
+                                                            )}
+                                                        >
+                                                            <MessageSquare className="h-4 w-4" />
+                                                            Chat
+                                                        </Button>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            ))
+                                        </CardContent>
+                                    </Card>
+                                ))}
+
+                                {filteredOrders.length > pageSize && (
+                                    <div className="pt-6 flex justify-center">
+                                        <Pagination
+                                            currentPage={currentPage}
+                                            totalPages={totalPages}
+                                            onPageChange={setCurrentPage}
+                                            totalCount={filteredOrders.length}
+                                            pageSize={pageSize}
+                                        />
+                                    </div>
+                                )}
+                            </div>
                         ) : (
                             <div className="flex flex-col items-center justify-center py-20 bg-slate-50/50 rounded-[3rem] border border-dashed border-slate-200 gap-6">
                                 <div className="h-24 w-24 rounded-[2.5rem] bg-white flex items-center justify-center text-slate-200 shadow-xl shadow-slate-200/50">
@@ -449,7 +503,10 @@ export default function CustomerDashboard() {
                     </CardHeader>
                     <CardContent className="text-slate-600 text-sm space-y-8 relative z-10 p-8 pt-0">
                         <p className="font-medium leading-relaxed">Our expert agents are ready to assist you with finding the exact parts for your vehicle.</p>
-                        <Button className="w-full bg-primary-blue text-white hover:bg-blue-700 font-bold uppercase tracking-widest text-xs h-14 rounded-2xl shadow-xl shadow-blue-500/20 border-0 transition-all active:scale-95">
+                        <Button
+                            onClick={() => router.push('/contact')}
+                            className="w-full bg-primary-blue text-white hover:bg-blue-700 font-bold uppercase tracking-widest text-xs h-14 rounded-2xl shadow-xl shadow-blue-500/20 border-0 transition-all active:scale-95"
+                        >
                             Contact Support
                         </Button>
                     </CardContent>

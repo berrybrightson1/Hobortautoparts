@@ -10,6 +10,7 @@ import { Loader2, Send, MessageSquare } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
 import { toast } from "sonner"
+import { sendNotification, notifyAdmins } from "@/lib/notifications"
 
 interface FeedbackPanelProps {
     requestId: string
@@ -109,6 +110,44 @@ export function FeedbackPanel({ requestId, currentUserId, isAgent = false }: Fee
                 })
 
             if (error) throw error
+
+            // 2. Trigger Notifications
+            try {
+                // Fetch request metadata to identify participants
+                const { data: request } = await supabase
+                    .from('sourcing_requests')
+                    .select('user_id, agent_id, part_name')
+                    .eq('id', requestId)
+                    .single()
+
+                if (request) {
+                    const isCustomer = currentUserId === request.user_id
+                    const participantName = isAgent ? "Agent" : (isCustomer ? "Customer" : "Admin")
+
+                    // Notify Admins (Always, if from customer or agent)
+                    if (isCustomer || isAgent) {
+                        await notifyAdmins({
+                            title: `New Message on ${request.part_name}`,
+                            message: `${participantName}: ${newMessage.trim().substring(0, 50)}${newMessage.length > 50 ? '...' : ''}`,
+                            type: 'system'
+                        })
+                    }
+
+                    // Notify Counter-party
+                    const targetId = isCustomer ? request.agent_id : request.user_id
+                    if (targetId && targetId !== currentUserId) {
+                        await sendNotification({
+                            userId: targetId,
+                            title: `New Message: ${request.part_name}`,
+                            message: newMessage.trim().substring(0, 100),
+                            type: 'system'
+                        })
+                    }
+                }
+            } catch (notifyErr) {
+                console.warn('Chat notification relay failed:', notifyErr)
+            }
+
             setNewMessage("")
         } catch (error) {
             console.error("Error sending message:", error)

@@ -205,11 +205,11 @@ export default function UnifiedSettingsPage() {
                             <div className="grid gap-8 md:grid-cols-2">
                                 <div className="space-y-3">
                                     <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Full Legal Name</Label>
-                                    <Input value={fullName} onChange={e => setFullName(e.target.value)} className="h-14 rounded-2xl bg-slate-50/50 border-slate-200 focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all font-bold text-lg" />
+                                    <Input value={fullName} onChange={e => setFullName(e.target.value)} className="h-14 rounded-2xl bg-slate-50/50 border-slate-200 focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all font-bold text-lg text-slate-900" />
                                 </div>
                                 <div className="space-y-3">
                                     <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Verified Mobile</Label>
-                                    <Input value={phoneNumber} onChange={e => setPhoneNumber(e.target.value)} className="h-14 rounded-2xl bg-slate-50/50 border-slate-200 focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all font-bold text-lg" />
+                                    <Input value={phoneNumber} onChange={e => setPhoneNumber(e.target.value)} className="h-14 rounded-2xl bg-slate-50/50 border-slate-200 focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all font-bold text-lg text-slate-900" />
                                 </div>
                             </div>
                         </CardContent>
@@ -237,16 +237,16 @@ export default function UnifiedSettingsPage() {
                         <CardContent className="p-6 sm:p-10 space-y-6 sm:space-y-8">
                             <div className="space-y-3">
                                 <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Verified Current Password</Label>
-                                <Input type="password" value={passwords.current} onChange={e => setPasswords({ ...passwords, current: e.target.value })} className="h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-slate-50/50 border-slate-200 focus:bg-white font-bold" placeholder="Required to authorize changes" />
+                                <Input type="password" value={passwords.current} onChange={e => setPasswords({ ...passwords, current: e.target.value })} className="h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-slate-50/50 border-slate-200 focus:bg-white font-bold text-slate-900" placeholder="Required to authorize changes" />
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 pt-4">
                                 <div className="space-y-3">
                                     <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">New Secure Cipher</Label>
-                                    <Input type="password" value={passwords.new} onChange={e => setPasswords({ ...passwords, new: e.target.value })} className="h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-slate-50/50 border-slate-200 focus:bg-white font-bold" />
+                                    <Input type="password" value={passwords.new} onChange={e => setPasswords({ ...passwords, new: e.target.value })} className="h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-slate-50/50 border-slate-200 focus:bg-white font-bold text-slate-900" />
                                 </div>
                                 <div className="space-y-3">
                                     <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Confirm Cipher</Label>
-                                    <Input type="password" value={passwords.confirm} onChange={e => setPasswords({ ...passwords, confirm: e.target.value })} className="h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-slate-50/50 border-slate-200 focus:bg-white font-bold" />
+                                    <Input type="password" value={passwords.confirm} onChange={e => setPasswords({ ...passwords, confirm: e.target.value })} className="h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-slate-50/50 border-slate-200 focus:bg-white font-bold text-slate-900" />
                                 </div>
                             </div>
                         </CardContent>

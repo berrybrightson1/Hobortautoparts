@@ -41,3 +41,42 @@ export async function sendNotification({
         return { success: false, error }
     }
 }
+/**
+ * Sends a real-time notification to all users with the 'admin' role.
+ */
+export async function notifyAdmins({
+    title,
+    message,
+    type = 'system'
+}: Omit<NotificationPayload, 'userId'>) {
+    try {
+        // 1. Fetch all admin IDs
+        const { data: admins, error: fetchError } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('role', 'admin')
+
+        if (fetchError) throw fetchError
+        if (!admins || admins.length === 0) return { success: true, message: 'No admins found' }
+
+        // 2. Insert notifications for all admins
+        const notifications = admins.map(admin => ({
+            user_id: admin.id,
+            title,
+            message,
+            type,
+            read: false
+        }))
+
+        const { error: insertError } = await supabase
+            .from('notifications')
+            .insert(notifications)
+
+        if (insertError) throw insertError
+
+        return { success: true }
+    } catch (error) {
+        console.error('Error in notifyAdmins:', error)
+        return { success: false, error }
+    }
+}

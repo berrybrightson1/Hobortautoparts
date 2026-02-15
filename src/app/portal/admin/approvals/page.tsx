@@ -18,35 +18,71 @@ import { supabase } from "@/lib/supabase"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { updateUserRole } from "@/app/actions/admin-actions"
+import { useRouter } from "next/navigation"
 
 export default function AdminApprovalsPage() {
+    const router = useRouter()
     const [pendingAgents, setPendingAgents] = useState<any[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [isRefreshing, setIsRefreshing] = useState(false)
+    const [stats, setStats] = useState({
+        processingOrders: 0,
+        newRequests: 0
+    })
 
     const fetchData = async () => {
         setIsRefreshing(true)
-        // Fetch users who have requested 'agent' role but are not yet approved?
-        // Or actually, fetch from 'agents' table if we had one.
-        // For now, let's look for users with 'agent' role but status 'pending' if we implemented that.
-        // Based on `agent/page.tsx`, it checks `agents` table. Let's assume we need to approve them there.
+        try {
+            // 1. Fetch Agents
+            const { data: agentsData } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('role', 'agent')
+                .order('created_at', { ascending: false })
 
-        const { data, error } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('role', 'agent')
-            .order('created_at', { ascending: false })
+            if (agentsData) setPendingAgents(agentsData)
 
-        // In a real app we'd have a specific "status" column. For now, let's just list all agents so Admin can verify them.
-        // Or better, let's listing "Sourcing Requests" that are stuck in 'pending' for too long?
+            // 2. Fetch Pending Sourcing Requests count (unassigned)
+            const { count: newRequestsCount } = await supabase
+                .from('sourcing_requests')
+                .select('*', { count: 'exact', head: true })
+                .eq('status', 'pending')
+                .is('agent_id', null)
 
-        // Let's pivot: "Approvals" = "Pending Agent Applications" AND "High Value Requests"
-        // Since we don't have a formal "Agent Application" flow yet (just "Create User"),
-        // Let's make this page show "Pending Sourcing Requests" that need quotas.
+            // 3. Fetch Processing Orders count (no shipment)
+            // This is a bit more complex, let's look for orders with status paid/processing
+            const { data: ordersData } = await supabase
+                .from('orders')
+                .select('id, status')
+                .in('status', ['paid', 'processing'])
 
-        if (data) setPendingAgents(data)
-        setIsLoading(false)
-        setIsRefreshing(false)
+            // To truly check if they have no shipment, we'd need a join or a separate check
+            // For now, let's fetch IDs and then check shipments table
+            const orderIds = ordersData?.map(o => o.id) || []
+            let processingOrdersCount = 0
+
+            if (orderIds.length > 0) {
+                const { data: shipmentsData } = await supabase
+                    .from('shipments')
+                    .select('order_id')
+                    .in('order_id', orderIds)
+
+                const shippedOrderIds = new Set(shipmentsData?.map(s => s.order_id) || [])
+                processingOrdersCount = orderIds.filter(id => !shippedOrderIds.has(id)).length
+            }
+
+            setStats({
+                newRequests: newRequestsCount || 0,
+                processingOrders: processingOrdersCount
+            })
+
+        } catch (error: any) {
+            console.error("Error fetching approval stats:", error)
+            toast.error("Sync Failed", { description: "Could not refresh Action Center metrics." })
+        } finally {
+            setIsLoading(false)
+            setIsRefreshing(false)
+        }
     }
 
     useEffect(() => {
@@ -85,7 +121,8 @@ export default function AdminApprovalsPage() {
                                     <TableHead className="font-semibold text-slate-500 text-xs uppercase tracking-wider pl-6 h-12">Agent Name</TableHead>
                                     <TableHead className="font-semibold text-slate-500 text-xs uppercase tracking-wider h-12">Email</TableHead>
                                     <TableHead className="font-semibold text-slate-500 text-xs uppercase tracking-wider h-12">Joined</TableHead>
-                                    <TableHead className="text-right font-semibold text-slate-500 text-xs uppercase tracking-wider pr-6 h-12">Status</TableHead>
+                                    <TableHead className="font-semibold text-slate-500 text-xs uppercase tracking-wider h-12">Status</TableHead>
+                                    <TableHead className="text-right font-semibold text-slate-500 text-xs uppercase tracking-wider pr-6 h-12">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -101,10 +138,20 @@ export default function AdminApprovalsPage() {
                                             <TableCell className="py-4 text-xs font-mono text-slate-400">
                                                 {format(new Date(agent.created_at || new Date()), 'MMM dd, yyyy')}
                                             </TableCell>
-                                            <TableCell className="text-right pr-6 py-4">
+                                            <TableCell className="py-4">
                                                 <Badge className="bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border-0 uppercase text-[10px] tracking-wider font-bold">
                                                     Active
                                                 </Badge>
+                                            </TableCell>
+                                            <TableCell className="text-right pr-6 py-4">
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    className="h-8 rounded-lg text-xs font-bold text-primary-blue hover:text-blue-700 hover:bg-blue-50"
+                                                    onClick={() => router.push(`/portal/users?search=${agent.full_name}`)}
+                                                >
+                                                    Manage
+                                                </Button>
                                             </TableCell>
                                         </TableRow>
                                     ))
@@ -133,18 +180,21 @@ export default function AdminApprovalsPage() {
                                     <p className="text-sm font-bold text-slate-200">Processing Orders</p>
                                     <p className="text-xs text-slate-500">Orders requiring shipment</p>
                                 </div>
-                                <Badge className="bg-blue-500 text-white border-0 font-mono text-xs">2</Badge>
+                                <Badge className="bg-blue-500 text-white border-0 font-mono text-xs">{stats.processingOrders}</Badge>
                             </div>
                             <div className="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/10">
                                 <div className="space-y-1">
                                     <p className="text-sm font-bold text-slate-200">New Requests</p>
                                     <p className="text-xs text-slate-500">Unassigned sourcing requests</p>
                                 </div>
-                                <Badge className="bg-orange-500 text-white border-0 font-mono text-xs">5</Badge>
+                                <Badge className="bg-orange-500 text-white border-0 font-mono text-xs">{stats.newRequests}</Badge>
                             </div>
                         </div>
 
-                        <Button className="w-full bg-white text-slate-900 hover:bg-slate-200 font-bold h-12 rounded-xl">
+                        <Button
+                            onClick={() => router.push('/portal/admin/requests?filter=unassigned')}
+                            className="w-full bg-white text-slate-900 hover:bg-slate-200 font-bold h-12 rounded-xl"
+                        >
                             Process Queue <ArrowRight className="ml-2 h-4 w-4" />
                         </Button>
                     </CardContent>

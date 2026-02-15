@@ -8,14 +8,23 @@ import { supabase } from "@/lib/supabase"
 import { useAuth } from "@/components/auth/auth-provider"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
+import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
+import { SearchBar } from "@/components/portal/search-bar"
+import { Pagination } from "@/components/portal/pagination"
 
 export default function CustomerTrackingPage() {
     const { user } = useAuth()
+    const router = useRouter()
     const [shipments, setShipments] = useState<any[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [searchTerm, setSearchTerm] = useState('')
+    const [debouncedSearch, setDebouncedSearch] = useState('')
+
+    // Pagination state
+    const [currentPage, setCurrentPage] = useState(1)
+    const [pageSize] = useState(10)
 
     const fetchShipments = async () => {
         if (!user) return
@@ -49,10 +58,23 @@ export default function CustomerTrackingPage() {
         fetchShipments()
     }, [user])
 
+    // Debounce search input
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(searchTerm)
+            setCurrentPage(1) // Reset to first page on new search
+        }, 300)
+        return () => clearTimeout(timer)
+    }, [searchTerm])
+
     const filteredShipments = shipments.filter(s =>
-        s.tracking_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        s.orders?.quotes?.sourcing_requests?.part_name?.toLowerCase().includes(searchTerm.toLowerCase())
+        s.tracking_number.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+        s.orders?.quotes?.sourcing_requests?.part_name?.toLowerCase().includes(debouncedSearch.toLowerCase())
     )
+
+    const totalPages = Math.ceil(filteredShipments.length / pageSize)
+    const startIndex = (currentPage - 1) * pageSize
+    const paginatedShipments = filteredShipments.slice(startIndex, startIndex + pageSize)
 
     return (
         <div className="space-y-8 animate-in fade-in duration-700">
@@ -66,15 +88,12 @@ export default function CustomerTrackingPage() {
                 </Button>
             </div>
 
-            <div className="relative w-full max-w-2xl group mx-auto">
-                <div className="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
-                    <Truck className="h-5 w-5 text-slate-400 group-focus-within:text-primary-blue transition-colors" />
-                </div>
-                <Input
+            <div className="flex justify-center">
+                <SearchBar
                     value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onChange={setSearchTerm}
                     placeholder="Enter Tracking ID or Ref Number..."
-                    className="pl-14 h-16 bg-white border-slate-200 rounded-3xl shadow-xl shadow-slate-200/40 focus:ring-4 focus:ring-primary-blue/10 transition-all text-lg font-medium"
+                    className="w-full max-w-2xl"
                 />
             </div>
 
@@ -85,7 +104,7 @@ export default function CustomerTrackingPage() {
                 </div>
             ) : filteredShipments.length > 0 ? (
                 <div className="grid gap-6">
-                    {filteredShipments.map((shipment) => (
+                    {paginatedShipments.map((shipment) => (
                         <Card key={shipment.id} className="border-slate-100 shadow-xl shadow-slate-200/40 rounded-[2.5rem] overflow-hidden bg-white ring-1 ring-slate-100/50 hover:shadow-2xl transition-all duration-300">
                             <CardContent className="p-8">
                                 <div className="flex flex-col md:flex-row items-center gap-8">
@@ -114,13 +133,25 @@ export default function CustomerTrackingPage() {
                                             </span>
                                         </div>
                                     </div>
-                                    <Button variant="ghost" className="rounded-xl h-12 px-6 group border border-slate-100 hover:bg-slate-50">
+                                    <Button variant="ghost" className="rounded-xl h-12 px-6 group border border-slate-100 hover:bg-slate-50" onClick={() => router.push(`/portal/customer/tracking/${shipment.id}`)}>
                                         Monitor <ChevronRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                                     </Button>
                                 </div>
                             </CardContent>
                         </Card>
                     ))}
+
+                    {filteredShipments.length > pageSize && (
+                        <div className="pt-8 flex justify-center">
+                            <Pagination
+                                currentPage={currentPage}
+                                totalPages={totalPages}
+                                onPageChange={setCurrentPage}
+                                totalCount={filteredShipments.length}
+                                pageSize={pageSize}
+                            />
+                        </div>
+                    )}
                 </div>
             ) : (
                 <Card className="border-slate-100 shadow-xl shadow-slate-200/40 rounded-[2.5rem] bg-white ring-1 ring-slate-100/50 p-8">
