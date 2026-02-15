@@ -159,10 +159,11 @@ export default function QuotePage() {
             }
 
             let currentUser = user;
-            if (!currentUser) {
-                console.log('--- CHECKING SESSION FALLBACK ---')
-                const { data: { session } } = await supabase.auth.getSession();
-                currentUser = session?.user || null;
+            // Fallback check removed - rely on AuthProvider state which is already checked via authLoading
+            if (!currentUser && !authLoading) {
+                // Double check if session exists in storage but AuthProvider hasn't picked it up yet (rare race condition)
+                // But safest is to just prompt login
+                console.log('No active user found in AuthContext')
             }
 
             if (!currentUser) {

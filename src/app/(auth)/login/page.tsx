@@ -40,6 +40,7 @@ export default function LoginPage() {
         }
     }, [profile, loading, router, setRole, activeRole])
 
+
     async function onSubmit(event: React.SyntheticEvent) {
         event.preventDefault()
         setIsLoading(true)
@@ -62,9 +63,7 @@ export default function LoginPage() {
                     description: "Redirecting to your portal..."
                 })
 
-                if (role === 'admin') router.push("/portal/admin")
-                else if (role === 'agent') router.push("/portal/agent")
-                else router.push("/portal/customer")
+                // router.push is handled by useEffect when profile updates
             }
 
         } catch (error: any) {

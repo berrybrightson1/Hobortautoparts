@@ -29,18 +29,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const router = useRouter()
 
     useEffect(() => {
-        // Get initial session
-        const initAuth = async () => {
+        let mounted = true
+
+        // Check for session immediately
+        const initSession = async () => {
             try {
                 const { data: { session }, error } = await supabase.auth.getSession()
+                if (!mounted) return
 
                 if (error) {
-                    console.error("AuthProvider: Initial session error:", error)
-                    // If refresh token is explicitly invalid/missing, clear everything
-                    if (error.message?.includes("refresh_token_not_found") || error.message?.includes("Refresh Token Not Found")) {
+                    // Suppress "Refresh Token Not Found" noise, just sign out
+                    if (error.message?.includes("Refresh Token Not Found") || error.message?.includes("refresh_token_not_found")) {
+                        console.warn("AuthProvider: Stale session detected, clearing...")
                         await signOut()
                         return
                     }
+                    console.error("AuthProvider: Session check error:", error)
                 }
 
                 if (session?.user) {
@@ -48,17 +52,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                     await fetchProfile(session.user)
                 }
             } catch (err) {
-                console.error("AuthProvider: initAuth unexpected error:", err)
+                console.error("AuthProvider: Init error:", err)
             } finally {
-                setLoading(false)
+                if (mounted) setLoading(false)
             }
         }
 
-        initAuth()
+        initSession()
 
         // Listen for auth changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
             async (event, session) => {
+                if (!mounted) return
+
+                // Handle token refresh errors that might come through events
                 if (event === 'SIGNED_OUT') {
                     setUser(null)
                     setProfile(null)
@@ -67,8 +74,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 }
 
                 if (session?.user) {
-                    setUser(session.user)
-                    await fetchProfile(session.user)
+                    // Only update if different user or profile missing
+                    if (session.user.id !== user?.id) {
+                        setUser(session.user)
+                        await fetchProfile(session.user)
+                    }
                 } else {
                     setUser(null)
                     setProfile(null)
@@ -78,6 +88,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         )
 
         return () => {
+            mounted = false
             subscription.unsubscribe()
         }
     }, [])

@@ -166,19 +166,19 @@ export default function UnifiedSettingsPage() {
     return (
         <div className="space-y-8 max-w-5xl mx-auto pb-20 animate-in fade-in duration-700">
             <div className="flex flex-col gap-2">
-                <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-slate-900 bg-gradient-to-r from-slate-900 to-slate-500 bg-clip-text text-transparent">
+                <h2 className="text-2xl sm:text-4xl font-bold tracking-tight text-slate-900 bg-gradient-to-r from-slate-900 to-slate-500 bg-clip-text text-transparent">
                     {profile?.role === 'admin' ? 'Console & Profile' : 'Account & Settings'}
                 </h2>
-                <p className="text-slate-500 font-medium text-base sm:text-lg">Manage your personal profile, portal settings, and security preferences.</p>
+                <p className="text-slate-500 font-normal text-base sm:text-lg">Manage your personal profile, portal settings, and security preferences.</p>
             </div>
 
             <Tabs defaultValue="account" className="w-full">
                 <TabsList className="flex w-full overflow-x-auto justify-start mb-8 h-14 bg-slate-100/80 backdrop-blur-sm p-1.5 rounded-2xl border border-slate-200/50 shadow-inner no-scrollbar">
-                    <TabsTrigger value="account" className="rounded-xl px-4 sm:px-8 data-[state=active]:bg-white data-[state=active]:shadow-lg data-[state=active]:text-primary-blue font-bold transition-all shrink-0">Account</TabsTrigger>
-                    <TabsTrigger value="security" className="rounded-xl px-4 sm:px-8 data-[state=active]:bg-white data-[state=active]:shadow-lg data-[state=active]:text-primary-blue font-bold transition-all shrink-0">Security</TabsTrigger>
-                    <TabsTrigger value="hub" className="rounded-xl px-4 sm:px-8 data-[state=active]:bg-white data-[state=active]:shadow-lg data-[state=active]:text-primary-blue font-bold transition-all shrink-0">Portal Hub</TabsTrigger>
+                    <TabsTrigger value="account" className="rounded-xl px-4 sm:px-8 data-[state=active]:bg-white data-[state=active]:shadow-lg data-[state=active]:text-primary-blue font-semibold transition-all shrink-0">Account</TabsTrigger>
+                    <TabsTrigger value="security" className="rounded-xl px-4 sm:px-8 data-[state=active]:bg-white data-[state=active]:shadow-lg data-[state=active]:text-primary-blue font-semibold transition-all shrink-0">Security</TabsTrigger>
+                    <TabsTrigger value="hub" className="rounded-xl px-4 sm:px-8 data-[state=active]:bg-white data-[state=active]:shadow-lg data-[state=active]:text-primary-blue font-semibold transition-all shrink-0">Portal Hub</TabsTrigger>
                     {profile?.role === 'admin' && (
-                        <TabsTrigger value="system" className="rounded-xl px-4 sm:px-8 data-[state=active]:bg-white data-[state=active]:shadow-lg data-[state=active]:text-orange-600 font-bold transition-all shrink-0 gap-2">
+                        <TabsTrigger value="system" className="rounded-xl px-4 sm:px-8 data-[state=active]:bg-white data-[state=active]:shadow-lg data-[state=active]:text-orange-600 font-semibold transition-all shrink-0 gap-2">
                             <Server className="h-4 w-4" /> System
                         </TabsTrigger>
                     )}
@@ -187,7 +187,7 @@ export default function UnifiedSettingsPage() {
                 <TabsContent value="account">
                     <Card className="border-slate-100 shadow-2xl shadow-slate-200/50 rounded-[2rem] sm:rounded-[3rem] overflow-hidden bg-white/80 backdrop-blur-xl">
                         <CardHeader className="p-6 sm:p-10 pb-4 sm:pb-6 border-b border-slate-50">
-                            <CardTitle className="text-xl sm:text-2xl font-bold text-slate-900">Profile Details</CardTitle>
+                            <CardTitle className="text-xl sm:text-2xl font-semibold text-slate-900">Profile Details</CardTitle>
                             <CardDescription className="text-slate-500 text-sm sm:text-base">Your official platform representation and core contact data.</CardDescription>
                         </CardHeader>
                         <CardContent className="p-6 sm:p-10 space-y-8 sm:space-y-10">
@@ -196,26 +196,26 @@ export default function UnifiedSettingsPage() {
                                     <User className="h-10 w-10 sm:h-12 sm:w-12" />
                                 </div>
                                 <div className="space-y-2 relative z-10 text-center sm:text-left">
-                                    <h4 className="font-bold text-lg sm:text-xl text-slate-900">User Profile</h4>
-                                    <p className="text-xs sm:text-sm text-slate-500 font-medium max-w-sm leading-relaxed">Your profile is linked to your email address. Updates are synchronized across the portal for: <span className="text-primary-blue break-all">{user?.email}</span></p>
+                                    <h4 className="font-semibold text-lg sm:text-xl text-slate-900">User Profile</h4>
+                                    <p className="text-xs sm:text-sm text-slate-500 font-normal max-w-sm leading-relaxed">Your profile is linked to your email address. Updates are synchronized across the portal for: <span className="text-primary-blue break-all">{user?.email}</span></p>
                                 </div>
                                 <div className="absolute right-0 top-0 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none" />
                             </div>
 
                             <div className="grid gap-8 md:grid-cols-2">
                                 <div className="space-y-3">
-                                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Full Legal Name</Label>
-                                    <Input value={fullName} onChange={e => setFullName(e.target.value)} className="h-14 rounded-2xl bg-slate-50/50 border-slate-200 focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all font-bold text-lg text-slate-900" />
+                                    <Label className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400 ml-1">Full Legal Name</Label>
+                                    <Input value={fullName} onChange={e => setFullName(e.target.value)} className="h-14 rounded-2xl bg-slate-50/50 border-slate-200 focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all font-semibold text-lg text-slate-900" />
                                 </div>
                                 <div className="space-y-3">
-                                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Verified Mobile</Label>
-                                    <Input value={phoneNumber} onChange={e => setPhoneNumber(e.target.value)} className="h-14 rounded-2xl bg-slate-50/50 border-slate-200 focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all font-bold text-lg text-slate-900" />
+                                    <Label className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400 ml-1">Verified Mobile</Label>
+                                    <Input value={phoneNumber} onChange={e => setPhoneNumber(e.target.value)} className="h-14 rounded-2xl bg-slate-50/50 border-slate-200 focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all font-semibold text-lg text-slate-900" />
                                 </div>
                             </div>
                         </CardContent>
                         <CardFooter className="bg-slate-50/80 p-6 sm:p-10 flex justify-end">
                             <Button onClick={handleUpdateProfile} disabled={isSavingProfile || isSaved} className={cn(
-                                "h-12 sm:h-14 w-full sm:w-auto px-10 rounded-xl sm:rounded-2xl shadow-xl font-black gap-3 transition-all active:scale-95 text-xs sm:text-base",
+                                "h-12 sm:h-14 w-full sm:w-auto px-10 rounded-xl sm:rounded-2xl shadow-xl font-bold gap-3 transition-all active:scale-95 text-xs sm:text-base",
                                 isSaved ? "bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/20 text-white" : "bg-primary-blue hover:bg-blue-700 shadow-blue-500/20"
                             )}>
                                 {isSavingProfile ? <Loader2 className="animate-spin h-5 w-5" /> :
@@ -229,29 +229,29 @@ export default function UnifiedSettingsPage() {
                 <TabsContent value="security">
                     <Card className="border-slate-100 shadow-2xl shadow-slate-200/50 rounded-[3rem] overflow-hidden bg-white/80 backdrop-blur-xl">
                         <CardHeader className="p-6 sm:p-10 pb-4 sm:pb-6 border-b border-slate-50">
-                            <CardTitle className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-3">
+                            <CardTitle className="text-xl sm:text-2xl font-semibold text-slate-900 flex items-center gap-3">
                                 <Shield className="h-6 w-6 text-emerald-500" /> Security Protocol
                             </CardTitle>
                             <CardDescription className="text-slate-500 text-sm sm:text-base">Old password verification required for all credential shifts.</CardDescription>
                         </CardHeader>
                         <CardContent className="p-6 sm:p-10 space-y-6 sm:space-y-8">
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Verified Current Password</Label>
-                                <Input type="password" value={passwords.current} onChange={e => setPasswords({ ...passwords, current: e.target.value })} className="h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-slate-50/50 border-slate-200 focus:bg-white font-bold text-slate-900" placeholder="Required to authorize changes" />
+                                <Label className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400 ml-1">Verified Current Password</Label>
+                                <Input type="password" value={passwords.current} onChange={e => setPasswords({ ...passwords, current: e.target.value })} className="h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-slate-50/50 border-slate-200 focus:bg-white font-semibold text-slate-900" placeholder="Required to authorize changes" />
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 pt-4">
                                 <div className="space-y-3">
-                                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">New Secure Cipher</Label>
-                                    <Input type="password" value={passwords.new} onChange={e => setPasswords({ ...passwords, new: e.target.value })} className="h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-slate-50/50 border-slate-200 focus:bg-white font-bold text-slate-900" />
+                                    <Label className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400 ml-1">New Secure Cipher</Label>
+                                    <Input type="password" value={passwords.new} onChange={e => setPasswords({ ...passwords, new: e.target.value })} className="h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-slate-50/50 border-slate-200 focus:bg-white font-semibold text-slate-900" />
                                 </div>
                                 <div className="space-y-3">
-                                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Confirm Cipher</Label>
-                                    <Input type="password" value={passwords.confirm} onChange={e => setPasswords({ ...passwords, confirm: e.target.value })} className="h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-slate-50/50 border-slate-200 focus:bg-white font-bold text-slate-900" />
+                                    <Label className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400 ml-1">Confirm Cipher</Label>
+                                    <Input type="password" value={passwords.confirm} onChange={e => setPasswords({ ...passwords, confirm: e.target.value })} className="h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-slate-50/50 border-slate-200 focus:bg-white font-semibold text-slate-900" />
                                 </div>
                             </div>
                         </CardContent>
                         <CardFooter className="bg-slate-50/80 p-6 sm:p-10 flex justify-end">
-                            <Button onClick={handleUpdatePassword} disabled={isUpdatingPassword} className="h-12 sm:h-14 w-full sm:w-auto px-10 rounded-xl sm:rounded-2xl bg-slate-900 hover:bg-black shadow-xl shadow-black/20 font-black gap-3 transition-all active:scale-95 text-xs sm:text-base">
+                            <Button onClick={handleUpdatePassword} disabled={isUpdatingPassword} className="h-12 sm:h-14 w-full sm:w-auto px-10 rounded-xl sm:rounded-2xl bg-slate-900 hover:bg-black shadow-xl shadow-black/20 font-bold gap-3 transition-all active:scale-95 text-xs sm:text-base">
                                 {isUpdatingPassword ? <Loader2 className="animate-spin h-5 w-5" /> : <Unlock className="h-5 w-5" />}
                                 Authorize & Update
                             </Button>
@@ -266,8 +266,8 @@ export default function UnifiedSettingsPage() {
                                 <Globe className="h-10 w-10 animate-pulse" />
                             </div>
                             <div className="space-y-2">
-                                <h3 className="text-3xl font-black text-slate-900 uppercase tracking-tighter italic">Sovereign Innovation</h3>
-                                <p className="text-slate-500 font-bold text-sm tracking-widest uppercase opacity-60">Portal Hub Overhaul: Coming Soon</p>
+                                <h3 className="text-3xl font-bold text-slate-900 uppercase tracking-tighter italic">Sovereign Innovation</h3>
+                                <p className="text-slate-500 font-semibold text-sm tracking-widest uppercase opacity-60">Portal Hub Overhaul: Coming Soon</p>
                             </div>
                             <div className="pt-4">
                                 <Badge className="bg-indigo-50 text-indigo-600 border border-indigo-100 px-6 py-2">Version 3.0 Pipeline</Badge>
@@ -283,8 +283,8 @@ export default function UnifiedSettingsPage() {
                                 <Server className="h-10 w-10 animate-bounce" />
                             </div>
                             <div className="space-y-2">
-                                <h3 className="text-3xl font-black text-white uppercase tracking-tighter italic">Edge Intelligence</h3>
-                                <p className="text-slate-400 font-bold text-sm tracking-widest uppercase opacity-60">System Console: Coming Soon</p>
+                                <h3 className="text-3xl font-bold text-white uppercase tracking-tighter italic">Edge Intelligence</h3>
+                                <p className="text-slate-400 font-semibold text-sm tracking-widest uppercase opacity-60">System Console: Coming Soon</p>
                             </div>
                             <div className="pt-4">
                                 <Badge className="bg-orange-600/20 text-orange-500 border border-orange-500/20 px-6 py-2">Deployment Cycle Locked</Badge>
@@ -299,7 +299,7 @@ export default function UnifiedSettingsPage() {
 
 function Badge({ children, className }: { children: React.ReactNode, className?: string }) {
     return (
-        <span className={cn("px-3 py-1 rounded-full text-[10px] font-bold tracking-widest", className)}>
+        <span className={cn("px-3 py-1 rounded-full text-[10px] font-semibold tracking-widest", className)}>
             {children}
         </span>
     )

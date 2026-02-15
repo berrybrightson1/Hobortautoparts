@@ -27,6 +27,7 @@ export default function CustomerDashboard() {
     const router = useRouter()
     const [orders, setOrders] = useState<any[]>([])
     const [isLoading, setIsLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
     const [selectedRequest, setSelectedRequest] = useState<any>(null)
     const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false)
     const [isAccepting, setIsAccepting] = useState(false)
@@ -43,6 +44,7 @@ export default function CustomerDashboard() {
     const fetchOrders = async () => {
         if (!user) return
         setIsLoading(true)
+        setError(null)
         try {
             const { data, error } = await supabase
                 .from('sourcing_requests')
@@ -59,8 +61,9 @@ export default function CustomerDashboard() {
 
             if (error) throw error
             setOrders(data || [])
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error fetching orders:", error)
+            setError(error.message || "Failed to load orders")
         } finally {
             setIsLoading(false)
         }
@@ -221,10 +224,10 @@ export default function CustomerDashboard() {
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
                 <div className="space-y-1">
-                    <h2 className="text-4xl md:text-5xl font-bold tracking-tighter text-slate-900 leading-none">
+                    <h2 className="text-4xl md:text-5xl font-semibold tracking-tighter text-slate-900 leading-none">
                         Welcome back, {profile?.full_name?.split(' ')[0] || 'Member'}!
                     </h2>
-                    <p className="text-slate-500 font-medium text-lg pt-2 max-w-2xl">Track your orders and manage your vehicle sourcing requests.</p>
+                    <p className="text-slate-500 font-normal text-lg pt-2 max-w-2xl">Track your orders and manage your vehicle sourcing requests.</p>
                 </div>
                 <div className="flex gap-2 w-full md:w-auto">
                     <Button
@@ -277,8 +280,8 @@ export default function CustomerDashboard() {
                                     <s.icon className="h-7 w-7" />
                                 </div>
                                 <div>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{s.label}</p>
-                                    <p className="text-3xl font-black text-slate-900 leading-none mt-1">{s.count}</p>
+                                    <p className="text-[10px] font-medium uppercase tracking-widest text-slate-400">{s.label}</p>
+                                    <p className="text-3xl font-bold text-slate-900 leading-none mt-1">{s.count}</p>
                                 </div>
                             </CardContent>
                         </Card>
@@ -301,8 +304,8 @@ export default function CustomerDashboard() {
                                         <Hash className="h-6 w-6 text-white" />
                                     </div>
                                     <div>
-                                        <p className="text-xs font-bold uppercase tracking-widest text-white/60">Your Tracking Numbers</p>
-                                        <p className="text-white font-medium text-sm mt-0.5">Click any number below to copy instantly</p>
+                                        <p className="text-xs font-semibold uppercase tracking-widest text-white/60">Your Tracking Numbers</p>
+                                        <p className="text-white font-normal text-sm mt-0.5">Click any number below to copy instantly</p>
                                     </div>
                                 </div>
 
@@ -318,7 +321,7 @@ export default function CustomerDashboard() {
                                             }}
                                             className="group/btn flex items-center gap-2 px-4 md:px-6 py-3 md:py-4 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-xl md:rounded-2xl border border-white/20 hover:border-white/30 transition-all active:scale-95 shadow-lg hover:shadow-xl"
                                         >
-                                            <span className="font-mono text-sm md:text-base font-bold text-white tracking-wider">
+                                            <span className="font-mono text-sm md:text-base font-medium text-white tracking-wider">
                                                 {order.id.slice(0, 13)}...
                                             </span>
                                             <CopyIcon className="h-4 w-4 md:h-5 md:w-5 text-white/80 group-hover/btn:text-white transition-colors" />
@@ -345,10 +348,10 @@ export default function CustomerDashboard() {
                 {/* Main Content: Orders */}
                 <div className="md:col-span-2 space-y-6">
                     <div className="flex items-center justify-between px-1">
-                        <h3 className="text-xl font-bold text-slate-900 flex items-center gap-3 tracking-tight">
+                        <h3 className="text-xl font-semibold text-slate-900 flex items-center gap-3 tracking-tight">
                             <Clock className="h-6 w-6 text-primary-orange" /> Recent Activity
                         </h3>
-                        <Button variant="link" className="text-primary-blue font-bold uppercase tracking-widest text-[10px] hover:no-underline hover:text-blue-700" disabled={orders.length === 0}>
+                        <Button variant="link" className="text-primary-blue font-semibold uppercase tracking-widest text-[10px] hover:no-underline hover:text-blue-700" disabled={orders.length === 0}>
                             View All <ChevronRight className="ml-1 h-3 w-3" />
                         </Button>
                     </div>
@@ -358,6 +361,23 @@ export default function CustomerDashboard() {
                             <div className="flex flex-col items-center justify-center py-20 bg-white rounded-[3rem] border border-slate-100 shadow-xl shadow-slate-200/20">
                                 <Loader2 className="h-8 w-8 text-primary-orange animate-spin" />
                                 <p className="mt-4 text-xs font-bold uppercase tracking-widest text-slate-400">Syncing Sourcing Feed...</p>
+                            </div>
+                        ) : error ? (
+                            <div className="flex flex-col items-center justify-center py-20 bg-red-50 rounded-[3rem] border border-red-100 gap-6">
+                                <div className="h-20 w-20 rounded-3xl bg-white flex items-center justify-center text-red-500 shadow-sm border border-red-100">
+                                    <AlertCircle className="h-10 w-10" />
+                                </div>
+                                <div className="text-center space-y-2">
+                                    <p className="text-xl font-semibold text-slate-900">Failed to load requests</p>
+                                    <p className="text-sm text-slate-500 max-w-xs mx-auto">{error}</p>
+                                </div>
+                                <Button
+                                    onClick={fetchOrders}
+                                    variant="outline"
+                                    className="rounded-xl h-12 px-8 border-red-200 text-red-700 hover:bg-white hover:border-red-300"
+                                >
+                                    <RefreshCw className="mr-2 h-4 w-4" /> Retry
+                                </Button>
                             </div>
                         ) : paginatedOrders.length > 0 ? (
                             <div className="space-y-4">
@@ -381,7 +401,7 @@ export default function CustomerDashboard() {
 
                                                     <div className="flex-1 space-y-1.5 min-w-0 w-full">
                                                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
-                                                            <p className="font-bold text-lg md:text-xl text-slate-900 truncate tracking-tight">{order.vehicle_info || order.part_name}</p>
+                                                            <p className="font-semibold text-lg md:text-xl text-slate-900 truncate tracking-tight">{order.vehicle_info || order.part_name}</p>
                                                             {order.status === 'pending' ? (
                                                                 <Badge variant="outline" className="w-fit shrink-0 font-mono text-[10px] bg-slate-50 text-slate-400 border-slate-100 cursor-not-allowed opacity-70">
                                                                     Running Checks...
@@ -403,14 +423,14 @@ export default function CustomerDashboard() {
                                                                 </Badge>
                                                             )}
                                                         </div>
-                                                        <div className="flex items-center gap-2 text-sm text-slate-500 font-medium truncate">
+                                                        <div className="flex items-center gap-2 text-sm text-slate-500 font-normal truncate">
                                                             <span>{order.part_name}</span>
                                                         </div>
                                                         <div className="flex flex-wrap items-center gap-3 pt-2">
-                                                            <Badge className={cn("rounded-lg px-3 py-1 border-0 shadow-sm font-bold text-[10px] uppercase tracking-wider", getStatusColor(order.status))}>
+                                                            <Badge className={cn("rounded-lg px-3 py-1 border-0 shadow-sm font-medium text-[10px] uppercase tracking-wider", getStatusColor(order.status))}>
                                                                 {order.status}
                                                             </Badge>
-                                                            <span className="text-[10px] text-slate-400 flex items-center font-bold uppercase tracking-widest">
+                                                            <span className="text-[10px] text-slate-400 flex items-center font-medium uppercase tracking-widest">
                                                                 <Calendar className="h-3 w-3 mr-1.5" />
                                                                 {format(new Date(order.created_at), 'MMM dd, yyyy')}
                                                             </span>
@@ -422,7 +442,7 @@ export default function CustomerDashboard() {
                                                             onClick={() => handleViewRequest(order)}
                                                             variant="outline"
                                                             className={cn(
-                                                                "w-full sm:w-auto rounded-xl border-slate-200 text-[10px] font-bold uppercase tracking-widest transition-all active:scale-95 shrink-0 h-12 sm:h-10",
+                                                                "w-full sm:w-auto rounded-xl border-slate-200 text-[10px] font-semibold uppercase tracking-widest transition-all active:scale-95 shrink-0 h-12 sm:h-10",
                                                                 order.status === 'quoted' ? "bg-white border-primary-orange text-primary-orange hover:bg-orange-50" : "hover:text-primary-blue hover:border-blue-200 hover:bg-blue-50"
                                                             )}
                                                         >
@@ -431,7 +451,7 @@ export default function CustomerDashboard() {
                                                         <Button
                                                             onClick={() => handleViewRequest(order)}
                                                             className={cn(
-                                                                "w-full sm:w-auto rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all active:scale-95 shrink-0 h-12 sm:h-10 px-6 flex items-center gap-2 shadow-lg",
+                                                                "w-full sm:w-auto rounded-xl text-[10px] font-semibold uppercase tracking-widest transition-all active:scale-95 shrink-0 h-12 sm:h-10 px-6 flex items-center gap-2 shadow-lg",
                                                                 order.status === 'quoted' ? "bg-primary-orange text-white hover:bg-orange-600 shadow-orange-900/20" : "bg-primary-blue text-white hover:bg-blue-600 shadow-blue-900/20"
                                                             )}
                                                         >
@@ -463,10 +483,10 @@ export default function CustomerDashboard() {
                                     <Inbox className="h-10 w-10" />
                                 </div>
                                 <div className="text-center space-y-2">
-                                    <p className="text-2xl font-bold text-slate-900 leading-none tracking-tight">
+                                    <p className="text-2xl font-semibold text-slate-900 leading-none tracking-tight">
                                         {debouncedSearch ? 'No matching requests' : 'No active requests yet'}
                                     </p>
-                                    <p className="text-sm text-slate-500 font-medium">
+                                    <p className="text-sm text-slate-500 font-normal">
                                         {debouncedSearch ? 'Try adjusting your search terms' : 'When you place an order, it will appear here.'}
                                     </p>
                                 </div>
@@ -499,13 +519,13 @@ export default function CustomerDashboard() {
                     <div className="absolute bottom-0 left-0 w-24 h-24 bg-primary-blue/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-2xl group-hover:bg-primary-blue/20 transition-colors" />
 
                     <CardHeader className="relative z-10 pb-2 p-8">
-                        <CardTitle className="text-2xl font-bold tracking-tight text-slate-900">Need Help?</CardTitle>
+                        <CardTitle className="text-2xl font-semibold tracking-tight text-slate-900">Need Help?</CardTitle>
                     </CardHeader>
                     <CardContent className="text-slate-600 text-sm space-y-8 relative z-10 p-8 pt-0">
-                        <p className="font-medium leading-relaxed">Our expert agents are ready to assist you with finding the exact parts for your vehicle.</p>
+                        <p className="font-normal leading-relaxed">Our expert agents are ready to assist you with finding the exact parts for your vehicle.</p>
                         <Button
                             onClick={() => router.push('/contact')}
-                            className="w-full bg-primary-blue text-white hover:bg-blue-700 font-bold uppercase tracking-widest text-xs h-14 rounded-2xl shadow-xl shadow-blue-500/20 border-0 transition-all active:scale-95"
+                            className="w-full bg-primary-blue text-white hover:bg-blue-700 font-semibold uppercase tracking-widest text-xs h-14 rounded-2xl shadow-xl shadow-blue-500/20 border-0 transition-all active:scale-95"
                         >
                             Contact Support
                         </Button>
@@ -531,8 +551,8 @@ export default function CustomerDashboard() {
                                 <div className="p-6 bg-slate-50/50 rounded-3xl border border-slate-100/50 space-y-4">
                                     <div className="flex items-center justify-between">
                                         <div className="space-y-2">
-                                            <p className="text-[10px] font-semibold text-slate-600 uppercase tracking-[0.2em]">Sourcing Progress</p>
-                                            <Badge className={cn("w-fit rounded-lg px-4 py-1.5 border-none shadow-sm font-semibold text-[10px] uppercase tracking-[0.15em]", getStatusColor(selectedRequest?.status))}>
+                                            <p className="text-[10px] font-medium text-slate-600 uppercase tracking-[0.2em]">Sourcing Progress</p>
+                                            <Badge className={cn("w-fit rounded-lg px-4 py-1.5 border-none shadow-sm font-medium text-[10px] uppercase tracking-[0.15em]", getStatusColor(selectedRequest?.status))}>
                                                 {selectedRequest?.status}
                                             </Badge>
                                         </div>
@@ -546,19 +566,19 @@ export default function CustomerDashboard() {
                                     <div className="p-6 bg-slate-50/30 rounded-3xl border border-slate-100/50 space-y-8">
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div className="p-5 bg-white rounded-2xl border border-slate-100/50 shadow-sm space-y-1">
-                                                <p className="text-[10px] font-semibold text-slate-600 uppercase tracking-[0.2em]">Item price</p>
+                                                <p className="text-[10px] font-medium text-slate-600 uppercase tracking-[0.2em]">Item price</p>
                                                 <p className="text-2xl font-semibold text-slate-900 leading-none tracking-tight">${quote.item_price}</p>
                                             </div>
                                             <div className="p-5 bg-white rounded-2xl border border-slate-100/50 shadow-sm space-y-1">
-                                                <p className="text-[10px] font-semibold text-slate-600 uppercase tracking-[0.2em]">Logistics Estimate</p>
-                                                <p className="text-xl font-semibold text-slate-700/80 leading-none tracking-tight">${quote.shipping_cost}</p>
+                                                <p className="text-[10px] font-medium text-slate-600 uppercase tracking-[0.2em]">Logistics Estimate</p>
+                                                <p className="text-xl font-medium text-slate-700/80 leading-none tracking-tight">${quote.shipping_cost}</p>
                                             </div>
                                         </div>
                                         <div className="pt-4">
                                             <div className="p-8 bg-slate-950 rounded-2xl shadow-xl relative overflow-hidden group">
                                                 <div className="absolute inset-0 bg-primary-orange/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                                                 <div className="space-y-2 relative z-10">
-                                                    <p className="text-[10px] font-semibold text-primary-orange uppercase tracking-[0.25em]">Total Value</p>
+                                                    <p className="text-[10px] font-medium text-primary-orange uppercase tracking-[0.25em]">Total Value</p>
                                                     <p className="text-5xl font-semibold text-white tracking-tighter leading-none">${quote.total_amount}</p>
                                                 </div>
                                             </div>
@@ -580,8 +600,8 @@ export default function CustomerDashboard() {
 
                                 {quote?.notes && (
                                     <div className="p-6 bg-slate-50/20 rounded-3xl border border-slate-100/50 space-y-3">
-                                        <p className="text-[10px] font-semibold text-slate-600 uppercase tracking-[0.2em]">Agent Notes</p>
-                                        <div className="text-base font-medium text-slate-600 leading-relaxed italic max-w-2xl">
+                                        <p className="text-[10px] font-medium text-slate-600 uppercase tracking-[0.2em]">Agent Notes</p>
+                                        <div className="text-base font-normal text-slate-600 leading-relaxed italic max-w-2xl">
                                             "{quote.notes}"
                                         </div>
                                     </div>

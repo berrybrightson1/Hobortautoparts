@@ -19,6 +19,7 @@ export default function CustomerTrackingPage() {
     const router = useRouter()
     const [shipments, setShipments] = useState<any[]>([])
     const [isLoading, setIsLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
     const [searchTerm, setSearchTerm] = useState('')
     const [debouncedSearch, setDebouncedSearch] = useState('')
 
@@ -29,6 +30,7 @@ export default function CustomerTrackingPage() {
     const fetchShipments = async () => {
         if (!user) return
         setIsLoading(true)
+        setError(null)
         try {
             const { data, error } = await supabase
                 .from('shipments')
@@ -48,6 +50,7 @@ export default function CustomerTrackingPage() {
             setShipments(data || [])
         } catch (error: any) {
             console.error("Error fetching shipments:", error)
+            setError(error.message || "Failed to load shipments")
             toast.error("Tracking Offline", { description: "Could not sync your shipment status." })
         } finally {
             setIsLoading(false)
@@ -80,8 +83,8 @@ export default function CustomerTrackingPage() {
         <div className="space-y-8 animate-in fade-in duration-700">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div className="space-y-1">
-                    <h2 className="text-4xl md:text-5xl font-bold tracking-tighter text-slate-900 leading-none">Track Orders</h2>
-                    <p className="text-slate-500 font-medium text-lg pt-2">Real-time logistics and shipment monitoring for your parts.</p>
+                    <h2 className="text-4xl md:text-5xl font-semibold tracking-tighter text-slate-900 leading-none">Track Orders</h2>
+                    <p className="text-slate-500 font-normal text-lg pt-2">Real-time logistics and shipment monitoring for your parts.</p>
                 </div>
                 <Button variant="outline" onClick={fetchShipments} className="rounded-xl border-slate-200">
                     <RefreshCw className={cn("mr-2 h-4 w-4", isLoading && "animate-spin")} /> Update Live
@@ -100,7 +103,20 @@ export default function CustomerTrackingPage() {
             {isLoading ? (
                 <div className="h-[40vh] flex flex-col items-center justify-center space-y-4">
                     <Loader2 className="h-10 w-10 animate-spin text-primary-orange" />
-                    <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Syncing Logistics...</p>
+                    <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">Syncing Logistics...</p>
+                </div>
+            ) : error ? (
+                <div className="h-[40vh] flex flex-col items-center justify-center space-y-6 text-center">
+                    <div className="h-20 w-20 bg-red-50 rounded-3xl flex items-center justify-center shadow-sm border border-red-100">
+                        <Activity className="h-10 w-10 text-red-500" />
+                    </div>
+                    <div className="space-y-2">
+                        <h3 className="text-xl font-semibold text-slate-900">Tracking Unavailable</h3>
+                        <p className="text-slate-500 text-sm max-w-sm mx-auto">{error}</p>
+                    </div>
+                    <Button onClick={fetchShipments} variant="outline" className="rounded-xl h-12 px-8 border-red-200 text-red-700 hover:bg-red-50">
+                        <RefreshCw className="mr-2 h-4 w-4" /> Retry Sync
+                    </Button>
                 </div>
             ) : filteredShipments.length > 0 ? (
                 <div className="grid gap-6">
@@ -113,14 +129,14 @@ export default function CustomerTrackingPage() {
                                     </div>
                                     <div className="flex-1 space-y-2 min-w-0 w-full text-center md:text-left">
                                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                                            <h3 className="text-2xl font-bold tracking-tight text-slate-900 truncate uppercase tracking-widest">
+                                            <h3 className="text-2xl font-semibold tracking-tight text-slate-900 truncate uppercase tracking-widest">
                                                 #{shipment.tracking_number}
                                             </h3>
-                                            <Badge className="w-fit mx-auto md:mx-0 px-4 py-1.5 bg-blue-50 text-blue-600 rounded-lg border-none shadow-sm font-semibold text-[10px] uppercase tracking-widest">
+                                            <Badge className="w-fit mx-auto md:mx-0 px-4 py-1.5 bg-blue-50 text-blue-600 rounded-lg border-none shadow-sm font-medium text-[10px] uppercase tracking-widest">
                                                 {shipment.status.replace(/_/g, ' ')}
                                             </Badge>
                                         </div>
-                                        <p className="text-sm font-bold text-slate-500 truncate">
+                                        <p className="text-sm font-semibold text-slate-500 truncate">
                                             {shipment.orders?.quotes?.sourcing_requests?.part_name || 'Vehicle Part Shipment'}
                                         </p>
                                         <div className="flex items-center justify-center md:justify-start gap-4 text-[10px] uppercase font-black tracking-tighter text-slate-400">
@@ -160,7 +176,7 @@ export default function CustomerTrackingPage() {
                             <Package className="h-10 w-10 text-slate-300" />
                         </div>
                         <div className="space-y-2">
-                            <h3 className="text-2xl font-bold tracking-tight text-slate-900">No active shipments</h3>
+                            <h3 className="text-2xl font-semibold tracking-tight text-slate-900">No active shipments</h3>
                             <p className="text-slate-500 text-lg max-w-sm">Once your parts are in transit, you can track their journey here in real-time.</p>
                         </div>
                     </CardContent>
@@ -177,8 +193,8 @@ export default function CustomerTrackingPage() {
                         <div className="h-12 w-12 bg-slate-50 rounded-2xl flex items-center justify-center">
                             <item.icon className="h-6 w-6 text-slate-400" />
                         </div>
-                        <h4 className="text-lg font-bold text-slate-900">{item.title}</h4>
-                        <p className="text-sm text-slate-500 leading-relaxed font-medium">{item.text}</p>
+                        <h4 className="text-lg font-semibold text-slate-900">{item.title}</h4>
+                        <p className="text-sm text-slate-500 leading-relaxed font-normal">{item.text}</p>
                     </div>
                 ))}
             </div>

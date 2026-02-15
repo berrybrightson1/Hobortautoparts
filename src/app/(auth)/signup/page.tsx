@@ -1,9 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { usePortalStore } from "@/lib/store"
+import { useAuth } from "@/components/auth/auth-provider"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { PasswordInput } from "@/components/ui/password-input"
@@ -18,12 +19,29 @@ export default function SignupPage() {
     const { setRole } = usePortalStore()
     const [isLoading, setIsLoading] = useState(false)
     const [activeTab, setActiveTab] = useState("customer")
+    const { profile, loading } = useAuth() // Access global auth state
     const [firstName, setFirstName] = useState("")
     const [lastName, setLastName] = useState("")
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [phoneNumber, setPhoneNumber] = useState("")
     const [company, setCompany] = useState("")
+
+    // Auto-redirect once AuthProvider fetches the role/profile
+    useEffect(() => {
+        if (loading) return
+
+        if (profile?.role) {
+            const userRole = profile.role
+
+            // Sync store
+            setRole(userRole)
+
+            if (userRole === 'admin') router.push("/portal/admin")
+            else if (userRole === 'agent') router.push("/portal/agent")
+            else router.push("/portal/customer")
+        }
+    }, [profile, loading, router, setRole])
 
     async function onSubmit(event: React.SyntheticEvent) {
         event.preventDefault()
@@ -66,11 +84,8 @@ export default function SignupPage() {
 
             setRole(activeTab === 'agent' ? 'agent' : 'customer')
 
-            if (activeTab === 'agent') {
-                router.push("/portal/agent")
-            } else {
-                router.push("/portal/customer")
-            }
+            // Redirect handled by useEffect once profile syncs
+
         } catch (error: any) {
             toast.error("Signup failed", {
                 description: error.message || "An error occurred. Please try again."
