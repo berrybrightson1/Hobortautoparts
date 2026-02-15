@@ -35,17 +35,25 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { Search, Filter, MoreHorizontal, Plus, Truck, MapPin, Package, Calendar, Loader2, Plane, Ship, CheckCircle2, AlertCircle, RefreshCw } from "lucide-react"
+import { Search, Filter, MoreHorizontal, Plus, Truck, MapPin, Package, Calendar, Loader2, Plane, Ship, CheckCircle2, AlertCircle, RefreshCw, Clock } from "lucide-react"
 import { useState, useEffect } from "react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
-import { getShipments, createShipment, updateShipmentStatus, searchOrdersForShipment } from "@/app/actions/shipment-actions"
+import { getShipments, createShipment, updateShipmentStatus, searchOrdersForShipment, getShipmentEvents } from "@/app/actions/shipment-actions"
+import { ShipmentTimeline } from "@/components/portal/shipment-timeline"
+import { SearchBar } from "@/components/portal/search-bar"
+import { Pagination } from "@/components/portal/pagination"
 
 export default function AdminShipmentsPage() {
     const [searchTerm, setSearchTerm] = useState('')
+    const [debouncedSearch, setDebouncedSearch] = useState('')
     const [shipments, setShipments] = useState<any[]>([])
     const [isLoading, setIsLoading] = useState(true)
+
+    // Pagination state
+    const [currentPage, setCurrentPage] = useState(1)
+    const [pageSize] = useState(20)
     const [isCreateOpen, setIsCreateOpen] = useState(false)
     const [isCreating, setIsCreating] = useState(false)
     const [updatingId, setUpdatingId] = useState<string | null>(null)
@@ -64,6 +72,11 @@ export default function AdminShipmentsPage() {
     const [selectedOrder, setSelectedOrder] = useState<any>(null)
     const [isSearchingOrders, setIsSearchingOrders] = useState(false)
 
+    // Timeline Modal State
+    const [viewingShipment, setViewingShipment] = useState<any>(null)
+    const [shipmentEvents, setShipmentEvents] = useState<any[]>([])
+    const [isLoadingEvents, setIsLoadingEvents] = useState(false)
+
     const fetchData = async () => {
         setIsLoading(true)
         const result = await getShipments()
@@ -79,23 +92,32 @@ export default function AdminShipmentsPage() {
         fetchData()
     }, [])
 
-    // Debounced Order Search
+    // Debounced Order Search + Auto-fetch on dialog open
     useEffect(() => {
         const delayDebounceFn = setTimeout(async () => {
-            if (orderSearchQuery.length > 1) {
+            // Auto-fetch when dialog opens with empty query, or when user types
+            if (isCreateOpen && orderSearchQuery.length === 0) {
+                setIsSearchingOrders(true)
+                const result = await searchOrdersForShipment('')
+                if (result.success) {
+                    setFoundOrders(result.data || [])
+                }
+                setIsSearchingOrders(false)
+            } else if (orderSearchQuery.length > 1) {
                 setIsSearchingOrders(true)
                 const result = await searchOrdersForShipment(orderSearchQuery)
                 if (result.success) {
                     setFoundOrders(result.data || [])
                 }
                 setIsSearchingOrders(false)
-            } else {
+            } else if (orderSearchQuery.length === 0 && !isCreateOpen) {
                 setFoundOrders([])
             }
         }, 500)
 
         return () => clearTimeout(delayDebounceFn)
-    }, [orderSearchQuery])
+    }, [orderSearchQuery, isCreateOpen])
+
 
     const handleCreate = async () => {
         if (!selectedOrder || !newShipment.tracking_number) {
@@ -104,6 +126,17 @@ export default function AdminShipmentsPage() {
         }
 
         setIsCreating(true)
+
+        // Hard timeout to prevent "loading forever"
+        const timeoutId = setTimeout(() => {
+            if (isCreating) {
+                setIsCreating(false)
+                toast.error("Low Network or Database Latency", {
+                    description: "The shipment is taking longer than expected to initialize. Please check the logs."
+                })
+            }
+        }, 30000)
+
         const result = await createShipment({
             ...newShipment,
             order_id: selectedOrder.id,
@@ -128,10 +161,41 @@ export default function AdminShipmentsPage() {
             toast.error("Failed to create shipment", { description: result.error })
         }
         setIsCreating(false)
+        clearTimeout(timeoutId)
+    }
+
+    const handleViewTimeline = async (shipment: any) => {
+        setViewingShipment(shipment)
+        setShipmentEvents([])
+        setIsLoadingEvents(true)
+
+        try {
+            const result = await getShipmentEvents(shipment.id)
+            if (result.success) {
+                setShipmentEvents(result.data as any[])
+            } else {
+                toast.error("Failed to load events")
+            }
+        } catch (error) {
+            console.error("Timeline Error", error)
+        } finally {
+            setIsLoadingEvents(false)
+        }
     }
 
     const handleStatusUpdate = async (id: string, status: any, description: string) => {
         setUpdatingId(id)
+
+        // Hard timeout to prevent "loading forever"
+        const timeoutId = setTimeout(() => {
+            if (updatingId === id) {
+                setUpdatingId(null)
+                toast.error("Update Latency", {
+                    description: "The status update is taking longer than expected. Please wait a moment."
+                })
+            }
+        }, 30000)
+
         const result = await updateShipmentStatus(id, status, 'Admin Console', description)
         if (result.success) {
             toast.success(`Status updated to ${status.replace(/_/g, ' ')}`)
@@ -140,12 +204,31 @@ export default function AdminShipmentsPage() {
             toast.error("Update failed", { description: result.error })
         }
         setUpdatingId(null)
+        clearTimeout(timeoutId)
     }
 
-    const filteredShipments = shipments.filter(s =>
-        s.tracking_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        s.orders?.profiles?.full_name?.toLowerCase().includes(searchTerm.toLowerCase())
-    )
+    // Debounce search input
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(searchTerm)
+            setCurrentPage(1) // Reset to first page on new search
+        }, 300)
+        return () => clearTimeout(timer)
+    }, [searchTerm])
+
+    const filteredShipments = shipments.filter(s => {
+        const matchesSearch = !debouncedSearch ||
+            s.tracking_number?.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+            s.orders?.profiles?.full_name?.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+            s.orders?.id?.toLowerCase().includes(debouncedSearch.toLowerCase())
+
+        return matchesSearch
+    })
+
+    const totalPages = Math.ceil(filteredShipments.length / pageSize)
+    const startIndex = (currentPage - 1) * pageSize
+    const paginatedShipments = filteredShipments.slice(startIndex, startIndex + pageSize)
+
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500 max-w-7xl mx-auto pb-10">
@@ -174,15 +257,12 @@ export default function AdminShipmentsPage() {
 
             <Card className="border-slate-100 shadow-xl shadow-slate-200/40 rounded-3xl overflow-hidden bg-white">
                 <CardHeader className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-50 p-6">
-                    <div className="relative flex-1 md:max-w-md">
-                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                        <Input
-                            placeholder="Search by Tracking #, Customer Name..."
-                            className="pl-10 h-11 rounded-2xl border-slate-200 bg-slate-50 focus:bg-white transition-all font-medium"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                    </div>
+                    <SearchBar
+                        value={searchTerm}
+                        onChange={setSearchTerm}
+                        placeholder="Search by Tracking #, Customer Name, Order ID..."
+                        className="flex-1 md:max-w-md"
+                    />
                 </CardHeader>
                 <CardContent className="p-0">
                     <Table>
@@ -203,8 +283,8 @@ export default function AdminShipmentsPage() {
                                         <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Loading Logistics Data...</p>
                                     </TableCell>
                                 </TableRow>
-                            ) : filteredShipments.length > 0 ? (
-                                filteredShipments.map((shipment) => (
+                            ) : paginatedShipments.length > 0 ? (
+                                paginatedShipments.map((shipment) => (
                                     <TableRow key={shipment.id} className="hover:bg-slate-50/50 transition-colors border-slate-50 group">
                                         <TableCell className="pl-6 py-4">
                                             <div className="flex items-center gap-3">
@@ -256,6 +336,9 @@ export default function AdminShipmentsPage() {
                                                 <DropdownMenuContent align="end" className="w-56 rounded-xl p-2 shadow-xl border-slate-100">
                                                     <DropdownMenuLabel className="text-[10px] font-bold uppercase tracking-widest text-slate-400 px-2 py-1.5">Update Status</DropdownMenuLabel>
                                                     <DropdownMenuSeparator className="bg-slate-50" />
+                                                    <DropdownMenuItem onClick={() => handleViewTimeline(shipment)} className="text-xs font-bold px-2 py-2 rounded-lg cursor-pointer hover:bg-slate-50">
+                                                        <Clock className="mr-2 h-4 w-4 text-slate-500" /> View Timeline
+                                                    </DropdownMenuItem>
                                                     <DropdownMenuItem onClick={() => handleStatusUpdate(shipment.id, 'in_transit_air', 'In Transit via Air')} className="text-xs font-bold px-2 py-2 rounded-lg cursor-pointer hover:bg-slate-50">
                                                         <Plane className="mr-2 h-4 w-4 text-sky-500" /> In Transit (Air)
                                                     </DropdownMenuItem>
@@ -293,6 +376,17 @@ export default function AdminShipmentsPage() {
                             )}
                         </TableBody>
                     </Table>
+                    {filteredShipments.length > pageSize && (
+                        <div className="p-4 border-t border-slate-50">
+                            <Pagination
+                                currentPage={currentPage}
+                                totalPages={totalPages}
+                                onPageChange={setCurrentPage}
+                                totalCount={filteredShipments.length}
+                                pageSize={pageSize}
+                            />
+                        </div>
+                    )}
                 </CardContent>
             </Card>
 
@@ -327,6 +421,7 @@ export default function AdminShipmentsPage() {
                                                     key={order.id}
                                                     onClick={() => {
                                                         setSelectedOrder(order)
+                                                        setNewShipment({ ...newShipment, tracking_number: order.id })
                                                         setOrderSearchQuery('')
                                                         setFoundOrders([])
                                                     }}
@@ -356,7 +451,7 @@ export default function AdminShipmentsPage() {
                                 <Label className="text-xs font-bold text-slate-500 uppercase tracking-wide ml-1">Tracking Number</Label>
                                 <Input
                                     placeholder="TRK-123456789"
-                                    className="rounded-xl bg-slate-50 border-slate-200 font-mono text-sm"
+                                    className="h-11 rounded-xl bg-slate-50 border-slate-200 font-mono text-sm"
                                     value={newShipment.tracking_number}
                                     onChange={(e) => setNewShipment({ ...newShipment, tracking_number: e.target.value })}
                                 />
@@ -367,10 +462,10 @@ export default function AdminShipmentsPage() {
                                     value={newShipment.freight_type}
                                     onValueChange={(val) => setNewShipment({ ...newShipment, freight_type: val })}
                                 >
-                                    <SelectTrigger className="rounded-xl bg-slate-50 border-slate-200">
+                                    <SelectTrigger className="h-11 rounded-xl bg-slate-50 border-slate-200">
                                         <SelectValue />
                                     </SelectTrigger>
-                                    <SelectContent>
+                                    <SelectContent className="rounded-xl">
                                         <SelectItem value="air">Air Freight</SelectItem>
                                         <SelectItem value="sea">Sea Freight</SelectItem>
                                     </SelectContent>
@@ -382,7 +477,7 @@ export default function AdminShipmentsPage() {
                             <div className="space-y-2">
                                 <Label className="text-xs font-bold text-slate-500 uppercase tracking-wide ml-1">Origin Hub</Label>
                                 <Input
-                                    className="rounded-xl bg-slate-50 border-slate-200"
+                                    className="h-11 rounded-xl bg-slate-50 border-slate-200"
                                     value={newShipment.origin_hub}
                                     onChange={(e) => setNewShipment({ ...newShipment, origin_hub: e.target.value })}
                                 />
@@ -390,7 +485,7 @@ export default function AdminShipmentsPage() {
                             <div className="space-y-2">
                                 <Label className="text-xs font-bold text-slate-500 uppercase tracking-wide ml-1">Destination Hub</Label>
                                 <Input
-                                    className="rounded-xl bg-slate-50 border-slate-200"
+                                    className="h-11 rounded-xl bg-slate-50 border-slate-200"
                                     value={newShipment.destination_hub}
                                     onChange={(e) => setNewShipment({ ...newShipment, destination_hub: e.target.value })}
                                 />
@@ -401,7 +496,7 @@ export default function AdminShipmentsPage() {
                             <Label className="text-xs font-bold text-slate-500 uppercase tracking-wide ml-1">Estimated Arrival</Label>
                             <Input
                                 type="date"
-                                className="rounded-xl bg-slate-50 border-slate-200"
+                                className="h-11 rounded-xl bg-slate-50 border-slate-200"
                                 value={newShipment.estimated_arrival}
                                 onChange={(e) => setNewShipment({ ...newShipment, estimated_arrival: e.target.value })}
                             />
@@ -416,6 +511,41 @@ export default function AdminShipmentsPage() {
                         >
                             {isCreating ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : <Truck className="h-5 w-5 mr-2" />}
                             Initialize Shipment
+                        </Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+            {/* Timeline Dialog */}
+            <Dialog open={!!viewingShipment} onOpenChange={(open) => !open && setViewingShipment(null)}>
+                <DialogContent className="sm:max-w-[600px] p-0 overflow-hidden border-0 shadow-2xl rounded-3xl bg-white gap-0">
+                    <DialogHeader className="p-6 pb-4 bg-white border-b border-slate-50">
+                        <DialogTitle className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-3">
+                            <Truck className="h-5 w-5 text-slate-400" />
+                            Tracking History
+                        </DialogTitle>
+                        <DialogDescription className="text-slate-500 font-medium text-xs font-mono">
+                            REF: {viewingShipment?.tracking_number}
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <div className="p-6 max-h-[60vh] overflow-y-auto">
+                        {isLoadingEvents ? (
+                            <div className="flex justify-center py-12">
+                                <Loader2 className="h-8 w-8 animate-spin text-slate-300" />
+                            </div>
+                        ) : (
+                            <ShipmentTimeline events={shipmentEvents} />
+                        )}
+                    </div>
+
+                    <div className="p-4 bg-slate-50 border-t border-slate-100 flex justify-end">
+                        <Button
+                            onClick={() => setViewingShipment(null)}
+                            variant="outline"
+                            className="rounded-xl border-slate-200 text-xs font-bold uppercase tracking-wider"
+                        >
+                            Close
                         </Button>
                     </div>
                 </DialogContent>

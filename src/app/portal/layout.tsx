@@ -20,7 +20,9 @@ import {
     Search,
     Loader2,
     UserCircle,
-    Truck
+    Truck,
+    Info,
+    TrendingUp
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -34,11 +36,16 @@ import { toast } from "sonner"
 const NAV_ITEMS = {
     customer: [
         { name: "Dashboard", href: "/portal/customer", icon: LayoutDashboard },
+        { name: "Track Orders", href: "/portal/customer/tracking", icon: Truck },
+        { name: "Platform Guide", href: "/marketing/guide", icon: Info },
         { name: "New Request", href: "/quote", icon: Plus },
         { name: "My Account", href: "/portal/profile", icon: UserCircle },
     ],
     agent: [
-        { name: "Active Requests", href: "/portal/agent", icon: PackageSearch },
+        { name: "Dashboard", href: "/portal/agent/dashboard", icon: LayoutDashboard },
+        { name: "Sourcing Pipeline", href: "/portal/agent", icon: PackageSearch },
+        { name: "Order Pipeline", href: "/portal/agent/orders", icon: ShoppingBag },
+        { name: "Performance Hub", href: "/portal/agent/performance", icon: TrendingUp },
         { name: "My Account", href: "/portal/profile", icon: UserCircle },
     ],
     admin: [

@@ -20,7 +20,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Search, Filter, MoreHorizontal, Package, CheckCircle2, Clock, AlertCircle, Inbox, Loader2, ArrowRight, DollarSign, Calculator, Info, Users, Truck, RefreshCw, Copy as CopyIcon } from "lucide-react"
+import { Search, Filter, MoreHorizontal, Package, CheckCircle2, Clock, AlertCircle, Inbox, Loader2, ArrowRight, DollarSign, Calculator, Info, Users, Truck, RefreshCw, Copy as CopyIcon, X, MessageSquare } from "lucide-react"
 import { useState, useEffect, useMemo } from "react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
@@ -39,27 +39,45 @@ import { Label } from "@/components/ui/label"
 import { useAuth } from "@/components/auth/auth-provider"
 import { useRouter } from "next/navigation"
 import { sendNotification } from "@/lib/notifications"
+import { FeedbackPanel } from "@/components/portal/feedback-panel"
+import { ResponsiveModal } from "@/components/ui/responsive-modal"
+import { Activity } from "lucide-react"
+import { SearchBar } from "@/components/portal/search-bar"
+import { Pagination } from "@/components/portal/pagination"
 
 interface SourcingRequest {
     id: string
     user_id: string
+    agent_id: string | null
     vin: string | null
     part_name: string
     vehicle_info: string | null
-    status: 'pending' | 'processing' | 'quoted' | 'shipped' | 'completed' | 'cancelled'
+    status: 'pending' | 'processing' | 'quoted' | 'shipped' | 'completed' | 'cancelled' | 'unavailable'
+    part_condition?: string
     created_at: string
     profiles?: {
         full_name: string | null
     }
+    quotes?: any[]
 }
 
 export default function SourcingRequestsPage() {
     const { user } = useAuth()
     const router = useRouter()
+    const searchParams = useSearchParams()
+    const requestIdParam = searchParams.get('id')
     const [searchTerm, setSearchTerm] = useState('')
+    const [debouncedSearch, setDebouncedSearch] = useState('')
     const [requests, setRequests] = useState<SourcingRequest[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [updatingId, setUpdatingId] = useState<string | null>(null)
+    const [isAcceptingProxy, setIsAcceptingProxy] = useState(false)
+    const [isDetailsOpen, setIsDetailsOpen] = useState(false)
+
+    // Pagination state
+    const [currentPage, setCurrentPage] = useState(1)
+    const [pageSize] = useState(20)
+    const totalCount = requests.length
 
     // Quote Modal State
     const [selectedRequest, setSelectedRequest] = useState<SourcingRequest | null>(null)
@@ -90,7 +108,8 @@ export default function SourcingRequestsPage() {
                     *,
                     profiles (
                         full_name
-                    )
+                    ),
+                    quotes (*)
                 `)
                 .order('created_at', { ascending: false })
 
@@ -116,6 +135,42 @@ export default function SourcingRequestsPage() {
     useEffect(() => {
         fetchRequests()
     }, [])
+
+    useEffect(() => {
+        if (requestIdParam && requests.length > 0) {
+            const request = requests.find(r => r.id === requestIdParam)
+            if (request) {
+                setSelectedRequest(request)
+                setIsDetailsOpen(true)
+            }
+        }
+    }, [requestIdParam, requests])
+
+    // Debounce search input
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(searchTerm)
+        }, 300)
+        return () => clearTimeout(timer)
+    }, [searchTerm])
+
+    // Filter and paginate requests
+    const filteredRequests = requests.filter((request) => {
+        if (!debouncedSearch) return true
+        const searchLower = debouncedSearch.toLowerCase()
+        return (
+            request.part_name?.toLowerCase().includes(searchLower) ||
+            request.vehicle_info?.toLowerCase().includes(searchLower) ||
+            request.vin?.toLowerCase().includes(searchLower) ||
+            request.profiles?.full_name?.toLowerCase().includes(searchLower) ||
+            request.id?.toLowerCase().includes(searchLower)
+        )
+    })
+
+    const totalPages = Math.ceil(filteredRequests.length / pageSize)
+    const startIndex = (currentPage - 1) * pageSize
+    const paginatedRequests = filteredRequests.slice(startIndex, startIndex + pageSize)
+
 
     const handleAssignment = async (requestId: string, agentId: string) => {
         setUpdatingId(requestId)
@@ -176,6 +231,62 @@ export default function SourcingRequestsPage() {
         }
     }
 
+    const handleAcceptOnBehalf = async () => {
+        if (!selectedRequest || !selectedRequest.quotes?.[0] || !user) return
+
+        setIsAcceptingProxy(true)
+        const quote = selectedRequest.quotes[0]
+
+        // Hard timeout to prevent "loading forever"
+        const timeoutId = setTimeout(() => {
+            if (isAcceptingProxy) {
+                setIsAcceptingProxy(false)
+                toast.error("Proxy Conversion Latency", {
+                    description: "The order is taking longer than expected to process. Please wait a moment."
+                })
+            }
+        }, 30000)
+
+        try {
+            console.log('--- STARTING ADMIN PROXY ORDER CONVERSION ---')
+            // 1. Create the order
+            const { error: orderError } = await supabase
+                .from('orders')
+                .insert({
+                    user_id: selectedRequest.user_id,
+                    quote_id: quote.id,
+                    agent_id: selectedRequest.agent_id,
+                    status: 'paid', // Admin bypass/offline payment
+                    payment_method: 'Manual Payment (Verified by Admin)'
+                })
+
+            if (orderError) throw orderError
+            console.log('--- ADMIN PROXY ORDER CREATED ---')
+
+            // 2. Update the request status
+            const { error: requestError } = await supabase
+                .from('sourcing_requests')
+                .update({ status: 'processing' })
+                .eq('id', selectedRequest.id)
+
+            if (requestError) throw requestError
+            console.log('--- REQUEST UPDATED BY ADMIN PROXY ---')
+
+            toast.success("Order Confirmed on Customer's Behalf", {
+                description: "You have verified and accepted this quote for the client manually."
+            })
+
+            setIsDetailsOpen(false)
+            fetchRequests()
+        } catch (error: any) {
+            console.error("Admin proxy acceptance error:", error)
+            toast.error("Proxy Action Failed", { description: error.message || "A database error occurred." })
+        } finally {
+            clearTimeout(timeoutId)
+            setIsAcceptingProxy(false)
+        }
+    }
+
     const openQuoteModal = (request: SourcingRequest) => {
         setSelectedRequest(request)
         setShowQuoteModal(true)
@@ -189,7 +300,19 @@ export default function SourcingRequestsPage() {
         }
 
         setIsSubmittingQuote(true)
+
+        // Hard timeout to prevent "loading forever" UI
+        const timeoutId = setTimeout(() => {
+            if (isSubmittingQuote) {
+                setIsSubmittingQuote(false)
+                toast.error("Low Network or Database Latency", {
+                    description: "The request is taking longer than expected. Please check your connection and try again."
+                })
+            }
+        }, 30000)
+
         try {
+            console.log('--- STARTING QUOTE SUBMISSION ---')
             // 1. Create the quote
             const { data: quote, error: quoteError } = await supabase
                 .from('quotes')
@@ -207,6 +330,7 @@ export default function SourcingRequestsPage() {
                 .single()
 
             if (quoteError) throw quoteError
+            console.log('--- QUOTE CREATED ---')
 
             // 2. Update the request status
             const { error: requestError } = await supabase
@@ -215,14 +339,20 @@ export default function SourcingRequestsPage() {
                 .eq('id', selectedRequest.id)
 
             if (requestError) throw requestError
+            console.log('--- REQUEST UPDATED ---')
 
             // Notify the customer of the new quote
-            await sendNotification({
-                userId: selectedRequest.user_id,
-                title: 'New Quote Available',
-                message: `An official quote has been generated for your request: ${selectedRequest.part_name}.`,
-                type: 'order'
-            })
+            try {
+                await sendNotification({
+                    userId: selectedRequest.user_id,
+                    title: 'New Quote Available',
+                    message: `An official quote has been generated for your request: ${selectedRequest.part_name}.`,
+                    type: 'order'
+                })
+                console.log('--- NOTIFICATION SENT ---')
+            } catch (notifyErr) {
+                console.warn('Non-blocking notification failure:', notifyErr)
+            }
 
             toast.success("Quote generated successfully!", {
                 description: "The customer will be notified of the new quote."
@@ -230,25 +360,17 @@ export default function SourcingRequestsPage() {
             setShowQuoteModal(false)
             fetchRequests()
 
-            // Trigger a simulated notification logic here if needed
-            // (Database triggers typically handle actual notifications)
-
         } catch (error: any) {
-            console.error('Quote submission error:', error)
+            console.error('Quote submission fatal error:', error)
             toast.error("Failed to generate quote", {
-                description: error.message
+                description: error.message || "A database error occurred."
             })
         } finally {
+            clearTimeout(timeoutId)
             setIsSubmittingQuote(false)
         }
     }
 
-    const filteredRequests = requests.filter(request =>
-        request.part_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        request.vehicle_info?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        request.profiles?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        request.vin?.toLowerCase().includes(searchTerm.toLowerCase())
-    )
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500 max-w-7xl mx-auto pb-10">
@@ -274,15 +396,12 @@ export default function SourcingRequestsPage() {
 
             <Card className="border-slate-100 shadow-xl shadow-slate-200/40 rounded-3xl overflow-hidden">
                 <CardHeader className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-50 bg-white p-6">
-                    <div className="relative flex-1 md:max-w-md">
-                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                        <Input
-                            placeholder="Search requests by part, vehicle, or customer..."
-                            className="pl-10 h-11 rounded-2xl border-slate-200 bg-slate-50 focus:bg-white transition-all"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                    </div>
+                    <SearchBar
+                        value={searchTerm}
+                        onChange={setSearchTerm}
+                        placeholder="Search by part, vehicle, customer, or VIN..."
+                        className="flex-1 md:max-w-md"
+                    />
                 </CardHeader>
                 <CardContent className="p-0">
                     <div className="overflow-x-auto">
@@ -293,6 +412,7 @@ export default function SourcingRequestsPage() {
                                     <TableHead className="font-semibold text-slate-500 text-xs uppercase tracking-wider h-12">Customer</TableHead>
                                     <TableHead className="font-semibold text-slate-500 text-xs uppercase tracking-wider h-12">Part / Vehicle</TableHead>
                                     <TableHead className="font-semibold text-slate-500 text-xs uppercase tracking-wider h-12">Status</TableHead>
+                                    <TableHead className="font-semibold text-slate-500 text-xs uppercase tracking-wider h-12">Messages</TableHead>
                                     <TableHead className="text-right font-semibold text-slate-500 text-xs uppercase tracking-wider pr-6 h-12">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
@@ -306,8 +426,8 @@ export default function SourcingRequestsPage() {
                                             </div>
                                         </TableCell>
                                     </TableRow>
-                                ) : filteredRequests.length > 0 ? (
-                                    filteredRequests.map((request) => (
+                                ) : paginatedRequests.length > 0 ? (
+                                    paginatedRequests.map((request) => (
                                         <TableRow key={request.id} className="hover:bg-blue-50/30 transition-colors border-slate-50 group cursor-pointer">
                                             <TableCell className="text-slate-500 text-xs font-medium pl-6 py-4">
                                                 {format(new Date(request.created_at), 'MMM dd, yyyy')}
@@ -336,6 +456,21 @@ export default function SourcingRequestsPage() {
                                                     {request.status}
                                                 </Badge>
                                             </TableCell>
+                                            <TableCell className="py-4">
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation()
+                                                        setSelectedRequest(request)
+                                                        setIsDetailsOpen(true)
+                                                    }}
+                                                    className="h-9 px-3 rounded-xl hover:bg-blue-50 text-blue-600 hover:text-blue-700 font-bold text-[10px] uppercase tracking-widest flex items-center gap-2 border border-transparent hover:border-blue-100 transition-all"
+                                                >
+                                                    <MessageSquare className="h-4 w-4" />
+                                                    Chat
+                                                </Button>
+                                            </TableCell>
                                             <TableCell className="text-right pr-6 py-4">
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
@@ -348,6 +483,21 @@ export default function SourcingRequestsPage() {
                                                         </Button>
                                                     </DropdownMenuTrigger>
                                                     <DropdownMenuContent align="end" className="w-56 p-2 bg-white/95 backdrop-blur-sm border-slate-200 shadow-xl shadow-slate-200/50 rounded-2xl">
+                                                        <DropdownMenuItem
+                                                            onClick={() => {
+                                                                setSelectedRequest(request)
+                                                                setIsDetailsOpen(true)
+                                                            }}
+                                                            className="rounded-xl px-3 py-2.5 mb-1 cursor-pointer hover:bg-blue-50 focus:bg-blue-50 text-slate-600 focus:text-blue-700 group transition-colors"
+                                                        >
+                                                            <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center mr-3 group-hover:bg-white group-hover:shadow-sm transition-all">
+                                                                <Info className="h-4 w-4 text-blue-600" />
+                                                            </div>
+                                                            <span className="font-medium">Manage Request</span>
+                                                        </DropdownMenuItem>
+
+                                                        <DropdownMenuSeparator className="my-1 bg-slate-100" />
+
                                                         <DropdownMenuLabel className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-3 py-2">Update Status</DropdownMenuLabel>
 
                                                         <DropdownMenuItem
@@ -423,138 +573,220 @@ export default function SourcingRequestsPage() {
                             </TableBody>
                         </Table>
                     </div>
+                    {filteredRequests.length > pageSize && (
+                        <div className="p-4 border-t border-slate-50 bg-white">
+                            <Pagination
+                                currentPage={currentPage}
+                                totalPages={totalPages}
+                                onPageChange={setCurrentPage}
+                                totalCount={filteredRequests.length}
+                                pageSize={pageSize}
+                            />
+                        </div>
+                    )}
                 </CardContent>
             </Card>
 
+            {/* Manage Request Modal */}
+            <ResponsiveModal
+                open={isDetailsOpen}
+                onOpenChange={setIsDetailsOpen}
+                title="Manage Sourcing Request"
+                description={`Request ID: ${selectedRequest?.id.slice(0, 8)}`}
+                size="xl"
+            >
+                <div className="w-full bg-white p-1">
+                    {/* Body - 2 Column Layout */}
+                    <div className="flex-1">
+                        <div className="flex flex-col lg:flex-row">
+
+                            {/* Left Column: Details (Scrollable) */}
+                            {/* Left Column: Details (Scrollable) */}
+                            <div className="flex-1 p-8 space-y-6 bg-white lg:border-r border-slate-100">
+                                {/* Header / Status Section */}
+                                <div className="p-6 bg-slate-50/50 rounded-3xl border border-slate-100/50 space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <div className="space-y-2">
+                                            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-600">Request Status</p>
+                                            <Badge className={cn("px-3 py-1 rounded-lg font-semibold uppercase tracking-[0.15em] text-[10px] border-none shadow-sm",
+                                                selectedRequest?.status === 'pending' ? "bg-orange-50 text-orange-600" : "bg-blue-50 text-blue-600"
+                                            )}>
+                                                {selectedRequest?.status}
+                                            </Badge>
+                                        </div>
+                                        <div className="h-10 w-10 rounded-xl bg-white flex items-center justify-center border border-slate-100 shadow-sm">
+                                            <Activity className="h-5 w-5 text-slate-400" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Item Info Section */}
+                                <div className="p-6 bg-slate-50/30 rounded-3xl border border-slate-100/50 space-y-6">
+                                    <div className="flex items-start justify-between">
+                                        <div className="space-y-2">
+                                            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-600">Part Description</p>
+                                            <h4 className="text-2xl font-semibold text-slate-900 tracking-tight leading-tight">{selectedRequest?.part_name}</h4>
+                                            {selectedRequest?.part_condition && (
+                                                <Badge variant="outline" className={cn(
+                                                    "mt-2 w-fit font-bold px-2 py-0.5 text-[10px] uppercase tracking-widest border-none",
+                                                    selectedRequest.part_condition === 'New (OEM)' ? "bg-emerald-100 text-emerald-700" :
+                                                        selectedRequest.part_condition === 'Aftermarket' ? "bg-blue-100 text-blue-700" :
+                                                            "bg-amber-100 text-amber-700"
+                                                )}>
+                                                    {selectedRequest.part_condition}
+                                                </Badge>
+                                            )}
+                                        </div>
+                                        <div className="h-12 w-12 bg-white rounded-xl flex items-center justify-center border border-slate-100 shrink-0 shadow-sm">
+                                            <Package className="h-6 w-6 text-primary-orange" />
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="p-5 bg-white rounded-2xl border border-slate-100/50 space-y-2 shadow-sm">
+                                            <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-slate-600">Vehicle Specification</p>
+                                            <p className="text-sm font-medium text-slate-600 leading-relaxed italic">{selectedRequest?.vehicle_info}</p>
+                                        </div>
+                                        <div className="p-5 bg-white rounded-2xl border border-slate-100/50 space-y-2 shadow-sm">
+                                            <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-slate-600">VIN Number</p>
+                                            <div className="h-10 flex items-center px-4 bg-slate-950 rounded-lg shadow-xl">
+                                                <p className="font-mono font-medium text-white tracking-[0.1em] text-[10px]">{selectedRequest?.vin || 'NOT PROVIDED'}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Requester Identity */}
+                                <div className="p-6 bg-blue-50/20 rounded-3xl border border-blue-100/50 space-y-6">
+                                    <div className="flex items-center gap-4">
+                                        <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center text-primary-blue font-semibold text-[10px] shadow-sm">
+                                            {selectedRequest?.profiles?.full_name?.substring(0, 2).toUpperCase()}
+                                        </div>
+                                        <div className="space-y-0.5">
+                                            <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-blue-500">Requester Identity</p>
+                                            <p className="font-semibold text-slate-900 text-lg tracking-tight">{selectedRequest?.profiles?.full_name}</p>
+                                        </div>
+                                    </div>
+
+                                    {/* Action Buttons inside scrollable area */}
+                                    <div className="pt-2 space-y-3">
+                                        <Button
+                                            className="w-full h-14 rounded-xl bg-primary-blue hover:bg-blue-700 text-white font-semibold uppercase tracking-[0.2em] text-[10px] shadow-xl transition-all active:scale-95 group border-none"
+                                            onClick={() => {
+                                                setIsDetailsOpen(false)
+                                                try {
+                                                    openQuoteModal(selectedRequest!)
+                                                } catch (e) {
+                                                    console.error("Failed to open quote modal", e)
+                                                }
+                                            }}
+                                        >
+                                            <span className="flex items-center gap-3">
+                                                Issue Quotation <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                                            </span>
+                                        </Button>
+                                        {/* Proxy Acceptance Button - Only if status is 'quoted' */}
+                                        {selectedRequest?.status === 'quoted' && (
+                                            <Button
+                                                className="w-full h-14 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold uppercase tracking-[0.2em] text-[10px] shadow-xl shadow-emerald-500/20 transition-all active:scale-95 group border-none"
+                                                onClick={handleAcceptOnBehalf}
+                                                disabled={isAcceptingProxy}
+                                            >
+                                                {isAcceptingProxy ? (
+                                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                                ) : (
+                                                    <span className="flex items-center gap-3">
+                                                        Accept on Customer's Behalf <CheckCircle2 className="h-4 w-4 text-emerald-300" />
+                                                    </span>
+                                                )}
+                                            </Button>
+                                        )}
+                                        <Button
+                                            variant="ghost"
+                                            className="w-full h-12 rounded-xl font-semibold uppercase tracking-[0.2em] text-[10px] text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-all border border-slate-100"
+                                            onClick={() => setIsDetailsOpen(false)}
+                                        >
+                                            Return to Requests
+                                        </Button>
+
+                                        {/* Mark Unavailable Button */}
+                                        {['pending', 'processing'].includes(selectedRequest?.status || '') && (
+                                            <Button
+                                                variant="ghost"
+                                                className="w-full h-12 rounded-xl font-semibold uppercase tracking-[0.2em] text-[10px] text-red-500 hover:text-red-700 hover:bg-red-50 transition-all border border-red-50"
+                                                onClick={() => {
+                                                    if (confirm("Are you sure you want to mark this request as Unavailable? This will notify the customer.")) {
+                                                        handleStatusUpdate(selectedRequest!.id, 'unavailable')
+                                                        setIsDetailsOpen(false)
+                                                    }
+                                                }}
+                                            >
+                                                Mark as Unavailable
+                                            </Button>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Right Column: Feedback/Messaging (Synced Height) */}
+                            <div className="lg:w-[500px] bg-white flex flex-col flex-1 lg:h-full overflow-hidden">
+                                {selectedRequest && user && (
+                                    <FeedbackPanel
+                                        requestId={selectedRequest.id}
+                                        currentUserId={user.id}
+                                        isAgent={true}
+                                    />
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ResponsiveModal>
+
             {/* Quote Builder Modal */}
-            <Dialog open={showQuoteModal} onOpenChange={setShowQuoteModal}>
-                <DialogContent className="sm:max-w-[425px] p-0 overflow-hidden border-0 shadow-2xl rounded-3xl bg-white text-slate-900 dark:bg-white dark:text-slate-900 gap-0">
-                    <DialogHeader className="p-6 pb-0">
-                        <div className="flex items-center justify-between">
-                            <DialogTitle className="text-2xl font-bold text-slate-900 tracking-tight">Create Quote</DialogTitle>
-                            <div className="flex items-center gap-2">
-                                <Badge
-                                    variant="outline"
-                                    className="font-mono text-xs cursor-pointer hover:bg-slate-100 transition-colors flex items-center gap-1.5 pr-2.5"
-                                    onClick={() => {
-                                        if (selectedRequest?.id) {
-                                            navigator.clipboard.writeText(selectedRequest.id)
-                                            toast.success("Reference ID copied to clipboard")
-                                        }
-                                    }}
-                                >
-                                    Ref: {selectedRequest?.id.slice(0, 8)}
-                                    <CopyIcon className="h-3 w-3 text-slate-400" />
-                                </Badge>
-                            </div>
-                        </div>
-                        <DialogDescription className="text-slate-500 font-medium text-sm mt-1.5">
-                            Set pricing for <span className="font-semibold text-slate-700">{selectedRequest?.part_name}</span>.
-                        </DialogDescription>
-                    </DialogHeader>
-
-                    <div className="p-6 space-y-6">
-                        {/* Request Summary */}
-                        <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 flex flex-col gap-3">
-                            <div className="flex justify-between items-center text-sm">
-                                <span className="text-slate-500 font-medium">Customer</span>
-                                <span className="font-semibold text-slate-900">{selectedRequest?.profiles?.full_name || 'Anonymous'}</span>
-                            </div>
-                            <div className="h-px bg-slate-200/50" />
-                            <div className="flex justify-between items-center text-sm">
-                                <span className="text-slate-500 font-medium">Vehicle</span>
-                                <span className="font-semibold text-slate-900">{selectedRequest?.vehicle_info || 'N/A'}</span>
-                            </div>
-                        </div>
-
-                        {/* Inputs */}
+            <ResponsiveModal
+                open={showQuoteModal}
+                onOpenChange={setShowQuoteModal}
+                title="Generate Quote"
+                description={`Ref: ${selectedRequest?.id.slice(0, 8)}`}
+            >
+                <div className="flex flex-col w-full max-w-lg mx-auto bg-white overflow-hidden rounded-3xl">
+                    <div className="p-8 space-y-6">
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label className="text-xs font-semibold text-slate-500">Item Price ($)</Label>
-                                <div className="relative">
-                                    <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                                    <Input
-                                        type="number"
-                                        placeholder="0.00"
-                                        className="pl-9 h-11 rounded-xl border-slate-200 focus:border-blue-500 font-medium"
-                                        value={quoteData.item_price}
-                                        onChange={(e) => setQuoteData({ ...quoteData, item_price: e.target.value })}
-                                    />
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <Label className="text-xs font-semibold text-slate-500">Logistics ($)</Label>
-                                <div className="relative">
-                                    <Truck className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                                    <Input
-                                        type="number"
-                                        placeholder="0.00"
-                                        className="pl-9 h-11 rounded-xl border-slate-200 focus:border-blue-500 font-medium"
-                                        value={quoteData.shipping_cost}
-                                        onChange={(e) => setQuoteData({ ...quoteData, shipping_cost: e.target.value })}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="space-y-2">
-                            <div className="flex items-center justify-between">
-                                <Label className="text-xs font-semibold text-slate-500">Service Fee ($)</Label>
-                            </div>
-                            <div className="relative">
-                                <Calculator className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-600">Item Price ($)</Label>
                                 <Input
                                     type="number"
-                                    placeholder="0.00"
-                                    className="pl-9 h-11 rounded-xl border-slate-200 focus:border-blue-500 font-medium"
-                                    value={quoteData.service_fee}
-                                    onChange={(e) => setQuoteData({ ...quoteData, service_fee: e.target.value })}
+                                    className="h-12 rounded-xl bg-slate-50 border-slate-200 font-bold"
+                                    value={quoteData.item_price}
+                                    onChange={(e) => setQuoteData({ ...quoteData, item_price: e.target.value })}
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-600">Logistics ($)</Label>
+                                <Input
+                                    type="number"
+                                    className="h-12 rounded-xl bg-slate-50 border-slate-200 font-bold"
+                                    value={quoteData.shipping_cost}
+                                    onChange={(e) => setQuoteData({ ...quoteData, shipping_cost: e.target.value })}
                                 />
                             </div>
                         </div>
 
-                        {/* Total Card */}
-                        <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200 shadow-sm">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Total Amount</p>
-                                    <div className="text-3xl font-bold tracking-tight text-slate-900">
-                                        ${totalAmount}
-                                        <span className="text-sm font-medium text-slate-400 ml-1">USD</span>
-                                    </div>
-                                </div>
-                                <div className="h-10 w-10 rounded-full bg-white border border-slate-200 flex items-center justify-center shadow-sm">
-                                    <ArrowRight className="h-5 w-5 text-slate-700" />
-                                </div>
-                            </div>
+                        <div className="p-6 bg-gradient-to-br from-blue-50 to-slate-50 rounded-2xl border-2 border-blue-100 flex items-center justify-between">
+                            <span className="text-xs font-black uppercase tracking-widest text-slate-600">Total Quote Amount</span>
+                            <span className="text-3xl font-black tracking-tighter text-slate-900">${totalAmount}</span>
                         </div>
                     </div>
 
-                    <DialogFooter className="p-6 pt-2 border-t border-slate-100 bg-white gap-3">
-                        <Button
-                            variant="ghost"
-                            onClick={() => setShowQuoteModal(false)}
-                            className="rounded-xl font-medium text-slate-500 hover:text-slate-900"
-                        >
-                            Cancel
+                    <div className="p-8 border-t border-slate-100 flex gap-3">
+                        <Button variant="ghost" className="flex-1 h-14 rounded-xl font-bold uppercase tracking-widest text-xs" onClick={() => setShowQuoteModal(false)}>Cancel</Button>
+                        <Button className="flex-1 h-14 rounded-xl bg-primary-blue hover:bg-blue-700 text-white font-bold uppercase tracking-widest text-xs shadow-xl shadow-blue-500/20" onClick={handleSubmitQuote} disabled={isSubmittingQuote}>
+                            {isSubmittingQuote ? <Loader2 className="h-4 w-4 animate-spin" /> : "Dispatch Quote"}
                         </Button>
-                        <Button
-                            onClick={handleSubmitQuote}
-                            disabled={isSubmittingQuote || !quoteData.item_price || !quoteData.shipping_cost}
-                            className="rounded-xl bg-slate-900 hover:bg-black text-white font-bold shadow-lg shadow-slate-900/10 px-6"
-                        >
-                            {isSubmittingQuote ? (
-                                <>
-                                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                                    Sending...
-                                </>
-                            ) : (
-                                "Send Quote"
-                            )}
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
+                    </div>
+                </div>
+            </ResponsiveModal>
         </div>
     )
 }

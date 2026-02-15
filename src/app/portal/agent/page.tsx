@@ -15,6 +15,7 @@ import {
     Filter,
     MoreHorizontal,
     FileText,
+    Clock,
     Truck,
     Inbox,
     Loader2,
@@ -42,10 +43,14 @@ import { PendingApproval } from "@/components/portal/pending-approval"
 import { toast } from "sonner"
 import { StatsSkeleton, CardSkeleton, Skeleton } from "@/components/portal/skeletons"
 import { ResponsiveModal } from "@/components/ui/responsive-modal"
+import { FeedbackPanel } from "@/components/portal/feedback-panel"
+import { X, Package, ChevronRight, MessageSquare, ArrowRight } from "lucide-react"
+import { SearchBar } from "@/components/portal/search-bar"
 
 export default function AgentDashboard() {
     const { profile, user } = useAuth()
     const [searchTerm, setSearchTerm] = useState('')
+    const [debouncedSearch, setDebouncedSearch] = useState('')
     const [orders, setOrders] = useState<any[]>([])
     const [sourcingRequests, setSourcingRequests] = useState<any[]>([])
     const [agentStatus, setAgentStatus] = useState<string | null>(null)
@@ -58,9 +63,12 @@ export default function AgentDashboard() {
     ])
     const [selectedRequest, setSelectedRequest] = useState<any>(null)
     const [isDetailsOpen, setIsDetailsOpen] = useState(false)
+    const [isAcceptingProxy, setIsAcceptingProxy] = useState(false)
+    const [currentUserId, setCurrentUserId] = useState<string>("")
 
     const fetchAgentData = async () => {
         if (!user) return
+        setCurrentUserId(user.id)
         setIsLoading(true)
         try {
             // Check profile role first for admin bypass
@@ -104,7 +112,8 @@ export default function AgentDashboard() {
                 .from('sourcing_requests')
                 .select(`
                     *,
-                    profiles:user_id (full_name)
+                    profiles:user_id (full_name),
+                    quotes (*)
                 `)
                 .eq('agent_id', user.id)
                 .order('created_at', { ascending: false })
@@ -149,9 +158,73 @@ export default function AgentDashboard() {
         }
     }
 
+    const handleAcceptOnBehalf = async () => {
+        if (!selectedRequest || !selectedRequest.quotes?.[0] || !user) return
+
+        setIsAcceptingProxy(true)
+        const quote = selectedRequest.quotes[0]
+
+        // Hard timeout to prevent "loading forever"
+        const timeoutId = setTimeout(() => {
+            if (isAcceptingProxy) {
+                setIsAcceptingProxy(false)
+                toast.error("Proxy Conversion Latency", {
+                    description: "The order is taking longer than expected to process. Please wait a moment."
+                })
+            }
+        }, 30000)
+
+        try {
+            console.log('--- STARTING PROXY ORDER CONVERSION ---')
+            // 1. Create the order
+            const { error: orderError } = await supabase
+                .from('orders')
+                .insert({
+                    user_id: selectedRequest.user_id, // The customer
+                    quote_id: quote.id,
+                    agent_id: user.id, // The agent acting as proxy
+                    status: 'pending_payment', // Changed from 'paid' - requires Admin Verification
+                    payment_method: 'Client Cash/Transfer (Pending Verification)'
+                })
+
+            if (orderError) throw orderError
+            console.log('--- PROXY ORDER CREATED (PENDING VERIFICATION) ---')
+
+            // 2. Update the request status
+            const { error: requestError } = await supabase
+                .from('sourcing_requests')
+                .update({ status: 'processing' })
+                .eq('id', selectedRequest.id)
+
+            if (requestError) throw requestError
+            console.log('--- REQUEST UPDATED BY PROXY ---')
+
+            toast.success("Order Submitted for Verification", {
+                description: "The order has been created. An Admin must verify the payment before it moves to the Order Pipeline."
+            })
+
+            setIsDetailsOpen(false)
+            fetchAgentData()
+        } catch (error: any) {
+            console.error("Proxy acceptance error:", error)
+            toast.error("Proxy Action Failed", { description: error.message || "A database error occurred." })
+        } finally {
+            clearTimeout(timeoutId)
+            setIsAcceptingProxy(false)
+        }
+    }
+
     useEffect(() => {
         fetchAgentData()
     }, [user])
+
+    // Debounce search input
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(searchTerm)
+        }, 300)
+        return () => clearTimeout(timer)
+    }, [searchTerm])
 
     // Show pending approval screen if agent is not approved
     if (isLoading) {
@@ -166,63 +239,77 @@ export default function AgentDashboard() {
         return <PendingApproval />
     }
 
-    const filteredOrders = orders.filter(order =>
-        order.profiles?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        order.id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        order.quotes?.sourcing_requests?.vehicle_info?.toLowerCase().includes(searchTerm.toLowerCase())
-    )
 
-    const filteredSourcing = sourcingRequests.filter(req =>
-        req.profiles?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        req.part_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        req.vehicle_info?.toLowerCase().includes(searchTerm.toLowerCase())
-    )
+    const filteredOrders = orders.filter(order => {
+        if (!debouncedSearch) return true
+        const searchLower = debouncedSearch.toLowerCase()
+        return (
+            order.profiles?.full_name?.toLowerCase().includes(searchLower) ||
+            order.id?.toLowerCase().includes(searchLower) ||
+            order.quotes?.sourcing_requests?.vehicle_info?.toLowerCase().includes(searchLower) ||
+            order.quotes?.sourcing_requests?.part_name?.toLowerCase().includes(searchLower)
+        )
+    })
+
+    const filteredSourcing = sourcingRequests.filter(req => {
+        if (!debouncedSearch) return true
+        const searchLower = debouncedSearch.toLowerCase()
+        return (
+            req.profiles?.full_name?.toLowerCase().includes(searchLower) ||
+            req.part_name?.toLowerCase().includes(searchLower) ||
+            req.vehicle_info?.toLowerCase().includes(searchLower) ||
+            req.vin?.toLowerCase().includes(searchLower)
+        )
+    })
+
 
     return (
         <div className="space-y-8 animate-in fade-in duration-700 max-w-7xl mx-auto pb-10">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div className="space-y-1">
-                    <h2 className="text-4xl font-bold tracking-tighter text-slate-900 leading-none">Agent Command</h2>
-                    <p className="text-slate-500 font-medium text-lg pt-2">Overview of your sourcing activities and performance.</p>
+                    <h2 className="text-4xl md:text-5xl font-bold tracking-tighter text-slate-900 leading-none">Agent Command</h2>
+                    <p className="text-slate-500 font-medium text-lg pt-2 max-w-2xl">Overview of your sourcing activities and performance.</p>
                 </div>
                 <Button
                     variant="outline"
                     onClick={fetchAgentData}
                     disabled={isLoading}
-                    className="rounded-xl border-slate-200 text-slate-600 hover:text-slate-900 bg-white"
+                    className="rounded-xl border-slate-200 text-slate-600 hover:text-slate-900 bg-white shadow-sm"
                 >
                     <RefreshCw className={cn("mr-2 h-4 w-4", isLoading && "animate-spin")} /> Update Feed
                 </Button>
             </div>
 
             {/* Stats Grid */}
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-4 md:gap-6 grid-cols-2 lg:grid-cols-4">
                 {stats.map((stat, i) => (
                     <Card key={i} className={cn(
-                        "border-slate-100 shadow-xl shadow-slate-200/40 rounded-[2.5rem] overflow-hidden transition-all duration-300 hover:-translate-y-1 bg-white ring-1 ring-slate-100/50",
-                        i === 0 ? "hover:border-green-100" :
-                            i === 1 ? "hover:border-blue-100" :
-                                i === 2 ? "hover:border-purple-100" : "hover:border-orange-100"
+                        "border-slate-100 shadow-xl shadow-slate-200/40 rounded-[2rem] overflow-hidden transition-all duration-300 hover:-translate-y-1 bg-white ring-1 ring-slate-100/50",
+                        i === 0 ? "hover:border-blue-100" :
+                            i === 1 ? "hover:border-orange-100" :
+                                i === 2 ? "hover:border-purple-100" : "hover:border-green-100"
                     )}>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-5 md:p-6">
                             <CardTitle className="text-[10px] font-bold uppercase tracking-widest text-slate-500">
-                                {stat.label}
+                                {stat.label === "Active Requests" ? "Pipeline Volume" :
+                                    stat.label === "Responses Provided" ? "Dispatched Quotes" :
+                                        stat.label === "Pending Review" ? "Action Required" : "Sourcing Success"}
                             </CardTitle>
                             <div className={cn(
-                                "h-10 w-10 rounded-2xl flex items-center justify-center shadow-inner",
-                                i === 0 ? "bg-green-50 text-green-600" :
-                                    i === 1 ? "bg-blue-50 text-blue-600" :
-                                        i === 2 ? "bg-purple-50 text-purple-600" : "bg-orange-50 text-orange-600"
+                                "h-8 w-8 md:h-10 md:w-10 rounded-2xl flex items-center justify-center shadow-inner",
+                                i === 0 ? "bg-blue-50 text-blue-600" :
+                                    i === 1 ? "bg-orange-50 text-orange-600" :
+                                        i === 2 ? "bg-purple-50 text-purple-600" : "bg-green-50 text-green-600"
                             )}>
-                                {i === 0 ? <DollarSign className="h-5 w-5" /> :
-                                    i === 1 ? <ShoppingCart className="h-5 w-5" /> :
-                                        i === 2 ? <Activity className="h-5 w-5" /> :
-                                            <Users className="h-5 w-5" />}
+                                {i === 0 ? <Activity className="h-4 w-4 md:h-5 md:w-5" /> :
+                                    i === 1 ? <FileText className="h-4 w-4 md:h-5 md:w-5" /> :
+                                        i === 2 ? <Clock className="h-4 w-4 md:h-5 md:w-5" /> :
+                                            <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5" />}
                             </div>
                         </CardHeader>
-                        <CardContent>
-                            <div className="text-3xl font-bold tracking-tighter text-slate-900">{stat.value}</div>
-                            <div className="flex items-center text-[10px] mt-3 font-bold uppercase tracking-tight">
+                        <CardContent className="p-5 md:p-6 pt-0">
+                            <div className="text-2xl md:text-3xl font-bold tracking-tighter text-slate-900">{stat.value}</div>
+                            <div className="flex items-center text-[10px] mt-2 font-bold uppercase tracking-tight">
                                 {stat.trend === 'up' ? (
                                     <ArrowUpRight className="mr-1 h-3 w-3 text-emerald-600" />
                                 ) : (
@@ -231,7 +318,7 @@ export default function AgentDashboard() {
                                 <span className={stat.trend === 'up' ? "text-emerald-600" : "text-red-600"}>
                                     {stat.change}
                                 </span>
-                                <span className="text-slate-400 ml-2">from last month</span>
+                                <span className="text-slate-400 ml-2">Real-time Data</span>
                             </div>
                         </CardContent>
                     </Card>
@@ -239,25 +326,32 @@ export default function AgentDashboard() {
             </div>
 
             {/* Sourcing Pipeline */}
-            <Card className="border-slate-100 shadow-xl shadow-slate-200/40 rounded-[2.5rem] overflow-hidden bg-white ring-1 ring-slate-100/50">
-                <CardHeader className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-50 p-10">
+            <Card className="border-slate-100 shadow-xl shadow-slate-200/40 rounded-[2rem] md:rounded-[2.5rem] overflow-hidden bg-white ring-1 ring-slate-100/50">
+                <CardHeader className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-50 p-6 md:p-10">
                     <div className="space-y-1">
-                        <CardTitle className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-3">
-                            <Activity className="h-6 w-6 text-primary-orange" /> Sourcing Pipeline
+                        <CardTitle className="text-xl md:text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-3">
+                            <Activity className="h-5 w-5 md:h-6 md:w-6 text-primary-orange" /> Sourcing Pipeline
                         </CardTitle>
-                        <CardDescription className="text-slate-500 font-medium pt-1">Active requests assigned to you for part location and pricing.</CardDescription>
+                        <CardDescription className="text-slate-500 font-medium pt-1 text-sm md:text-base">Active requests assigned to you for part location and pricing.</CardDescription>
                     </div>
+                    <SearchBar
+                        value={searchTerm}
+                        onChange={setSearchTerm}
+                        placeholder="Search by part, vehicle, or customer..."
+                        className="flex-1 md:max-w-md"
+                    />
                 </CardHeader>
                 <CardContent className="p-0">
                     <div className="overflow-x-auto">
                         <Table>
                             <TableHeader className="bg-slate-50/30">
                                 <TableRow className="hover:bg-transparent border-slate-100">
-                                    <TableHead className="font-bold text-slate-400 text-[10px] uppercase tracking-widest pl-10 h-14">Request ID</TableHead>
-                                    <TableHead className="font-bold text-slate-400 text-[10px] uppercase tracking-widest h-14">Customer</TableHead>
-                                    <TableHead className="font-bold text-slate-400 text-[10px] uppercase tracking-widest h-14">Part & Vehicle</TableHead>
-                                    <TableHead className="font-bold text-slate-400 text-[10px] uppercase tracking-widest h-14">Status</TableHead>
-                                    <TableHead className="text-right font-bold text-slate-400 text-[10px] uppercase tracking-widest pr-10 h-14">Actions</TableHead>
+                                    <TableHead className="font-bold text-slate-400 text-[10px] uppercase tracking-widest pl-6 md:pl-10 h-12 md:h-14 whitespace-nowrap">Request ID</TableHead>
+                                    <TableHead className="font-bold text-slate-400 text-[10px] uppercase tracking-widest h-12 md:h-14 whitespace-nowrap">Customer</TableHead>
+                                    <TableHead className="font-bold text-slate-400 text-[10px] uppercase tracking-widest h-12 md:h-14 whitespace-nowrap">Part & Vehicle</TableHead>
+                                    <TableHead className="font-bold text-slate-400 text-[10px] uppercase tracking-widest h-12 md:h-14 whitespace-nowrap">Status</TableHead>
+                                    <TableHead className="font-bold text-slate-400 text-[10px] uppercase tracking-widest h-12 md:h-14 whitespace-nowrap">Messages</TableHead>
+                                    <TableHead className="text-right font-bold text-slate-400 text-[10px] uppercase tracking-widest pr-6 md:pr-10 h-12 md:h-14 whitespace-nowrap">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -270,7 +364,7 @@ export default function AgentDashboard() {
                                 ) : (
                                     filteredSourcing.map((req) => (
                                         <TableRow key={req.id} className="hover:bg-orange-50/20 border-slate-50 group">
-                                            <TableCell className="pl-10 py-6 font-bold text-slate-900">
+                                            <TableCell className="pl-6 md:pl-10 py-4 md:py-6 font-bold text-slate-900">
                                                 {req.status === 'pending' ? (
                                                     <Badge variant="outline" className="font-mono text-[10px] bg-slate-50 text-slate-300 border-slate-100 cursor-not-allowed">
                                                         Processing...
@@ -278,7 +372,7 @@ export default function AgentDashboard() {
                                                 ) : (
                                                     <Badge
                                                         variant="outline"
-                                                        className="font-mono text-[10px] cursor-pointer hover:bg-slate-100 transition-colors flex items-center gap-1.5 w-fit pr-2.5 bg-white border-slate-200 text-slate-500"
+                                                        className="font-mono text-[10px] cursor-pointer hover:bg-slate-100 transition-colors flex items-center gap-1.5 w-fit pr-2.5 bg-white border-slate-200 text-slate-500 whitespace-nowrap"
                                                         onClick={(e) => {
                                                             e.stopPropagation()
                                                             if (req.id) {
@@ -292,24 +386,39 @@ export default function AgentDashboard() {
                                                     </Badge>
                                                 )}
                                             </TableCell>
-                                            <TableCell className="py-6 font-medium text-slate-600">
+                                            <TableCell className="py-4 md:py-6 font-medium text-slate-600 whitespace-nowrap">
                                                 {req.profiles?.full_name}
                                             </TableCell>
-                                            <TableCell className="py-6">
-                                                <div className="flex flex-col">
-                                                    <span className="font-bold text-slate-800">{req.part_name}</span>
-                                                    <span className="text-xs text-slate-500">{req.vehicle_info}</span>
+                                            <TableCell className="py-4 md:py-6">
+                                                <div className="flex flex-col min-w-[150px]">
+                                                    <span className="font-bold text-slate-800 truncate">{req.part_name}</span>
+                                                    <span className="text-xs text-slate-500 truncate">{req.vehicle_info}</span>
                                                 </div>
                                             </TableCell>
-                                            <TableCell className="py-6">
+                                            <TableCell className="py-4 md:py-6">
                                                 <Badge className={cn(
-                                                    "rounded-full px-3 py-1 font-bold text-[10px] uppercase tracking-wider",
+                                                    "rounded-full px-3 py-1 font-bold text-[10px] uppercase tracking-wider whitespace-nowrap",
                                                     req.status === 'pending' ? "bg-orange-100 text-orange-600" : "bg-blue-100 text-blue-600"
                                                 )}>
                                                     {req.status}
                                                 </Badge>
                                             </TableCell>
-                                            <TableCell className="text-right pr-10 py-6">
+                                            <TableCell className="py-4 md:py-6">
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    className="h-9 px-3 rounded-xl hover:bg-blue-50 text-blue-600 hover:text-blue-700 font-bold text-[10px] uppercase tracking-widest flex items-center gap-2 border border-transparent hover:border-blue-100 transition-all"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation()
+                                                        setSelectedRequest(req)
+                                                        setIsDetailsOpen(true)
+                                                    }}
+                                                >
+                                                    <MessageSquare className="h-4 w-4" />
+                                                    Chat
+                                                </Button>
+                                            </TableCell>
+                                            <TableCell className="text-right pr-6 md:pr-10 py-4 md:py-6">
                                                 <Button
                                                     variant="ghost"
                                                     size="sm"
@@ -334,85 +443,142 @@ export default function AgentDashboard() {
             <ResponsiveModal
                 open={isDetailsOpen}
                 onOpenChange={setIsDetailsOpen}
+                title="Sourcing Command Console"
+                description={`Request ID: ${selectedRequest?.id.slice(0, 8)}`}
+                size="xl"
             >
-                <div className="flex flex-col h-[85vh] sm:h-[600px] md:h-auto max-h-[85vh] sm:max-h-[90vh] bg-white">
-                    {/* Header - Neutral White-Card Aesthetic */}
-                    <div className="p-6 sm:p-10 border-b border-slate-100">
-                        <div className="flex items-center gap-4">
-                            <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl sm:rounded-2xl bg-slate-50 flex items-center justify-center text-slate-900 shrink-0 shadow-inner">
-                                <Activity className="h-5 w-5 sm:h-6 sm:w-6" />
-                            </div>
-                            <div className="space-y-1">
-                                <h3 className="text-xl sm:text-3xl font-black text-slate-900 uppercase tracking-tighter leading-none">Sourcing Detail</h3>
-                                <p className="text-slate-500 font-bold text-[10px] sm:text-xs italic uppercase tracking-wider">Parts Specification & Verification</p>
-                            </div>
-                        </div>
-                    </div>
-                    {/* Body - Scrollable */}
-                    <div className="flex-1 overflow-y-auto p-5 sm:p-10 space-y-6 sm:space-y-8">
-                        {/* Status Badge Group */}
-                        <div className="flex items-center gap-2">
-                            <Badge className="bg-primary-orange text-white border-0 font-black uppercase tracking-widest text-[9px] px-3 py-1 rounded-lg">
-                                {selectedRequest?.status}
-                            </Badge>
-                            <Badge className="bg-slate-100 text-slate-600 border-0 font-black uppercase tracking-widest text-[9px] px-3 py-1 rounded-lg">
-                                ID: {selectedRequest?.id.slice(0, 8).toUpperCase()}
-                            </Badge>
-                        </div>
+                <div className="w-full bg-white p-1">
+                    {/* Body - 2 Column Layout for Desktop */}
+                    <div className="flex-1">
+                        <div className="flex flex-col lg:flex-row">
 
-                        {/* Vehicle Info Card - Vertical First */}
-                        <div className="p-6 sm:p-8 bg-slate-50/50 rounded-[1.5rem] sm:rounded-[2rem] border border-slate-100 ring-1 ring-slate-100/50 space-y-4">
-                            <div className="space-y-1">
-                                <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Target Vehicle</p>
-                                <h4 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight">{selectedRequest?.part_name}</h4>
-                                <p className="text-xs sm:text-sm text-slate-500 font-bold">{selectedRequest?.vehicle_info}</p>
-                            </div>
-                        </div>
+                            {/* Left Column: Details (Scrollable) */}
+                            <div className="flex-1 p-8 space-y-6 bg-white lg:border-r border-slate-100">
+                                {/* Vehicle Info Section */}
+                                <div className="p-6 bg-slate-50/50 rounded-3xl border border-slate-100/50 space-y-6">
+                                    <div className="flex items-start justify-between">
+                                        <div className="space-y-2">
+                                            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-600">Target Vehicle</p>
+                                            <h4 className="text-2xl font-semibold text-slate-900 tracking-tight leading-tight">{selectedRequest?.part_name}</h4>
+                                            {selectedRequest?.part_condition && (
+                                                <Badge variant="outline" className={cn(
+                                                    "mt-2 w-fit font-bold px-2 py-0.5 text-[10px] uppercase tracking-widest border-none",
+                                                    selectedRequest.part_condition === 'New (OEM)' ? "bg-emerald-100 text-emerald-700" :
+                                                        selectedRequest.part_condition === 'Aftermarket' ? "bg-blue-100 text-blue-700" :
+                                                            "bg-amber-100 text-amber-700"
+                                                )}>
+                                                    {selectedRequest.part_condition}
+                                                </Badge>
+                                            )}
+                                        </div>
+                                        <div className="h-12 w-12 bg-white rounded-xl flex items-center justify-center border border-slate-100 shrink-0 shadow-sm">
+                                            <Package className="h-6 w-6 text-primary-orange" />
+                                        </div>
+                                    </div>
+                                    <div className="p-5 bg-white rounded-2xl border border-slate-100/50 text-sm font-medium text-slate-600 leading-relaxed shadow-sm">
+                                        {selectedRequest?.vehicle_info}
+                                    </div>
+                                </div>
 
-                        {/* Data Sections - Strictly Vertical Grouping */}
-                        <div className="space-y-6">
-                            <div className="space-y-3">
-                                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 ml-1">Origin Customer</p>
-                                <div className="h-14 sm:h-16 rounded-xl sm:rounded-[1.25rem] bg-slate-50/50 border border-slate-200 flex items-center px-6">
-                                    <p className="font-black text-slate-900 text-base sm:text-lg">{selectedRequest?.profiles?.full_name}</p>
+                                {/* Quote Visibility */}
+                                {selectedRequest?.quotes?.[0] && (
+                                    <div className="p-6 bg-slate-950 rounded-3xl shadow-xl space-y-4">
+                                        <div className="flex items-center justify-between">
+                                            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-primary-orange">Active Quote Details</p>
+                                            <Badge variant="outline" className="border-primary-orange/20 text-primary-orange text-[9px] uppercase tracking-widest">{selectedRequest.status}</Badge>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="space-y-1">
+                                                <p className="text-[10px] text-white/50 uppercase font-bold tracking-wider">Total Amount</p>
+                                                <p className="text-3xl font-bold text-white tracking-tighter">${selectedRequest.quotes[0].total_amount}</p>
+                                            </div>
+                                            <div className="space-y-1 text-right border-l border-white/10 pl-4">
+                                                <p className="text-[10px] text-white/50 uppercase font-bold tracking-wider">Net Item Price</p>
+                                                <p className="text-xl font-bold text-white/80">${selectedRequest.quotes[0].item_price}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Data Sections */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="p-6 bg-slate-50/30 rounded-3xl border border-slate-100/50 space-y-4">
+                                        <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-600">Customer</p>
+                                        <div className="flex items-center gap-4">
+                                            <div className="h-10 w-10 rounded-full bg-slate-900 flex items-center justify-center text-white font-semibold text-[10px] shadow-lg">
+                                                {selectedRequest?.profiles?.full_name?.substring(0, 2).toUpperCase()}
+                                            </div>
+                                            <p className="font-semibold text-slate-900 text-lg tracking-tight">{selectedRequest?.profiles?.full_name}</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="p-6 bg-slate-50/30 rounded-3xl border border-slate-100/50 space-y-4">
+                                        <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-600">VIN Number</p>
+                                        <div className="h-12 rounded-xl bg-slate-950 flex items-center px-5 shadow-xl">
+                                            <p className="font-mono font-medium text-white tracking-[0.1em] text-xs">
+                                                {selectedRequest?.vin || 'NOT PROVIDED'}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Agent Protocol */}
+                                <div className="p-6 bg-blue-50/30 rounded-3xl border border-blue-100/50 flex flex-col gap-6">
+                                    <div className="flex gap-6">
+                                        <div className="h-10 w-10 rounded-xl bg-white flex items-center justify-center shrink-0 shadow-sm border border-blue-100">
+                                            <Info className="h-5 w-5 text-blue-500" />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <p className="text-[10px] font-semibold text-blue-600 uppercase tracking-[0.2em]">Action Protocol</p>
+                                            <p className="text-xs font-medium text-slate-500 leading-relaxed">
+                                                Verify part availability and pricing. Use messaging for clarifications.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {/* Proxy Acceptance Button - Only if status is 'quoted' */}
+                                    {selectedRequest?.status === 'quoted' && (
+                                        <Button
+                                            className="w-full h-14 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold uppercase tracking-[0.2em] text-[10px] shadow-xl shadow-emerald-500/20 transition-all active:scale-95 group border-none"
+                                            onClick={handleAcceptOnBehalf}
+                                            disabled={isAcceptingProxy}
+                                        >
+                                            {isAcceptingProxy ? (
+                                                <Loader2 className="h-4 w-4 animate-spin" />
+                                            ) : (
+                                                <span className="flex items-center gap-3">
+                                                    Accept on Client's Behalf <CheckCircle2 className="h-4 w-4 text-emerald-300" />
+                                                </span>
+                                            )}
+                                        </Button>
+                                    )}
+
+                                    {/* Action Button inside container to avoid scroll on modal */}
+                                    <Button
+                                        variant="ghost"
+                                        className="w-full h-12 rounded-xl font-semibold uppercase tracking-[0.15em] text-[10px] text-slate-500 hover:text-slate-900 hover:bg-white/50 border border-blue-100/50 transition-all shadow-sm"
+                                        onClick={() => setIsDetailsOpen(false)}
+                                    >
+                                        Return to Pipeline
+                                    </Button>
                                 </div>
                             </div>
 
-                            <div className="space-y-3">
-                                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 ml-1">Full Chassis VIN</p>
-                                <div className="h-14 sm:h-16 rounded-xl sm:rounded-[1.25rem] bg-slate-50/50 border border-slate-200 flex items-center px-6">
-                                    <p className="font-mono font-black text-slate-900 text-sm sm:text-base break-all uppercase leading-none tracking-tight">
-                                        {selectedRequest?.vin || 'NOT PROVIDED'}
-                                    </p>
-                                </div>
+                            {/* Right Column: Feedback/Messaging (Synced Height) */}
+                            <div className="lg:w-[500px] bg-white flex flex-col flex-1 lg:h-full overflow-hidden">
+                                {selectedRequest && currentUserId && (
+                                    <FeedbackPanel
+                                        requestId={selectedRequest.id}
+                                        currentUserId={currentUserId}
+                                        isAgent={true}
+                                    />
+                                )}
                             </div>
+
                         </div>
-
-                        {/* Objective Card - Neutral Theme */}
-                        <div className="p-6 sm:p-8 bg-white rounded-[1.5rem] sm:rounded-[2rem] border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 shadow-sm">
-                            <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl sm:rounded-2xl bg-white flex items-center justify-center text-slate-400 shrink-0 border border-slate-100 shadow-inner">
-                                <Info className="h-5 w-5 sm:h-6 sm:w-6" />
-
-                            </div>
-                            <div className="space-y-1.5">
-                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em]">Agent Protocol</p>
-                                <p className="text-xs sm:text-sm font-bold text-slate-600 leading-relaxed">Locate part specifications and verify pricing with US distribution hubs for client approval.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Footer - Sticky Solid White */}
-                    <div className="shrink-0 p-6 sm:p-10 border-t border-slate-100 flex justify-end bg-white">
-                        <Button
-                            className="h-14 sm:h-16 w-full px-12 rounded-xl sm:rounded-[2rem] bg-slate-900 hover:bg-black font-black text-base sm:text-lg uppercase tracking-widest gap-4 transition-all active:scale-95 text-white"
-                            onClick={() => setIsDetailsOpen(false)}
-                        >
-                            <CheckCircle2 className="h-5 w-5 sm:h-6 sm:w-6" />
-                            Acknowledge
-                        </Button>
                     </div>
                 </div>
             </ResponsiveModal>
-        </div >
+        </div>
     )
 }

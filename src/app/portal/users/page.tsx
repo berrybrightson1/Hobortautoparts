@@ -52,14 +52,21 @@ import { useState, useEffect } from "react"
 import { supabase, supabaseAdmin } from "@/lib/supabase"
 import { toast } from "sonner"
 import { format } from "date-fns"
-import { updateUserRole, createUser, getUserSourcingHistory } from "@/app/actions/admin-actions"
+import { SearchBar } from "@/components/portal/search-bar"
+import { Pagination } from "@/components/portal/pagination"
+import { updateUserRole, createUser, getUserSourcingHistory, getUsersWithEmails } from "@/app/actions/admin-actions"
 import { SmartPhoneInput } from "@/components/ui/phone-input"
 
 export default function UsersPage() {
     const [activeRole, setActiveRole] = useState<'all' | 'customer' | 'agent' | 'admin'>('all')
     const [searchQuery, setSearchQuery] = useState('')
+    const [debouncedSearch, setDebouncedSearch] = useState('')
     const [users, setUsers] = useState<any[]>([])
     const [isLoading, setIsLoading] = useState(true)
+
+    // Pagination state
+    const [currentPage, setCurrentPage] = useState(1)
+    const [pageSize] = useState(20)
     const [updatingId, setUpdatingId] = useState<string | null>(null)
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
 
@@ -84,13 +91,13 @@ export default function UsersPage() {
     const fetchUsers = async () => {
         setIsLoading(true)
         try {
-            const { data, error } = await supabase
-                .from('profiles')
-                .select('*')
-                .order('created_at', { ascending: false })
+            const result = await getUsersWithEmails()
 
-            if (error) throw error
-            setUsers(data || [])
+            if (!result.success) {
+                throw new Error(result.error)
+            }
+
+            setUsers(result.data || [])
         } catch (error: any) {
             toast.error("Failed to fetch users", {
                 description: error.message
@@ -200,13 +207,30 @@ export default function UsersPage() {
         }
     }
 
+    // Debounce search input
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(searchQuery)
+            setCurrentPage(1) // Reset to first page on new search
+        }, 300)
+        return () => clearTimeout(timer)
+    }, [searchQuery])
+
     const filteredUsers = users.filter((user: any) => {
         const matchesRole = activeRole === 'all' || user.role === activeRole
         const name = user.full_name || 'Anonymous'
-        const matchesSearch = name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            user.id.toLowerCase().includes(searchQuery.toLowerCase())
+        const matchesSearch = !debouncedSearch ||
+            name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+            user.id.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+            user.email?.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+            user.phone_number?.toLowerCase().includes(debouncedSearch.toLowerCase())
         return matchesRole && matchesSearch
     })
+
+    const totalPages = Math.ceil(filteredUsers.length / pageSize)
+    const startIndex = (currentPage - 1) * pageSize
+    const paginatedUsers = filteredUsers.slice(startIndex, startIndex + pageSize)
+
 
     const counts = {
         all: users.length,
@@ -335,24 +359,21 @@ export default function UsersPage() {
                     ))}
                     {/* Animated Glider */}
                     <div
-                        className="absolute top-1.5 bottom-1.5 bg-primary-blue rounded-full transition-all duration-500 shadow-lg shadow-blue-500/20 hidden sm:block"
-                        style={{
-                            left: activeRole === 'all' ? '0.5rem' :
-                                activeRole === 'customer' ? '25%' :
-                                    activeRole === 'agent' ? '50.1%' : '75.3%',
-                            width: 'calc(25% - 0.6rem)',
-                            marginLeft: activeRole === 'all' ? '0' : '0'
-                        }}
+                        className={cn(
+                            "absolute top-1.5 bottom-1.5 bg-primary-blue rounded-full transition-all duration-500 shadow-lg shadow-blue-500/20 hidden sm:block",
+                            activeRole === 'all' ? "left-[0.5rem] w-[calc(25%-0.6rem)]" :
+                                activeRole === 'customer' ? "left-[25%] w-[calc(25%-0.6rem)]" :
+                                    activeRole === 'agent' ? "left-[50.1%] w-[calc(25%-0.6rem)]" : "left-[75.3%] w-[calc(25%-0.6rem)]"
+                        )}
                     />
                 </div>
 
-                <div className="lg:col-span-6 relative group">
-                    <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300 group-focus-within:text-primary-blue transition-colors" />
-                    <Input
-                        placeholder="Search by name, ID, or email..."
-                        className="h-14 pl-14 pr-6 rounded-[2rem] border-0 bg-white ring-1 ring-slate-100 focus-visible:ring-primary-blue/30 text-sm font-semibold shadow-sm transition-all placeholder:text-slate-300"
+                <div className="lg:col-span-6">
+                    <SearchBar
                         value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onChange={setSearchQuery}
+                        placeholder="Search by name, ID, email, or phone..."
+                        className="h-14 rounded-[2rem] bg-white ring-1 ring-slate-100 shadow-sm"
                     />
                 </div>
             </div>
@@ -380,8 +401,8 @@ export default function UsersPage() {
                                             </div>
                                         </TableCell>
                                     </TableRow>
-                                ) : filteredUsers.length > 0 ? (
-                                    filteredUsers.map((user) => (
+                                ) : paginatedUsers.length > 0 ? (
+                                    paginatedUsers.map((user) => (
                                         <TableRow
                                             key={user.id}
                                             className="hover:bg-slate-50/80 transition-all border-slate-50 group cursor-pointer"
@@ -482,11 +503,22 @@ export default function UsersPage() {
                             </TableBody>
                         </Table>
                     </div>
+                    {filteredUsers.length > pageSize && (
+                        <div className="p-6 border-t border-slate-50 bg-white">
+                            <Pagination
+                                currentPage={currentPage}
+                                totalPages={totalPages}
+                                onPageChange={setCurrentPage}
+                                totalCount={filteredUsers.length}
+                                pageSize={pageSize}
+                            />
+                        </div>
+                    )}
                 </CardContent>
             </Card>
 
             {/* Search Empty State */}
-            {filteredUsers.length === 0 && searchQuery !== '' && !isLoading && (
+            {filteredUsers.length === 0 && debouncedSearch !== '' && !isLoading && (
                 <div className="h-96 flex flex-col items-center justify-center text-center p-12 bg-white rounded-[3rem] border border-dashed border-slate-200 space-y-6">
                     <div className="h-24 w-24 bg-slate-50 rounded-[2.5rem] flex items-center justify-center">
                         <Search className="h-10 w-10 text-slate-200" />

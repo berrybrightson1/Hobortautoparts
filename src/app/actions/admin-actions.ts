@@ -110,3 +110,37 @@ export async function getUserSourcingHistory(userId: string) {
         return { success: false, error: error.message }
     }
 }
+
+export async function getUsersWithEmails() {
+    try {
+        const supabaseAdmin = getAdminClient()
+
+        // Fetch profiles
+        const { data: profiles, error: profilesError } = await supabaseAdmin
+            .from('profiles')
+            .select('*')
+            .order('created_at', { ascending: false })
+
+        if (profilesError) throw profilesError
+
+        // Fetch auth users to get emails
+        const { data: authData, error: authError } = await supabaseAdmin.auth.admin.listUsers()
+
+        if (authError) throw authError
+
+        // Merge email data with profiles
+        const usersWithEmails = (profiles || []).map(profile => {
+            const authUser = authData.users.find(u => u.id === profile.id)
+            return {
+                ...profile,
+                email: authUser?.email || 'N/A'
+            }
+        })
+
+        return { success: true, data: usersWithEmails }
+    } catch (error: any) {
+        console.error("Fetch Users With Emails Error:", error)
+        return { success: false, error: error.message, data: [] }
+    }
+}
+

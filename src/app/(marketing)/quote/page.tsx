@@ -17,6 +17,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { supabase } from "@/lib/supabase"
 import { PartLibraryPicker } from "@/components/marketing/part-library-picker"
+import { sendNotification } from "@/lib/notifications"
 
 // VIN Validation Helper
 function validateVIN(vin: string) {
@@ -63,12 +64,14 @@ export default function QuotePage() {
         model: "",
         submodel: "",
         engine: "",
-        part_name: ""
+        part_name: "",
+        part_condition: "New (OEM)"
     })
     const [vinError, setVinError] = useState<string | null>(null)
     const [isVehicleConfirmed, setIsVehicleConfirmed] = useState(false)
 
     const isStep1Valid = Boolean(formData.vin && formData.year && formData.make && formData.model && formData.submodel && formData.engine)
+    const isStep2Valid = Boolean(formData.part_condition)
 
     // VIN detection logic
     useEffect(() => {
@@ -134,26 +137,30 @@ export default function QuotePage() {
         const timeoutId = setTimeout(() => {
             if (isLoading) {
                 setIsLoading(false)
-                toast.error("Request timed out. Please try again.")
+                toast.error("Low Network or Database Latency", {
+                    description: "The request is taking longer than expected. Please check your connection and try again."
+                })
             }
-        }, 15000)
+        }, 30000)
 
         try {
+            console.log('--- STARTING SOURCING REQUEST SUBMISSION ---')
             // 1. Check Auth Loading State
             if (authLoading) {
+                console.log('--- WAITING FOR AUTH ---')
                 // Wait briefly for auth to resolve or fail
-                await new Promise(resolve => setTimeout(resolve, 500))
+                await new Promise(resolve => setTimeout(resolve, 1000))
                 if (authLoading) {
                     toast.warning("Still connecting to secure server...", {
                         description: "Please wait a moment and try again."
                     })
-                    return // Ensure we return here, but finally block will handle loading state
+                    return
                 }
             }
 
             let currentUser = user;
             if (!currentUser) {
-                // Double check session in case state hasn't updated
+                console.log('--- CHECKING SESSION FALLBACK ---')
                 const { data: { session } } = await supabase.auth.getSession();
                 currentUser = session?.user || null;
             }
@@ -162,12 +169,12 @@ export default function QuotePage() {
                 toast.error("Please sign in or create an account to submit a request.", {
                     description: "This ensures you can track your request status."
                 })
-                // Redirect to login with proper return URL
                 router.push('/login?redirect=/quote')
                 return
             }
 
             const vehicle_info = `${formData.year} ${formData.make} ${formData.model} (${formData.submodel})`
+            console.log('--- VEHICLE INFO PREPARED ---')
 
             const { error } = await supabase
                 .from('sourcing_requests')
@@ -176,17 +183,39 @@ export default function QuotePage() {
                     agent_id: profile?.role === 'agent' ? currentUser.id : null,
                     vin: formData.vin,
                     part_name: formData.part_name,
+                    part_condition: formData.part_condition,
                     vehicle_info: vehicle_info,
                     status: 'pending'
                 })
 
             if (error) throw error
+            console.log('--- REQUEST SUBMITTED SUCCESSFULLY ---')
+
+            // Notify Admin of new request
+            try {
+                const { data: admins } = await supabase
+                    .from('profiles')
+                    .select('id')
+                    .eq('role', 'admin')
+                    .limit(1)
+
+                if (admins && admins.length > 0) {
+                    await sendNotification({
+                        userId: admins[0].id,
+                        title: 'New Sourcing Request',
+                        message: `New request submitted for ${formData.part_name} (${vehicle_info})`,
+                        type: 'system'
+                    })
+                }
+            } catch (notifyErr) {
+                console.warn('Non-blocking notification failure:', notifyErr)
+            }
 
             setIsSubmitted(true)
         } catch (error: any) {
-            console.error("Error submitting sourcing request:", error)
+            console.error("Sourcing request submission fatal error:", error)
             toast.error("Failed to submit request", {
-                description: error.message || "Please try again later."
+                description: error.message || "A database error occurred. Please try again later."
             })
         } finally {
             clearTimeout(timeoutId)
@@ -282,30 +311,31 @@ export default function QuotePage() {
 
                 <Card className="border-primary-blue/10 shadow-2xl shadow-primary-blue/5 overflow-hidden rounded-3xl md:rounded-[2.5rem] relative mx-auto w-full bg-white/80 backdrop-blur-sm">
                     {/* Progress Indicator */}
+                    {/* Progress Indicator */}
                     <div className="absolute top-0 left-0 right-0 h-1.5 bg-primary-blue/5 flex">
                         <div
                             className={cn(
                                 "h-full bg-primary-orange transition-all duration-500 ease-out",
-                                step === 1 ? "w-1/2" : "w-full"
+                                step === 1 ? "w-1/3" : step === 2 ? "w-2/3" : "w-full"
                             )}
                         />
                     </div>
 
                     <CardHeader className="bg-primary-blue/5 border-b border-primary-blue/5 pb-4 pt-8 px-6 md:px-12">
                         <div className="flex justify-between items-center mb-4">
-                            <span className="text-xs font-bold text-primary-orange uppercase tracking-[0.2em]">Step {step} of 2</span>
-                            <span className="text-xs font-bold text-primary-blue/40 uppercase tracking-[0.2em]">{step === 1 ? "Vehicle Details" : "Parts Specification"}</span>
+                            <span className="text-xs font-bold text-primary-orange uppercase tracking-[0.2em]">Step {step} of 3</span>
+                            <span className="text-xs font-bold text-primary-blue/40 uppercase tracking-[0.2em]">{step === 1 ? "Vehicle Details" : step === 2 ? "Condition" : "Parts Specification"}</span>
                         </div>
                         <div className="flex items-center gap-4">
                             <div className="h-12 w-12 md:h-14 md:w-14 rounded-xl bg-primary-blue text-white flex items-center justify-center shadow-lg shadow-primary-blue/20 shrink-0">
-                                {step === 1 ? <Car className="h-6 w-6 md:h-7 md:w-7" /> : <Package className="h-6 w-6 md:h-7 md:w-7" />}
+                                {step === 1 ? <Car className="h-6 w-6 md:h-7 md:w-7" /> : step === 2 ? <ShieldCheck className="h-6 w-6 md:h-7 md:w-7" /> : <Package className="h-6 w-6 md:h-7 md:w-7" />}
                             </div>
                             <div>
                                 <CardTitle className="text-xl md:text-3xl font-semibold text-primary-blue tracking-tight mb-1">
-                                    {step === 1 ? "Vehicle Details" : "Parts Specification"}
+                                    {step === 1 ? "Vehicle Details" : step === 2 ? "Part Condition" : "Parts Specification"}
                                 </CardTitle>
                                 <CardDescription className="text-primary-blue/60 font-medium text-xs md:text-sm">
-                                    {step === 1 ? "Every detail counts for an accurate quote." : "List exactly what you need."}
+                                    {step === 1 ? "Every detail counts for an accurate quote." : step === 2 ? "Select your preferred part quality/type." : "List exactly what you need."}
                                 </CardDescription>
                             </div>
                         </div>
@@ -436,6 +466,84 @@ export default function QuotePage() {
                                         </Button>
                                     </div>
                                 </div>
+                            ) : step === 2 ? (
+                                <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        {[
+                                            {
+                                                id: 'New (OEM)',
+                                                title: 'New (OEM)',
+                                                desc: 'Genuine manufacturer parts. Highest quality and fitment guarantee.',
+                                                icon: ShieldCheck,
+                                                color: 'text-emerald-600',
+                                                bg: 'bg-emerald-50',
+                                                border: 'border-emerald-100'
+                                            },
+                                            {
+                                                id: 'Aftermarket',
+                                                title: 'Aftermarket',
+                                                desc: 'High-quality alternative parts. Great balance of performance and value.',
+                                                icon: Zap,
+                                                color: 'text-blue-600',
+                                                bg: 'bg-blue-50',
+                                                border: 'border-blue-100'
+                                            },
+                                            {
+                                                id: 'Used',
+                                                title: 'Used',
+                                                desc: 'Verified pre-owned parts. Most affordable option for older vehicles.',
+                                                icon: Package,
+                                                color: 'text-amber-600',
+                                                bg: 'bg-amber-50',
+                                                border: 'border-amber-100'
+                                            }
+                                        ].map((condition) => (
+                                            <div
+                                                key={condition.id}
+                                                onClick={() => setFormData({ ...formData, part_condition: condition.id })}
+                                                className={cn(
+                                                    "relative cursor-pointer rounded-3xl p-6 border-2 transition-all hover:scale-[1.02] active:scale-[0.98]",
+                                                    formData.part_condition === condition.id
+                                                        ? `border-primary-orange bg-white shadow-xl shadow-primary-orange/10 ring-4 ring-primary-orange/5`
+                                                        : "border-slate-100 bg-slate-50 hover:bg-white hover:border-slate-200"
+                                                )}
+                                            >
+                                                <div className={cn("h-12 w-12 rounded-xl flex items-center justify-center mb-4", condition.bg, condition.color)}>
+                                                    <condition.icon className="h-6 w-6" />
+                                                </div>
+                                                <h3 className="text-lg font-bold text-slate-900 mb-2">{condition.title}</h3>
+                                                <p className="text-sm font-medium text-slate-500 leading-relaxed">{condition.desc}</p>
+
+                                                {formData.part_condition === condition.id && (
+                                                    <div className="absolute top-4 right-4">
+                                                        <div className="h-6 w-6 rounded-full bg-primary-orange text-white flex items-center justify-center">
+                                                            <CheckCircle2 className="h-4 w-4" />
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    <div className="flex flex-col sm:flex-row gap-6 pt-4">
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            onClick={() => setStep(1)}
+                                            className="h-16 px-10 rounded-2xl border-primary-blue/10 text-primary-blue font-semibold hover:bg-primary-blue/5 order-2 sm:order-1 text-lg"
+                                        >
+                                            <ArrowLeft className="mr-2 h-5 w-5" /> Back
+                                        </Button>
+                                        <Button
+                                            type="button"
+                                            onClick={() => setStep(3)}
+                                            disabled={!isStep2Valid}
+                                            className="flex-1 bg-primary-blue hover:bg-hobort-blue-dark text-white font-semibold h-16 rounded-2xl shadow-2xl shadow-primary-blue/20 text-lg transition-all hover:scale-[1.01] active:scale-[0.99] order-1 sm:order-2"
+                                        >
+                                            Continue to Parts <ArrowRight className="ml-2 h-5 w-5" />
+                                        </Button>
+                                    </div>
+                                </div>
                             ) : (
                                 <div className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-500">
                                     <div className="bg-slate-50 rounded-3xl p-6 md:p-8 border border-slate-100">
@@ -479,7 +587,7 @@ export default function QuotePage() {
                                         <Button
                                             type="button"
                                             variant="outline"
-                                            onClick={() => setStep(1)}
+                                            onClick={() => setStep(2)}
                                             className="h-16 px-10 rounded-2xl border-primary-blue/10 text-primary-blue font-semibold hover:bg-primary-blue/5 order-2 sm:order-1 text-lg"
                                         >
                                             <ArrowLeft className="mr-2 h-5 w-5" /> Back

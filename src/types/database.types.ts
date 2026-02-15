@@ -278,6 +278,32 @@ export interface Database {
                     created_at?: string
                 }
             }
+            request_messages: {
+                Row: {
+                    id: string
+                    request_id: string
+                    sender_id: string
+                    message: string
+                    created_at: string
+                    is_internal: boolean
+                }
+                Insert: {
+                    id?: string
+                    request_id: string
+                    sender_id: string
+                    message: string
+                    created_at?: string
+                    is_internal?: boolean
+                }
+                Update: {
+                    id?: string
+                    request_id?: string
+                    sender_id?: string
+                    message?: string
+                    created_at?: string
+                    is_internal?: boolean
+                }
+            }
         }
     }
 }

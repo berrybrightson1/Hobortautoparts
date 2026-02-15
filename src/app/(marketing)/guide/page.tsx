@@ -15,7 +15,21 @@ import { VideoModal } from "@/components/marketing/video-modal"
 
 const updates = [
     {
-        version: "v1.9.0",
+        version: "v2.0.0",
+        date: "February 15, 2026",
+        time: "01:15 PM",
+        title: "Real-time Communication & Premium UI",
+        description: "Transformed the platform into a high-fidelity communication ecosystem with real-time messaging and symmetrical modal architecture.",
+        changes: [
+            "Integrated Live Feedback System: Real-time chat between Agents and Customers powered by Supabase.",
+            "Launched Apple-style Symmetrical Modals: Redesigned window architecture for better focus and aesthetics.",
+            "Eliminated Modal Scrolling: Optimized vertical layout with flex-grow containers and scroll-free viewports.",
+            "Enhanced Accessibility: Universal contrast uplift for labels (slate-400 -> slate-600) across all dashboards.",
+            "Unified Admin Controls: Direct 'Chat' access from all data tables and dashboards.",
+        ]
+    },
+    {
+        version: "v1.9.1",
         date: "February 15, 2026",
         time: "11:30 AM",
         title: "Platform Guide & Tracking Intelligence",
@@ -263,7 +277,7 @@ export default function GuidePage() {
                                 <Card className="bg-slate-900 text-white border-none shadow-xl">
                                     <CardHeader>
                                         <CardTitle className="text-lg font-bold tracking-tight">Dashboard Overview</CardTitle>
-                                        <CardDescription className="text-slate-400">View all active and tracking numbers. Copy Reference IDs instantly.</CardDescription>
+                                        <CardDescription className="text-slate-400">View active requests, track shipments and chat directly with your sourcing agent in real-time.</CardDescription>
                                     </CardHeader>
                                     <CardContent>
                                         <Link href="/portal/customer">
@@ -306,9 +320,9 @@ export default function GuidePage() {
                                     </CardHeader>
                                     <CardContent>
                                         <ul className="space-y-2 text-sm text-slate-500 mb-4">
-                                            <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-500" /> View Pending Requests</li>
-                                            <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-500" /> Generate Price Quotes</li>
-                                            <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-500" /> Manage Customer Status</li>
+                                            <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-500" /> Real-time Customer Messaging</li>
+                                            <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-500" /> Generate Symmetrical Price Quotes</li>
+                                            <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-500" /> Manage Advanced Logistics & Feedback</li>
                                         </ul>
                                         <Link href="/portal/admin">
                                             <Button variant="ghost" className="w-full text-xs font-bold uppercase tracking-wide text-slate-400 hover:text-slate-900">
@@ -352,8 +366,8 @@ export default function GuidePage() {
                                     <div className="flex gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100">
                                         <div className="h-8 w-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-900 font-bold shrink-0 shadow-sm">2</div>
                                         <div>
-                                            <h4 className="font-bold tracking-tight text-slate-900">Wait for Quote</h4>
-                                            <p className="text-sm text-slate-500 mt-1">Agents review availability and pricing. You receive an email alert.</p>
+                                            <h4 className="font-bold tracking-tight text-slate-900">Clarify & Quote</h4>
+                                            <p className="text-sm text-slate-500 mt-1">Chat live with agents to confirm part details. once finalized, you receive your quote alert.</p>
                                         </div>
                                     </div>
                                     <div className="flex gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100">

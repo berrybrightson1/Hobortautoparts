@@ -10,7 +10,8 @@ import {
     Bell,
     Activity,
     Loader2,
-    Calendar
+    Calendar,
+    ChevronRight
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { AnalyticsChart } from "@/components/admin/analytics-chart"
@@ -146,10 +147,10 @@ export default function AdminPortal() {
         <div className="flex flex-col gap-10 max-w-7xl mx-auto pb-10 animate-in fade-in duration-700">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div className="flex flex-col gap-2">
-                    <h2 className="text-2xl sm:text-3xl font-semibold text-slate-900 tracking-tight flex items-center gap-4">
+                    <h2 className="text-2xl sm:text-3xl font-semibold text-slate-900 tracking-tighter flex items-center gap-4">
                         System Control <ShieldAlert className="h-6 w-6 sm:h-8 sm:w-8 text-primary-orange" />
                     </h2>
-                    <p className="text-slate-500 font-medium text-sm sm:text-base">Global platform health and transaction monitoring.</p>
+                    <p className="text-slate-500 font-bold text-sm sm:text-base tracking-tight">Global platform health and transaction monitoring.</p>
                 </div>
                 {isLoading && (
                     <div className="flex items-center gap-2 text-primary-orange font-bold text-[10px] uppercase tracking-widest bg-orange-50 px-4 py-2 rounded-full border border-orange-100">
@@ -160,12 +161,20 @@ export default function AdminPortal() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {stats.map((stat) => (
-                    <div key={stat.label} className={cn(
-                        "p-6 sm:p-8 rounded-[1.5rem] sm:rounded-[2.5rem] border shadow-sm flex items-center justify-between group hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-500 bg-white",
-                        stat.label.includes("Revenue") ? "hover:border-green-100" :
-                            stat.label.includes("Users") ? "hover:border-blue-100" :
-                                "hover:border-orange-100"
-                    )}>
+                    <Link
+                        key={stat.label}
+                        href={
+                            stat.label === "Active Requests" ? "/portal/admin/requests" :
+                                stat.label === "Platform Users" ? "/portal/users" :
+                                    stat.label === "Sourcing Success" ? "/portal/admin/orders" : "#"
+                        }
+                        className={cn(
+                            "p-6 sm:p-8 rounded-[1.5rem] sm:rounded-[2.5rem] border shadow-sm flex items-center justify-between group hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-500 bg-white cursor-pointer active:scale-95",
+                            stat.label.includes("Revenue") ? "hover:border-green-100" :
+                                stat.label.includes("Users") ? "hover:border-blue-100" :
+                                    "hover:border-orange-100"
+                        )}
+                    >
                         <div className="space-y-1">
                             <p className={cn(
                                 "text-[10px] sm:text-[10px] font-bold uppercase tracking-[0.2em]",
@@ -185,7 +194,7 @@ export default function AdminPortal() {
                         )}>
                             <stat.icon className="h-6 w-6 sm:h-8 sm:w-8" />
                         </div>
-                    </div>
+                    </Link>
                 ))}
             </div>
 
@@ -217,7 +226,11 @@ export default function AdminPortal() {
                     <div className="space-y-4">
                         {recentActivity.length > 0 ? (
                             recentActivity.map((item) => (
-                                <div key={item.id} className="flex items-start gap-4 p-4 hover:bg-slate-50 rounded-3xl transition-colors border border-transparent hover:border-slate-100 group cursor-default">
+                                <Link
+                                    key={item.id}
+                                    href={`/portal/admin/requests?id=${item.id}`}
+                                    className="flex items-start gap-4 p-4 hover:bg-slate-50 rounded-3xl transition-colors border border-transparent hover:border-slate-100 group cursor-pointer"
+                                >
                                     <div className="h-12 w-12 rounded-2xl bg-blue-50/50 flex items-center justify-center shrink-0 group-hover:bg-white group-hover:shadow-md transition-all">
                                         <Bell className="h-5 w-5 text-blue-500" />
                                     </div>
@@ -227,7 +240,8 @@ export default function AdminPortal() {
                                             {format(new Date(item.created_at), 'MMM dd, HH:mm')} • {item.profiles?.full_name || 'Anonymous User'}
                                         </p>
                                     </div>
-                                </div>
+                                    <ChevronRight className="h-4 w-4 text-slate-300 self-center opacity-0 group-hover:opacity-100 transition-all mr-2" />
+                                </Link>
                             ))
                         ) : (
                             <div className="flex flex-col items-center justify-center py-10 text-center space-y-3 opacity-50">

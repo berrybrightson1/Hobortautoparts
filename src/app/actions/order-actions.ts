@@ -33,13 +33,14 @@ export async function getAdminOrders() {
                     phone_number
                 ),
                 quotes:quote_id (
+                    request_id,
                     total_amount,
                     item_price,
                     shipping_cost,
                     service_fee,
                     currency
                 ),
-                shipments:id (
+                shipments (
                     tracking_number,
                     status
                 )
