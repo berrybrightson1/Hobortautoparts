@@ -132,7 +132,7 @@ export default function CustomerTrackingPage() {
                                             <h3 className="text-2xl font-semibold tracking-tight text-slate-900 truncate uppercase tracking-widest">
                                                 #{shipment.tracking_number}
                                             </h3>
-                                            <Badge className="w-fit mx-auto md:mx-0 px-4 py-1.5 bg-blue-50 text-blue-600 rounded-lg border-none shadow-sm font-medium text-[10px] uppercase tracking-widest">
+                                            <Badge className="w-fit mx-auto md:mx-0 px-4 py-1.5 bg-blue-50 text-blue-600 rounded-lg border-none shadow-sm font-medium text-[10px] uppercase tracking-widest whitespace-nowrap">
                                                 {shipment.status.replace(/_/g, ' ')}
                                             </Badge>
                                         </div>

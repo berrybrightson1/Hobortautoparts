@@ -10,7 +10,7 @@ import { Loader2, Send, MessageSquare } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
 import { toast } from "sonner"
-import { sendNotification, notifyAdmins } from "@/lib/notifications"
+import { sendNotificationAction, notifyAdminsAction } from "@/app/actions/notification-actions"
 
 interface FeedbackPanelProps {
     requestId: string
@@ -126,7 +126,7 @@ export function FeedbackPanel({ requestId, currentUserId, isAgent = false }: Fee
 
                     // Notify Admins (Always, if from customer or agent)
                     if (isCustomer || isAgent) {
-                        await notifyAdmins({
+                        await notifyAdminsAction({
                             title: `New Message on ${request.part_name}`,
                             message: `${participantName}: ${newMessage.trim().substring(0, 50)}${newMessage.length > 50 ? '...' : ''}`,
                             type: 'system'
@@ -136,7 +136,7 @@ export function FeedbackPanel({ requestId, currentUserId, isAgent = false }: Fee
                     // Notify Counter-party
                     const targetId = isCustomer ? request.agent_id : request.user_id
                     if (targetId && targetId !== currentUserId) {
-                        await sendNotification({
+                        await sendNotificationAction({
                             userId: targetId,
                             title: `New Message: ${request.part_name}`,
                             message: newMessage.trim().substring(0, 100),

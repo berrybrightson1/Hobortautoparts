@@ -17,7 +17,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { supabase } from "@/lib/supabase"
 import { PartLibraryPicker } from "@/components/marketing/part-library-picker"
-import { sendNotification, notifyAdmins } from "@/lib/notifications"
+import { notifyAdminsAction } from "@/app/actions/notification-actions"
 
 // VIN Validation Helper
 function validateVIN(vin: string) {
@@ -194,7 +194,7 @@ export default function QuotePage() {
 
             // Notify all Admins of new request
             try {
-                await notifyAdmins({
+                await notifyAdminsAction({
                     title: 'New Sourcing Request',
                     message: `New request submitted for ${formData.part_name} (${vehicle_info})`,
                     type: 'system'

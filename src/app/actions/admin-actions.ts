@@ -2,6 +2,10 @@
 
 import { createClient } from '@supabase/supabase-js'
 import { revalidatePath } from 'next/cache'
+import { requireAdmin } from '@/lib/auth-checks'
+import { sendEmail } from '@/lib/email'
+import { WelcomeEmail } from '@/emails/welcome-email'
+import { sendNotification } from '@/lib/notifications'
 
 // Initialize Admin Client (Service Role)
 // ONLY for use in Server Actions. Never export this or use on client.
@@ -24,6 +28,7 @@ function getAdminClient() {
 
 export async function updateUserRole(userId: string, newRole: 'customer' | 'agent' | 'admin') {
     try {
+        await requireAdmin()
         const supabaseAdmin = getAdminClient()
         const { error } = await supabaseAdmin.auth.admin.updateUserById(
             userId,
@@ -39,6 +44,16 @@ export async function updateUserRole(userId: string, newRole: 'customer' | 'agen
         if (error) throw error
         if (profileError) throw profileError
 
+        // Notify user of role change
+        if (newRole === 'agent') {
+            await sendNotification({
+                userId,
+                title: 'Agent Application Approved',
+                message: 'Congratulations! Your application to become a Hobort Agent has been approved. You now have access to the Agent Portal.',
+                type: 'system'
+            })
+        }
+
         revalidatePath('/portal/users')
         return { success: true }
     } catch (error: any) {
@@ -49,6 +64,7 @@ export async function updateUserRole(userId: string, newRole: 'customer' | 'agen
 
 export async function createUser(formData: any) {
     try {
+        await requireAdmin()
         const { email, password, full_name, role, phone_number } = formData
 
         const supabaseAdmin = getAdminClient()
@@ -81,6 +97,20 @@ export async function createUser(formData: any) {
             if (profileError) {
                 console.error("Profile Upsert Error (Non-fatal):", profileError)
             }
+
+            // Send Welcome Email
+            try {
+                await sendEmail({
+                    to: email,
+                    subject: "Welcome to Hobort Auto Parts Express",
+                    react: WelcomeEmail({
+                        name: full_name || "Partner",
+                        role: role
+                    })
+                })
+            } catch (emailError) {
+                console.error("Failed to send welcome email:", emailError)
+            }
         }
 
         revalidatePath('/portal/users')
@@ -94,6 +124,7 @@ export async function createUser(formData: any) {
 
 export async function getUserSourcingHistory(userId: string) {
     try {
+        await requireAdmin()
         const supabaseAdmin = getAdminClient()
         const { data, error } = await supabaseAdmin
             .from('sourcing_requests')
@@ -113,6 +144,7 @@ export async function getUserSourcingHistory(userId: string) {
 
 export async function getUsersWithEmails() {
     try {
+        await requireAdmin()
         const supabaseAdmin = getAdminClient()
 
         // Fetch profiles

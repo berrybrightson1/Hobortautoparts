@@ -2,6 +2,7 @@
 
 import { createClient } from '@supabase/supabase-js'
 import { revalidatePath } from 'next/cache'
+import { requireAdmin } from '@/lib/auth-checks'
 
 // Initialize Admin Client
 function getAdminClient() {
@@ -21,9 +22,9 @@ function getAdminClient() {
 }
 
 export async function getAdminOrders() {
-    const supabase = getAdminClient()
-
     try {
+        await requireAdmin()
+        const supabase = getAdminClient()
         const { data, error } = await supabase
             .from('orders')
             .select(`
@@ -57,9 +58,9 @@ export async function getAdminOrders() {
 }
 
 export async function updateOrderStatus(orderId: string, newStatus: string) {
-    const supabase = getAdminClient()
-
     try {
+        await requireAdmin()
+        const supabase = getAdminClient()
         const { error } = await supabase
             .from('orders')
             .update({ status: newStatus })

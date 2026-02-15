@@ -18,7 +18,7 @@ import { FeedbackPanel } from "@/components/portal/feedback-panel"
 import { X, Truck, AlertCircle } from "lucide-react"
 import { getShipmentByOrderId } from "@/app/actions/shipment-actions"
 import { ShipmentTimeline } from "@/components/portal/shipment-timeline"
-import { sendNotification, notifyAdmins } from "@/lib/notifications"
+import { sendNotificationAction, notifyAdminsAction } from "@/app/actions/notification-actions"
 import { SearchBar } from "@/components/portal/search-bar"
 import { Pagination } from "@/components/portal/pagination"
 
@@ -171,7 +171,7 @@ export default function CustomerDashboard() {
             // 3. Notify Admin and Agent
             try {
                 // Notify all Admins
-                await notifyAdmins({
+                await notifyAdminsAction({
                     title: 'New Order Payment',
                     message: `Customer accepted quote and paid for ${selectedRequest.part_name}.`,
                     type: 'order'
@@ -179,7 +179,7 @@ export default function CustomerDashboard() {
 
                 // Notify assigned agent if exists
                 if (selectedRequest.agent_id) {
-                    await sendNotification({
+                    await sendNotificationAction({
                         userId: selectedRequest.agent_id,
                         title: 'Quote Accepted',
                         message: `Customer accepted quote for ${selectedRequest.part_name}`,

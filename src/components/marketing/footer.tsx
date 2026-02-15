@@ -47,9 +47,9 @@ export function Footer() {
             <div className="container max-w-[1400px] mx-auto px-6 mt-10 flex flex-col md:flex-row items-center justify-between gap-6 text-[10px] text-white/40 font-medium uppercase tracking-widest">
                 <p>&copy; {new Date().getFullYear()} Hobort. All rights reserved.</p>
                 <div className="flex flex-wrap justify-center gap-x-8 gap-y-2">
-                    <Link href="/guide" className="hover:text-primary-orange transition-colors">Platform Guide</Link>
-                    <span>Terms & Privacy</span>
-                    <span>Info@hobortautopartsexpress.com</span>
+                    <Link href="/marketing/guide" className="hover:text-primary-orange transition-colors">Platform Guide</Link>
+                    <Link href="/privacy-policy" className="hover:text-primary-orange transition-colors">Terms & Privacy</Link>
+                    <a href="mailto:Info@hobortautopartsexpress.com" className="hover:text-primary-orange transition-colors">Info@hobortautopartsexpress.com</a>
                 </div>
             </div>
         </footer>

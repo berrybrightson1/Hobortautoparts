@@ -38,7 +38,7 @@ import {
 import { Label } from "@/components/ui/label"
 import { useAuth } from "@/components/auth/auth-provider"
 import { useRouter } from "next/navigation"
-import { sendNotification, notifyAdmins } from "@/lib/notifications"
+import { sendNotificationAction, notifyAdminsAction } from "@/app/actions/notification-actions"
 import { FeedbackPanel } from "@/components/portal/feedback-panel"
 import { ResponsiveModal } from "@/components/ui/responsive-modal"
 import { Activity } from "lucide-react"
@@ -189,11 +189,11 @@ export default function SourcingRequestsPage() {
             if (error) throw error
 
             // Notify the assigned agent
-            await sendNotification({
+            await sendNotificationAction({
                 userId: agentId,
                 title: 'New Request Allocated',
                 message: `You have been assigned a new sourcing request: ${requests.find(r => r.id === requestId)?.part_name || 'Unidentified Part'}.`,
-                type: 'request'
+                type: 'request' // Use literal string if type error persists, or ensure type definition match
             })
 
             toast.success("Agent assigned successfully")
@@ -218,7 +218,7 @@ export default function SourcingRequestsPage() {
             // Notify the customer
             const request = requests.find(r => r.id === requestId)
             if (request) {
-                await sendNotification({
+                await sendNotificationAction({
                     userId: request.user_id,
                     title: 'Request Status Updated',
                     message: `The status of your request for "${request.part_name}" has been updated to ${newStatus.toUpperCase()}.`,
@@ -349,7 +349,7 @@ export default function SourcingRequestsPage() {
 
             // Notify the customer of the new quote
             try {
-                await sendNotification({
+                await sendNotificationAction({
                     userId: selectedRequest.user_id,
                     title: 'New Quote Available',
                     message: `An official quote has been generated for your request: ${selectedRequest.part_name}.`,
@@ -357,7 +357,7 @@ export default function SourcingRequestsPage() {
                 })
 
                 // Relay to all Admins
-                await notifyAdmins({
+                await notifyAdminsAction({
                     title: 'Quote Sent to Customer',
                     message: `A new quote has been generated for ${selectedRequest.part_name} by ${profile?.full_name || 'an Agent'}.`,
                     type: 'order'

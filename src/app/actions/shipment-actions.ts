@@ -3,6 +3,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { revalidatePath } from 'next/cache'
 import { sendNotification } from '@/lib/notifications'
+import { requireAdmin, requireUser } from '@/lib/auth-checks'
 
 // Initialize Admin Client (Service Role)
 function getAdminClient() {
@@ -22,9 +23,9 @@ function getAdminClient() {
 }
 
 export async function getShipments() {
-    const supabase = getAdminClient()
-
     try {
+        await requireAdmin()
+        const supabase = getAdminClient()
         const { data, error } = await supabase
             .from('shipments')
             .select(`
@@ -57,9 +58,10 @@ export async function createShipment(formData: {
     origin_hub?: string,
     destination_hub?: string
 }) {
-    const supabase = getAdminClient()
-
     try {
+        await requireAdmin()
+        const supabase = getAdminClient()
+
         // 1. Create Shipment Record
         const { data: shipment, error: shipmentError } = await supabase
             .from('shipments')
@@ -125,9 +127,10 @@ export async function updateShipmentStatus(
     location: string,
     description: string
 ) {
-    const supabase = getAdminClient()
-
     try {
+        await requireAdmin()
+        const supabase = getAdminClient()
+
         // 1. Update Main Status
         const { error: updateError } = await supabase
             .from('shipments')
@@ -181,12 +184,10 @@ export async function updateShipmentStatus(
 
 // Fetch Eligible Orders (Paid/Processing) that don't have shipments yet?
 // Or just allow searching orders.
-// Fetch Eligible Orders (Paid/Processing) that don't have shipments yet?
-// Or just allow searching orders.
 export async function searchOrdersForShipment(query: string = '') {
-    const supabase = getAdminClient()
-
     try {
+        await requireAdmin()
+        const supabase = getAdminClient()
         const { data, error } = await supabase
             .from('orders')
             .select(`
@@ -217,9 +218,28 @@ export async function searchOrdersForShipment(query: string = '') {
 
 // Fetch Shipment History Events
 export async function getShipmentEvents(shipmentId: string) {
-    const supabase = getAdminClient()
-
     try {
+        const user = await requireUser() // Must be logged in
+        const supabase = getAdminClient() // Using admin client, need to verify access if restricting to owner
+
+        // Allowed if user is admin, agent, or the owner of the shipment
+
+        // 1. Fetch shipment owner
+        const { data: shipment, error: fetchError } = await supabase
+            .from('shipments')
+            .select('orders(user_id)')
+            .eq('id', shipmentId)
+            .single()
+
+        if (fetchError) throw fetchError
+
+        const ownerId = (shipment?.orders as any)?.user_id
+
+        // 2. Verify Access
+        if (user.role !== 'admin' && user.role !== 'agent' && user.id !== ownerId) {
+            throw new Error("Unauthorized: Access denied")
+        }
+
         const { data, error } = await supabase
             .from('shipment_events')
             .select('*')
@@ -236,9 +256,24 @@ export async function getShipmentEvents(shipmentId: string) {
 
 // Fetch Shipment by Order ID (for Customer/Agent Portal)
 export async function getShipmentByOrderId(orderId: string) {
-    const supabase = getAdminClient()
-
     try {
+        const user = await requireUser()
+        const supabase = getAdminClient()
+
+        // 1. Check ownership of the order FIRST
+        const { data: order, error: orderError } = await supabase
+            .from('orders')
+            .select('user_id')
+            .eq('id', orderId)
+            .single()
+
+        if (orderError) throw orderError
+
+        // 2. Verify Access
+        if (user.role !== 'admin' && user.role !== 'agent' && order?.user_id !== user.id) {
+            throw new Error("Unauthorized: Access denied")
+        }
+
         const { data, error } = await supabase
             .from('shipments')
             .select(`
