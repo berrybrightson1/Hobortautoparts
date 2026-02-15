@@ -19,7 +19,8 @@ import {
     ChevronRight,
     Search,
     Loader2,
-    UserCircle
+    UserCircle,
+    Truck
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -42,6 +43,8 @@ const NAV_ITEMS = {
     ],
     admin: [
         { name: "Overview", href: "/portal/admin", icon: LayoutDashboard },
+        { name: "Orders", href: "/portal/admin/orders", icon: ShoppingBag },
+        { name: "Shipments", href: "/portal/admin/shipments", icon: Truck },
         { name: "Sourcing Requests", href: "/portal/admin/requests", icon: PackageSearch },
         { name: "Approvals", href: "/portal/admin/approvals", icon: ShieldAlert },
         { name: "User Network", href: "/portal/users", icon: Users },
@@ -78,6 +81,20 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
             } else if (path.startsWith('/portal/customer') && role === 'agent') {
                 router.push('/portal/agent')
             }
+
+            // Check for missing phone number and prompt update
+            if (!profile.phone_number) {
+                toast.dismiss() // Clean up any previous toasts to avoid clutter
+                toast.error("Action Required: Phone Number Missing", {
+                    description: "Please update your profile with a valid phone number to continue receiving important updates.",
+                    duration: Infinity, // Persistent until resolved
+                    action: {
+                        label: "Update Now",
+                        onClick: () => router.push('/portal/profile')
+                    },
+                    // Prevent closing without action if possible, though sonner doesn't strictly enforce "un-closable"
+                })
+            }
         }
     }, [user, profile, loading, router, pathname])
 
@@ -100,7 +117,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
     const handleSignOut = async () => {
         try {
             await signOut()
-            toast.success("Identity Disconnected", {
+            toast.success("Logged out successfully", {
                 description: "Your session has been securely terminated."
             })
             router.push('/login')

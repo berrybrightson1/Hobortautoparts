@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Switch } from "@/components/ui/switch"
-import { User, Shield, Key, Loader2, Save, Unlock, Moon, Minimize2, Bell, Mail, Settings2, Globe, Server } from "lucide-react"
+import { User, Shield, Key, Loader2, Save, Unlock, Moon, Minimize2, Bell, Mail, Settings2, Globe, Server, CheckCircle2 } from "lucide-react"
 import { useAuth } from "@/components/auth/auth-provider"
 import { useState, useEffect } from "react"
 import { supabase } from "@/lib/supabase"
@@ -14,8 +14,9 @@ import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 
 export default function UnifiedSettingsPage() {
-    const { user, profile } = useAuth()
+    const { user, profile, refreshProfile } = useAuth()
     const [isSavingProfile, setIsSavingProfile] = useState(false)
+    const [isSaved, setIsSaved] = useState(false)
     const [isUpdatingPassword, setIsUpdatingPassword] = useState(false)
     const [isLoadingPrefs, setIsLoadingPrefs] = useState(true)
 
@@ -69,13 +70,20 @@ export default function UnifiedSettingsPage() {
     const handleUpdateProfile = async () => {
         if (!user) return
         setIsSavingProfile(true)
+        setIsSaved(false)
         try {
             const { error } = await supabase
                 .from('profiles')
                 .update({ full_name: fullName, phone_number: phoneNumber })
                 .eq('id', user.id)
             if (error) throw error
+
+            await refreshProfile() // Update global context immediately so "Missing Phone" toast vanishes
             toast.success("Profile details updated")
+
+            setIsSaved(true)
+            setTimeout(() => setIsSaved(false), 3000)
+
         } catch (error: any) {
             toast.error("Update failed", { description: error.message })
         } finally {
@@ -161,7 +169,7 @@ export default function UnifiedSettingsPage() {
                 <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-slate-900 bg-gradient-to-r from-slate-900 to-slate-500 bg-clip-text text-transparent">
                     {profile?.role === 'admin' ? 'Console & Profile' : 'Account & Settings'}
                 </h2>
-                <p className="text-slate-500 font-medium text-base sm:text-lg">Manage your global identity, portal behavior, and security protocols.</p>
+                <p className="text-slate-500 font-medium text-base sm:text-lg">Manage your personal profile, portal settings, and security preferences.</p>
             </div>
 
             <Tabs defaultValue="account" className="w-full">
@@ -179,7 +187,7 @@ export default function UnifiedSettingsPage() {
                 <TabsContent value="account">
                     <Card className="border-slate-100 shadow-2xl shadow-slate-200/50 rounded-[2rem] sm:rounded-[3rem] overflow-hidden bg-white/80 backdrop-blur-xl">
                         <CardHeader className="p-6 sm:p-10 pb-4 sm:pb-6 border-b border-slate-50">
-                            <CardTitle className="text-xl sm:text-2xl font-bold text-slate-900">Identity Details</CardTitle>
+                            <CardTitle className="text-xl sm:text-2xl font-bold text-slate-900">Profile Details</CardTitle>
                             <CardDescription className="text-slate-500 text-sm sm:text-base">Your official platform representation and core contact data.</CardDescription>
                         </CardHeader>
                         <CardContent className="p-6 sm:p-10 space-y-8 sm:space-y-10">
@@ -188,8 +196,8 @@ export default function UnifiedSettingsPage() {
                                     <User className="h-10 w-10 sm:h-12 sm:w-12" />
                                 </div>
                                 <div className="space-y-2 relative z-10 text-center sm:text-left">
-                                    <h4 className="font-black text-lg sm:text-xl text-slate-900">Portal Identity</h4>
-                                    <p className="text-xs sm:text-sm text-slate-500 font-bold max-w-sm leading-relaxed">Identity is tied to encrypted email metadata. Avatars are synchronized via global protocols for: <span className="text-primary-blue break-all">{user?.email}</span></p>
+                                    <h4 className="font-bold text-lg sm:text-xl text-slate-900">User Profile</h4>
+                                    <p className="text-xs sm:text-sm text-slate-500 font-medium max-w-sm leading-relaxed">Your profile is linked to your email address. Updates are synchronized across the portal for: <span className="text-primary-blue break-all">{user?.email}</span></p>
                                 </div>
                                 <div className="absolute right-0 top-0 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none" />
                             </div>
@@ -206,9 +214,13 @@ export default function UnifiedSettingsPage() {
                             </div>
                         </CardContent>
                         <CardFooter className="bg-slate-50/80 p-6 sm:p-10 flex justify-end">
-                            <Button onClick={handleUpdateProfile} disabled={isSavingProfile} className="h-12 sm:h-14 w-full sm:w-auto px-10 rounded-xl sm:rounded-2xl bg-primary-blue hover:bg-blue-700 shadow-xl shadow-blue-500/20 font-black gap-3 transition-all active:scale-95 text-xs sm:text-base">
-                                {isSavingProfile ? <Loader2 className="animate-spin h-5 w-5" /> : <Save className="h-5 w-5" />}
-                                Synchronize Identity
+                            <Button onClick={handleUpdateProfile} disabled={isSavingProfile || isSaved} className={cn(
+                                "h-12 sm:h-14 w-full sm:w-auto px-10 rounded-xl sm:rounded-2xl shadow-xl font-black gap-3 transition-all active:scale-95 text-xs sm:text-base",
+                                isSaved ? "bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/20 text-white" : "bg-primary-blue hover:bg-blue-700 shadow-blue-500/20"
+                            )}>
+                                {isSavingProfile ? <Loader2 className="animate-spin h-5 w-5" /> :
+                                    isSaved ? <CheckCircle2 className="h-5 w-5" /> : <Save className="h-5 w-5" />}
+                                {isSaved ? "Saved Successfully" : "Update Profile"}
                             </Button>
                         </CardFooter>
                     </Card>

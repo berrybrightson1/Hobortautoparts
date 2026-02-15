@@ -45,13 +45,13 @@ export function BrandedSelect({
     }, [value, options])
 
     return (
-        <div className={cn("space-y-2.5 relative", className)} ref={containerRef}>
+        <div className={cn("space-y-1.5 relative", className)} ref={containerRef}>
             <label className="ml-1 text-[10px] font-semibold text-primary-blue/80 uppercase tracking-widest">{label}</label>
             <button
                 type="button"
                 onClick={() => !disabled && setIsOpen(!isOpen)}
                 className={cn(
-                    "flex items-center justify-between w-full h-14 px-5 rounded-2xl border-primary-blue/10 bg-primary-blue/5 transition-all text-left",
+                    "flex items-center justify-between w-full h-12 px-4 rounded-xl border-primary-blue/10 bg-primary-blue/5 transition-all text-left",
                     isOpen ? "bg-white border-primary-blue/20 ring-4 ring-primary-blue/5" : "hover:bg-primary-blue/10",
                     disabled && "opacity-50 cursor-not-allowed",
                     value ? "text-primary-blue font-medium" : "text-primary-blue/40 font-medium"

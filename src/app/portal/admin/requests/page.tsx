@@ -20,7 +20,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Search, Filter, MoreHorizontal, Package, CheckCircle2, Clock, AlertCircle, Inbox, Loader2, ArrowRight, DollarSign, Calculator, Info, Users, Truck } from "lucide-react"
+import { Search, Filter, MoreHorizontal, Package, CheckCircle2, Clock, AlertCircle, Inbox, Loader2, ArrowRight, DollarSign, Calculator, Info, Users, Truck, RefreshCw, Copy as CopyIcon } from "lucide-react"
 import { useState, useEffect, useMemo } from "react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
@@ -258,6 +258,14 @@ export default function SourcingRequestsPage() {
                     <p className="text-slate-500 font-medium">Manage and respond to part sourcing requests from customers.</p>
                 </div>
                 <div className="flex items-center gap-2">
+                    <Button
+                        variant="outline"
+                        className="rounded-xl border-slate-200 text-slate-600 hover:text-slate-900"
+                        onClick={fetchRequests}
+                        disabled={isLoading}
+                    >
+                        <RefreshCw className={cn("mr-2 h-4 w-4", isLoading && "animate-spin")} /> Refresh
+                    </Button>
                     <Button variant="outline" className="rounded-xl border-slate-200 text-slate-600 hover:text-slate-900" disabled={requests.length === 0}>
                         <Filter className="mr-2 h-4 w-4" /> Export Requests
                     </Button>
@@ -420,63 +428,68 @@ export default function SourcingRequestsPage() {
 
             {/* Quote Builder Modal */}
             <Dialog open={showQuoteModal} onOpenChange={setShowQuoteModal}>
-                <DialogContent className="sm:max-w-[550px] w-[95vw] p-0 overflow-hidden border-0 shadow-2xl rounded-[2.5rem] sm:rounded-[3rem] bg-white text-slate-900 max-h-[85vh] sm:max-h-[90vh] flex flex-col gap-0">
-                    <DialogHeader className="p-8 sm:p-10 sm:pt-12 text-left bg-slate-50/50 border-b border-slate-100 shrink-0">
-                        <div className="flex items-center gap-4">
-                            <div className="h-14 w-14 rounded-2xl bg-orange-100 flex items-center justify-center text-orange-600 shadow-sm border border-orange-200">
-                                <DollarSign className="h-8 w-8" />
-                            </div>
-                            <div className="space-y-1">
-                                <DialogTitle className="text-3xl font-black uppercase tracking-tighter leading-none text-slate-900">Issue Quote</DialogTitle>
-                                <DialogDescription className="text-slate-500 font-bold text-sm italic">
-                                    Finalizing financial breakdown for <span className="text-primary-blue font-bold italic">"{selectedRequest?.part_name}"</span>.
-                                </DialogDescription>
-                            </div>
-                        </div>
-                    </DialogHeader>
-
-                    <div className="p-8 sm:p-10 space-y-8 flex-1 overflow-y-auto">
-                        {/* Request Summary Card */}
-                        <div className="bg-slate-50 rounded-3xl p-6 border border-slate-100 space-y-4">
-                            <div className="flex items-center justify-between">
-                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Customer Entity</span>
-                                <Badge variant="outline" className="rounded-full bg-white text-slate-900 border-slate-200 px-4 py-1 font-bold">
-                                    {selectedRequest?.profiles?.full_name || 'Anonymous'}
+                <DialogContent className="sm:max-w-[425px] p-0 overflow-hidden border-0 shadow-2xl rounded-3xl bg-white text-slate-900 dark:bg-white dark:text-slate-900 gap-0">
+                    <DialogHeader className="p-6 pb-0">
+                        <div className="flex items-center justify-between">
+                            <DialogTitle className="text-2xl font-bold text-slate-900 tracking-tight">Create Quote</DialogTitle>
+                            <div className="flex items-center gap-2">
+                                <Badge
+                                    variant="outline"
+                                    className="font-mono text-xs cursor-pointer hover:bg-slate-100 transition-colors flex items-center gap-1.5 pr-2.5"
+                                    onClick={() => {
+                                        if (selectedRequest?.id) {
+                                            navigator.clipboard.writeText(selectedRequest.id)
+                                            toast.success("Reference ID copied to clipboard")
+                                        }
+                                    }}
+                                >
+                                    Ref: {selectedRequest?.id.slice(0, 8)}
+                                    <CopyIcon className="h-3 w-3 text-slate-400" />
                                 </Badge>
                             </div>
-                            <div className="flex items-center justify-between">
-                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Vehicle Instance</span>
-                                <span className="text-xs font-bold text-slate-600 tracking-tight">{selectedRequest?.vehicle_info || 'Global Sync'}</span>
+                        </div>
+                        <DialogDescription className="text-slate-500 font-medium text-sm mt-1.5">
+                            Set pricing for <span className="font-semibold text-slate-700">{selectedRequest?.part_name}</span>.
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <div className="p-6 space-y-6">
+                        {/* Request Summary */}
+                        <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 flex flex-col gap-3">
+                            <div className="flex justify-between items-center text-sm">
+                                <span className="text-slate-500 font-medium">Customer</span>
+                                <span className="font-semibold text-slate-900">{selectedRequest?.profiles?.full_name || 'Anonymous'}</span>
+                            </div>
+                            <div className="h-px bg-slate-200/50" />
+                            <div className="flex justify-between items-center text-sm">
+                                <span className="text-slate-500 font-medium">Vehicle</span>
+                                <span className="font-semibold text-slate-900">{selectedRequest?.vehicle_info || 'N/A'}</span>
                             </div>
                         </div>
 
-                        {/* Input Fields */}
-                        <div className="grid grid-cols-2 gap-6">
-                            <div className="space-y-3">
-                                <Label className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Net Price ($)</Label>
-                                <div className="relative group">
-                                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-primary-blue transition-colors">
-                                        <DollarSign className="h-5 w-5" />
-                                    </div>
+                        {/* Inputs */}
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label className="text-xs font-semibold text-slate-500">Item Price ($)</Label>
+                                <div className="relative">
+                                    <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                                     <Input
                                         type="number"
                                         placeholder="0.00"
-                                        className="h-16 pl-12 rounded-[1.25rem] border-slate-100 bg-slate-50 focus:bg-white focus:ring-8 focus:ring-blue-500/10 transition-all font-bold text-xl"
+                                        className="pl-9 h-11 rounded-xl border-slate-200 focus:border-blue-500 font-medium"
                                         value={quoteData.item_price}
                                         onChange={(e) => setQuoteData({ ...quoteData, item_price: e.target.value })}
                                     />
                                 </div>
                             </div>
-                            <div className="space-y-3">
-                                <Label className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Logistics ($)</Label>
-                                <div className="relative group">
-                                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-primary-blue transition-colors">
-                                        <Truck className="h-5 w-5" />
-                                    </div>
+                            <div className="space-y-2">
+                                <Label className="text-xs font-semibold text-slate-500">Logistics ($)</Label>
+                                <div className="relative">
+                                    <Truck className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                                     <Input
                                         type="number"
                                         placeholder="0.00"
-                                        className="h-16 pl-12 rounded-[1.25rem] border-slate-100 bg-slate-50 focus:bg-white focus:ring-8 focus:ring-blue-500/10 transition-all font-bold text-xl"
+                                        className="pl-9 h-11 rounded-xl border-slate-200 focus:border-blue-500 font-medium"
                                         value={quoteData.shipping_cost}
                                         onChange={(e) => setQuoteData({ ...quoteData, shipping_cost: e.target.value })}
                                     />
@@ -484,63 +497,62 @@ export default function SourcingRequestsPage() {
                             </div>
                         </div>
 
-                        <div className="space-y-3">
-                            <div className="flex items-center justify-between ml-1">
-                                <Label className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Platform / Service Fee ($)</Label>
-                                <Badge className="bg-blue-50 text-primary-blue border-blue-100 text-[9px] font-black uppercase tracking-widest px-2 py-0.5">
-                                    Standard Rate
-                                </Badge>
+                        <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                                <Label className="text-xs font-semibold text-slate-500">Service Fee ($)</Label>
                             </div>
-                            <Input
-                                type="number"
-                                className="h-16 rounded-[1.25rem] border-slate-100 bg-slate-50/50 text-slate-400 transition-all font-bold text-xl cursor-not-allowed opacity-60 px-6"
-                                value={quoteData.service_fee}
-                                disabled
-                            />
+                            <div className="relative">
+                                <Calculator className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                <Input
+                                    type="number"
+                                    placeholder="0.00"
+                                    className="pl-9 h-11 rounded-xl border-slate-200 focus:border-blue-500 font-medium"
+                                    value={quoteData.service_fee}
+                                    onChange={(e) => setQuoteData({ ...quoteData, service_fee: e.target.value })}
+                                />
+                            </div>
                         </div>
 
-                        {/* Total Highlight - Premium Card */}
-                        <div className="relative group mt-4">
-                            <div className="absolute -inset-1 bg-gradient-to-r from-primary-blue to-indigo-600 rounded-[2.5rem] blur opacity-10 group-hover:opacity-20 transition duration-1000"></div>
-                            <div className="relative bg-[#0c1425] rounded-[2rem] p-8 flex items-center justify-between overflow-hidden shadow-2xl">
-                                <div className="space-y-2 relative z-10">
-                                    <p className="text-[10px] font-black text-blue-300/60 uppercase tracking-[0.3em]">Aggregate Total (USD)</p>
-                                    <div className="flex items-baseline gap-1">
-                                        <span className="text-5xl font-black text-white tracking-tighter">
-                                            ${totalAmount}
-                                        </span>
+                        {/* Total Card */}
+                        <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200 shadow-sm">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Total Amount</p>
+                                    <div className="text-3xl font-bold tracking-tight text-slate-900">
+                                        ${totalAmount}
+                                        <span className="text-sm font-medium text-slate-400 ml-1">USD</span>
                                     </div>
                                 </div>
-                                <div className="h-20 w-20 rounded-[1.5rem] bg-white/5 flex items-center justify-center text-white border border-white/10 group-hover:bg-primary-blue group-hover:border-primary-blue/50 transition-all duration-500 shadow-xl relative z-10">
-                                    <ArrowRight className="h-8 w-8" />
+                                <div className="h-10 w-10 rounded-full bg-white border border-slate-200 flex items-center justify-center shadow-sm">
+                                    <ArrowRight className="h-5 w-5 text-slate-700" />
                                 </div>
-
-                                {/* Subtle Gradient Glow */}
-                                <div className="absolute top-0 right-0 w-48 h-48 bg-blue-600/20 rounded-full blur-[80px] -mr-24 -mt-24 pointer-events-none" />
                             </div>
                         </div>
                     </div>
 
-                    <div className="p-8 sm:p-10 pt-4 pb-10 sm:pb-12 grid grid-cols-2 gap-4 border-t border-slate-100 bg-white shrink-0">
+                    <DialogFooter className="p-6 pt-2 border-t border-slate-100 bg-white gap-3">
                         <Button
-                            variant="outline"
-                            className="h-16 rounded-[1.5rem] border-2 border-slate-100 text-slate-400 font-black uppercase tracking-widest text-[10px] hover:bg-slate-50 hover:text-slate-900 transition-all"
+                            variant="ghost"
                             onClick={() => setShowQuoteModal(false)}
+                            className="rounded-xl font-medium text-slate-500 hover:text-slate-900"
                         >
-                            Abort Process
+                            Cancel
                         </Button>
                         <Button
-                            className="h-16 rounded-[1.5rem] bg-[#0c1425] hover:bg-black text-white font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-slate-900/10 transition-all active:scale-95 border-0"
                             onClick={handleSubmitQuote}
                             disabled={isSubmittingQuote || !quoteData.item_price || !quoteData.shipping_cost}
+                            className="rounded-xl bg-slate-900 hover:bg-black text-white font-bold shadow-lg shadow-slate-900/10 px-6"
                         >
                             {isSubmittingQuote ? (
-                                <Loader2 className="h-6 w-6 animate-spin" />
+                                <>
+                                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                                    Sending...
+                                </>
                             ) : (
-                                "Confirm Deployment"
+                                "Send Quote"
                             )}
                         </Button>
-                    </div>
+                    </DialogFooter>
                 </DialogContent>
             </Dialog>
         </div>

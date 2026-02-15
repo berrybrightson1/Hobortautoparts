@@ -130,26 +130,45 @@ export default function QuotePage() {
         event.preventDefault()
         setIsLoading(true)
 
-        if (authLoading) return; // Wait for auth to resolve
-
-        let currentUser = user;
-        if (!currentUser) {
-            // Double check session in case state hasn't updated
-            const { data: { session } } = await supabase.auth.getSession();
-            currentUser = session?.user || null;
-        }
-
-        if (!currentUser) {
-            toast.error("Please sign in or create an account to submit a request.", {
-                description: "This ensures you can track your request status."
-            })
-            setIsLoading(false)
-            router.push('/login?redirect=/quote')
-            return
-        }
+        // Safety timeout to prevent infinite loading
+        const timeoutId = setTimeout(() => {
+            if (isLoading) {
+                setIsLoading(false)
+                toast.error("Request timed out. Please try again.")
+            }
+        }, 15000)
 
         try {
+            // 1. Check Auth Loading State
+            if (authLoading) {
+                // Wait briefly for auth to resolve or fail
+                await new Promise(resolve => setTimeout(resolve, 500))
+                if (authLoading) {
+                    toast.warning("Still connecting to secure server...", {
+                        description: "Please wait a moment and try again."
+                    })
+                    return // Ensure we return here, but finally block will handle loading state
+                }
+            }
+
+            let currentUser = user;
+            if (!currentUser) {
+                // Double check session in case state hasn't updated
+                const { data: { session } } = await supabase.auth.getSession();
+                currentUser = session?.user || null;
+            }
+
+            if (!currentUser) {
+                toast.error("Please sign in or create an account to submit a request.", {
+                    description: "This ensures you can track your request status."
+                })
+                // Redirect to login with proper return URL
+                router.push('/login?redirect=/quote')
+                return
+            }
+
             const vehicle_info = `${formData.year} ${formData.make} ${formData.model} (${formData.submodel})`
+
             const { error } = await supabase
                 .from('sourcing_requests')
                 .insert({
@@ -167,9 +186,10 @@ export default function QuotePage() {
         } catch (error: any) {
             console.error("Error submitting sourcing request:", error)
             toast.error("Failed to submit request", {
-                description: error.message
+                description: error.message || "Please try again later."
             })
         } finally {
+            clearTimeout(timeoutId)
             setIsLoading(false)
         }
     }
@@ -248,19 +268,19 @@ export default function QuotePage() {
     }
 
     return (
-        <div className="min-h-screen bg-white flex flex-col items-center justify-start p-4 pt-20 pb-10 overflow-y-auto">
-            <div className="w-full max-w-2xl animate-in fade-in duration-500">
-                <div className="text-center mb-10 md:mb-12 space-y-2 relative px-4">
+        <div className="min-h-screen bg-white flex flex-col items-center justify-start p-4 md:p-12 pt-32 md:pt-24 pb-20 overflow-y-auto">
+            <div className="w-full max-w-7xl animate-in fade-in duration-500">
+                <div className="text-center mb-10 md:mb-16 space-y-4 relative px-4">
                     <div className="flex items-center justify-center gap-4">
                         <Link href="/" className="group p-2 rounded-full hover:bg-primary-blue/5 transition-all outline-none">
                             <ArrowLeft className="h-6 w-6 text-primary-blue/30 group-hover:text-primary-blue group-hover:-translate-x-1 transition-all" />
                         </Link>
-                        <h1 className="text-2xl md:text-4xl font-semibold text-primary-blue tracking-tighter">New Sourcing Request</h1>
+                        <h1 className="text-3xl md:text-5xl font-semibold text-primary-blue tracking-tighter">New Sourcing Request</h1>
                     </div>
-                    <p className="text-primary-blue/60 font-medium text-sm md:text-base">Get a premium price estimate in record time.</p>
+                    <p className="text-primary-blue/60 font-medium text-base md:text-xl max-w-2xl mx-auto">Get a premium price estimate in record time.</p>
                 </div>
 
-                <Card className="border-primary-blue/10 shadow-2xl shadow-primary-blue/5 overflow-hidden rounded-3xl relative mx-auto w-full">
+                <Card className="border-primary-blue/10 shadow-2xl shadow-primary-blue/5 overflow-hidden rounded-3xl md:rounded-[2.5rem] relative mx-auto w-full bg-white/80 backdrop-blur-sm">
                     {/* Progress Indicator */}
                     <div className="absolute top-0 left-0 right-0 h-1.5 bg-primary-blue/5 flex">
                         <div
@@ -271,17 +291,17 @@ export default function QuotePage() {
                         />
                     </div>
 
-                    <CardHeader className="bg-primary-blue/5 border-b border-primary-blue/5 pb-6 pt-10 px-6 md:px-10">
-                        <div className="flex justify-between items-center mb-2">
-                            <span className="text-[10px] font-semibold text-primary-orange uppercase tracking-[0.2em]">Step {step} of 2</span>
-                            <span className="text-[10px] font-semibold text-primary-blue/40 uppercase tracking-[0.2em]">{step === 1 ? "Vehicle Details" : "Parts Specification"}</span>
+                    <CardHeader className="bg-primary-blue/5 border-b border-primary-blue/5 pb-4 pt-8 px-6 md:px-12">
+                        <div className="flex justify-between items-center mb-4">
+                            <span className="text-xs font-bold text-primary-orange uppercase tracking-[0.2em]">Step {step} of 2</span>
+                            <span className="text-xs font-bold text-primary-blue/40 uppercase tracking-[0.2em]">{step === 1 ? "Vehicle Details" : "Parts Specification"}</span>
                         </div>
-                        <div className="flex items-center gap-4 md:gap-5">
-                            <div className="h-12 w-12 md:h-14 md:w-14 rounded-2xl bg-primary-blue text-white flex items-center justify-center shadow-xl shadow-primary-blue/20 shrink-0">
+                        <div className="flex items-center gap-4">
+                            <div className="h-12 w-12 md:h-14 md:w-14 rounded-xl bg-primary-blue text-white flex items-center justify-center shadow-lg shadow-primary-blue/20 shrink-0">
                                 {step === 1 ? <Car className="h-6 w-6 md:h-7 md:w-7" /> : <Package className="h-6 w-6 md:h-7 md:w-7" />}
                             </div>
                             <div>
-                                <CardTitle className="text-xl md:text-2xl font-semibold text-primary-blue tracking-tight">
+                                <CardTitle className="text-xl md:text-3xl font-semibold text-primary-blue tracking-tight mb-1">
                                     {step === 1 ? "Vehicle Details" : "Parts Specification"}
                                 </CardTitle>
                                 <CardDescription className="text-primary-blue/60 font-medium text-xs md:text-sm">
@@ -292,19 +312,19 @@ export default function QuotePage() {
                     </CardHeader>
 
                     <CardContent className="p-5 md:p-10">
-                        <form onSubmit={onSubmit} className="space-y-8">
+                        <form onSubmit={onSubmit} className="space-y-6">
                             {step === 1 ? (
-                                <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
-                                    <div className="space-y-6">
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <div className="space-y-2.5 relative">
-                                                <Label htmlFor="vin" className="ml-1 text-[10px] font-medium text-primary-blue/80 uppercase tracking-widest leading-none mb-1">VIN Number</Label>
+                                <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
+                                    <div className="space-y-5">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                                            <div className="space-y-1.5 relative lg:col-span-1">
+                                                <Label htmlFor="vin" className="ml-1 text-[10px] font-bold text-primary-blue/80 uppercase tracking-widest leading-none mb-1">VIN Number</Label>
                                                 <div className="relative">
                                                     <Input
                                                         id="vin"
                                                         placeholder="17-CHARACTER VIN"
                                                         className={cn(
-                                                            "h-14 pr-12 rounded-2xl border-primary-blue/10 bg-primary-blue/5 focus:bg-white transition-all font-mono uppercase font-semibold placeholder:normal-case placeholder:font-medium text-sm md:text-base",
+                                                            "h-12 pr-10 rounded-xl border-primary-blue/10 bg-primary-blue/5 focus:bg-white transition-all font-mono uppercase font-bold text-base tracking-wider placeholder:normal-case placeholder:font-medium placeholder:tracking-normal",
                                                             vinError && "border-red-500 bg-red-50"
                                                         )}
                                                         required
@@ -313,18 +333,18 @@ export default function QuotePage() {
                                                         onChange={(e) => setFormData({ ...formData, vin: e.target.value })}
                                                     />
                                                     {vinLoading && (
-                                                        <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                                                        <div className="absolute right-3 top-1/2 -translate-y-1/2">
                                                             <div className="h-5 w-5 border-2 border-primary-orange/30 border-t-primary-orange rounded-full animate-spin" />
                                                         </div>
                                                     )}
                                                     {vinError && !vinLoading && (
-                                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 text-red-500">
+                                                        <div className="absolute right-3 top-1/2 -translate-y-1/2 text-red-500">
                                                             <AlertCircle className="h-5 w-5" />
                                                         </div>
                                                     )}
                                                 </div>
                                                 {vinError && (
-                                                    <p className="text-[10px] text-red-500 font-medium ml-1 animate-in fade-in slide-in-from-top-1">{vinError}</p>
+                                                    <p className="text-xs text-red-500 font-bold ml-1 animate-in fade-in slide-in-from-top-1">{vinError}</p>
                                                 )}
                                             </div>
                                             <BrandedSelect
@@ -334,8 +354,6 @@ export default function QuotePage() {
                                                 onChange={(val) => setFormData({ ...formData, year: val })}
                                                 placeholder="Select Year"
                                             />
-                                        </div>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <BrandedSelect
                                                 label="Brand / Make"
                                                 value={formData.make}
@@ -343,6 +361,8 @@ export default function QuotePage() {
                                                 onChange={(val) => setFormData({ ...formData, make: val, model: "" })}
                                                 placeholder="Select Brand"
                                             />
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                                             <BrandedSelect
                                                 label="Series / Model"
                                                 value={formData.model}
@@ -351,8 +371,6 @@ export default function QuotePage() {
                                                 placeholder={formData.make ? "Select Model" : "Select Brand First"}
                                                 disabled={!formData.make}
                                             />
-                                        </div>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <BrandedSelect
                                                 label="Sub-Model / Trim"
                                                 value={formData.submodel}
@@ -375,31 +393,31 @@ export default function QuotePage() {
                                         <motion.div
                                             initial={{ opacity: 0, height: 0 }}
                                             animate={{ opacity: 1, height: "auto" }}
-                                            className="bg-primary-blue/5 rounded-2xl p-4 md:p-6 border border-primary-blue/10 overflow-hidden"
+                                            className="bg-primary-blue/5 rounded-3xl p-6 md:p-8 border border-primary-blue/10 overflow-hidden"
                                         >
-                                            <div className="flex flex-col sm:flex-row items-start gap-4">
-                                                <div className="h-10 w-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500 border border-emerald-500/20 shrink-0">
-                                                    <ShieldCheck className="h-5 w-5" />
+                                            <div className="flex flex-col md:flex-row items-center md:items-start gap-6 text-center md:text-left">
+                                                <div className="h-16 w-16 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500 border border-emerald-500/20 shrink-0">
+                                                    <ShieldCheck className="h-8 w-8" />
                                                 </div>
-                                                <div className="flex-1 min-w-0">
-                                                    <h4 className="text-[10px] font-bold uppercase tracking-widest text-primary-blue/40 mb-1">Identified Vehicle Profile</h4>
-                                                    <p className="text-base md:text-lg font-bold text-primary-blue leading-tight mb-4 break-words">
+                                                <div className="flex-1 min-w-0 w-full">
+                                                    <h4 className="text-xs font-bold uppercase tracking-widest text-primary-blue/40 mb-2">Identified Vehicle Profile</h4>
+                                                    <p className="text-xl md:text-3xl font-bold text-primary-blue leading-tight mb-6 break-words">
                                                         {formData.year} {formData.make} {formData.model}
-                                                        <span className="block text-xs md:text-sm font-medium text-primary-blue/60 mt-1">{formData.submodel} • {formData.engine}</span>
+                                                        <span className="block text-sm md:text-lg font-bold text-primary-blue/60 mt-2">{formData.submodel} • {formData.engine}</span>
                                                     </p>
 
                                                     {!isVehicleConfirmed ? (
                                                         <Button
                                                             type="button"
                                                             variant="orange"
-                                                            className="h-10 px-6 rounded-xl text-xs font-bold w-full sm:w-auto"
+                                                            className="h-12 px-8 rounded-xl text-sm font-bold w-full md:w-auto shadow-lg shadow-primary-orange/20"
                                                             onClick={() => setIsVehicleConfirmed(true)}
                                                         >
                                                             Yes, This is My Vehicle
                                                         </Button>
                                                     ) : (
-                                                        <div className="flex items-center gap-2 text-emerald-600 font-bold text-xs uppercase tracking-widest bg-emerald-500/5 py-2 px-3 rounded-lg border border-emerald-500/10 w-full sm:w-auto">
-                                                            <CheckCircle2 className="h-4 w-4" /> Vehicle Verified
+                                                        <div className="flex items-center justify-center md:justify-start gap-3 text-emerald-600 font-bold text-sm uppercase tracking-widest bg-emerald-500/5 py-3 px-6 rounded-xl border border-emerald-500/10 w-full md:w-auto">
+                                                            <CheckCircle2 className="h-5 w-5" /> Vehicle Verified
                                                         </div>
                                                     )}
                                                 </div>
@@ -407,59 +425,62 @@ export default function QuotePage() {
                                         </motion.div>
                                     )}
 
-                                    <Button
-                                        type="button"
-                                        onClick={() => setStep(2)}
-                                        disabled={!isStep1Valid || !isVehicleConfirmed}
-                                        className="w-full bg-primary-blue hover:bg-hobort-blue-dark text-white font-semibold h-16 rounded-2xl shadow-2xl shadow-primary-blue/20 text-lg transition-all hover:scale-[1.01] active:scale-[0.99] group disabled:opacity-50 disabled:grayscale"
-                                    >
-                                        {isVehicleConfirmed ? "Continue to Parts" : "Please Confirm Vehicle Details"} <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                                    </Button>
+                                    <div className="flex justify-end pt-4">
+                                        <Button
+                                            type="button"
+                                            onClick={() => setStep(2)}
+                                            disabled={!isStep1Valid || !isVehicleConfirmed}
+                                            className="w-full md:w-auto min-w-[200px] bg-primary-blue hover:bg-hobort-blue-dark text-white font-semibold h-16 rounded-2xl shadow-2xl shadow-primary-blue/20 text-lg transition-all hover:scale-[1.01] active:scale-[0.99] group disabled:opacity-50 disabled:grayscale"
+                                        >
+                                            {isVehicleConfirmed ? "Continue to Parts" : "Please Confirm Vehicle Details"} <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                                        </Button>
+                                    </div>
                                 </div>
                             ) : (
-                                <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
-                                    <PartLibraryPicker
-                                        onSelect={(name) => {
-                                            setFormData({ ...formData, part_name: name })
-                                            // Handle auto-submission or confirmation if needed
-                                        }}
-                                        onCustomPart={(notes) => {
-                                            setFormData({ ...formData, part_name: notes })
-                                        }}
-                                    />
+                                <div className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-500">
+                                    <div className="bg-slate-50 rounded-3xl p-6 md:p-8 border border-slate-100">
+                                        <PartLibraryPicker
+                                            onSelect={(name) => {
+                                                setFormData({ ...formData, part_name: name })
+                                            }}
+                                            onCustomPart={(notes) => {
+                                                setFormData({ ...formData, part_name: notes })
+                                            }}
+                                        />
+                                    </div>
 
                                     {formData.part_name && (
                                         <motion.div
                                             initial={{ opacity: 0, height: 0 }}
                                             animate={{ opacity: 1, height: "auto" }}
-                                            className="bg-emerald-500/5 rounded-2xl p-3 md:p-4 border border-emerald-500/10 overflow-hidden"
+                                            className="bg-emerald-500/5 rounded-3xl p-6 border border-emerald-500/10 overflow-hidden"
                                         >
-                                            <div className="flex items-center gap-2 md:gap-3">
-                                                <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500 shrink-0">
-                                                    <CheckCircle2 className="h-4 w-4" />
+                                            <div className="flex flex-col md:flex-row items-center gap-4 text-center md:text-left">
+                                                <div className="h-12 w-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 shrink-0">
+                                                    <CheckCircle2 className="h-6 w-6" />
                                                 </div>
-                                                <div className="flex-1 min-w-0">
-                                                    <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-600/60 mb-0.5">Selected Part</p>
-                                                    <p className="text-sm font-bold text-emerald-600 truncate">{formData.part_name}</p>
+                                                <div className="flex-1 min-w-0 w-full">
+                                                    <p className="text-xs font-bold uppercase tracking-widest text-emerald-600/60 mb-1">Selected Part</p>
+                                                    <p className="text-xl font-bold text-emerald-600 truncate">{formData.part_name}</p>
                                                 </div>
                                                 <Button
                                                     variant="ghost"
                                                     size="sm"
-                                                    className="h-8 text-[10px] font-bold uppercase tracking-widest text-emerald-600 px-2 shrink-0"
+                                                    className="h-10 text-xs font-bold uppercase tracking-widest text-emerald-600 px-4 shrink-0 hover:bg-emerald-500/10"
                                                     onClick={() => setFormData({ ...formData, part_name: "" })}
                                                 >
-                                                    Change
+                                                    Change Selection
                                                 </Button>
                                             </div>
                                         </motion.div>
                                     )}
 
-                                    <div className="flex flex-col sm:flex-row gap-4">
+                                    <div className="flex flex-col sm:flex-row gap-6 pt-4">
                                         <Button
                                             type="button"
                                             variant="outline"
                                             onClick={() => setStep(1)}
-                                            className="h-16 px-8 rounded-2xl border-primary-blue/10 text-primary-blue font-semibold hover:bg-primary-blue/5 order-2 sm:order-1"
+                                            className="h-16 px-10 rounded-2xl border-primary-blue/10 text-primary-blue font-semibold hover:bg-primary-blue/5 order-2 sm:order-1 text-lg"
                                         >
                                             <ArrowLeft className="mr-2 h-5 w-5" /> Back
                                         </Button>
@@ -479,8 +500,8 @@ export default function QuotePage() {
                             )}
                         </form>
                     </CardContent>
-                    <CardFooter className="bg-primary-blue/5 p-6 flex justify-center border-t border-primary-blue/5">
-                        <p className="text-[10px] font-semibold text-primary-blue/30 uppercase tracking-[0.2em]">
+                    <CardFooter className="bg-primary-blue/5 p-8 flex justify-center border-t border-primary-blue/5">
+                        <p className="text-xs font-bold text-primary-blue/30 uppercase tracking-[0.2em]">
                             Professional Sourcing Network • Security Guaranteed
                         </p>
                     </CardFooter>

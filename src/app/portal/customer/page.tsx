@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Plus, Package, Car, Clock, ChevronRight, Inbox, Loader2, Activity } from "lucide-react"
+import { Plus, Package, Car, Clock, ChevronRight, Inbox, Loader2, Activity, RefreshCw, Copy as CopyIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/components/auth/auth-provider"
 import { useState, useEffect } from "react"
@@ -80,12 +80,22 @@ export default function CustomerDashboard() {
                     </h2>
                     <p className="text-slate-500 font-medium text-lg pt-2">Track your orders and manage your vehicle sourcing requests.</p>
                 </div>
-                <Button
-                    onClick={() => router.push('/quote')}
-                    className="bg-primary-orange hover:bg-orange-600 text-white font-bold uppercase tracking-widest text-xs rounded-xl shadow-lg shadow-orange-900/20 px-8 h-14 transition-all active:scale-95"
-                >
-                    <Plus className="mr-3 h-5 w-5" /> New Request
-                </Button>
+                <div className="flex gap-2">
+                    <Button
+                        variant="ghost"
+                        onClick={fetchOrders}
+                        disabled={isLoading}
+                        className="h-14 w-14 rounded-xl text-slate-500 hover:text-slate-900 border border-slate-200/50"
+                    >
+                        <RefreshCw className={cn("h-5 w-5", isLoading && "animate-spin")} />
+                    </Button>
+                    <Button
+                        onClick={() => router.push('/quote')}
+                        className="bg-primary-orange hover:bg-orange-600 text-white font-bold uppercase tracking-widest text-xs rounded-xl shadow-lg shadow-orange-900/20 px-8 h-14 transition-all active:scale-95"
+                    >
+                        <Plus className="mr-3 h-5 w-5" /> New Request
+                    </Button>
+                </div>
             </div>
 
             <div className="grid md:grid-cols-3 gap-8">
@@ -128,7 +138,26 @@ export default function CustomerDashboard() {
                                                 <div className="flex-1 space-y-1.5 min-w-0">
                                                     <div className="flex items-center justify-between gap-4">
                                                         <p className="font-bold text-xl text-slate-900 truncate">{order.vehicle_info || order.part_name}</p>
-                                                        <span className="shrink-0 text-[10px] text-slate-400 font-bold uppercase tracking-widest bg-slate-50 px-2 py-1 rounded-lg border border-slate-100">#{order.id.slice(0, 8)}</span>
+                                                        {order.status === 'pending' ? (
+                                                            <Badge variant="outline" className="shrink-0 font-mono text-[10px] bg-slate-50 text-slate-400 border-slate-100 cursor-not-allowed opacity-70">
+                                                                Running Checks...
+                                                            </Badge>
+                                                        ) : (
+                                                            <Badge
+                                                                variant="outline"
+                                                                className="shrink-0 font-mono text-[10px] cursor-pointer hover:bg-slate-100 transition-colors flex items-center gap-1.5 pr-2.5 bg-slate-50 border-slate-100 text-slate-400"
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation() // Prevent card click
+                                                                    if (order.id) {
+                                                                        navigator.clipboard.writeText(order.id)
+                                                                        toast.success("Tracking ID copied to clipboard")
+                                                                    }
+                                                                }}
+                                                            >
+                                                                Ref: {order.id.slice(0, 8)}
+                                                                <CopyIcon className="h-3 w-3 text-slate-400" />
+                                                            </Badge>
+                                                        )}
                                                     </div>
                                                     <div className="flex items-center gap-2 text-sm text-slate-500 font-medium truncate">
                                                         <span>{order.part_name}</span>

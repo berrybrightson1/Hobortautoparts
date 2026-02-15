@@ -35,7 +35,7 @@ export function SmartPhoneInput({ value, onChange, className, placeholder, id }:
 
   if (!hasMounted) {
     return (
-      <div className={cn("flex h-16 w-full rounded-[1.25rem] border border-slate-100 bg-slate-50 items-center px-4", className)}>
+      <div className={cn("flex h-11 w-full rounded-xl border border-slate-200 bg-slate-50 items-center px-4", className)}>
         <div className="h-5 w-8 bg-slate-200 rounded animate-pulse mr-3" />
         <div className="h-4 w-32 bg-slate-200 rounded animate-pulse" />
       </div>
@@ -44,7 +44,7 @@ export function SmartPhoneInput({ value, onChange, className, placeholder, id }:
 
   return (
     <div className={cn("relative w-full", className)}>
-      <div className="flex h-16 w-full rounded-[1.25rem] border border-slate-100 bg-slate-50 focus-within:bg-white focus-within:ring-2 focus-within:ring-emerald-500/20 transition-all items-center overflow-hidden">
+      <div className="flex h-full w-full rounded-xl border border-slate-200 bg-slate-50 focus-within:bg-white focus-within:ring-2 focus-within:ring-emerald-500/20 transition-all items-center overflow-hidden">
         <PhoneInput
           international
           defaultCountry={defaultCountry}

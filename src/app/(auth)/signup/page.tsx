@@ -22,6 +22,7 @@ export default function SignupPage() {
     const [lastName, setLastName] = useState("")
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const [phoneNumber, setPhoneNumber] = useState("")
     const [company, setCompany] = useState("")
 
     async function onSubmit(event: React.SyntheticEvent) {
@@ -38,6 +39,7 @@ export default function SignupPage() {
                     data: {
                         full_name: fullName,
                         role: activeTab === 'agent' ? 'agent' : 'customer',
+                        phone_number: phoneNumber,
                         company_name: activeTab === 'agent' ? company : null
                     }
                 }
@@ -140,6 +142,20 @@ export default function SignupPage() {
                                 onChange={(e) => setLastName(e.target.value)}
                             />
                         </div>
+                    </div>
+
+                    <div className="grid gap-2">
+                        <Label htmlFor="phone" className="ml-1 text-primary-blue/80 font-semibold text-xs uppercase tracking-wider">Phone Number</Label>
+                        <Input
+                            id="phone"
+                            type="tel"
+                            placeholder="+1 (555) 000-0000"
+                            className="h-11 rounded-xl bg-primary-blue/5 border-primary-blue/10 font-medium"
+                            required
+                            disabled={isLoading}
+                            value={phoneNumber}
+                            onChange={(e) => setPhoneNumber(e.target.value)}
+                        />
                     </div>
 
                     <div className="grid gap-2">

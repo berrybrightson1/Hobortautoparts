@@ -20,7 +20,9 @@ import {
     Loader2,
     Eye,
     Info,
-    CheckCircle2
+    CheckCircle2,
+    RefreshCw,
+    Copy as CopyIcon
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useState, useEffect } from "react"
@@ -183,6 +185,14 @@ export default function AgentDashboard() {
                     <h2 className="text-4xl font-bold tracking-tighter text-slate-900 leading-none">Agent Command</h2>
                     <p className="text-slate-500 font-medium text-lg pt-2">Overview of your sourcing activities and performance.</p>
                 </div>
+                <Button
+                    variant="outline"
+                    onClick={fetchAgentData}
+                    disabled={isLoading}
+                    className="rounded-xl border-slate-200 text-slate-600 hover:text-slate-900 bg-white"
+                >
+                    <RefreshCw className={cn("mr-2 h-4 w-4", isLoading && "animate-spin")} /> Update Feed
+                </Button>
             </div>
 
             {/* Stats Grid */}
@@ -261,7 +271,26 @@ export default function AgentDashboard() {
                                     filteredSourcing.map((req) => (
                                         <TableRow key={req.id} className="hover:bg-orange-50/20 border-slate-50 group">
                                             <TableCell className="pl-10 py-6 font-bold text-slate-900">
-                                                #{req.id.slice(0, 8).toUpperCase()}
+                                                {req.status === 'pending' ? (
+                                                    <Badge variant="outline" className="font-mono text-[10px] bg-slate-50 text-slate-300 border-slate-100 cursor-not-allowed">
+                                                        Processing...
+                                                    </Badge>
+                                                ) : (
+                                                    <Badge
+                                                        variant="outline"
+                                                        className="font-mono text-[10px] cursor-pointer hover:bg-slate-100 transition-colors flex items-center gap-1.5 w-fit pr-2.5 bg-white border-slate-200 text-slate-500"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation()
+                                                            if (req.id) {
+                                                                navigator.clipboard.writeText(req.id)
+                                                                toast.success("Tracking ID copied to clipboard")
+                                                            }
+                                                        }}
+                                                    >
+                                                        Ref: {req.id.slice(0, 8)}
+                                                        <CopyIcon className="h-3 w-3 text-slate-400" />
+                                                    </Badge>
+                                                )}
                                             </TableCell>
                                             <TableCell className="py-6 font-medium text-slate-600">
                                                 {req.profiles?.full_name}
@@ -384,6 +413,6 @@ export default function AgentDashboard() {
                     </div>
                 </div>
             </ResponsiveModal>
-        </div>
+        </div >
     )
 }

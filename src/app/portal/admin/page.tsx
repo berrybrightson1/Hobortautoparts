@@ -224,7 +224,7 @@ export default function AdminPortal() {
                                     <div className="flex-1 min-w-0">
                                         <p className="text-sm font-bold text-slate-900 truncate">New Sourcing: {item.part_name}</p>
                                         <p className="text-[10px] text-slate-500 font-bold uppercase tracking-tight mt-1 flex items-center gap-2">
-                                            {format(new Date(item.created_at), 'MMM dd, HH:mm')} • {item.profiles?.full_name || 'Anonymous Entity'}
+                                            {format(new Date(item.created_at), 'MMM dd, HH:mm')} • {item.profiles?.full_name || 'Anonymous User'}
                                         </p>
                                     </div>
                                 </div>

@@ -60,10 +60,10 @@ interface VideoModalProps {
 export function VideoModal({ open, onOpenChange, trigger }: VideoModalProps) {
     const isDesktop = useMediaQuery("(min-width: 768px)")
     // TODO: Replace with actual YouTube Video ID provided by user
-    const VIDEO_ID = "dQw4w9WgXcQ" // Placeholder (Rick Roll for testing, or use generic) -> Let's use a generic nature one or leave blank.
+    const VIDEO_ID = "gJ7v-5BxJJ0"
     // Changing to a generic tech background video or just a placeholder message if preferred.
     // For now, using a valid ID to demonstrate the player.
-    const YOUTUBE_URL = `https://www.youtube.com/embed/${VIDEO_ID}?autoplay=0&rel=0&modestbranding=1`
+    const YOUTUBE_URL = `https://www.youtube.com/embed/${VIDEO_ID}?autoplay=0&rel=0&controls=1&playsinline=1`
 
     const content = (
         <div className="flex flex-col gap-6 w-full max-w-5xl mx-auto">
@@ -124,16 +124,62 @@ export function VideoModal({ open, onOpenChange, trigger }: VideoModalProps) {
         return (
             <Dialog open={open} onOpenChange={onOpenChange}>
                 {trigger && <div onClick={() => onOpenChange(true)}>{trigger}</div>}
-                <DialogContent className="sm:max-w-5xl p-6 bg-white/95 backdrop-blur-xl border-white/20">
-                    <DialogHeader className="mb-2">
-                        <DialogTitle className="text-2xl font-bold text-center text-slate-800">
-                            Experience the Autoparts Express Difference
-                        </DialogTitle>
-                        <DialogDescription className="text-center">
-                            See how we identify, source, and deliver your parts with precision.
-                        </DialogDescription>
-                    </DialogHeader>
-                    {content}
+                <DialogContent className="sm:max-w-6xl p-0 bg-white dark:bg-white border-slate-100 dark:border-slate-100 shadow-2xl overflow-hidden gap-0">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 h-[600px]">
+                        {/* LEFT: Video Section (2/3 width) */}
+                        <div className="lg:col-span-2 bg-slate-950 flex flex-col items-center justify-center relative group">
+                            <iframe
+                                width="100%"
+                                height="100%"
+                                src={YOUTUBE_URL}
+                                title="How Autoparts Express Works"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowFullScreen
+                                className="absolute inset-0 w-full h-full"
+                            />
+                        </div>
+
+                        {/* RIGHT: Process Section (1/3 width) */}
+                        <div className="lg:col-span-1 p-8 bg-white dark:bg-white flex flex-col">
+                            <div className="mb-6">
+                                <DialogHeader>
+                                    <DialogTitle className="text-2xl font-bold text-slate-900 dark:text-slate-900 tracking-tighter leading-tight mb-2">
+                                        The Autoparts Express Difference
+                                    </DialogTitle>
+                                    <DialogDescription className="text-slate-500 dark:text-slate-500 text-sm">
+                                        Our proven 5-step sourcing protocol ensures quality and speed.
+                                    </DialogDescription>
+                                </DialogHeader>
+                            </div>
+
+                            <div className="flex-1 space-y-4 overflow-y-auto pr-2">
+                                {STEPS.map((step, i) => (
+                                    <div key={i} className="flex items-start gap-4 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-50 transition-colors group/item">
+                                        <div className={cn(
+                                            "h-10 w-10 flex items-center justify-center rounded-full shrink-0 shadow-sm bg-white dark:bg-white border border-slate-100 dark:border-slate-100 group-hover/item:scale-110 transition-transform duration-300",
+                                            step.color
+                                        )}>
+                                            <step.icon className="h-5 w-5" />
+                                        </div>
+                                        <div>
+                                            <div className="text-sm font-bold text-slate-900 dark:text-slate-900 tracking-tight">
+                                                {step.title}
+                                            </div>
+                                            <div className="text-xs text-slate-500 dark:text-slate-500 mt-0.5 leading-relaxed">
+                                                {step.description}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-100">
+                                <p className="text-[10px] text-slate-400 dark:text-slate-400 text-center uppercase tracking-widest font-bold">
+                                    Trusted by 500+ Importers
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 </DialogContent>
             </Dialog>
         )

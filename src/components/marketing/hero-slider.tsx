@@ -12,8 +12,8 @@ import { VideoModal } from "@/components/marketing/video-modal"
 
 interface Slide {
     id: number
-    title: string
-    description: string
+    title: React.ReactNode
+    description: React.ReactNode
     icon: React.ElementType
     image: string
     theme: string
@@ -23,8 +23,8 @@ interface Slide {
 const slides: Slide[] = [
     {
         id: 1,
-        title: "Genuine U.S. auto parts delivered globally",
-        description: "Access a massive inventory of authentic OEM and certified aftermarket components directly from the U.S. We bridge the gap between American quality and international demand.",
+        title: <>Genuine U.S. auto parts <br /> delivered globally</>,
+        description: <>Access a massive inventory of authentic OEM and certified aftermarket <br /> components directly from the U.S. We bridge the gap between <br /> American quality and international demand.</>,
         icon: Zap,
         image: "/Hero slider white latest.jpg",
         theme: "light",
@@ -32,8 +32,8 @@ const slides: Slide[] = [
     },
     {
         id: 2,
-        title: "Precision VIN matching for every single order",
-        description: "Eliminate the risk of incorrect parts with our advanced technical verification and expert matching systems. Every component is cross-referenced against your specific vehicle data.",
+        title: <>Precision VIN matching <br /> for every single order</>,
+        description: <>Eliminate the risk of incorrect parts with our advanced <br /> technical verification and expert matching systems. Every <br /> component is cross-referenced against your specific vehicle data.</>,
         icon: ShieldCheck,
         image: "/Hero slider dark.jpg",
         theme: "dark",
@@ -41,8 +41,8 @@ const slides: Slide[] = [
     },
     {
         id: 3,
-        title: "Fast export and seamless customs clearance",
-        description: "Navigate international shipping complexities with our specialized logistics team and established export hubs. We handle the documentation so your parts arrive without delay.",
+        title: <>Fast export & seamless <br /> customs clearance</>,
+        description: <>Navigate international shipping complexities with our specialized <br /> logistics team and established export hubs. We handle the <br /> documentation so your parts arrive without delay.</>,
         icon: Truck,
         image: "/Hero slider white new.jpg",
         theme: "light",
@@ -50,8 +50,8 @@ const slides: Slide[] = [
     },
     {
         id: 4,
-        title: "Premium quality at unbeatable wholesale pricing",
-        description: "Leverage our direct-to-source relationships to secure the best rates on hard-to-find luxury and performance parts. Quality remains our priority while delivering significant value.",
+        title: <>Premium quality at <br /> wholesale pricing</>,
+        description: <>Leverage our direct-to-source relationships to secure the best <br /> rates on hard-to-find luxury and performance parts. Quality remains <br /> our priority while delivering significant value.</>,
         icon: BadgePercent,
         image: "/Hero slider white.jpg",
         theme: "light",
@@ -59,8 +59,8 @@ const slides: Slide[] = [
     },
     {
         id: 5,
-        title: "Complete tracking from our hub to your door",
-        description: "Monitor every step of your shipment's journey with real-time updates and proactive delivery management. Total visibility ensures you stay informed from checkout to installation.",
+        title: <>Complete tracking from <br /> our hub to your door</>,
+        description: <>Monitor every step of your shipment's journey with real-time <br /> updates and proactive delivery management. Total visibility <br /> ensures you stay informed from checkout to installation.</>,
         icon: PackageCheck,
         image: "/Hero slider white latest 1.jpg",
         theme: "light",
@@ -222,11 +222,11 @@ export function HeroSlider() {
                             </div>
                         </div>
                         {/* Headline */}
-                        <h1 className="text-2xl min-[400px]:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tighter text-white drop-shadow-2xl mb-4 md:mb-6 font-display leading-[1.1] max-w-2xl mx-auto lg:mx-0">
+                        <h1 className="text-2xl min-[400px]:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tighter text-white drop-shadow-2xl mb-4 md:mb-6 font-display leading-[1.1] max-w-4xl mx-auto lg:mx-0">
                             {current.title}
                         </h1>
                         {/* Subtext */}
-                        <div className="pl-0 lg:pl-6 border-l-0 lg:border-l-4 border-primary-orange/50 mb-6 md:mb-8 max-w-xl mx-auto lg:mx-0">
+                        <div className="pl-0 lg:pl-6 border-l-0 lg:border-l-4 border-primary-orange/50 mb-6 md:mb-8 max-w-3xl mx-auto lg:mx-0">
                             <p className="text-sm md:text-lg text-slate-300 font-medium leading-relaxed min-h-[4rem] md:min-h-[5.25rem]">
                                 {current.description}
                             </p>
