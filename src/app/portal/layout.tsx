@@ -56,6 +56,7 @@ const NAV_ITEMS = {
         { name: "Sourcing Requests", href: "/portal/admin/requests", icon: PackageSearch },
         { name: "Approvals", href: "/portal/admin/approvals", icon: ShieldAlert },
         { name: "User Network", href: "/portal/users", icon: Users },
+        { name: "Platform Guide", href: "/portal/admin/guide", icon: Info },
         { name: "Console & Profile", href: "/portal/profile", icon: Settings },
     ]
 }
@@ -90,19 +91,19 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
                 router.push('/portal/agent')
             }
 
-            // Check for missing phone number and prompt update
-            if (!profile.phone_number) {
-                toast.dismiss() // Clean up any previous toasts to avoid clutter
-                toast.error("Action Required: Phone Number Missing", {
-                    description: "Please update your profile with a valid phone number to continue receiving important updates.",
-                    duration: Infinity, // Persistent until resolved
-                    action: {
-                        label: "Update Now",
-                        onClick: () => router.push('/portal/profile')
-                    },
-                    // Prevent closing without action if possible, though sonner doesn't strictly enforce "un-closable"
-                })
-            }
+            // Check for missing phone number and prompt update (DISABLED based on user feedback)
+            // if (!profile.phone_number) {
+            //     toast.dismiss() // Clean up any previous toasts to avoid clutter
+            //     toast.error("Action Required: Phone Number Missing", {
+            //         description: "Please update your profile with a valid phone number to continue receiving important updates.",
+            //         duration: Infinity, // Persistent until resolved
+            //         action: {
+            //             label: "Update Now",
+            //             onClick: () => router.push('/portal/profile')
+            //         },
+            //         // Prevent closing without action if possible, though sonner doesn't strictly enforce "un-closable"
+            //     })
+            // }
         }
     }, [user, profile, loading, router, pathname])
 
