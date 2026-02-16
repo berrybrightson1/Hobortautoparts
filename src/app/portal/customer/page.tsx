@@ -358,9 +358,13 @@ export default function CustomerDashboard() {
 
                     <div className="space-y-4">
                         {isLoading ? (
-                            <div className="flex flex-col items-center justify-center py-20 bg-white rounded-[3rem] border border-slate-100 shadow-xl shadow-slate-200/20">
-                                <Loader2 className="h-8 w-8 text-primary-orange animate-spin" />
-                                <p className="mt-4 text-xs font-bold uppercase tracking-widest text-slate-400">Syncing Sourcing Feed...</p>
+                            <div className="space-y-6">
+                                <StatsSkeleton />
+                                <div className="grid md:grid-cols-2 gap-4">
+                                    <div className="space-y-4">
+                                        {[1, 2, 3].map((i) => <CardSkeleton key={i} />)}
+                                    </div>
+                                </div>
                             </div>
                         ) : error ? (
                             <div className="flex flex-col items-center justify-center py-20 bg-red-50 rounded-[3rem] border border-red-100 gap-6">

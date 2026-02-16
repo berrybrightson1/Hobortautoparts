@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { SearchBar } from "@/components/portal/search-bar"
 import { Pagination } from "@/components/portal/pagination"
+import { CardSkeleton } from "@/components/portal/skeletons"
 
 export default function CustomerTrackingPage() {
     const { user } = useAuth()
@@ -39,7 +40,9 @@ export default function CustomerTrackingPage() {
                     orders!inner (
                         user_id,
                         quotes (
-                            part_name
+                            sourcing_requests (
+                                part_name
+                            )
                         )
                     )
                 `)
@@ -72,7 +75,7 @@ export default function CustomerTrackingPage() {
 
     const filteredShipments = shipments.filter(s =>
         s.tracking_number.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-        s.orders?.quotes?.part_name?.toLowerCase().includes(debouncedSearch.toLowerCase())
+        s.orders?.quotes?.sourcing_requests?.part_name?.toLowerCase().includes(debouncedSearch.toLowerCase())
     )
 
     const totalPages = Math.ceil(filteredShipments.length / pageSize)
@@ -101,9 +104,10 @@ export default function CustomerTrackingPage() {
             </div>
 
             {isLoading ? (
-                <div className="h-[40vh] flex flex-col items-center justify-center space-y-4">
-                    <Loader2 className="h-10 w-10 animate-spin text-primary-orange" />
-                    <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">Syncing Logistics...</p>
+                <div className="grid gap-6">
+                    {[1, 2, 3].map((i) => (
+                        <CardSkeleton key={i} />
+                    ))}
                 </div>
             ) : error ? (
                 <div className="h-[40vh] flex flex-col items-center justify-center space-y-6 text-center">
@@ -137,7 +141,7 @@ export default function CustomerTrackingPage() {
                                             </Badge>
                                         </div>
                                         <p className="text-sm font-semibold text-slate-500 truncate">
-                                            {shipment.orders?.quotes?.part_name || 'Vehicle Part Shipment'}
+                                            {shipment.orders?.quotes?.sourcing_requests?.part_name || 'Vehicle Part Shipment'}
                                         </p>
                                         <div className="flex items-center justify-center md:justify-start gap-4 text-[10px] uppercase font-black tracking-tighter text-slate-400">
                                             <span className="flex items-center gap-2">

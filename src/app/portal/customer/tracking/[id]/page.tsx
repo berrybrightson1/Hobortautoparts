@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { ArrowLeft, Truck, MapPin, Calendar, Package, Loader2, AlertCircle } from 'lucide-react'
 import { ShipmentTimeline } from '@/components/portal/shipment-timeline'
 import { format } from 'date-fns'
+import { CardSkeleton } from '@/components/portal/skeletons'
 
 export default function ShipmentDetailsPage() {
     const params = useParams()
@@ -52,9 +53,15 @@ export default function ShipmentDetailsPage() {
 
     if (isLoading) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[60vh]">
-                <Loader2 className="h-10 w-10 animate-spin text-primary-orange" />
-                <p className="mt-4 text-slate-500 font-medium">Loading shipment details...</p>
+            <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in duration-500 pb-12 mt-10">
+                <div className="grid md:grid-cols-3 gap-8">
+                    <div className="md:col-span-2">
+                        <CardSkeleton />
+                    </div>
+                    <div>
+                        <CardSkeleton />
+                    </div>
+                </div>
             </div>
         )
     }
