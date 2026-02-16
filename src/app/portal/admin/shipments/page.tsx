@@ -294,7 +294,7 @@ export default function AdminShipmentsPage() {
                                                 <div>
                                                     <p className="text-sm font-bold text-slate-900 font-mono">{shipment.tracking_number}</p>
                                                     <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wide">
-                                                        Created {format(new Date(shipment.created_at), 'MMM dd')}
+                                                        {format(new Date(shipment.created_at), 'MMM dd, yyyy • h:mm a')}
                                                     </p>
                                                 </div>
                                             </div>

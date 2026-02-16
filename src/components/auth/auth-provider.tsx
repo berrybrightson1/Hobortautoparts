@@ -21,10 +21,16 @@ const AuthContext = createContext<AuthContextType>({
     refreshProfile: async () => { },
 })
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-    const [user, setUser] = useState<User | null>(null)
+export const AuthProvider = ({
+    children,
+    initialSession
+}: {
+    children: React.ReactNode,
+    initialSession?: any
+}) => {
+    const [user, setUser] = useState<User | null>(initialSession?.user || null)
     const [profile, setProfile] = useState<any | null>(null)
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(!initialSession)
 
     const router = useRouter()
 
@@ -56,6 +62,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             } finally {
                 if (mounted) setLoading(false)
             }
+        }
+
+        if (initialSession?.user) {
+            fetchProfile(initialSession.user)
         }
 
         initSession()

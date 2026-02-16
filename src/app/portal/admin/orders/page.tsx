@@ -220,7 +220,7 @@ export default function AdminOrdersPage() {
                                                 <div>
                                                     <p className="text-sm font-bold text-slate-900 font-mono">#{order.id.slice(0, 8)}</p>
                                                     <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wide">
-                                                        {format(new Date(order.created_at), 'MMM dd, HH:mm')}
+                                                        {format(new Date(order.created_at), 'MMM dd, yyyy • h:mm a')}
                                                     </p>
                                                 </div>
                                             </div>

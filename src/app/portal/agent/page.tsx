@@ -347,6 +347,7 @@ export default function AgentDashboard() {
                             <TableHeader className="bg-slate-50/30">
                                 <TableRow className="hover:bg-transparent border-slate-100">
                                     <TableHead className="font-bold text-slate-400 text-[10px] uppercase tracking-widest pl-6 md:pl-10 h-12 md:h-14 whitespace-nowrap">Request ID</TableHead>
+                                    <TableHead className="font-bold text-slate-400 text-[10px] uppercase tracking-widest h-12 md:h-14 whitespace-nowrap">Created</TableHead>
                                     <TableHead className="font-bold text-slate-400 text-[10px] uppercase tracking-widest h-12 md:h-14 whitespace-nowrap">Customer</TableHead>
                                     <TableHead className="font-bold text-slate-400 text-[10px] uppercase tracking-widest h-12 md:h-14 whitespace-nowrap">Part & Vehicle</TableHead>
                                     <TableHead className="font-bold text-slate-400 text-[10px] uppercase tracking-widest h-12 md:h-14 whitespace-nowrap">Status</TableHead>
@@ -357,7 +358,7 @@ export default function AgentDashboard() {
                             <TableBody>
                                 {filteredSourcing.length === 0 ? (
                                     <TableRow>
-                                        <TableCell colSpan={5} className="h-32 text-center">
+                                        <TableCell colSpan={6} className="h-32 text-center">
                                             <p className="text-[10px] font-bold uppercase tracking-widest opacity-50">No active sourcing requests.</p>
                                         </TableCell>
                                     </TableRow>
@@ -385,6 +386,9 @@ export default function AgentDashboard() {
                                                         <CopyIcon className="h-3 w-3 text-slate-400" />
                                                     </Badge>
                                                 )}
+                                            </TableCell>
+                                            <TableCell className="py-4 md:py-6 font-medium text-slate-500 whitespace-nowrap text-xs">
+                                                {format(new Date(req.created_at), 'MMM dd, yyyy • h:mm a')}
                                             </TableCell>
                                             <TableCell className="py-4 md:py-6 font-medium text-slate-600 whitespace-nowrap">
                                                 {req.profiles?.full_name}

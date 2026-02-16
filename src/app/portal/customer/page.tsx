@@ -459,7 +459,7 @@ export default function CustomerDashboard() {
                                                             </Badge>
                                                             <span className="text-[10px] text-slate-400 flex items-center font-medium uppercase tracking-widest">
                                                                 <Calendar className="h-3 w-3 mr-1.5" />
-                                                                {format(new Date(order.created_at), 'MMM dd, yyyy')}
+                                                                {format(new Date(order.created_at), 'MMM dd, yyyy • h:mm a')}
                                                             </span>
                                                         </div>
                                                     </div>

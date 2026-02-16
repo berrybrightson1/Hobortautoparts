@@ -443,7 +443,7 @@ export default function UsersPage() {
                                             </TableCell>
                                             <TableCell>
                                                 <div className="flex flex-col">
-                                                    <span className="text-[11px] font-bold text-slate-700">{format(new Date(user.created_at), 'MMM dd, yyyy')}</span>
+                                                    <span className="text-[11px] font-bold text-slate-700">{format(new Date(user.created_at), 'MMM dd, yyyy • h:mm a')}</span>
                                                     <span className="text-[9px] font-medium text-slate-400">{user.country || 'Global Origin'}</span>
                                                 </div>
                                             </TableCell>

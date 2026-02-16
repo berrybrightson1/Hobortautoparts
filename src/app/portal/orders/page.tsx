@@ -180,7 +180,7 @@ export default function OrdersPage() {
                                                     </Badge>
                                                 </TableCell>
                                                 <TableCell className="py-4 font-medium text-slate-500">
-                                                    {format(new Date(order.created_at), 'MMM dd, yyyy')}
+                                                    {format(new Date(order.created_at), 'MMM dd, yyyy • h:mm a')}
                                                 </TableCell>
                                                 <TableCell className="text-right pr-6 py-4">
                                                     <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl hover:bg-white hover:shadow-md transition-all">
