@@ -86,7 +86,7 @@ export default function SourcingRequestsPage() {
     const [quoteData, setQuoteData] = useState({
         item_price: '',
         shipping_cost: '',
-        service_fee: '25.00', // Default service fee
+        service_fee: '0.00', // Default to 0
         notes: ''
     })
 
@@ -683,21 +683,24 @@ export default function SourcingRequestsPage() {
 
                                     {/* Action Buttons inside scrollable area */}
                                     <div className="pt-2 space-y-3">
-                                        <Button
-                                            className="w-full h-14 rounded-xl bg-primary-blue hover:bg-blue-700 text-white font-semibold uppercase tracking-[0.2em] text-[10px] shadow-xl transition-all active:scale-95 group border-none"
-                                            onClick={() => {
-                                                setIsDetailsOpen(false)
-                                                try {
-                                                    openQuoteModal(selectedRequest!)
-                                                } catch (e) {
-                                                    console.error("Failed to open quote modal", e)
-                                                }
-                                            }}
-                                        >
-                                            <span className="flex items-center gap-3">
-                                                Issue Quotation <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                                            </span>
-                                        </Button>
+                                        {/* Issue Quotation Button - Only if not quoted/completed */}
+                                        {!['quoted', 'shipped', 'completed', 'cancelled', 'unavailable'].includes(selectedRequest?.status || '') && (
+                                            <Button
+                                                className="w-full h-14 rounded-xl bg-primary-blue hover:bg-blue-700 text-white font-semibold uppercase tracking-[0.2em] text-[10px] shadow-xl transition-all active:scale-95 group border-none"
+                                                onClick={() => {
+                                                    setIsDetailsOpen(false)
+                                                    try {
+                                                        openQuoteModal(selectedRequest!)
+                                                    } catch (e) {
+                                                        console.error("Failed to open quote modal", e)
+                                                    }
+                                                }}
+                                            >
+                                                <span className="flex items-center gap-3">
+                                                    Issue Quotation <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                                                </span>
+                                            </Button>
+                                        )}
                                         {/* Proxy Acceptance Button - Only if status is 'quoted' */}
                                         {selectedRequest?.status === 'quoted' && (
                                             <Button
