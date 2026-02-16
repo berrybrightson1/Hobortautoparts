@@ -38,9 +38,9 @@ const NAV_ITEMS = {
         { name: "Dashboard", href: "/portal/customer", icon: LayoutDashboard },
         { name: "All Orders", href: "/portal/orders", icon: ShoppingBag },
         { name: "Track Orders", href: "/portal/customer/tracking", icon: Truck },
-        { name: "Platform Guide", href: "/marketing/guide", icon: Info },
         { name: "New Request", href: "/quote", icon: Plus },
         { name: "My Account", href: "/portal/profile", icon: UserCircle },
+        { name: "Platform Guide", href: "/marketing/guide", icon: Info },
     ],
     agent: [
         { name: "Dashboard", href: "/portal/agent/dashboard", icon: LayoutDashboard },
@@ -48,6 +48,7 @@ const NAV_ITEMS = {
         { name: "Order Pipeline", href: "/portal/agent/orders", icon: ShoppingBag },
         { name: "Performance Hub", href: "/portal/agent/performance", icon: TrendingUp },
         { name: "My Account", href: "/portal/profile", icon: UserCircle },
+        { name: "Platform Guide", href: "/marketing/guide", icon: Info },
     ],
     admin: [
         { name: "Overview", href: "/portal/admin", icon: LayoutDashboard },
@@ -56,8 +57,8 @@ const NAV_ITEMS = {
         { name: "Sourcing Requests", href: "/portal/admin/requests", icon: PackageSearch },
         { name: "Approvals", href: "/portal/admin/approvals", icon: ShieldAlert },
         { name: "User Network", href: "/portal/users", icon: Users },
-        { name: "Platform Guide", href: "/portal/admin/guide", icon: Info },
         { name: "Console & Profile", href: "/portal/profile", icon: Settings },
+        { name: "Platform Guide", href: "/portal/admin/guide", icon: Info },
     ]
 }
 

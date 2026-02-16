@@ -427,7 +427,10 @@ export default function SourcingRequestsPage() {
                                     paginatedRequests.map((request) => (
                                         <TableRow key={request.id} className="hover:bg-blue-50/30 transition-colors border-slate-50 group cursor-pointer">
                                             <TableCell className="text-slate-500 text-xs font-medium pl-6 py-4">
-                                                {format(new Date(request.created_at), 'MMM dd, yyyy')}
+                                                <div className="flex flex-col gap-0.5">
+                                                    <span className="font-semibold text-slate-700">{format(new Date(request.created_at), 'MMM dd, yyyy')}</span>
+                                                    <span className="text-[10px] text-slate-400 uppercase tracking-wide">{format(new Date(request.created_at), 'h:mm a')}</span>
+                                                </div>
                                             </TableCell>
                                             <TableCell className="py-4">
                                                 <div className="flex flex-col">
