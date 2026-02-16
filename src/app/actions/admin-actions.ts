@@ -161,7 +161,27 @@ export async function getUsersWithEmails() {
     } catch (error: any) {
         console.error("Fetch Users With Emails Error:", error)
         // Ensure error is serializable
+        // Ensure error is serializable
         return { success: false, error: error?.message || "Unknown server error", data: [] }
     }
 }
 
+export async function deleteUser(userId: string) {
+    try {
+        await requireAdmin()
+        const supabaseAdmin = getAdminClient()
+
+        const { error } = await supabaseAdmin.auth.admin.deleteUser(userId)
+
+        if (error) throw error
+
+        revalidatePath('/portal/users')
+        return { success: true }
+    } catch (error: any) {
+        console.error("Delete User Error:", error)
+        if (error.code === '23503' || (error.message && error.message.includes('foreign key'))) {
+            return { success: false, error: "Cannot delete user: They have active orders associated with their account." }
+        }
+        return { success: false, error: error.message }
+    }
+}

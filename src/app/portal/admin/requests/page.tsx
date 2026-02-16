@@ -109,7 +109,10 @@ export default function SourcingRequestsPage() {
                     profiles (
                         full_name
                     ),
-                    quotes (*)
+                    keywords: quotes (
+                        *,
+                        orders (id, status)
+                    )
                 `)
                 .order('created_at', { ascending: false })
 
@@ -701,21 +704,30 @@ export default function SourcingRequestsPage() {
                                                 </span>
                                             </Button>
                                         )}
-                                        {/* Proxy Acceptance Button - Only if status is 'quoted' */}
+                                        {/* Proxy Acceptance Button - Only if status is 'quoted' AND no order exists */}
                                         {selectedRequest?.status === 'quoted' && (
-                                            <Button
-                                                className="w-full h-14 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold uppercase tracking-[0.2em] text-[10px] shadow-xl shadow-emerald-500/20 transition-all active:scale-95 group border-none"
-                                                onClick={handleAcceptOnBehalf}
-                                                disabled={isAcceptingProxy}
-                                            >
-                                                {isAcceptingProxy ? (
-                                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                            <>
+                                                {selectedRequest.quotes?.[0]?.orders?.length > 0 ? (
+                                                    <div className="w-full h-14 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center gap-2 text-slate-500 font-semibold uppercase tracking-[0.2em] text-[10px]">
+                                                        <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                                                        Order Already Created
+                                                    </div>
                                                 ) : (
-                                                    <span className="flex items-center gap-3">
-                                                        Accept on Customer's Behalf <CheckCircle2 className="h-4 w-4 text-emerald-300" />
-                                                    </span>
+                                                    <Button
+                                                        className="w-full h-14 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold uppercase tracking-[0.2em] text-[10px] shadow-xl shadow-emerald-500/20 transition-all active:scale-95 group border-none"
+                                                        onClick={handleAcceptOnBehalf}
+                                                        disabled={isAcceptingProxy}
+                                                    >
+                                                        {isAcceptingProxy ? (
+                                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                                        ) : (
+                                                            <span className="flex items-center gap-3">
+                                                                Accept on Customer's Behalf <CheckCircle2 className="h-4 w-4 text-emerald-300" />
+                                                            </span>
+                                                        )}
+                                                    </Button>
                                                 )}
-                                            </Button>
+                                            </>
                                         )}
                                         <Button
                                             variant="ghost"

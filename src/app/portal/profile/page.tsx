@@ -257,6 +257,49 @@ export default function UnifiedSettingsPage() {
                             </Button>
                         </CardFooter>
                     </Card>
+
+                    <Card className="border-red-100 shadow-2xl shadow-red-200/20 rounded-[3rem] overflow-hidden bg-white/80 backdrop-blur-xl mt-8">
+                        <CardHeader className="p-6 sm:p-10 pb-4 sm:pb-6 border-b border-red-50">
+                            <CardTitle className="text-xl sm:text-2xl font-semibold text-red-600 flex items-center gap-3">
+                                <Shield className="h-6 w-6 text-red-500" /> Danger Zone
+                            </CardTitle>
+                            <CardDescription className="text-red-400 text-sm sm:text-base">Irreversible account actions.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="p-6 sm:p-10">
+                            <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+                                <div className="space-y-2">
+                                    <h4 className="font-bold text-slate-900">Delete Account</h4>
+                                    <p className="text-sm text-slate-500 max-w-md">Once you delete your account, there is no going back. Please be certain. Accounts with active orders cannot be deleted.</p>
+                                </div>
+                                <Button
+                                    variant="destructive"
+                                    className="h-12 w-full sm:w-auto px-8 rounded-xl font-bold bg-red-600 hover:bg-red-700"
+                                    onClick={async () => {
+                                        const confirmation = prompt("To confirm deletion, type 'DELETE' in all caps:")
+                                        if (confirmation === 'DELETE') {
+                                            const { deleteMyAccount } = await import('@/app/actions/profile-actions')
+                                            const promise = deleteMyAccount()
+                                            toast.promise(promise, {
+                                                loading: 'Deleting account...',
+                                                success: (data) => {
+                                                    if (data.success) {
+                                                        // Redirect currently handled by auth state change usually, but let's force it
+                                                        window.location.href = '/'
+                                                        return "Account deleted. Goodbye!"
+                                                    } else {
+                                                        throw new Error(data.error)
+                                                    }
+                                                },
+                                                error: (err) => `Deletion failed: ${err.message}`
+                                            })
+                                        }
+                                    }}
+                                >
+                                    Delete Account
+                                </Button>
+                            </div>
+                        </CardContent>
+                    </Card>
                 </TabsContent>
 
                 <TabsContent value="hub">

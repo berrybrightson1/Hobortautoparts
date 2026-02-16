@@ -54,7 +54,7 @@ import { toast } from "sonner"
 import { format } from "date-fns"
 import { SearchBar } from "@/components/portal/search-bar"
 import { Pagination } from "@/components/portal/pagination"
-import { updateUserRole, createUser, getUserSourcingHistory, getUsersWithEmails } from "@/app/actions/admin-actions"
+import { updateUserRole, createUser, getUserSourcingHistory, getUsersWithEmails, deleteUser } from "@/app/actions/admin-actions"
 import { SmartPhoneInput } from "@/components/ui/phone-input"
 
 export default function UsersPage() {
@@ -477,8 +477,23 @@ export default function UsersPage() {
                                                             <UserIcon className="mr-2 h-4 w-4" /> Standard Customer
                                                         </DropdownMenuItem>
                                                         <DropdownMenuSeparator className="bg-slate-50" />
-                                                        <DropdownMenuItem className="rounded-xl font-bold text-xs px-3 py-2.5 cursor-pointer text-red-600 hover:bg-red-50 focus:bg-red-50">
-                                                            Suspend Account
+                                                        <DropdownMenuItem
+                                                            onClick={async () => {
+                                                                if (confirm("Are you sure? This action cannot be undone unless they have active orders.")) {
+                                                                    setUpdatingId(user.id)
+                                                                    const res = await deleteUser(user.id)
+                                                                    if (res.success) {
+                                                                        toast.success("User deleted")
+                                                                        fetchUsers()
+                                                                    } else {
+                                                                        toast.error("Deletion Failed", { description: res.error })
+                                                                    }
+                                                                    setUpdatingId(null)
+                                                                }
+                                                            }}
+                                                            className="rounded-xl font-bold text-xs px-3 py-2.5 cursor-pointer text-red-600 hover:bg-red-50 focus:bg-red-50"
+                                                        >
+                                                            Delete Account
                                                         </DropdownMenuItem>
                                                     </DropdownMenuContent>
                                                 </DropdownMenu>
