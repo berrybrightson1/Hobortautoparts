@@ -102,19 +102,16 @@ export default function SourcingRequestsPage() {
     const fetchRequests = async () => {
         setIsLoading(true)
         try {
-            const { data, error } = await supabase
-                .from('sourcing_requests')
-                .select(`
-                    *,
-                    quotes (
-                        *,
-                        orders (id, status)
-                    )
-                `)
-                .order('created_at', { ascending: false })
+            // Use Server Action to bypass RLS and ensure we get all data (especially orders)
+            // This prevents the "Accept" button from showing when an order already exists
+            const { getAdminSourcingRequests } = await import('@/app/actions/admin-actions')
+            const result = await getAdminSourcingRequests()
 
-            if (error) throw error
-            setRequests(data || [])
+            if (!result.success) {
+                throw new Error(result.error)
+            }
+
+            setRequests(result.data || [])
 
             // Fetch active agents for assignment
             const { data: agentsData } = await supabase

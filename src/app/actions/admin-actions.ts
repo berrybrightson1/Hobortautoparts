@@ -222,3 +222,31 @@ export async function createProxyOrder(requestId: string, quoteId: string, userI
         return { success: false, error: error.message || "Failed to create proxy order" }
     }
 }
+
+export async function getAdminSourcingRequests() {
+    try {
+        await requireAdmin()
+        const supabaseAdmin = getAdminClient()
+
+        const { data, error } = await supabaseAdmin
+            .from('sourcing_requests')
+            .select(`
+                *,
+                profiles (
+                    full_name
+                ),
+                quotes (
+                    *,
+                    orders (id, status)
+                )
+            `)
+            .order('created_at', { ascending: false })
+
+        if (error) throw error
+
+        return { success: true, data }
+    } catch (error: any) {
+        console.error("Fetch Requests Error:", error)
+        return { success: false, error: error.message }
+    }
+}
