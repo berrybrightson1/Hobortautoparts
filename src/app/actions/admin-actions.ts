@@ -185,3 +185,40 @@ export async function deleteUser(userId: string) {
         return { success: false, error: error.message }
     }
 }
+
+export async function createProxyOrder(requestId: string, quoteId: string, userId: string, agentId: string | null) {
+    try {
+        await requireAdmin()
+        const supabaseAdmin = getAdminClient()
+
+        // 1. Create the order
+        const { error: orderError } = await supabaseAdmin
+            .from('orders')
+            .insert({
+                user_id: userId,
+                quote_id: quoteId,
+                agent_id: agentId,
+                status: 'paid', // Admin bypass/offline payment
+                payment_method: 'Manual Payment (Verified by Admin)'
+            })
+
+        if (orderError) throw orderError
+
+        // 2. Update the request status
+        const { error: requestError } = await supabaseAdmin
+            .from('sourcing_requests')
+            .update({ status: 'processing' })
+            .eq('id', requestId)
+
+        if (requestError) throw requestError
+
+        revalidatePath('/portal/admin/requests')
+        return { success: true }
+    } catch (error: any) {
+        console.error("Create Proxy Order Error:", error)
+        if (error.code === '23505') {
+            return { success: false, error: "Order already exists for this quote." }
+        }
+        return { success: false, error: error.message || "Failed to create proxy order" }
+    }
+}

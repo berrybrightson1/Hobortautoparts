@@ -243,52 +243,28 @@ export default function SourcingRequestsPage() {
         setIsAcceptingProxy(true)
         const quote = selectedRequest.quotes[0]
 
-        // Hard timeout to prevent "loading forever"
-        const timeoutId = setTimeout(() => {
-            if (isAcceptingProxy) {
-                setIsAcceptingProxy(false)
-                toast.error("Proxy Conversion Latency", {
-                    description: "The order is taking longer than expected to process. Please wait a moment."
-                })
-            }
-        }, 30000)
-
         try {
-            console.log('--- STARTING ADMIN PROXY ORDER CONVERSION ---')
-            // 1. Create the order
-            const { error: orderError } = await supabase
-                .from('orders')
-                .insert({
-                    user_id: selectedRequest.user_id,
-                    quote_id: quote.id,
-                    agent_id: selectedRequest.agent_id,
-                    status: 'paid', // Admin bypass/offline payment
-                    payment_method: 'Manual Payment (Verified by Admin)'
+            const { createProxyOrder } = await import('@/app/actions/admin-actions')
+            const res = await createProxyOrder(
+                selectedRequest.id,
+                quote.id,
+                selectedRequest.user_id,
+                selectedRequest.agent_id
+            )
+
+            if (res.success) {
+                toast.success("Order Confirmed on Customer's Behalf", {
+                    description: "You have verified and accepted this quote for the client manually."
                 })
-
-            if (orderError) throw orderError
-            console.log('--- ADMIN PROXY ORDER CREATED ---')
-
-            // 2. Update the request status
-            const { error: requestError } = await supabase
-                .from('sourcing_requests')
-                .update({ status: 'processing' })
-                .eq('id', selectedRequest.id)
-
-            if (requestError) throw requestError
-            console.log('--- REQUEST UPDATED BY ADMIN PROXY ---')
-
-            toast.success("Order Confirmed on Customer's Behalf", {
-                description: "You have verified and accepted this quote for the client manually."
-            })
-
-            setIsDetailsOpen(false)
-            fetchRequests()
+                setIsDetailsOpen(false)
+                fetchRequests()
+            } else {
+                throw new Error(res.error)
+            }
         } catch (error: any) {
             console.error("Admin proxy acceptance error:", error)
             toast.error("Proxy Action Failed", { description: error.message || "A database error occurred." })
         } finally {
-            clearTimeout(timeoutId)
             setIsAcceptingProxy(false)
         }
     }
