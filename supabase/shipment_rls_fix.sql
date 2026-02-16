@@ -49,3 +49,25 @@ USING (
     AND (orders.user_id = auth.uid() OR orders.agent_id = auth.uid() OR (SELECT role FROM profiles WHERE id = auth.uid()) = 'admin')
   )
 );
+
+-- 4. Quotes Policies (Needed for Shipment Details)
+ALTER TABLE quotes ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Customers can view quotes for their orders" ON quotes;
+
+CREATE POLICY "Customers can view quotes for their orders" ON quotes FOR SELECT
+USING (
+  EXISTS (
+    SELECT 1 FROM orders
+    WHERE orders.quote_id = quotes.id
+    AND orders.user_id = auth.uid()
+  )
+);
+
+-- 5. Sourcing Requests Policies (Needed for Part Name)
+ALTER TABLE sourcing_requests ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Customers can view their own requests" ON sourcing_requests;
+
+CREATE POLICY "Customers can view their own requests" ON sourcing_requests FOR SELECT
+USING (auth.uid() = user_id);

@@ -39,7 +39,7 @@ export default function CustomerTrackingPage() {
                     orders!inner (
                         user_id,
                         quotes (
-                            sourcing_requests (part_name)
+                            part_name
                         )
                     )
                 `)
@@ -72,7 +72,7 @@ export default function CustomerTrackingPage() {
 
     const filteredShipments = shipments.filter(s =>
         s.tracking_number.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-        s.orders?.quotes?.sourcing_requests?.part_name?.toLowerCase().includes(debouncedSearch.toLowerCase())
+        s.orders?.quotes?.part_name?.toLowerCase().includes(debouncedSearch.toLowerCase())
     )
 
     const totalPages = Math.ceil(filteredShipments.length / pageSize)
@@ -137,7 +137,7 @@ export default function CustomerTrackingPage() {
                                             </Badge>
                                         </div>
                                         <p className="text-sm font-semibold text-slate-500 truncate">
-                                            {shipment.orders?.quotes?.sourcing_requests?.part_name || 'Vehicle Part Shipment'}
+                                            {shipment.orders?.quotes?.part_name || 'Vehicle Part Shipment'}
                                         </p>
                                         <div className="flex items-center justify-center md:justify-start gap-4 text-[10px] uppercase font-black tracking-tighter text-slate-400">
                                             <span className="flex items-center gap-2">
