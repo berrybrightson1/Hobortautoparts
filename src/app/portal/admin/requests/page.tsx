@@ -146,6 +146,17 @@ export default function SourcingRequestsPage() {
         }
     }, [requestIdParam, requests])
 
+    // Sync selectedRequest with updated data (e.g. after order creation)
+    useEffect(() => {
+        if (selectedRequest && requests.length > 0) {
+            const updated = requests.find(r => r.id === selectedRequest.id)
+            // Only update if data actually changed (deep comparison not needed if object ref changes on fetch)
+            if (updated && updated !== selectedRequest) {
+                setSelectedRequest(updated)
+            }
+        }
+    }, [requests])
+
     // Debounce search input
     useEffect(() => {
         const timer = setTimeout(() => {
