@@ -6,6 +6,15 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Switch } from "@/components/ui/switch"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
 import { User, Shield, Key, Loader2, Save, Unlock, Moon, Minimize2, Bell, Mail, Settings2, Globe, Server, CheckCircle2 } from "lucide-react"
 import { useAuth } from "@/components/auth/auth-provider"
 import { useState, useEffect } from "react"
@@ -23,6 +32,11 @@ export default function UnifiedSettingsPage() {
     // Profile State
     const [fullName, setFullName] = useState("")
     const [phoneNumber, setPhoneNumber] = useState("")
+
+    // Deletion State
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+    const [deleteConfirmation, setDeleteConfirmation] = useState("")
+    const [isDeleting, setIsDeleting] = useState(false)
 
     // Security State
     const [passwords, setPasswords] = useState({
@@ -271,32 +285,68 @@ export default function UnifiedSettingsPage() {
                                     <h4 className="font-bold text-slate-900">Delete Account</h4>
                                     <p className="text-sm text-slate-500 max-w-md">Once you delete your account, there is no going back. Please be certain. Accounts with active orders cannot be deleted.</p>
                                 </div>
-                                <Button
-                                    variant="destructive"
-                                    className="h-12 w-full sm:w-auto px-8 rounded-xl font-bold bg-red-600 hover:bg-red-700"
-                                    onClick={async () => {
-                                        const confirmation = prompt("To confirm deletion, type 'DELETE' in all caps:")
-                                        if (confirmation === 'DELETE') {
-                                            const { deleteMyAccount } = await import('@/app/actions/profile-actions')
-                                            const promise = deleteMyAccount()
-                                            toast.promise(promise, {
-                                                loading: 'Deleting account...',
-                                                success: (data) => {
-                                                    if (data.success) {
-                                                        // Redirect currently handled by auth state change usually, but let's force it
-                                                        window.location.href = '/'
-                                                        return "Account deleted. Goodbye!"
-                                                    } else {
-                                                        throw new Error(data.error)
+                                <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
+                                    <DialogTrigger asChild>
+                                        <Button
+                                            variant="destructive"
+                                            className="h-12 w-full sm:w-auto px-8 rounded-xl font-bold bg-red-600 hover:bg-red-700"
+                                        >
+                                            Delete Account
+                                        </Button>
+                                    </DialogTrigger>
+                                    <DialogContent className="sm:max-w-md rounded-[2rem] border-0 shadow-2xl bg-white p-0 gap-0 overflow-hidden">
+                                        <DialogHeader className="p-8 pb-4">
+                                            <DialogTitle className="text-xl font-bold text-red-600">Delete Account Permanently</DialogTitle>
+                                            <DialogDescription className="text-slate-500 font-medium pt-2">
+                                                This action is <strong>irreversible</strong>. All your data, including profile settings and preferences, will be erased.
+                                                <br /><br />
+                                                Active orders will prevent deletion.
+                                            </DialogDescription>
+                                        </DialogHeader>
+                                        <div className="p-8 pt-0 space-y-4">
+                                            <Label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Type "DELETE" to confirm</Label>
+                                            <Input
+                                                value={deleteConfirmation}
+                                                onChange={(e) => setDeleteConfirmation(e.target.value)}
+                                                className="h-12 rounded-xl border-slate-200 font-bold text-slate-900"
+                                                placeholder="DELETE"
+                                            />
+                                        </div>
+                                        <DialogFooter className="p-6 bg-slate-50/50 gap-2 sm:gap-0">
+                                            <Button
+                                                variant="ghost"
+                                                onClick={() => setIsDeleteModalOpen(false)}
+                                                className="rounded-xl font-bold text-slate-500 hover:bg-slate-100 h-12"
+                                            >
+                                                Cancel
+                                            </Button>
+                                            <Button
+                                                variant="destructive"
+                                                disabled={deleteConfirmation !== 'DELETE' || isDeleting}
+                                                onClick={async () => {
+                                                    setIsDeleting(true)
+                                                    try {
+                                                        const { deleteMyAccount } = await import('@/app/actions/profile-actions')
+                                                        const res = await deleteMyAccount()
+
+                                                        if (res.success) {
+                                                            toast.success("Account deleted. Goodbye!")
+                                                            window.location.href = '/'
+                                                        } else {
+                                                            throw new Error(res.error)
+                                                        }
+                                                    } catch (error: any) {
+                                                        toast.error("Deletion Failed", { description: error.message })
+                                                        setIsDeleting(false)
                                                     }
-                                                },
-                                                error: (err) => `Deletion failed: ${err.message}`
-                                            })
-                                        }
-                                    }}
-                                >
-                                    Delete Account
-                                </Button>
+                                                }}
+                                                className="rounded-xl font-bold bg-red-600 hover:bg-red-700 h-12 px-6"
+                                            >
+                                                {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Confirm Deletion"}
+                                            </Button>
+                                        </DialogFooter>
+                                    </DialogContent>
+                                </Dialog>
                             </div>
                         </CardContent>
                     </Card>

@@ -106,10 +106,7 @@ export default function SourcingRequestsPage() {
                 .from('sourcing_requests')
                 .select(`
                     *,
-                    profiles (
-                        full_name
-                    ),
-                    keywords: quotes (
+                    quotes (
                         *,
                         orders (id, status)
                     )

@@ -80,6 +80,10 @@ export default function UsersPage() {
     })
     const [isCreating, setIsCreating] = useState(false)
 
+    // Delete User State
+    const [userToDelete, setUserToDelete] = useState<any | null>(null)
+    const [isDeletingUser, setIsDeletingUser] = useState(false)
+
     // User Detail View State
     const [selectedUser, setSelectedUser] = useState<any | null>(null)
     const [isSheetOpen, setIsSheetOpen] = useState(false)
@@ -478,19 +482,7 @@ export default function UsersPage() {
                                                         </DropdownMenuItem>
                                                         <DropdownMenuSeparator className="bg-slate-50" />
                                                         <DropdownMenuItem
-                                                            onClick={async () => {
-                                                                if (confirm("Are you sure? This action cannot be undone unless they have active orders.")) {
-                                                                    setUpdatingId(user.id)
-                                                                    const res = await deleteUser(user.id)
-                                                                    if (res.success) {
-                                                                        toast.success("User deleted")
-                                                                        fetchUsers()
-                                                                    } else {
-                                                                        toast.error("Deletion Failed", { description: res.error })
-                                                                    }
-                                                                    setUpdatingId(null)
-                                                                }
-                                                            }}
+                                                            onClick={() => setUserToDelete(user)}
                                                             className="rounded-xl font-bold text-xs px-3 py-2.5 cursor-pointer text-red-600 hover:bg-red-50 focus:bg-red-50"
                                                         >
                                                             Delete Account
@@ -678,6 +670,55 @@ export default function UsersPage() {
                     )}
                 </SheetContent>
             </Sheet>
+
+            {/* Delete Confirmation Dialog */}
+            <Dialog open={!!userToDelete} onOpenChange={(open) => !open && setUserToDelete(null)}>
+                <DialogContent className="sm:max-w-md rounded-[2rem] border-0 shadow-2xl bg-white p-0 gap-0 overflow-hidden">
+                    <DialogHeader className="p-8 pb-4">
+                        <DialogTitle className="text-xl font-bold text-red-600">Delete User Account</DialogTitle>
+                        <DialogDescription className="text-slate-500 font-medium pt-2">
+                            Are you sure you want to delete <strong>{userToDelete?.full_name}</strong>?
+                            <br /><br />
+                            This action cannot be undone. If they have active orders, deletion will be blocked by safety protocols.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter className="p-6 bg-slate-50/50 gap-2 sm:gap-0">
+                        <Button
+                            variant="ghost"
+                            onClick={() => setUserToDelete(null)}
+                            className="rounded-xl font-bold text-slate-500 hover:bg-slate-100 h-12"
+                            disabled={isDeletingUser}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            variant="destructive"
+                            disabled={isDeletingUser}
+                            onClick={async () => {
+                                if (!userToDelete) return
+                                setIsDeletingUser(true)
+                                try {
+                                    const res = await deleteUser(userToDelete.id)
+                                    if (res.success) {
+                                        toast.success("User deleted successfully")
+                                        fetchUsers()
+                                        setUserToDelete(null)
+                                    } else {
+                                        toast.error("Deletion Failed", { description: res.error })
+                                    }
+                                } catch (error: any) {
+                                    toast.error("Deletion Failed", { description: error.message })
+                                } finally {
+                                    setIsDeletingUser(false)
+                                }
+                            }}
+                            className="rounded-xl font-bold bg-red-600 hover:bg-red-700 h-12 px-6"
+                        >
+                            {isDeletingUser ? <Loader2 className="h-4 w-4 animate-spin" /> : "Confirm Delete"}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }
