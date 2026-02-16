@@ -29,7 +29,7 @@ import { useState, useEffect } from "react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
-import { getAdminOrders, updateOrderStatus } from "@/app/actions/order-actions"
+import { getAdminOrders, updateOrderStatus, updateServiceFee } from "@/app/actions/order-actions"
 import { ResponsiveModal } from "@/components/ui/responsive-modal"
 
 export default function AdminOrdersPage() {
@@ -41,6 +41,11 @@ export default function AdminOrdersPage() {
     const [updatingId, setUpdatingId] = useState<string | null>(null)
     const [selectedOrder, setSelectedOrder] = useState<any>(null)
     const [isDetailsOpen, setIsDetailsOpen] = useState(false)
+
+    // Service Fee Editing State
+    const [isEditingFee, setIsEditingFee] = useState(false)
+    const [tempFee, setTempFee] = useState('')
+    const [isUpdatingFee, setIsUpdatingFee] = useState(false)
 
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1)
@@ -86,6 +91,37 @@ export default function AdminOrdersPage() {
         }
         setUpdatingId(null)
         clearTimeout(timeoutId)
+    }
+
+    const handleUpdateFee = async () => {
+        if (!selectedOrder?.quote_id) return
+
+        setIsUpdatingFee(true)
+        const fee = parseFloat(tempFee)
+
+        if (isNaN(fee) || fee < 0) {
+            toast.error("Invalid Fee", { description: "Please enter a valid positive number" })
+            setIsUpdatingFee(false)
+            return
+        }
+
+        const result = await updateServiceFee(selectedOrder.quote_id, fee)
+
+        if (result.success) {
+            toast.success("Service Fee Updated", { description: "Order total has been recalculated." })
+            setIsEditingFee(false)
+            fetchData() // Refresh data
+            // Also update selectedOrder locally to reflect change immediately if possible, 
+            // but fetching is safer to get dependent total_amount.
+            // We'll rely on fetchData + useEffect to update selectedOrder?
+            // Actually, fetchData updates `orders`. `selectedOrder` is a separate state reference.
+            // We need to re-find the order in the new data or update it manually.
+            // Let's close the modal for now or just trigger a refresh.
+            setIsDetailsOpen(false)
+        } else {
+            toast.error("Update Failed", { description: result.error })
+        }
+        setIsUpdatingFee(false)
     }
 
     // Debounce search input
@@ -328,7 +364,48 @@ export default function AdminOrdersPage() {
                                         </div>
                                         <div className="flex justify-between items-center p-4 bg-white rounded-xl border border-slate-100/50 shadow-sm">
                                             <span className="text-slate-600 font-semibold uppercase tracking-[0.1em] text-[10px]">Platform Service Fee</span>
-                                            <span className="text-slate-900 font-mono font-medium text-base">${selectedOrder?.quotes?.service_fee?.toFixed(2)}</span>
+                                            {isEditingFee ? (
+                                                <div className="flex items-center gap-2">
+                                                    <Input
+                                                        type="number"
+                                                        value={tempFee}
+                                                        onChange={(e) => setTempFee(e.target.value)}
+                                                        className="h-8 w-20 text-right font-mono"
+                                                    />
+                                                    <Button
+                                                        size="icon"
+                                                        variant="ghost"
+                                                        className="h-8 w-8 text-emerald-600 hover:bg-emerald-50"
+                                                        onClick={handleUpdateFee}
+                                                        disabled={isUpdatingFee}
+                                                    >
+                                                        {isUpdatingFee ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
+                                                    </Button>
+                                                    <Button
+                                                        size="icon"
+                                                        variant="ghost"
+                                                        className="h-8 w-8 text-red-500 hover:bg-red-50"
+                                                        onClick={() => setIsEditingFee(false)}
+                                                    >
+                                                        <X className="h-4 w-4" />
+                                                    </Button>
+                                                </div>
+                                            ) : (
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-slate-900 font-mono font-medium text-base">${selectedOrder?.quotes?.service_fee?.toFixed(2)}</span>
+                                                    <Button
+                                                        size="icon"
+                                                        variant="ghost"
+                                                        className="h-6 w-6 text-slate-400 hover:text-blue-600"
+                                                        onClick={() => {
+                                                            setTempFee(selectedOrder?.quotes?.service_fee?.toString() || '0')
+                                                            setIsEditingFee(true)
+                                                        }}
+                                                    >
+                                                        <RefreshCw className="h-3 w-3" />
+                                                    </Button>
+                                                </div>
+                                            )}
                                         </div>
                                         <div className="pt-4">
                                             <div className="flex justify-between items-end p-6 bg-slate-950 rounded-2xl shadow-xl relative overflow-hidden group">

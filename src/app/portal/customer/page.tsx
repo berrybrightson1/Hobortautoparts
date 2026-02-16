@@ -50,10 +50,13 @@ export default function CustomerDashboard() {
                 .from('sourcing_requests')
                 .select(`
                     *,
-                    *,
                     quotes (
                         *,
-                        orders (id, status)
+                        orders (
+                            id, 
+                            status,
+                            shipments (tracking_number)
+                        )
                     )
                 `)
                 .eq('user_id', user.id)
@@ -115,6 +118,18 @@ export default function CustomerDashboard() {
             order.vin?.toLowerCase().includes(searchLower)
         )
     })
+
+    // Helper to extract tracking number
+    const getTrackingInfo = (request: any) => {
+        const order = request.quotes?.[0]?.orders?.[0] || request.quotes?.[0]?.orders
+        const shipment = order?.shipments?.[0] || order?.shipments
+        return {
+            hasTracking: !!shipment?.tracking_number,
+            trackingNumber: shipment?.tracking_number || order?.id,
+            isPending: !shipment?.tracking_number,
+            status: order?.status
+        }
+    }
 
     // Stat counts
     const stats = {
@@ -290,7 +305,7 @@ export default function CustomerDashboard() {
             )}
 
             {/* PROMINENT TRACKING NUMBER CARD */}
-            {orders.length > 0 && orders.some(order => order.id) && (
+            {orders.some(o => getTrackingInfo(o).hasTracking) && (
                 <Card className="bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 border-none shadow-2xl shadow-blue-900/30 rounded-[2rem] overflow-hidden relative group">
                     {/* Decorative elements */}
                     <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
@@ -310,26 +325,34 @@ export default function CustomerDashboard() {
                                 </div>
 
                                 <div className="flex flex-wrap gap-2 md:gap-3">
-                                    {orders.slice(0, 3).map((order) => order.id && (
-                                        <button
-                                            key={order.id}
-                                            onClick={() => {
-                                                navigator.clipboard.writeText(order.id)
-                                                toast.success("Tracking number copied!", {
-                                                    description: `${order.id} is now in your clipboard`
-                                                })
-                                            }}
-                                            className="group/btn flex items-center gap-2 px-4 md:px-6 py-3 md:py-4 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-xl md:rounded-2xl border border-white/20 hover:border-white/30 transition-all active:scale-95 shadow-lg hover:shadow-xl"
-                                        >
-                                            <span className="font-mono text-sm md:text-base font-medium text-white tracking-wider">
-                                                {order.id.slice(0, 13)}...
-                                            </span>
-                                            <CopyIcon className="h-4 w-4 md:h-5 md:w-5 text-white/80 group-hover/btn:text-white transition-colors" />
-                                        </button>
-                                    ))}
-                                    {orders.length > 3 && (
+                                    {orders
+                                        .filter(o => getTrackingInfo(o).hasTracking)
+                                        .slice(0, 3)
+                                        .map((request) => {
+                                            const info = getTrackingInfo(request)
+                                            return (
+                                                <div key={request.id} className="flex flex-col gap-1">
+                                                    <span className="text-[10px] text-white/60 font-medium uppercase tracking-wider pl-1">{request.part_name}</span>
+                                                    <button
+                                                        onClick={() => {
+                                                            navigator.clipboard.writeText(info.trackingNumber)
+                                                            toast.success("Tracking number copied!", {
+                                                                description: `${info.trackingNumber} is now in your clipboard`
+                                                            })
+                                                        }}
+                                                        className="group/btn flex items-center gap-2 px-4 md:px-6 py-3 md:py-4 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-xl md:rounded-2xl border border-white/20 hover:border-white/30 transition-all active:scale-95 shadow-lg hover:shadow-xl"
+                                                    >
+                                                        <span className="font-mono text-sm md:text-base font-medium text-white tracking-wider">
+                                                            {info.trackingNumber}
+                                                        </span>
+                                                        <CopyIcon className="h-4 w-4 md:h-5 md:w-5 text-white/80 group-hover/btn:text-white transition-colors" />
+                                                    </button>
+                                                </div>
+                                            )
+                                        })}
+                                    {orders.filter(o => getTrackingInfo(o).hasTracking).length > 3 && (
                                         <div className="flex items-center px-4 py-3 text-white/60 text-sm font-medium">
-                                            +{orders.length - 3} more below
+                                            +{orders.filter(o => getTrackingInfo(o).hasTracking).length - 3} more below
                                         </div>
                                     )}
                                 </div>
@@ -351,7 +374,7 @@ export default function CustomerDashboard() {
                         <h3 className="text-xl font-semibold text-slate-900 flex items-center gap-3 tracking-tight">
                             <Clock className="h-6 w-6 text-primary-orange" /> Recent Activity
                         </h3>
-                        <Button variant="link" className="text-primary-blue font-semibold uppercase tracking-widest text-[10px] hover:no-underline hover:text-blue-700" disabled={orders.length === 0}>
+                        <Button onClick={() => router.push('/portal/orders')} variant="link" className="text-primary-blue font-semibold uppercase tracking-widest text-[10px] hover:no-underline hover:text-blue-700" disabled={orders.length === 0}>
                             View All <ChevronRight className="ml-1 h-3 w-3" />
                         </Button>
                     </div>

@@ -36,6 +36,7 @@ import { toast } from "sonner"
 const NAV_ITEMS = {
     customer: [
         { name: "Dashboard", href: "/portal/customer", icon: LayoutDashboard },
+        { name: "All Orders", href: "/portal/orders", icon: ShoppingBag },
         { name: "Track Orders", href: "/portal/customer/tracking", icon: Truck },
         { name: "Platform Guide", href: "/marketing/guide", icon: Info },
         { name: "New Request", href: "/quote", icon: Plus },

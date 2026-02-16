@@ -75,3 +75,48 @@ export async function updateOrderStatus(orderId: string, newStatus: string) {
         return { success: false, error: error.message }
     }
 }
+
+export async function updateServiceFee(quoteId: string, serviceFee: number) {
+    try {
+        await requireAdmin()
+        const supabase = getAdminClient()
+
+        // 1. Get current quote details to recalculate total
+        const { data: quote, error: fetchError } = await supabase
+            .from('quotes')
+            .select('item_price, shipping_cost')
+            .eq('id', quoteId)
+            .single()
+
+        if (fetchError) throw fetchError
+
+        // Ensure values are numbers (stripping currency symbols if needed, though they should be numeric in DB)
+        // Postgres MONEY type returns as string like "$10.00". Need to parse.
+        // Actually, supabase-js might return them as strings.
+        const parseMoney = (val: any) => {
+            if (typeof val === 'number') return val
+            return parseFloat(String(val).replace(/[^0-9.-]+/g, ''))
+        }
+
+        const itemPrice = parseMoney(quote.item_price)
+        const shippingCost = parseMoney(quote.shipping_cost)
+        const newTotal = itemPrice + shippingCost + serviceFee
+
+        // 2. Update quote
+        const { error: updateError } = await supabase
+            .from('quotes')
+            .update({
+                service_fee: serviceFee,
+                total_amount: newTotal
+            })
+            .eq('id', quoteId)
+
+        if (updateError) throw updateError
+
+        revalidatePath('/portal/admin/orders')
+        return { success: true }
+    } catch (error: any) {
+        console.error("Update Service Fee Error:", error)
+        return { success: false, error: error.message }
+    }
+}
