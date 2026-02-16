@@ -8,7 +8,6 @@ interface NotificationPayload {
     title: string
     message: string
     type?: 'system' | 'order' | 'quote' | 'sourcing' | 'shipment' | 'request' | 'promo'
-    email?: string
 }
 
 const mapTypeToDb = (type: NotificationPayload['type']): 'system' | 'order' | 'promo' | 'request' => {

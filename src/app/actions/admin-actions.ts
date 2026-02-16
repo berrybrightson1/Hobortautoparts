@@ -3,8 +3,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { revalidatePath } from 'next/cache'
 import { requireAdmin } from '@/lib/auth-checks'
-import { sendEmail } from '@/lib/email'
-import { WelcomeEmail } from '@/emails/welcome-email'
 import { sendNotification } from '@/lib/notifications'
 
 // Initialize Admin Client (Service Role)
@@ -98,19 +96,9 @@ export async function createUser(formData: any) {
                 console.error("Profile Upsert Error (Non-fatal):", profileError)
             }
 
-            // Send Welcome Email
-            try {
-                await sendEmail({
-                    to: email,
-                    subject: "Welcome to Hobort Auto Parts Express",
-                    react: WelcomeEmail({
-                        name: full_name || "Partner",
-                        role: role
-                    })
-                })
-            } catch (emailError) {
-                console.error("Failed to send welcome email:", emailError)
-            }
+
+
+
         }
 
         revalidatePath('/portal/users')
@@ -172,7 +160,8 @@ export async function getUsersWithEmails() {
         return { success: true, data: usersWithEmails }
     } catch (error: any) {
         console.error("Fetch Users With Emails Error:", error)
-        return { success: false, error: error.message, data: [] }
+        // Ensure error is serializable
+        return { success: false, error: error?.message || "Unknown server error", data: [] }
     }
 }
 
