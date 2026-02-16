@@ -294,57 +294,65 @@ export default function UnifiedSettingsPage() {
                                             Delete Account
                                         </Button>
                                     </DialogTrigger>
-                                    <DialogContent className="sm:max-w-md rounded-[2rem] border-0 shadow-2xl bg-white p-0 gap-0 overflow-hidden">
-                                        <DialogHeader className="p-8 pb-4">
-                                            <DialogTitle className="text-xl font-bold text-red-600">Delete Account Permanently</DialogTitle>
-                                            <DialogDescription className="text-slate-500 font-medium pt-2">
-                                                This action is <strong>irreversible</strong>. All your data, including profile settings and preferences, will be erased.
-                                                <br /><br />
-                                                Active orders will prevent deletion.
-                                            </DialogDescription>
-                                        </DialogHeader>
-                                        <div className="p-8 pt-0 space-y-4">
-                                            <Label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Type "DELETE" to confirm</Label>
-                                            <Input
-                                                value={deleteConfirmation}
-                                                onChange={(e) => setDeleteConfirmation(e.target.value)}
-                                                className="h-12 rounded-xl border-slate-200 font-bold text-slate-900"
-                                                placeholder="DELETE"
-                                            />
-                                        </div>
-                                        <DialogFooter className="p-6 bg-slate-50/50 gap-2 sm:gap-0">
-                                            <Button
-                                                variant="ghost"
-                                                onClick={() => setIsDeleteModalOpen(false)}
-                                                className="rounded-xl font-bold text-slate-500 hover:bg-slate-100 h-12"
-                                            >
-                                                Cancel
-                                            </Button>
-                                            <Button
-                                                variant="destructive"
-                                                disabled={deleteConfirmation !== 'DELETE' || isDeleting}
-                                                onClick={async () => {
-                                                    setIsDeleting(true)
-                                                    try {
-                                                        const { deleteMyAccount } = await import('@/app/actions/profile-actions')
-                                                        const res = await deleteMyAccount()
+                                    <DialogContent className="sm:max-w-md rounded-[2.5rem] border-0 shadow-2xl bg-white p-0 gap-0 overflow-hidden">
+                                        <div className="p-8 sm:p-10 text-center space-y-6">
+                                            <div className="mx-auto h-20 w-20 rounded-[2rem] bg-red-50 flex items-center justify-center text-red-600 shadow-inner border border-red-100">
+                                                <Shield className="h-10 w-10" />
+                                            </div>
 
-                                                        if (res.success) {
-                                                            toast.success("Account deleted. Goodbye!")
-                                                            window.location.href = '/'
-                                                        } else {
-                                                            throw new Error(res.error)
-                                                        }
-                                                    } catch (error: any) {
-                                                        toast.error("Deletion Failed", { description: error.message })
-                                                        setIsDeleting(false)
-                                                    }
-                                                }}
-                                                className="rounded-xl font-bold bg-red-600 hover:bg-red-700 h-12 px-6"
-                                            >
-                                                {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Confirm Deletion"}
-                                            </Button>
-                                        </DialogFooter>
+                                            <div className="space-y-2">
+                                                <DialogTitle className="text-2xl font-bold text-slate-900 tracking-tight">Delete Account Permanently</DialogTitle>
+                                                <DialogDescription className="text-slate-500 font-medium">
+                                                    This action is <strong>irreversible</strong>. All your data, including profile settings and preferences, will be erased.
+                                                </DialogDescription>
+                                            </div>
+
+                                            <div className="space-y-4 pt-4">
+                                                <div className="space-y-2">
+                                                    <Label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Type "DELETE" to authorize</Label>
+                                                    <Input
+                                                        value={deleteConfirmation}
+                                                        onChange={(e) => setDeleteConfirmation(e.target.value)}
+                                                        className="h-14 rounded-2xl border-slate-200 bg-slate-50/50 focus:bg-white text-center font-bold text-lg text-red-600 placeholder:text-slate-300 transition-all"
+                                                        placeholder="DELETE"
+                                                    />
+                                                </div>
+
+                                                <div className="flex flex-col gap-3 pt-2">
+                                                    <Button
+                                                        variant="destructive"
+                                                        disabled={deleteConfirmation !== 'DELETE' || isDeleting}
+                                                        onClick={async () => {
+                                                            setIsDeleting(true)
+                                                            try {
+                                                                const { deleteMyAccount } = await import('@/app/actions/profile-actions')
+                                                                const res = await deleteMyAccount()
+
+                                                                if (res.success) {
+                                                                    toast.success("Account deleted. Goodbye!")
+                                                                    window.location.href = '/'
+                                                                } else {
+                                                                    throw new Error(res.error)
+                                                                }
+                                                            } catch (error: any) {
+                                                                toast.error("Deletion Failed", { description: error.message })
+                                                                setIsDeleting(false)
+                                                            }
+                                                        }}
+                                                        className="h-14 rounded-2xl font-bold bg-red-600 hover:bg-red-700 shadow-xl shadow-red-600/20 transition-all active:scale-95"
+                                                    >
+                                                        {isDeleting ? <Loader2 className="h-5 w-5 animate-spin" /> : "Authorize Permanent Deletion"}
+                                                    </Button>
+                                                    <Button
+                                                        variant="ghost"
+                                                        onClick={() => setIsDeleteModalOpen(false)}
+                                                        className="h-12 rounded-xl font-bold text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-all uppercase text-[10px] tracking-widest"
+                                                    >
+                                                        Discard & Go Back
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </DialogContent>
                                 </Dialog>
                             </div>

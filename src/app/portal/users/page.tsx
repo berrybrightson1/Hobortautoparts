@@ -673,50 +673,54 @@ export default function UsersPage() {
 
             {/* Delete Confirmation Dialog */}
             <Dialog open={!!userToDelete} onOpenChange={(open) => !open && setUserToDelete(null)}>
-                <DialogContent className="sm:max-w-md rounded-[2rem] border-0 shadow-2xl bg-white p-0 gap-0 overflow-hidden">
-                    <DialogHeader className="p-8 pb-4">
-                        <DialogTitle className="text-xl font-bold text-red-600">Delete User Account</DialogTitle>
-                        <DialogDescription className="text-slate-500 font-medium pt-2">
-                            Are you sure you want to delete <strong>{userToDelete?.full_name}</strong>?
-                            <br /><br />
-                            This action cannot be undone. If they have active orders, deletion will be blocked by safety protocols.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <DialogFooter className="p-6 bg-slate-50/50 gap-2 sm:gap-0">
-                        <Button
-                            variant="ghost"
-                            onClick={() => setUserToDelete(null)}
-                            className="rounded-xl font-bold text-slate-500 hover:bg-slate-100 h-12"
-                            disabled={isDeletingUser}
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            variant="destructive"
-                            disabled={isDeletingUser}
-                            onClick={async () => {
-                                if (!userToDelete) return
-                                setIsDeletingUser(true)
-                                try {
-                                    const res = await deleteUser(userToDelete.id)
-                                    if (res.success) {
-                                        toast.success("User deleted successfully")
-                                        fetchUsers()
-                                        setUserToDelete(null)
-                                    } else {
-                                        toast.error("Deletion Failed", { description: res.error })
+                <DialogContent className="sm:max-w-md rounded-[2.5rem] border-0 shadow-2xl bg-white p-0 gap-0 overflow-hidden">
+                    <div className="p-8 sm:p-10 text-center space-y-6">
+                        <div className="mx-auto h-20 w-20 rounded-[2rem] bg-red-50 flex items-center justify-center text-red-600 shadow-inner border border-red-100">
+                            <XCircle className="h-10 w-10" />
+                        </div>
+
+                        <div className="space-y-2">
+                            <DialogTitle className="text-2xl font-bold text-slate-900 tracking-tight">Delete User Account</DialogTitle>
+                            <DialogDescription className="text-slate-500 font-medium">
+                                Are you sure you want to delete <strong>{userToDelete?.full_name}</strong>? This action is <strong>irreversible</strong> and will be blocked if active orders exist.
+                            </DialogDescription>
+                        </div>
+
+                        <div className="flex flex-col gap-3 pt-4">
+                            <Button
+                                variant="destructive"
+                                disabled={isDeletingUser}
+                                onClick={async () => {
+                                    if (!userToDelete) return
+                                    setIsDeletingUser(true)
+                                    try {
+                                        const res = await deleteUser(userToDelete.id)
+                                        if (res.success) {
+                                            toast.success("User deleted successfully")
+                                            fetchUsers()
+                                            setUserToDelete(null)
+                                        } else {
+                                            toast.error("Deletion Failed", { description: res.error })
+                                        }
+                                    } catch (error: any) {
+                                        toast.error("Deletion Failed", { description: error.message })
+                                    } finally {
+                                        setIsDeletingUser(false)
                                     }
-                                } catch (error: any) {
-                                    toast.error("Deletion Failed", { description: error.message })
-                                } finally {
-                                    setIsDeletingUser(false)
-                                }
-                            }}
-                            className="rounded-xl font-bold bg-red-600 hover:bg-red-700 h-12 px-6"
-                        >
-                            {isDeletingUser ? <Loader2 className="h-4 w-4 animate-spin" /> : "Confirm Delete"}
-                        </Button>
-                    </DialogFooter>
+                                }}
+                                className="h-14 rounded-2xl font-bold bg-red-600 hover:bg-red-700 shadow-xl shadow-red-600/20 transition-all active:scale-95"
+                            >
+                                {isDeletingUser ? <Loader2 className="h-5 w-5 animate-spin" /> : "Confirm Permanent Deletion"}
+                            </Button>
+                            <Button
+                                variant="ghost"
+                                onClick={() => setUserToDelete(null)}
+                                className="h-12 rounded-xl font-bold text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-all uppercase text-[10px] tracking-widest"
+                            >
+                                Discard & Cancel
+                            </Button>
+                        </div>
+                    </div>
                 </DialogContent>
             </Dialog>
         </div>

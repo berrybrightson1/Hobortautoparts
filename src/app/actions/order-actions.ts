@@ -3,6 +3,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { revalidatePath } from 'next/cache'
 import { requireAdmin } from '@/lib/auth-checks'
+import { sendNotification } from '@/lib/notifications'
 
 // Initialize Admin Client
 function getAdminClient() {
@@ -68,6 +69,26 @@ export async function updateOrderStatus(orderId: string, newStatus: string) {
 
         if (error) throw error
 
+        // Notify Customer of Status Update
+        try {
+            const { data: order } = await supabase
+                .from('orders')
+                .select('user_id, status')
+                .eq('id', orderId)
+                .single()
+
+            if (order) {
+                await sendNotification({
+                    userId: order.user_id,
+                    title: 'Order Status Updated',
+                    message: `Your order status has been updated to ${newStatus.toUpperCase()}.`,
+                    type: 'order'
+                })
+            }
+        } catch (notifyErr) {
+            console.warn('Non-blocking notification failure:', notifyErr)
+        }
+
         revalidatePath('/portal/admin/orders')
         return { success: true }
     } catch (error: any) {
@@ -112,6 +133,26 @@ export async function updateServiceFee(quoteId: string, serviceFee: number) {
             .eq('id', quoteId)
 
         if (updateError) throw updateError
+
+        // Notify Customer of Fee Adjustment (Optional, but good for transparency)
+        try {
+            const { data: order } = await supabase
+                .from('orders')
+                .select('user_id')
+                .eq('quote_id', quoteId)
+                .single()
+
+            if (order) {
+                await sendNotification({
+                    userId: order.user_id,
+                    title: 'Service Fee Updated',
+                    message: `A service fee of $${serviceFee} has been applied to your quote.`,
+                    type: 'system'
+                })
+            }
+        } catch (notifyErr) {
+            console.warn('Non-blocking notification failure:', notifyErr)
+        }
 
         revalidatePath('/portal/admin/orders')
         return { success: true }

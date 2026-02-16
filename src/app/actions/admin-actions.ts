@@ -212,6 +212,18 @@ export async function createProxyOrder(requestId: string, quoteId: string, userI
 
         if (requestError) throw requestError
 
+        // Notify Customer that Admin accepted on their behalf
+        try {
+            await sendNotification({
+                userId: userId,
+                title: 'Order Confirmed',
+                message: 'Your order has been verified and confirmed by an administrator.',
+                type: 'order'
+            })
+        } catch (notifyErr) {
+            console.warn('Non-blocking notification failure:', notifyErr)
+        }
+
         revalidatePath('/portal/admin/requests')
         return { success: true }
     } catch (error: any) {
