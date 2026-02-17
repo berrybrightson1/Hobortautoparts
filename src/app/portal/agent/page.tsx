@@ -46,6 +46,7 @@ import { ResponsiveModal } from "@/components/ui/responsive-modal"
 import { FeedbackPanel } from "@/components/portal/feedback-panel"
 import { X, Package, ChevronRight, MessageSquare, ArrowRight } from "lucide-react"
 import { SearchBar } from "@/components/portal/search-bar"
+import { createProxyOrder } from "./actions"
 
 export default function AgentDashboard() {
     const { profile, user } = useAuth()
@@ -176,28 +177,20 @@ export default function AgentDashboard() {
 
         try {
             console.log('--- STARTING PROXY ORDER CONVERSION ---')
-            // 1. Create the order
-            const { error: orderError } = await supabase
-                .from('orders')
-                .insert({
-                    user_id: selectedRequest.user_id, // The customer
-                    quote_id: quote.id,
-                    agent_id: user.id, // The agent acting as proxy
-                    status: 'pending_payment', // Changed from 'paid' - requires Admin Verification
-                    payment_method: 'Client Cash/Transfer (Pending Verification)'
-                })
+            console.log('--- STARTING PROXY ORDER CONVERSION ---')
 
-            if (orderError) throw orderError
-            console.log('--- PROXY ORDER CREATED (PENDING VERIFICATION) ---')
+            const result = await createProxyOrder({
+                userId: selectedRequest.user_id,
+                agentId: user.id,
+                quoteId: quote.id,
+                requestId: selectedRequest.id
+            })
 
-            // 2. Update the request status
-            const { error: requestError } = await supabase
-                .from('sourcing_requests')
-                .update({ status: 'processing' })
-                .eq('id', selectedRequest.id)
+            console.log('--- PROXY ORDER RESULT:', result)
 
-            if (requestError) throw requestError
-            console.log('--- REQUEST UPDATED BY PROXY ---')
+            if (!result.success) {
+                throw new Error(result.error || "Server Action Failed")
+            }
 
             toast.success("Order Submitted for Verification", {
                 description: "The order has been created. An Admin must verify the payment before it moves to the Order Pipeline."
@@ -207,6 +200,12 @@ export default function AgentDashboard() {
             fetchAgentData()
         } catch (error: any) {
             console.error("Proxy acceptance error:", error)
+            console.error("Error details:", {
+                message: error.message,
+                code: error.code,
+                details: error.details,
+                hint: error.hint
+            })
             toast.error("Proxy Action Failed", { description: error.message || "A database error occurred." })
         } finally {
             clearTimeout(timeoutId)
@@ -556,7 +555,8 @@ export default function AgentDashboard() {
                                                 <Loader2 className="h-4 w-4 animate-spin" />
                                             ) : (
                                                 <span className="flex items-center gap-3">
-                                                    Accept on Client's Behalf <CheckCircle2 className="h-4 w-4 text-emerald-300" />
+                                                    {selectedRequest.user_id === user?.id ? "Accept Quote" : "Accept on Client's Behalf"}
+                                                    <CheckCircle2 className="h-4 w-4 text-emerald-300" />
                                                 </span>
                                             )}
                                         </Button>

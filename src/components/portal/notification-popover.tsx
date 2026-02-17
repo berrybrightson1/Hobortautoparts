@@ -5,10 +5,9 @@ import { Bell, Check, Trash2, Package, Info, Tag, Clock, CheckCheck, PackageSear
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { cn } from "@/lib/utils"
+import { cn, formatMinimalDistance } from "@/lib/utils"
 import { useAuth } from "@/components/auth/auth-provider"
 import { supabase } from "@/lib/supabase"
-import { formatDistanceToNow } from "date-fns"
 import { toast } from "sonner"
 import { motion, AnimatePresence } from "framer-motion"
 import { InteractiveNotification } from "@/components/portal/interactive-notification"
@@ -228,15 +227,17 @@ export function NotificationPopover() {
                                                 {notification.type === 'system' && <Info className="h-5 w-5" />}
                                             </div>
                                             <div className="flex-1 min-w-0 space-y-1">
-                                                <div className="flex items-start justify-between gap-3">
-                                                    <p className={cn("text-sm font-bold truncate flex-1", notification.read ? "text-slate-600" : "text-slate-900")}>
-                                                        {notification.title}
-                                                    </p>
-                                                    <span className="text-[10px] font-bold text-slate-400/80 uppercase tracking-tight whitespace-nowrap mt-0.5">
-                                                        {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
+                                                <div className="flex items-center justify-between gap-4">
+                                                    <div className="min-w-0 flex-1">
+                                                        <p className={cn("text-sm font-bold truncate", notification.read ? "text-slate-600" : "text-slate-900")}>
+                                                            {notification.title}
+                                                        </p>
+                                                    </div>
+                                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tight bg-slate-100 px-2 py-0.5 rounded-full shrink-0">
+                                                        {formatMinimalDistance(notification.created_at)}
                                                     </span>
                                                 </div>
-                                                <p className="text-[11px] text-slate-500 font-medium leading-relaxed line-clamp-2">
+                                                <p className="text-[11px] text-slate-500 font-medium leading-relaxed line-clamp-2 pr-4">
                                                     {notification.message}
                                                 </p>
                                             </div>
