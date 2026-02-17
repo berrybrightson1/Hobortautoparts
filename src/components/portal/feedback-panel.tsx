@@ -67,13 +67,19 @@ export function FeedbackPanel({ requestId, currentUserId, isAgent = false }: Fee
                 table: 'request_messages',
                 filter: `request_id=eq.${requestId}`
             }, (payload) => {
-                // Optimistically fetch or just append if we had the full profile data in payload (we don't)
+                console.log("New request message received:", payload)
                 fetchMessages()
             })
-            .subscribe()
+            .subscribe((status) => {
+                console.log("FeedbackPanel Realtime status:", status)
+            })
+
+        // Polling fallback (every 5 seconds)
+        const interval = setInterval(fetchMessages, 5000)
 
         return () => {
             supabase.removeChannel(channel)
+            clearInterval(interval)
         }
     }, [requestId])
 

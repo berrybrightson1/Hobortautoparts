@@ -198,6 +198,7 @@ export function PartLibraryPicker({ onSelect, onCustomPart }: PartLibraryPickerP
                                     />
                                 </div>
                                 <Button
+                                    type="button"
                                     className="w-full h-14 rounded-xl bg-primary-orange hover:bg-orange-600 text-white font-bold text-lg shadow-lg shadow-primary-orange/20 transition-all hover:scale-[1.01] disabled:opacity-50"
                                     onClick={handleCustomSubmit}
                                     disabled={!customNotes.trim()}
@@ -233,13 +234,13 @@ export function PartLibraryPicker({ onSelect, onCustomPart }: PartLibraryPickerP
                             <button
                                 type="button"
                                 onClick={() => setIsOther(true)}
-                                className="flex flex-col items-center justify-center p-4 md:p-6 rounded-3xl bg-primary-orange/5 border border-primary-orange/10 border-dashed hover:bg-primary-orange hover:text-white transition-all group"
+                                className="col-span-2 flex flex-col items-center justify-center p-4 md:p-6 rounded-3xl bg-primary-orange/5 border border-primary-orange/10 border-dashed hover:bg-primary-orange hover:text-white transition-all group"
                             >
                                 <div className="h-10 w-10 md:h-14 md:w-14 rounded-2xl bg-white text-primary-orange flex items-center justify-center mb-3 md:mb-4 shadow-sm group-hover:scale-110 transition-transform">
                                     <Wrench className="h-5 w-5 md:h-7 md:w-7" />
                                 </div>
-                                <span className="text-[9px] md:text-xs font-bold uppercase tracking-[0.1em] md:tracking-widest text-center leading-tight">
-                                    Other / Mixed
+                                <span className="text-xs md:text-sm font-extrabold uppercase tracking-[0.1em] md:tracking-widest text-center leading-tight">
+                                    Manual Entry
                                 </span>
                             </button>
                         </motion.div>

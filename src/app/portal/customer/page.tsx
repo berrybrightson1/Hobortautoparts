@@ -21,6 +21,8 @@ import { ShipmentTimeline } from "@/components/portal/shipment-timeline"
 import { sendNotificationAction, notifyAdminsAction } from "@/app/actions/notification-actions"
 import { SearchBar } from "@/components/portal/search-bar"
 import { Pagination } from "@/components/portal/pagination"
+import { WhatsAppSupport } from "@/components/support/whatsapp-support"
+import { logAction } from "@/lib/audit"
 
 export default function CustomerDashboard() {
     const { profile, user } = useAuth()
@@ -36,6 +38,7 @@ export default function CustomerDashboard() {
     const [isLoadingShipment, setIsLoadingShipment] = useState(false)
     const [searchQuery, setSearchQuery] = useState('')
     const [debouncedSearch, setDebouncedSearch] = useState('')
+    const [isWhatsAppSupportOpen, setIsWhatsAppSupportOpen] = useState(false)
 
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1)
@@ -174,6 +177,11 @@ export default function CustomerDashboard() {
             if (orderError) throw orderError
             console.log('--- ORDER CREATED ---')
 
+            await logAction('create_order', {
+                quoteId: quote.id,
+                amount: quote.total_amount
+            })
+
             // 2. Update the request status
             const { error: requestError } = await supabase
                 .from('sourcing_requests')
@@ -215,6 +223,7 @@ export default function CustomerDashboard() {
         } catch (error: any) {
             console.error("Acceptance error:", error)
             toast.error("Process Failed", { description: error.message || "A database error occurred." })
+            setIsWhatsAppSupportOpen(true)
         } finally {
             clearTimeout(timeoutId)
             setIsAccepting(false)
@@ -727,6 +736,12 @@ export default function CustomerDashboard() {
                     </div>
                 </div>
             </ResponsiveModal>
+
+            <WhatsAppSupport
+                isOpen={isWhatsAppSupportOpen}
+                onClose={() => setIsWhatsAppSupportOpen(false)}
+                message={`I'm having trouble placing an order for Request ID: ${selectedRequest?.id || 'Unknown'}. Please assist.`}
+            />
         </div >
     )
 }

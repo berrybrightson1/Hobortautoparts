@@ -4,6 +4,8 @@ import { createClient } from '@supabase/supabase-js'
 import { revalidatePath } from 'next/cache'
 import { requireAdmin } from '@/lib/auth-checks'
 import { sendNotification } from '@/lib/notifications'
+import { logAction } from '@/lib/audit'
+
 
 // Initialize Admin Client
 function getAdminClient() {
@@ -90,6 +92,13 @@ export async function updateOrderStatus(orderId: string, newStatus: string) {
         }
 
         revalidatePath('/portal/admin/orders')
+
+        await logAction('update_order_status', {
+            orderId,
+            newStatus,
+            adminId: (await getAdminClient().auth.getUser()).data.user?.id
+        })
+
         return { success: true }
     } catch (error: any) {
         console.error("Update Order Status Error:", error)
@@ -155,6 +164,13 @@ export async function updateServiceFee(quoteId: string, serviceFee: number) {
         }
 
         revalidatePath('/portal/admin/orders')
+
+        await logAction('update_service_fee', {
+            quoteId,
+            serviceFee,
+            newTotal
+        })
+
         return { success: true }
     } catch (error: any) {
         console.error("Update Service Fee Error:", error)

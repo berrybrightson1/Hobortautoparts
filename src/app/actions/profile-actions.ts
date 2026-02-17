@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
+import { logAction } from '@/lib/audit'
 
 // Initialize Admin Client for "sudo" operations (like deleting auth users)
 function getAdminClient() {
@@ -42,6 +43,8 @@ export async function deleteMyAccount() {
         if (deleteError) {
             throw deleteError
         }
+
+        await logAction('delete_account', { userId: user.id })
 
         return { success: true }
     } catch (error: any) {

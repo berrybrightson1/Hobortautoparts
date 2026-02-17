@@ -22,7 +22,8 @@ import {
     UserCircle,
     Truck,
     Info,
-    TrendingUp
+    TrendingUp,
+    ClipboardList
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -57,6 +58,7 @@ const NAV_ITEMS = {
         { name: "Sourcing Requests", href: "/portal/admin/requests", icon: PackageSearch },
         { name: "Approvals", href: "/portal/admin/approvals", icon: ShieldAlert },
         { name: "User Network", href: "/portal/users", icon: Users },
+        { name: "Audit Logs", href: "/portal/admin/audit-logs", icon: ClipboardList },
         { name: "Console & Profile", href: "/portal/profile", icon: Settings },
         { name: "Platform Guide", href: "/portal/admin/guide", icon: Info },
     ]

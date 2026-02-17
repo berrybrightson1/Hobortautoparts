@@ -18,6 +18,8 @@ import { toast } from "sonner"
 import { supabase } from "@/lib/supabase"
 import { PartLibraryPicker } from "@/components/marketing/part-library-picker"
 import { notifyAdminsAction } from "@/app/actions/notification-actions"
+import { WhatsAppOrderModal } from "@/components/marketing/whatsapp-order-modal"
+import { MessageCircle } from "lucide-react"
 
 // VIN Validation Helper
 function validateVIN(vin: string) {
@@ -55,6 +57,7 @@ export default function QuotePage() {
     const [isSubmitted, setIsSubmitted] = useState(false)
     const [step, setStep] = useState(1)
     const [vinLoading, setVinLoading] = useState(false)
+    const [showWhatsAppModal, setShowWhatsAppModal] = useState(false)
 
     // Form state (minimal for demo)
     const [formData, setFormData] = useState({
@@ -72,6 +75,34 @@ export default function QuotePage() {
 
     const isStep1Valid = Boolean(formData.vin && formData.year && formData.make && formData.model && formData.submodel && formData.engine)
     const isStep2Valid = Boolean(formData.part_condition)
+
+    // Load state from localStorage on mount
+    useEffect(() => {
+        const savedData = localStorage.getItem("sourcingRequestData")
+        const savedStep = localStorage.getItem("sourcingRequestStep")
+        const savedVehicleConfirmed = localStorage.getItem("sourcingRequestVehicleConfirmed")
+
+        if (savedData) {
+            try {
+                setFormData(JSON.parse(savedData))
+            } catch (e) {
+                console.error("Failed to parse saved data", e)
+            }
+        }
+        if (savedStep) {
+            setStep(parseInt(savedStep))
+        }
+        if (savedVehicleConfirmed === "true") {
+            setIsVehicleConfirmed(true)
+        }
+    }, [])
+
+    // Save state to localStorage on change
+    useEffect(() => {
+        localStorage.setItem("sourcingRequestData", JSON.stringify(formData))
+        localStorage.setItem("sourcingRequestStep", step.toString())
+        localStorage.setItem("sourcingRequestVehicleConfirmed", isVehicleConfirmed.toString())
+    }, [formData, step, isVehicleConfirmed])
 
     // VIN detection logic
     useEffect(() => {
@@ -203,6 +234,10 @@ export default function QuotePage() {
                 console.warn('Non-blocking notification failure:', notifyErr)
             }
 
+            localStorage.removeItem("sourcingRequestData")
+            localStorage.removeItem("sourcingRequestStep")
+            localStorage.removeItem("sourcingRequestVehicleConfirmed")
+
             setIsSubmitted(true)
         } catch (error: any) {
             console.error("Sourcing request submission fatal error:", error)
@@ -289,20 +324,46 @@ export default function QuotePage() {
     }
 
     return (
-        <div className="min-h-screen bg-white flex flex-col items-center justify-start p-4 md:p-12 pt-32 md:pt-24 pb-20 overflow-y-auto">
+        <div className="min-h-screen bg-white flex flex-col items-center justify-start p-6 md:p-16 pt-32 md:pt-28 pb-24 overflow-y-auto">
             <div className="w-full max-w-7xl animate-in fade-in duration-500">
-                <div className="text-center mb-10 md:mb-16 space-y-4 relative px-4">
-                    <div className="flex items-center justify-center gap-4">
-                        <Link href="/" className="group p-2 rounded-full hover:bg-primary-blue/5 transition-all outline-none">
-                            <ArrowLeft className="h-6 w-6 text-primary-blue/30 group-hover:text-primary-blue group-hover:-translate-x-1 transition-all" />
-                        </Link>
-                        <h1 className="text-3xl md:text-5xl font-semibold text-primary-blue tracking-tighter">New Sourcing Request</h1>
+                <div className="mb-12 md:mb-20 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+                    <div className="space-y-4 text-left">
+                        <div className="flex items-center gap-4">
+                            <button
+                                onClick={() => step > 1 ? setStep(step - 1) : router.push('/')}
+                                className="group p-2 rounded-full hover:bg-primary-blue/5 transition-all outline-none -ml-2"
+                                aria-label="Go back"
+                            >
+                                <ArrowLeft className="h-6 w-6 text-primary-blue/30 group-hover:text-primary-blue group-hover:-translate-x-1 transition-all" />
+                            </button>
+                            <h1 className="text-3xl md:text-5xl font-semibold text-primary-blue tracking-tighter">New Sourcing Request</h1>
+                        </div>
+                        <p className="text-primary-blue/60 font-medium text-base md:text-xl max-w-2xl ml-14">Get a premium price estimate in record time.</p>
                     </div>
-                    <p className="text-primary-blue/60 font-medium text-base md:text-xl max-w-2xl mx-auto">Get a premium price estimate in record time.</p>
+
+                    <div className="hidden md:flex items-center gap-8 ml-auto">
+                        <div className="h-20 w-px bg-primary-blue/10" />
+                        <Button
+                            type="button"
+                            onClick={() => setShowWhatsAppModal(true)}
+                            className="bg-[#25D366] hover:bg-[#128C7E] text-white font-bold h-16 px-8 text-lg rounded-2xl shadow-xl shadow-[#25D366]/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                        >
+                            <MessageCircle className="mr-3 h-6 w-6" /> Order via WhatsApp
+                        </Button>
+                    </div>
+                    {/* Mobile WhatsApp Button */}
+                    <div className="md:hidden w-full">
+                        <Button
+                            type="button"
+                            onClick={() => setShowWhatsAppModal(true)}
+                            className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white font-bold h-14 text-lg rounded-xl shadow-lg shadow-[#25D366]/20"
+                        >
+                            <MessageCircle className="mr-2 h-6 w-6" /> Order via WhatsApp
+                        </Button>
+                    </div>
                 </div>
 
                 <Card className="border-primary-blue/10 shadow-2xl shadow-primary-blue/5 overflow-hidden rounded-3xl md:rounded-[2.5rem] relative mx-auto w-full bg-white/80 backdrop-blur-sm">
-                    {/* Progress Indicator */}
                     {/* Progress Indicator */}
                     <div className="absolute top-0 left-0 right-0 h-1.5 bg-primary-blue/5 flex">
                         <div
@@ -575,19 +636,11 @@ export default function QuotePage() {
                                         </motion.div>
                                     )}
 
-                                    <div className="flex flex-col sm:flex-row gap-6 pt-4">
-                                        <Button
-                                            type="button"
-                                            variant="outline"
-                                            onClick={() => setStep(2)}
-                                            className="h-16 px-10 rounded-2xl border-primary-blue/10 text-primary-blue font-semibold hover:bg-primary-blue/5 order-2 sm:order-1 text-lg"
-                                        >
-                                            <ArrowLeft className="mr-2 h-5 w-5" /> Back
-                                        </Button>
+                                    <div className="flex flex-col sm:flex-row gap-6 pt-4 items-stretch sm:items-center">
                                         <Button
                                             type="submit"
                                             disabled={isLoading || !formData.part_name}
-                                            className="flex-1 bg-primary-blue hover:bg-hobort-blue-dark text-white font-semibold h-16 rounded-2xl shadow-2xl shadow-primary-blue/20 text-lg transition-all hover:scale-[1.01] active:scale-[0.99] order-1 sm:order-2"
+                                            className="flex-1 bg-primary-blue hover:bg-hobort-blue-dark text-white font-semibold h-16 rounded-2xl shadow-2xl shadow-primary-blue/20 text-lg transition-all hover:scale-[1.01] active:scale-[0.99] order-1 sm:order-2 w-full"
                                         >
                                             {isLoading ? (
                                                 <Loader2 className="mr-2 h-6 w-6 animate-spin" />
@@ -607,6 +660,15 @@ export default function QuotePage() {
                     </CardFooter>
                 </Card>
             </div>
+
+            <WhatsAppOrderModal
+                open={showWhatsAppModal}
+                onOpenChange={setShowWhatsAppModal}
+                vehicleInfo={`${formData.year} ${formData.make} ${formData.model} ${formData.submodel}`}
+                vin={formData.vin}
+                partName={formData.part_name}
+                partCondition={formData.part_condition}
+            />
         </div>
     )
 }
