@@ -62,10 +62,6 @@ export function NotificationPopover() {
                 filter: `user_id=eq.${user.id}`
             }, (payload) => {
                 const newNotif = payload.new as Notification
-                toast.info(`Signal Received: ${newNotif.title}`, {
-                    description: "Real-time bridge connection confirmed.",
-                    duration: 3000
-                })
                 setNotifications(prev => [newNotif, ...prev])
                 // Clear any existing one first to trigger re-animation if needed
                 setActiveInteractive(null)
