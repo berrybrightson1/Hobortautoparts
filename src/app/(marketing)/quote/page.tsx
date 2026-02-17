@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { ArrowLeft, Car, Package, CheckCircle2, ArrowRight, ShieldCheck, Zap } from "lucide-react"
+import { ArrowLeft, Car, Package, CheckCircle2, ArrowRight, ShieldCheck, Zap, User, Users } from "lucide-react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { BrandedSelect } from "@/components/marketing/branded-select"
@@ -68,7 +68,10 @@ export default function QuotePage() {
         submodel: "",
         engine: "",
         part_name: "",
-        part_condition: "New (OEM)"
+        part_condition: "New (OEM)",
+        orderingFor: "self", // 'self' or 'customer'
+        customerName: "",
+        customerPhone: ""
     })
     const [vinError, setVinError] = useState<string | null>(null)
     const [isVehicleConfirmed, setIsVehicleConfirmed] = useState(false)
@@ -213,6 +216,9 @@ export default function QuotePage() {
                 .insert({
                     user_id: currentUser.id,
                     agent_id: profile?.role === 'agent' ? currentUser.id : null,
+                    is_proxy_request: profile?.role === 'agent' && formData.orderingFor === 'customer',
+                    customer_name: (profile?.role === 'agent' && formData.orderingFor === 'customer') ? formData.customerName : null,
+                    customer_phone: (profile?.role === 'agent' && formData.orderingFor === 'customer') ? formData.customerPhone : null,
                     vin: formData.vin,
                     part_name: formData.part_name,
                     part_condition: formData.part_condition,
@@ -228,7 +234,7 @@ export default function QuotePage() {
                 await notifyAdminsAction({
                     title: 'New Sourcing Request',
                     message: `New request submitted for ${formData.part_name} (${vehicle_info})`,
-                    type: 'system'
+                    type: 'request'
                 })
             } catch (notifyErr) {
                 console.warn('Non-blocking notification failure:', notifyErr)
@@ -338,6 +344,73 @@ export default function QuotePage() {
                             </button>
                             <h1 className="text-3xl md:text-5xl font-semibold text-primary-blue tracking-tighter">New Sourcing Request</h1>
                         </div>
+
+                        {/* Agent Proxy Selection */}
+                        {profile?.role === 'agent' && (
+                            <div className="mt-8 p-6 bg-blue-50/50 rounded-3xl border border-blue-100/50">
+                                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                                    <div className="space-y-1">
+                                        <p className="text-[10px] font-bold text-blue-600 uppercase tracking-[0.2em]">Agent Protocol</p>
+                                        <h3 className="text-lg font-bold text-slate-900">Ordering For?</h3>
+                                        <p className="text-sm text-slate-500">Select whether this request is for yourself or an external customer.</p>
+                                    </div>
+                                    <div className="flex gap-4">
+                                        <Button
+                                            type="button"
+                                            variant={formData.orderingFor === 'self' ? 'default' : 'outline'}
+                                            onClick={() => setFormData({ ...formData, orderingFor: 'self' })}
+                                            className={cn(
+                                                "h-12 px-6 rounded-xl font-bold uppercase tracking-widest text-[10px]",
+                                                formData.orderingFor === 'self' ? "bg-primary-blue" : "border-slate-200 text-slate-500 hover:bg-white"
+                                            )}
+                                        >
+                                            <User className="mr-2 h-4 w-4" /> Myself
+                                        </Button>
+                                        <Button
+                                            type="button"
+                                            variant={formData.orderingFor === 'customer' ? 'default' : 'outline'}
+                                            onClick={() => setFormData({ ...formData, orderingFor: 'customer' })}
+                                            className={cn(
+                                                "h-12 px-6 rounded-xl font-bold uppercase tracking-widest text-[10px]",
+                                                formData.orderingFor === 'customer' ? "bg-primary-orange text-white" : "border-slate-200 text-slate-500 hover:bg-white"
+                                            )}
+                                        >
+                                            <Users className="mr-2 h-4 w-4" /> Customer
+                                        </Button>
+                                    </div>
+                                </div>
+
+                                {formData.orderingFor === 'customer' && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="mt-6 pt-6 border-t border-blue-100/50 grid grid-cols-1 md:grid-cols-2 gap-4"
+                                    >
+                                        <div className="space-y-2">
+                                            <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Customer Name</Label>
+                                            <Input
+                                                placeholder="e.g. John Doe"
+                                                value={formData.customerName}
+                                                onChange={(e) => setFormData({ ...formData, customerName: e.target.value })}
+                                                className="h-12 rounded-xl bg-white border-blue-100"
+                                                required={formData.orderingFor === 'customer'}
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Customer Phone</Label>
+                                            <Input
+                                                placeholder="+233..."
+                                                value={formData.customerPhone}
+                                                onChange={(e) => setFormData({ ...formData, customerPhone: e.target.value })}
+                                                className="h-12 rounded-xl bg-white border-blue-100"
+                                                required={formData.orderingFor === 'customer'}
+                                            />
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </div>
+                        )}
+
                         <p className="text-primary-blue/60 font-medium text-base md:text-xl max-w-2xl ml-14">Get a premium price estimate in record time.</p>
                     </div>
 

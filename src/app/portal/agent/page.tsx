@@ -391,7 +391,12 @@ export default function AgentDashboard() {
                                                 {format(new Date(req.created_at), 'MMM dd, yyyy • h:mm a')}
                                             </TableCell>
                                             <TableCell className="py-4 md:py-6 font-medium text-slate-600 whitespace-nowrap">
-                                                {req.profiles?.full_name}
+                                                <div className="flex flex-col">
+                                                    <span>{req.is_proxy_request ? req.customer_name : req.profiles?.full_name}</span>
+                                                    {req.is_proxy_request && (
+                                                        <span className="text-[10px] text-primary-orange font-bold uppercase tracking-tighter">Proxy Request</span>
+                                                    )}
+                                                </div>
                                             </TableCell>
                                             <TableCell className="py-4 md:py-6">
                                                 <div className="flex flex-col min-w-[150px]">

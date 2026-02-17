@@ -11,24 +11,31 @@ import {
     ShoppingBag,
     History,
     ShieldAlert,
+    Copy,
+    FilePlus,
     LayoutDashboard,
     PackageSearch,
+    TrendingUp,
+    UserCircle,
+    Info,
+    User,
     Settings,
     LogOut,
     Menu,
     ChevronRight,
     Search,
     Loader2,
-    UserCircle,
     Truck,
-    Info,
-    TrendingUp,
-    ClipboardList
+    ClipboardList,
+    MessageSquare
 } from "lucide-react"
+import { LiveSupportTrigger } from "@/components/portal/live-support-trigger"
+
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/components/auth/auth-provider"
-import { NotificationDrawer } from "@/components/portal/notification-drawer"
+import { supabase } from "@/lib/supabase"
+import { NotificationPopover } from "@/components/portal/notification-popover"
 import { ResponsiveModal } from "@/components/ui/responsive-modal"
 import { Sheet, SheetContent } from "@/components/ui/sheet"
 import { motion, AnimatePresence } from "framer-motion"
@@ -42,13 +49,16 @@ const NAV_ITEMS = {
         { name: "New Request", href: "/quote", icon: Plus },
         { name: "My Account", href: "/portal/profile", icon: UserCircle },
         { name: "Platform Guide", href: "/marketing/guide", icon: Info },
+        { name: "Messages", href: "/portal/customer/messages", icon: MessageSquare },
     ],
     agent: [
         { name: "Dashboard", href: "/portal/agent/dashboard", icon: LayoutDashboard },
         { name: "Sourcing Pipeline", href: "/portal/agent", icon: PackageSearch },
         { name: "Order Pipeline", href: "/portal/agent/orders", icon: ShoppingBag },
         { name: "Performance Hub", href: "/portal/agent/performance", icon: TrendingUp },
+        { name: "New Request", href: "/quote", icon: FilePlus },
         { name: "My Account", href: "/portal/profile", icon: UserCircle },
+        { name: "Messages", href: "/portal/agent/messages", icon: MessageSquare },
         { name: "Platform Guide", href: "/marketing/guide", icon: Info },
     ],
     admin: [
@@ -58,6 +68,7 @@ const NAV_ITEMS = {
         { name: "Sourcing Requests", href: "/portal/admin/requests", icon: PackageSearch },
         { name: "Approvals", href: "/portal/admin/approvals", icon: ShieldAlert },
         { name: "User Network", href: "/portal/users", icon: Users },
+        { name: "Live Support", href: "/portal/admin/live-support", icon: MessageSquare },
         { name: "Audit Logs", href: "/portal/admin/audit-logs", icon: ClipboardList },
         { name: "Console & Profile", href: "/portal/profile", icon: Settings },
         { name: "Platform Guide", href: "/portal/admin/guide", icon: Info },
@@ -70,6 +81,8 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
     const { user, profile, loading, signOut } = useAuth()
     const [sidebarOpen, setSidebarOpen] = React.useState(false)
     const [showLogoutDialog, setShowLogoutDialog] = React.useState(false)
+    const [unreadCounts, setUnreadCounts] = React.useState<{ [key: string]: number }>({})
+
 
     const role = profile?.role || 'customer'
 
@@ -109,6 +122,45 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
             // }
         }
     }, [user, profile, loading, router, pathname])
+
+    // Real-time notification tracking for sidebar badges
+    React.useEffect(() => {
+        if (!user) return
+
+        const fetchUnread = async () => {
+            const { data, error } = await supabase
+                .from('notifications')
+                .select('type, read')
+                .eq('user_id', user.id)
+                .eq('read', false)
+
+            if (!error && data) {
+                const counts: { [key: string]: number } = {}
+                data.forEach((n: any) => {
+                    counts[n.type] = (counts[n.type] || 0) + 1
+                })
+                setUnreadCounts(counts)
+            }
+        }
+
+        fetchUnread()
+
+        const channel = supabase
+            .channel(`layout_notifications:${user.id}`)
+            .on('postgres_changes', {
+                event: '*',
+                schema: 'public',
+                table: 'notifications',
+                filter: `user_id=eq.${user.id}`
+            }, () => {
+                fetchUnread()
+            })
+            .subscribe()
+
+        return () => {
+            supabase.removeChannel(channel)
+        }
+    }, [user])
 
     if (loading) {
         return (
@@ -153,20 +205,62 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
             <nav className="flex-1 overflow-y-auto p-4 space-y-2">
                 {currentNav.map((item: any) => {
                     const isActive = pathname === item.href
+
+                    // Precise badge mapping
+                    const isRequestList = item.name === "Sourcing Requests" || item.name === "Sourcing Pipeline"
+                    const isOrderList = item.name === "All Orders" || item.name === "Orders" || item.name === "Order Pipeline"
+                    const isMessages = item.name === "Messages" || item.name === "Live Support"
+
+                    let unreadCount = 0
+                    if (isRequestList) {
+                        unreadCount = unreadCounts.request || 0
+                    } else if (isOrderList) {
+                        unreadCount = unreadCounts.order || 0
+                    } else if (isMessages) {
+                        // Messages tab shows sum of everything (conversations + status updates)
+                        unreadCount = Object.values(unreadCounts).reduce((a, b) => a + b, 0)
+                    }
+
+                    if (item.name === "Live Support") {
+                        return (
+                            <LiveSupportTrigger
+                                key={item.href}
+                                href={item.href}
+                                isActive={isActive}
+                                onClick={() => setSidebarOpen(false)}
+                            />
+                        )
+                    }
+
                     return (
                         <Link
                             key={item.href}
                             href={item.href}
                             onClick={() => setSidebarOpen(false)}
                             className={cn(
-                                "flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 group",
+                                "flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 group relative",
                                 isActive
                                     ? "bg-gradient-to-r from-primary-blue to-blue-600 text-white shadow-lg shadow-blue-500/30"
                                     : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                             )}
                         >
+                            {isActive && (
+                                <motion.div
+                                    layoutId="activeNav"
+                                    className="absolute left-0 w-1 h-6 bg-white rounded-full"
+                                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                />
+                            )}
                             <item.icon className={cn("h-5 w-5 shrink-0 transition-transform group-hover:scale-110", isActive ? "text-white" : "text-slate-400")} />
-                            <span className="text-sm font-semibold">{item.name}</span>
+                            <span className="text-sm font-semibold flex-1">{item.name}</span>
+                            {unreadCount > 0 && (
+                                <span className={cn(
+                                    "flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[10px] font-bold ring-2 ring-white shadow-sm",
+                                    isActive ? "bg-white text-primary-blue" : "bg-primary-orange text-white"
+                                )}>
+                                    {unreadCount}
+                                </span>
+                            )}
                         </Link>
                     )
                 })}
@@ -236,7 +330,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
                     </div>
 
                     <div className="flex items-center gap-4">
-                        <NotificationDrawer />
+                        <NotificationPopover />
                         <Link href="/portal/profile" className="hidden sm:flex items-center gap-3 group hover:bg-slate-50 p-1.5 pr-4 rounded-2xl transition-all border border-transparent hover:border-slate-100">
                             <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary-blue to-blue-600 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform">
                                 {profile?.full_name?.charAt(0) || user?.email?.charAt(0) || 'U'}
@@ -250,11 +344,21 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
                 </header>
 
                 {/* Content Area */}
-                <section className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-                    <div className="max-w-7xl mx-auto">
+                {/* Content Area */}
+                {/* Content Area */}
+                {pathname.startsWith('/portal/admin/live-support') ||
+                    pathname.startsWith('/portal/agent/messages') ||
+                    pathname.startsWith('/portal/customer/messages') ? (
+                    <section className="flex-1 overflow-hidden flex flex-col">
                         {children}
-                    </div>
-                </section>
+                    </section>
+                ) : (
+                    <section className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+                        <div className="max-w-7xl mx-auto">
+                            {children}
+                        </div>
+                    </section>
+                )}
             </main>
 
             {/* Minimal Logout Confirmation (Bottom-Right) */}

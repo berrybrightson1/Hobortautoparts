@@ -14,7 +14,9 @@ import {
     AlertCircle,
     Plane,
     Ship,
-    MapPin
+    MapPin,
+    BellRing,
+    MessageSquare
 } from "lucide-react"
 import Link from "next/link"
 
@@ -80,6 +82,16 @@ export default function AdminGuidePage() {
                                                 <li className="flex items-center gap-2"><Clock className="w-4 h-4 text-blue-500" /> <strong>Mark Processing:</strong> When you begin purchasing items.</li>
                                                 <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-slate-500" /> <strong>Mark Completed:</strong> Only for local pickup/no shipping.</li>
                                             </ul>
+                                        </div>
+                                    </div>
+
+                                    <div className="pt-6 border-t border-slate-100">
+                                        <div className="flex items-start gap-4">
+                                            <div className="h-8 w-8 rounded-full bg-orange-500 text-white flex items-center justify-center font-bold text-sm shrink-0">3</div>
+                                            <div>
+                                                <h3 className="font-bold text-slate-900 text-lg">Agent Proxy Ordering</h3>
+                                                <p className="text-slate-500 mt-1">Admins and assigned Agents can now create orders on behalf of customers directly from a Sourcing Request. Look for the <span className="font-bold text-orange-600 italic">"Create Order (Proxy)"</span> button inside the Request Details modal.</p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -195,6 +207,49 @@ export default function AdminGuidePage() {
                         </div>
                     </section>
 
+                    {/* Section 4: Real-time Communication */}
+                    <section className="space-y-6">
+                        <div className="flex items-center gap-4">
+                            <div className="h-12 w-12 rounded-2xl bg-orange-50 flex items-center justify-center text-orange-600">
+                                <Sparkles className="h-6 w-6" />
+                            </div>
+                            <div>
+                                <h2 className="text-2xl font-bold tracking-tight text-slate-900">4. Engagement & Notifications</h2>
+                                <p className="text-slate-500 font-medium">Keeping the bridge active with customers.</p>
+                            </div>
+                        </div>
+
+                        <div className="grid md:grid-cols-1 gap-6">
+                            <Card className="border-slate-100 shadow-lg p-8">
+                                <div className="grid md:grid-cols-2 gap-12">
+                                    <div className="space-y-4">
+                                        <h3 className="font-bold text-slate-900 flex items-center gap-2">
+                                            <BellRing className="w-5 h-5 text-primary-orange" /> Automatic Alerts
+                                        </h3>
+                                        <p className="text-slate-500 text-sm leading-relaxed">
+                                            The system automatically notifies customers via **Interactive Popups** and **Real-time Notifications** when:
+                                        </p>
+                                        <ul className="space-y-2 text-sm text-slate-600">
+                                            <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> A quote is sent or updated.</li>
+                                            <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> An order status changes.</li>
+                                            <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> A tracking update is posted.</li>
+                                        </ul>
+                                    </div>
+                                    <div className="space-y-4">
+                                        <h3 className="font-bold text-slate-900 flex items-center gap-2">
+                                            <MessageSquare className="w-5 h-5 text-primary-blue" /> Live Support Quick Actions
+                                        </h3>
+                                        <p className="text-slate-500 text-sm leading-relaxed">
+                                            Use the floating **"Messages" pill** at the bottom right to quickly respond to customer queries without leaving your current workflow.
+                                        </p>
+                                        <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 italic text-[11px] text-slate-400">
+                                            "Pro Tip: Faster response times lead to higher sourcing success rates."
+                                        </div>
+                                    </div>
+                                </div>
+                            </Card>
+                        </div>
+                    </section>
                 </TabsContent>
             </Tabs>
         </div>

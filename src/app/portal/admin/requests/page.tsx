@@ -54,10 +54,13 @@ interface SourcingRequest {
     vehicle_info: string | null
     status: 'pending' | 'processing' | 'quoted' | 'shipped' | 'completed' | 'cancelled' | 'unavailable'
     part_condition?: string
-    created_at: string
+    is_proxy_request?: boolean
+    customer_name?: string | null
+    customer_phone?: string | null
     profiles?: {
         full_name: string | null
     }
+    created_at: string
     quotes?: any[]
 }
 
@@ -175,6 +178,7 @@ export default function SourcingRequestsPage() {
             request.vehicle_info?.toLowerCase().includes(searchLower) ||
             request.vin?.toLowerCase().includes(searchLower) ||
             request.profiles?.full_name?.toLowerCase().includes(searchLower) ||
+            request.customer_name?.toLowerCase().includes(searchLower) ||
             request.id?.toLowerCase().includes(searchLower)
         )
 
@@ -302,7 +306,6 @@ export default function SourcingRequestsPage() {
         }, 30000)
 
         try {
-            console.log('--- STARTING QUOTE SUBMISSION ---')
             // 1. Create the quote
             const { data: quote, error: quoteError } = await supabase
                 .from('quotes')
@@ -320,7 +323,6 @@ export default function SourcingRequestsPage() {
                 .single()
 
             if (quoteError) throw quoteError
-            console.log('--- QUOTE CREATED ---')
 
             // 2. Update the request status
             const { error: requestError } = await supabase
@@ -329,7 +331,6 @@ export default function SourcingRequestsPage() {
                 .eq('id', selectedRequest.id)
 
             if (requestError) throw requestError
-            console.log('--- REQUEST UPDATED ---')
 
             // Notify the customer of the new quote
             try {
@@ -346,7 +347,6 @@ export default function SourcingRequestsPage() {
                     message: `A new quote has been generated for ${selectedRequest.part_name} by ${profile?.full_name || 'an Agent'}.`,
                     type: 'order'
                 })
-                console.log('--- NOTIFICATIONS SENT ---')
             } catch (notifyErr) {
                 console.warn('Non-blocking notification failure:', notifyErr)
             }
@@ -434,7 +434,14 @@ export default function SourcingRequestsPage() {
                                             </TableCell>
                                             <TableCell className="py-4">
                                                 <div className="flex flex-col">
-                                                    <span className="font-semibold text-slate-800">{request.profiles?.full_name || 'Anonymous'}</span>
+                                                    <span className="font-semibold text-slate-800">
+                                                        {request.is_proxy_request ? request.customer_name : (request.profiles?.full_name || 'Anonymous')}
+                                                    </span>
+                                                    {request.is_proxy_request && (
+                                                        <span className="text-[10px] text-primary-orange font-bold uppercase tracking-tighter flex items-center gap-1">
+                                                            <Users className="h-2 w-2" /> Proxy Request
+                                                        </span>
+                                                    )}
                                                     <span className="text-[10px] font-medium text-slate-400 uppercase tracking-tight">{request.vin || 'NO VIN'}</span>
                                                 </div>
                                             </TableCell>
@@ -658,13 +665,31 @@ export default function SourcingRequestsPage() {
 
                                 {/* Requester Identity */}
                                 <div className="p-6 bg-blue-50/20 rounded-3xl border border-blue-100/50 space-y-6">
-                                    <div className="flex items-center gap-4">
-                                        <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center text-primary-blue font-semibold text-[10px] shadow-sm">
-                                            {selectedRequest?.profiles?.full_name?.substring(0, 2).toUpperCase()}
+                                    <div className="flex items-start gap-4">
+                                        <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center text-primary-blue font-semibold text-[10px] shadow-sm shrink-0">
+                                            {selectedRequest?.is_proxy_request
+                                                ? selectedRequest?.customer_name?.substring(0, 2).toUpperCase()
+                                                : selectedRequest?.profiles?.full_name?.substring(0, 2).toUpperCase()}
                                         </div>
-                                        <div className="space-y-0.5">
-                                            <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-blue-500">Requester Identity</p>
-                                            <p className="font-semibold text-slate-900 text-lg tracking-tight">{selectedRequest?.profiles?.full_name}</p>
+                                        <div className="space-y-2 flex-1">
+                                            <div>
+                                                <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-blue-500">
+                                                    {selectedRequest?.is_proxy_request ? 'Target Customer (Proxy)' : 'Requester Identity'}
+                                                </p>
+                                                <p className="font-semibold text-slate-900 text-lg tracking-tight">
+                                                    {selectedRequest?.is_proxy_request ? selectedRequest?.customer_name : selectedRequest?.profiles?.full_name}
+                                                </p>
+                                                {selectedRequest?.is_proxy_request && (
+                                                    <p className="text-xs text-slate-500 font-medium">{selectedRequest?.customer_phone}</p>
+                                                )}
+                                            </div>
+
+                                            {selectedRequest?.is_proxy_request && (
+                                                <div className="pt-2 border-t border-blue-50 space-y-1">
+                                                    <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Initiated By Agent</p>
+                                                    <p className="text-sm font-medium text-slate-600">{selectedRequest?.profiles?.full_name}</p>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
 

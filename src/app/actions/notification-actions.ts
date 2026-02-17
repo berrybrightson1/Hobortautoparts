@@ -2,12 +2,12 @@
 
 import { sendNotification as sendNotificationLogic, notifyAdmins as notifyAdminsLogic } from "@/lib/notifications"
 
-// Re-export the type if needed, or define compatible interface
 interface NotificationPayload {
     userId: string
     title: string
     message: string
     type?: 'system' | 'order' | 'quote' | 'sourcing' | 'shipment' | 'request' | 'promo'
+    link?: string
 }
 
 const mapTypeToDb = (type: NotificationPayload['type']): 'system' | 'order' | 'promo' | 'request' => {

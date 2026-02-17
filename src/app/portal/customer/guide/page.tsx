@@ -15,8 +15,8 @@ export default function PlatformGuidePage() {
             bg: "bg-blue-50"
         },
         {
-            title: "2. Real-time Negotiation",
-            desc: "Expert agents source the best deals. You'll receive a professional quote including item price and logistics costs.",
+            title: "2. Real-time Interaction",
+            desc: "Expert agents source the best deals. Engage in real-time chat and receive instant notifications when your quote is ready.",
             icon: MessageSquare,
             color: "text-purple-500",
             bg: "bg-purple-50"
@@ -67,6 +67,21 @@ export default function PlatformGuidePage() {
                         </CardContent>
                     </Card>
                 ))}
+            </div>
+
+            {/* Premium Features */}
+            <div className="grid gap-8">
+                <Card className="group border-slate-100 shadow-xl shadow-slate-200/40 rounded-[2.5rem] bg-white ring-1 ring-slate-100/50 overflow-hidden hover:shadow-2xl transition-all duration-500">
+                    <CardContent className="p-10 flex flex-col md:flex-row items-center gap-8">
+                        <div className="h-20 w-20 rounded-[1.5rem] bg-emerald-50 text-emerald-500 flex items-center justify-center shrink-0">
+                            <Package className="h-10 w-10" />
+                        </div>
+                        <div className="space-y-2 text-center md:text-left">
+                            <h3 className="text-2xl font-bold tracking-tight text-slate-900">Premium Parts Library</h3>
+                            <p className="text-slate-500 leading-relaxed font-medium">Access our curated catalog of thousands of verified U.S. automotive components. Quick-add parts to your requests for even faster precision sourcing.</p>
+                        </div>
+                    </CardContent>
+                </Card>
             </div>
 
             {/* FAQ / Support Section */}

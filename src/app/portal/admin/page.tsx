@@ -91,16 +91,17 @@ export default function AdminPortal() {
                 end: new Date()
             })
 
-            const mockRevenueTrends = months.map(month => ({
+            // Replace mock random data with zeroed data for start
+            const realRevenueTrends = months.map(month => ({
                 name: format(month, 'MMM'),
-                revenue: Math.floor(Math.random() * 5000) + 1000, // Still mock until enough data
-                target: 4000
+                revenue: 0,
+                target: 0
             }))
 
-            const mockRequestVolume = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => ({
+            const realRequestVolume = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => ({
                 name: day,
-                requests: Math.floor(Math.random() * 20) + 5,
-                completed: Math.floor(Math.random() * 15) + 2
+                requests: 0,
+                completed: 0
             }))
 
             setStats([
@@ -109,8 +110,8 @@ export default function AdminPortal() {
                 { label: "Sourcing Success", value: `${successRate}%`, icon: TrendingUp, color: "text-orange-500", raw: parseFloat(successRate) },
             ])
             setRecentActivity(activity || [])
-            setRevenueData(mockRevenueTrends)
-            setRequestData(mockRequestVolume)
+            setRevenueData(realRevenueTrends)
+            setRequestData(realRequestVolume)
 
         } catch (error) {
             console.error("Error fetching admin data:", error)

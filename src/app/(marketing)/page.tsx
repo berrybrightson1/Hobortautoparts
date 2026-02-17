@@ -33,44 +33,7 @@ export default function LandingPage() {
   const isMobile = useMediaQuery("(max-width: 768px)")
   const itemsPerPage = isMobile ? 1 : 3 // 3 per page on desktop for a full-width experience
 
-  const testimonials = [
-    {
-      quote: "The Georgia export hub is a game changer. I get my US imports faster and cheaper than ever before. Unbeatable service!",
-      author: "BBL Drizzy",
-      role: "Luxury Fleet Owner — Accra",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Drizzy"
-    },
-    {
-      quote: "VIN verification is 100% accurate. I've never had a part fitment issue since I started sourcing through Hobort.",
-      author: "Berry Brightson",
-      role: "Master Technician — Kumasi",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Berry"
-    },
-    {
-      quote: "Direct sourcing from the US has cut my procurement costs significantly. Hobort is the most reliable partner in Ghana.",
-      author: "Samuel Osei",
-      role: "CEO, Osei Garages — Accra",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Samuel"
-    },
-    {
-      quote: "From the US Logistics Center to the Accra Pickup point, the transparency is incredible. I always know where my parts are.",
-      author: "Kofi Boateng",
-      role: "Ops Director — Tema",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Kofi"
-    },
-    {
-      quote: "Finally a company that understands the urgency of a professional garage. Fast shipping and genuine OEM quality every time.",
-      author: "Daniel Asante",
-      role: "Service Manager — Takoradi",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Daniel"
-    },
-    {
-      quote: "The portal makes it so easy to track orders. Hobort is definitely the #1 US parts hub for Ghana.",
-      author: "Kwame Owusu",
-      role: "Garage Owner — East Legon",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Kwame"
-    }
-  ]
+  const testimonials: any[] = [] // Cleaned demo data
 
   const totalPages = Math.ceil(testimonials.length / itemsPerPage)
 
@@ -164,7 +127,7 @@ export default function LandingPage() {
                 <span className="text-primary-orange">Affordable Logistics.</span>
               </h2>
               <p className="text-base md:text-lg text-slate-500 leading-relaxed max-w-md">
-                Join 450+ Ghanaian garage owners who have revolutionized their supply chain with Hobort Auto Parts Express.
+                Fueling the growth of Ghana's premier auto workshops and fleet owners with precision intercontinental sourcing.
               </p>
             </div>
 
@@ -219,74 +182,78 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* Step 4: 4-Set Horizontal Smooth Testimonial Slider */}
-        <div className="mt-20 w-full max-w-[1400px] mx-auto px-6 overflow-hidden">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={testimonialPage}
-              initial={{ x: 100, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: -100, opacity: 0 }}
-              transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-              className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12"
-            >
-              {testimonials.slice(testimonialPage * itemsPerPage, (testimonialPage * itemsPerPage) + itemsPerPage).map((testimonial, i) => (
-                <div
+        {/* Testimonials section hidden until real reviews or replaced with a Call-to-Action */}
+        {testimonials.length > 0 && (
+          <div className="mt-20 w-full max-w-[1400px] mx-auto px-6 overflow-hidden">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={testimonialPage}
+                initial={{ x: 100, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: -100, opacity: 0 }}
+                transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+                className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12"
+              >
+                {testimonials.slice(testimonialPage * itemsPerPage, (testimonialPage * itemsPerPage) + itemsPerPage).map((testimonial, i) => (
+                  <div
+                    key={i}
+                    className="relative min-h-[280px] w-full bg-slate-50/50 rounded-[3rem] border border-white p-10 flex flex-col justify-between transition-all duration-500 hover:shadow-xl hover:bg-white group/testimonial overflow-hidden shadow-sm"
+                  >
+                    <div className="flex flex-col gap-4">
+                      <Quote className="h-8 w-8 text-primary-blue/20 fill-primary-blue/5" />
+                      <p className="text-lg font-medium text-slate-700 leading-snug tracking-tight text-left italic">
+                        "{testimonial.quote}"
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-4 pt-6 mt-6 border-t border-slate-200/20">
+                      <div className="h-12 w-12 rounded-full overflow-hidden bg-slate-200 ring-4 ring-white shadow-sm shrink-0">
+                        <img
+                          src={testimonial.avatar}
+                          alt={testimonial.author}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div className="flex flex-col min-w-0 text-left">
+                        <p className="text-base font-semibold text-primary-blue truncate tracking-tight">{testimonial.author}</p>
+                        <p className="text-[10px] font-semibold text-slate-400 truncate uppercase tracking-[0.2em]">{testimonial.role}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </motion.div>
+            </AnimatePresence>
+
+            {/* Set-based Pagination Dots */}
+            <div className="mt-16 flex justify-center gap-3">
+              {[...Array(totalPages)].map((_, i) => (
+                <button
                   key={i}
-                  className="relative min-h-[280px] w-full bg-slate-50/50 rounded-[3rem] border border-white p-10 flex flex-col justify-between transition-all duration-500 hover:shadow-xl hover:bg-white group/testimonial overflow-hidden shadow-sm"
-                >
-                  <div className="flex flex-col gap-4">
-                    <Quote className="h-8 w-8 text-primary-blue/20 fill-primary-blue/5" />
-                    <p className="text-lg font-medium text-slate-700 leading-snug tracking-tight text-left italic">
-                      "{testimonial.quote}"
-                    </p>
-                  </div>
-
-                  <div className="flex items-center gap-4 pt-6 mt-6 border-t border-slate-200/20">
-                    <div className="h-12 w-12 rounded-full overflow-hidden bg-slate-200 ring-4 ring-white shadow-sm shrink-0">
-                      <img
-                        src={testimonial.avatar}
-                        alt={testimonial.author}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="flex flex-col min-w-0 text-left">
-                      <p className="text-base font-semibold text-primary-blue truncate tracking-tight">{testimonial.author}</p>
-                      <p className="text-[10px] font-semibold text-slate-400 truncate uppercase tracking-[0.2em]">{testimonial.role}</p>
-                    </div>
-                  </div>
-                </div>
+                  onClick={() => {
+                    setTestimonialPage(i)
+                  }}
+                  className={cn(
+                    "h-1.5 rounded-full transition-all duration-700",
+                    i === testimonialPage
+                      ? "bg-primary-orange w-12"
+                      : "bg-slate-200 w-3"
+                  )}
+                  aria-label={`Go to testimonial page ${i + 1}`}
+                />
               ))}
-            </motion.div>
-          </AnimatePresence>
-
-          {/* Set-based Pagination Dots */}
-          <div className="mt-16 flex justify-center gap-3">
-            {[...Array(totalPages)].map((_, i) => (
-              <button
-                key={i}
-                onClick={() => {
-                  setTestimonialPage(i)
-                }}
-                className={cn(
-                  "h-1.5 rounded-full transition-all duration-700",
-                  i === testimonialPage
-                    ? "bg-primary-orange w-12"
-                    : "bg-slate-200 w-3"
-                )}
-                aria-label={`Go to testimonial page ${i + 1}`}
-              />
-            ))}
+            </div>
           </div>
+        )}
 
-          <div className="pt-12 text-center md:hidden">
-            <Link href="/quote">
+        {testimonials.length === 0 && (
+          <div className="mt-12 text-center">
+            <Link href="/register">
               <Button variant="orange" size="lg" className="rounded-full px-16 h-20 text-xl font-semibold shadow-premium hover:scale-105 transition-transform text-white">
                 Start Your First Order
               </Button>
             </Link>
           </div>
-        </div>
+        )}
       </section>
 
       <FAQSection />

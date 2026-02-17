@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { motion, AnimatePresence } from "framer-motion"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { supabase } from "@/lib/supabase"
@@ -13,13 +12,14 @@ import { format } from "date-fns"
 import { toast } from "sonner"
 import { sendNotificationAction, notifyAdminsAction } from "@/app/actions/notification-actions"
 
-interface FeedbackPanelProps {
+interface RequestChatProps {
     requestId: string
+    requestTitle: string
     currentUserId: string
     isAgent?: boolean
 }
 
-export function FeedbackPanel({ requestId, currentUserId, isAgent = false }: FeedbackPanelProps) {
+export function RequestChat({ requestId, requestTitle, currentUserId, isAgent = false }: RequestChatProps) {
     const [messages, setMessages] = useState<any[]>([])
     const [newMessage, setNewMessage] = useState("")
     const [isLoading, setIsLoading] = useState(true)
@@ -31,7 +31,6 @@ export function FeedbackPanel({ requestId, currentUserId, isAgent = false }: Fee
 
     const fetchMessages = async () => {
         if (!requestId) {
-            console.warn("FeedbackPanel: requestId is missing")
             setIsLoading(false)
             return
         }
@@ -45,13 +44,10 @@ export function FeedbackPanel({ requestId, currentUserId, isAgent = false }: Fee
                 .eq('request_id', requestId)
                 .order('created_at', { ascending: true })
 
-            if (error) {
-                console.error("Supabase Error [String]:", error.message || String(error))
-                throw error
-            }
+            if (error) throw error
             setMessages(data || [])
         } catch (error: any) {
-            console.error("Caught error in fetchMessages:", error?.message || String(error))
+            console.error("Error fetching request messages:", error)
         } finally {
             setIsLoading(false)
         }
@@ -80,8 +76,10 @@ export function FeedbackPanel({ requestId, currentUserId, isAgent = false }: Fee
             }, (payload) => {
                 const newMsg = payload.new as any
                 setMessages(prev => {
+                    // Check if message already exists (to avoid duplicates from fetchMessages or optimistic)
                     if (prev.some(m => m.id === newMsg.id)) return prev
 
+                    // Try to match and replace optimistic message
                     const optimisticIndex = prev.findIndex(m =>
                         m.id.startsWith('temp-') &&
                         m.message === newMsg.message &&
@@ -92,16 +90,17 @@ export function FeedbackPanel({ requestId, currentUserId, isAgent = false }: Fee
                         const newMsgs = [...prev]
                         newMsgs[optimisticIndex] = {
                             ...newMsg,
-                            profiles: prev[optimisticIndex].profiles
+                            profiles: prev[optimisticIndex].profiles // Preserve profiles if optimistic had it
                         }
                         return newMsgs
                     }
 
+                    // Add immediately for receiver even without profile (will fill with placeholder)
                     const tempWithPlaceholder = {
                         ...newMsg,
                         profiles: { full_name: "...", role: "user" }
                     }
-                    setTimeout(fetchMessages, 100)
+                    setTimeout(fetchMessages, 100) // Re-fetch to get real profile data
                     return [...prev, tempWithPlaceholder]
                 })
 
@@ -114,6 +113,8 @@ export function FeedbackPanel({ requestId, currentUserId, isAgent = false }: Fee
                 const { userId, isTyping } = payload.payload
                 if (userId !== currentUserId) {
                     setRemoteIsTyping(isTyping)
+
+                    // Auto-clear after 3 seconds if no more events
                     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current)
                     if (isTyping) {
                         typingTimeoutRef.current = setTimeout(() => setRemoteIsTyping(false), 3000)
@@ -124,6 +125,7 @@ export function FeedbackPanel({ requestId, currentUserId, isAgent = false }: Fee
 
         channelRef.current = channel
 
+        // Polling fallback
         const interval = setInterval(fetchMessages, 10000)
 
         return () => {
@@ -133,6 +135,7 @@ export function FeedbackPanel({ requestId, currentUserId, isAgent = false }: Fee
         }
     }, [requestId])
 
+    // Auto-scroll to bottom
     useEffect(() => {
         if (scrollRef.current) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight
@@ -146,6 +149,7 @@ export function FeedbackPanel({ requestId, currentUserId, isAgent = false }: Fee
         setIsSending(true)
         setLocalTyping(false)
 
+        // Optimistic Update
         const tempId = `temp-${Date.now()}`
         const tempMsg = {
             id: tempId,
@@ -174,10 +178,12 @@ export function FeedbackPanel({ requestId, currentUserId, isAgent = false }: Fee
                 })
 
             if (error) {
+                // Revert optimism on error
                 setMessages(prev => prev.filter(m => m.id !== tempId))
                 throw error
             }
 
+            // Trigger Notifications
             try {
                 const { data: request } = await supabase
                     .from('sourcing_requests')
@@ -189,6 +195,7 @@ export function FeedbackPanel({ requestId, currentUserId, isAgent = false }: Fee
                     const isCustomer = currentUserId === request.user_id
                     const participantName = isAgent ? "Agent" : (isCustomer ? "Customer" : "Admin")
 
+                    // Notify Admins
                     if (isCustomer || isAgent) {
                         await notifyAdminsAction({
                             title: `New Message on ${request.part_name}`,
@@ -198,6 +205,7 @@ export function FeedbackPanel({ requestId, currentUserId, isAgent = false }: Fee
                         })
                     }
 
+                    // Notify Counter-party
                     const targetId = isCustomer ? request.agent_id : request.user_id
                     if (targetId && targetId !== currentUserId) {
                         await sendNotificationAction({
@@ -210,7 +218,7 @@ export function FeedbackPanel({ requestId, currentUserId, isAgent = false }: Fee
                     }
                 }
             } catch (notifyErr) {
-                console.warn('Chat notification relay failed:', notifyErr)
+                console.warn('Notification relay failed:', notifyErr)
             }
         } catch (error) {
             console.error("Error sending message:", error)
@@ -228,31 +236,26 @@ export function FeedbackPanel({ requestId, currentUserId, isAgent = false }: Fee
     }
 
     return (
-        <div className="flex flex-col h-full bg-white overflow-hidden">
+        <div className="flex flex-col h-full bg-slate-50/30">
             {/* Header */}
-            <div className="p-4 sm:p-6 border-b border-slate-100 bg-white flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center text-primary-blue shadow-inner">
-                        <MessageSquare className="h-5 w-5" />
-                    </div>
-                    <div>
-                        <h4 className="font-semibold text-slate-900 tracking-tight leading-none uppercase text-xs">Messages</h4>
-                        <p className="text-[9px] font-medium uppercase tracking-[0.15em] text-slate-400 pt-1.5">Direct communication</p>
-                    </div>
+            <div className="p-4 border-b border-slate-100 bg-white/50 backdrop-blur-md flex items-center justify-between sticky top-0 z-10 text-[9px]">
+                <div>
+                    <h2 className="font-bold text-slate-800 text-sm leading-none mb-1">{requestTitle}</h2>
+                    <p className="text-slate-500 font-medium uppercase tracking-wider">Request ID: {requestId.substring(0, 8)}</p>
                 </div>
             </div>
 
             {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6" ref={scrollRef}>
+            <div className="flex-1 overflow-y-auto p-4 space-y-4" ref={scrollRef}>
                 {isLoading ? (
-                    <div className="flex flex-col items-center justify-center h-full text-slate-400 gap-2">
-                        <Loader2 className="h-6 w-6 animate-spin" />
-                        <span className="text-xs font-bold uppercase tracking-widest">Loading history...</span>
+                    <div className="flex flex-col items-center justify-center h-full text-slate-400 gap-3">
+                        <Loader2 className="h-8 w-8 animate-spin" />
+                        <p className="text-xs font-medium uppercase tracking-widest">Loading thread...</p>
                     </div>
                 ) : messages.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center h-full text-slate-300 gap-4 opacity-50">
-                        <MessageSquare className="h-12 w-12" />
-                        <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-center">No messages yet.<br />Start the conversation.</span>
+                    <div className="flex flex-col items-center justify-center h-full text-slate-300 gap-3 opacity-60">
+                        <MessageSquare className="h-10 w-10" />
+                        <p className="text-xs font-medium uppercase tracking-widest">No messages yet</p>
                     </div>
                 ) : (
                     <>
@@ -261,35 +264,29 @@ export function FeedbackPanel({ requestId, currentUserId, isAgent = false }: Fee
                             const role = msg.profiles?.role
 
                             return (
-                                <div key={msg.id} className={cn("flex gap-3 max-w-[85%]", isMe ? "ml-auto flex-row-reverse" : "")}>
-                                    <Avatar className="h-8 w-8 sm:h-10 sm:w-10 border-2 border-white shadow-sm shrink-0">
-                                        <AvatarImage src={msg.profiles?.avatar_url} />
-                                        <AvatarFallback className={cn("text-[10px] font-bold", isMe ? "bg-primary-blue text-white" : "bg-slate-200 text-slate-600")}>
-                                            {msg.profiles?.full_name?.substring(0, 2).toUpperCase() || "??"}
-                                        </AvatarFallback>
-                                    </Avatar>
-                                    <div className={cn("space-y-1", isMe ? "items-end" : "items-start")}>
-                                        <div className={cn("flex items-center gap-2", isMe ? "flex-row-reverse" : "")}>
-                                            <span className="text-[11px] font-semibold text-slate-700">
-                                                {isMe ? "You" : (msg.profiles?.full_name || "User")}
-                                            </span>
-                                            <span className={cn("text-[8px] font-medium uppercase px-2 py-0.5 rounded-full border",
-                                                role === 'agent' ? "bg-purple-50 text-purple-600 border-purple-100" :
-                                                    role === 'admin' ? "bg-red-50 text-red-600 border-red-100" :
-                                                        "bg-blue-50 text-blue-600 border-blue-100"
+                                <div key={msg.id} className={cn("flex flex-col max-w-[85%]", isMe ? "ml-auto items-end" : "mr-auto items-start")}>
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <span className="text-[10px] font-bold text-slate-600">
+                                            {isMe ? "You" : (msg.profiles?.full_name || "User")}
+                                        </span>
+                                        {!isMe && (
+                                            <span className={cn("text-[9px] font-bold uppercase px-1.5 py-0.5 rounded border",
+                                                role === 'agent' ? "bg-purple-100 text-purple-700 border-purple-200" :
+                                                    role === 'admin' ? "bg-red-100 text-red-700 border-red-200" :
+                                                        "bg-blue-100 text-blue-700 border-blue-200"
                                             )}>
                                                 {role}
                                             </span>
-                                            <span className="text-[9px] font-medium text-slate-400">
-                                                {msg.created_at ? format(new Date(msg.created_at), 'h:mm a') : '...'}
-                                            </span>
-                                        </div>
-                                        <div className={cn(
-                                            "p-4 rounded-2xl text-[13px] font-medium leading-relaxed",
-                                            isMe ? "bg-primary-blue text-white rounded-tr-none" : "bg-slate-50 text-slate-600 border border-slate-100 rounded-tl-none"
-                                        )}>
-                                            {msg.message}
-                                        </div>
+                                        )}
+                                        <span className="text-[9px] text-slate-400">
+                                            {format(new Date(msg.created_at), 'h:mm a')}
+                                        </span>
+                                    </div>
+                                    <div className={cn(
+                                        "p-3 rounded-2xl text-sm font-medium leading-relaxed shadow-sm",
+                                        isMe ? "bg-primary-blue text-white rounded-tr-sm" : "bg-white border border-slate-200 text-slate-700 rounded-tl-sm"
+                                    )}>
+                                        {msg.message}
                                     </div>
                                 </div>
                             )
@@ -305,7 +302,7 @@ export function FeedbackPanel({ requestId, currentUserId, isAgent = false }: Fee
                                     <span className="w-1 h-1 bg-slate-300 rounded-full animate-bounce [animation-delay:-0.15s]" />
                                     <span className="w-1 h-1 bg-slate-300 rounded-full animate-bounce" />
                                 </div>
-                                <span className="font-bold tracking-[0.1em] uppercase text-[9px] text-slate-400">Typing...</span>
+                                <span className="font-semibold tracking-wide uppercase text-[9px]">Someone is typing...</span>
                             </motion.div>
                         )}
                     </>
@@ -313,8 +310,8 @@ export function FeedbackPanel({ requestId, currentUserId, isAgent = false }: Fee
             </div>
 
             {/* Input Area */}
-            <div className="p-4 sm:p-6 bg-white border-t border-slate-100">
-                <div className="flex items-end gap-2">
+            <div className="p-4 bg-white border-t border-slate-100">
+                <div className="flex gap-2 max-w-4xl mx-auto items-end">
                     <Textarea
                         value={newMessage}
                         onChange={(e) => {
@@ -322,21 +319,18 @@ export function FeedbackPanel({ requestId, currentUserId, isAgent = false }: Fee
                             setLocalTyping(true)
                         }}
                         onKeyDown={handleKeyDown}
-                        placeholder="Type your message..."
-                        className="min-h-[3rem] max-h-32 resize-none rounded-2xl border-slate-200 bg-slate-50 focus:bg-white transition-all text-slate-900 placeholder:text-slate-400 py-3"
+                        placeholder="Type a message..."
+                        className="min-h-[44px] max-h-32 resize-none rounded-xl border-slate-200 bg-slate-50 focus:bg-white text-sm py-3"
                     />
                     <Button
                         size="icon"
                         onClick={handleSendMessage}
                         disabled={isSending || !newMessage.trim()}
-                        className="h-12 w-12 rounded-xl bg-primary-blue hover:bg-blue-700 text-white shrink-0 shadow-lg shadow-blue-900/20 active:scale-95 transition-all"
+                        className="h-11 w-11 rounded-xl bg-primary-blue hover:bg-blue-700 shrink-0 shadow-sm transition-all active:scale-95"
                     >
-                        {isSending ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5 ml-0.5" />}
+                        {isSending ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
                     </Button>
                 </div>
-                <p className="text-[10px] text-slate-300 text-center pt-4 font-medium uppercase tracking-widest opacity-60">
-                    Press <kbd className="font-mono bg-slate-50 px-1.5 rounded border border-slate-100">Enter</kbd> to send
-                </p>
             </div>
         </div>
     )

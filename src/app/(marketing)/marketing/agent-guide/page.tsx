@@ -57,7 +57,8 @@ export default function AgentGuidePage() {
                                 "Access the 'Sourcing Pipeline' from your Agent Dashboard.",
                                 "Review vehicle details (VIN, Make, Model) and part requirements.",
                                 "Check 'Active' requests that need immediate attention.",
-                                "Use the 'Sourcing' status to indicate you are finding parts."
+                                "Use the 'Sourcing' status to indicate you are finding parts.",
+                                "Admins can see your activity live via matching unread badges."
                             ].map((item, i) => (
                                 <li key={i} className="flex items-start gap-4 p-4 rounded-2xl bg-primary-blue/5 border border-primary-blue/10">
                                     <div className="h-6 w-6 rounded-full bg-white border border-primary-blue/20 flex items-center justify-center shrink-0 text-xs font-bold text-primary-blue shadow-sm">
@@ -247,6 +248,23 @@ export default function AgentGuidePage() {
                                 </Button>
                             </Link>
                         </div>
+                        {/* STEP 4: PERFORMANCE CENTRAL */}
+                        <section className="grid md:grid-cols-1 gap-12 items-center">
+                            <Card className="border-slate-100 shadow-2xl rounded-[3rem] bg-white overflow-hidden">
+                                <CardContent className="p-12 flex flex-col md:flex-row items-center gap-12">
+                                    <div className="h-24 w-24 rounded-[2rem] bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                                        <TrendingUp className="h-12 w-12" />
+                                    </div>
+                                    <div className="space-y-4 text-center md:text-left">
+                                        <h3 className="text-3xl font-bold tracking-tight text-primary-blue">Performance Central</h3>
+                                        <p className="text-primary-blue/70 text-lg leading-relaxed max-w-2xl">
+                                            Admins now monitor sourcing speed and resolution rates in real-time. Use the **Agent Performance Hub** to track your metrics, completed orders, and global rating within the Hobort network.
+                                        </p>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </section>
+
                     </div>
                 </section>
 

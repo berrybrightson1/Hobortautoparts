@@ -257,6 +257,7 @@ export interface Database {
                     message: string
                     type: 'order' | 'promo' | 'system' | 'request'
                     read: boolean
+                    link: string | null
                     created_at: string
                 }
                 Insert: {
@@ -266,6 +267,7 @@ export interface Database {
                     message: string
                     type?: 'order' | 'promo' | 'system' | 'request'
                     read?: boolean
+                    link?: string | null
                     created_at?: string
                 }
                 Update: {
@@ -275,6 +277,7 @@ export interface Database {
                     message?: string
                     type?: 'order' | 'promo' | 'system' | 'request'
                     read?: boolean
+                    link?: string | null
                     created_at?: string
                 }
             }
