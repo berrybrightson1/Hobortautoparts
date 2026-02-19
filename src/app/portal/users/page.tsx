@@ -54,7 +54,7 @@ import { toast } from "sonner"
 import { format } from "date-fns"
 import { SearchBar } from "@/components/portal/search-bar"
 import { Pagination } from "@/components/portal/pagination"
-import { updateUserRole, createUser, getUserSourcingHistory, getUsersWithEmails, deleteUser } from "@/app/actions/admin-actions"
+import { updateUserRole, createUser, getUserSourcingHistory, getUsersWithEmails, deleteUser, suspendUser, unsuspendUser, resetUserPassword } from "@/app/actions/admin-actions"
 import { SmartPhoneInput } from "@/components/ui/phone-input"
 
 export default function UsersPage() {
@@ -108,6 +108,48 @@ export default function UsersPage() {
             })
         } finally {
             setIsLoading(false)
+        }
+    }
+
+    const [isResetModalOpen, setIsResetModalOpen] = useState(false)
+    const [userToReset, setUserToReset] = useState<any>(null)
+    const [newPass, setNewPass] = useState('')
+    const [isResetting, setIsResetting] = useState(false)
+
+    const handleResetPassword = async () => {
+        if (!newPass) return
+        setIsResetting(true)
+        try {
+            const res = await resetUserPassword(userToReset.id, newPass)
+            if (res.success) {
+                toast.success("Password reset successful")
+                setIsResetModalOpen(false)
+                setNewPass('')
+            } else {
+                toast.error("Reset failed", { description: res.error })
+            }
+        } catch (error: any) {
+            toast.error("Error resetting password")
+        } finally {
+            setIsResetting(false)
+        }
+    }
+
+    const handleToggleSuspension = async (user: any) => {
+        const isSuspended = user.raw_user_meta_data?.suspended === true
+        setUpdatingId(user.id)
+        try {
+            const res = isSuspended ? await unsuspendUser(user.id) : await suspendUser(user.id)
+            if (res.success) {
+                toast.success(isSuspended ? "Account reactivated" : "Account suspended")
+                fetchUsers()
+            } else {
+                toast.error("Action failed", { description: res.error })
+            }
+        } catch (error: any) {
+            toast.error("Error updating suspension status")
+        } finally {
+            setUpdatingId(null)
         }
     }
 
@@ -428,6 +470,9 @@ export default function UsersPage() {
                                                     <div className="flex flex-col min-w-0">
                                                         <span className="font-bold text-slate-900 leading-tight truncate">{user.full_name || 'Unnamed User'}</span>
                                                         <span className="text-[10px] text-slate-400 font-bold uppercase tracking-tight mt-0.5 truncate">{user.id}</span>
+                                                        {user.raw_user_meta_data?.suspended && (
+                                                            <span className="text-[9px] font-black text-red-500 uppercase tracking-widest mt-1 animate-pulse">Suspended</span>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </TableCell>
@@ -481,6 +526,24 @@ export default function UsersPage() {
                                                             <UserIcon className="mr-2 h-4 w-4" /> Standard Customer
                                                         </DropdownMenuItem>
                                                         <DropdownMenuSeparator className="bg-slate-50" />
+                                                        <DropdownMenuItem
+                                                            onClick={() => {
+                                                                setUserToReset(user)
+                                                                setIsResetModalOpen(true)
+                                                            }}
+                                                            className="rounded-xl font-bold text-xs px-3 py-2.5 cursor-pointer"
+                                                        >
+                                                            Reset Password
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem
+                                                            onClick={() => handleToggleSuspension(user)}
+                                                            className={cn(
+                                                                "rounded-xl font-bold text-xs px-3 py-2.5 cursor-pointer",
+                                                                user.raw_user_meta_data?.suspended ? "text-emerald-600 hover:bg-emerald-50" : "text-orange-600 hover:bg-orange-50"
+                                                            )}
+                                                        >
+                                                            {user.raw_user_meta_data?.suspended ? "Reactivate User" : "Suspend Access"}
+                                                        </DropdownMenuItem>
                                                         <DropdownMenuItem
                                                             onClick={() => setUserToDelete(user)}
                                                             className="rounded-xl font-bold text-xs px-3 py-2.5 cursor-pointer text-red-600 hover:bg-red-50 focus:bg-red-50"
@@ -670,6 +733,50 @@ export default function UsersPage() {
                     )}
                 </SheetContent>
             </Sheet>
+
+            {/* Password Reset Dialog */}
+            <Dialog open={isResetModalOpen} onOpenChange={setIsResetModalOpen}>
+                <DialogContent className="sm:max-w-md rounded-[2.5rem] border-0 shadow-2xl bg-white p-0 gap-0 overflow-hidden">
+                    <div className="p-8 sm:p-10 space-y-6">
+                        <div className="space-y-2 text-center">
+                            <DialogTitle className="text-2xl font-bold text-slate-900 tracking-tight">Reset Password</DialogTitle>
+                            <DialogDescription className="text-slate-500 font-medium">
+                                Manually override password for <strong>{userToReset?.full_name}</strong>.
+                            </DialogDescription>
+                        </div>
+
+                        <div className="space-y-4">
+                            <div className="space-y-2">
+                                <Label className="text-xs font-semibold text-slate-500 ml-1">New Password</Label>
+                                <Input
+                                    type="text"
+                                    placeholder="Enter new strong password"
+                                    className="h-14 rounded-2xl bg-slate-50 border-slate-200 focus:bg-white transition-all font-medium"
+                                    value={newPass}
+                                    onChange={(e) => setNewPass(e.target.value)}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col gap-3 pt-4">
+                            <Button
+                                disabled={isResetting || !newPass}
+                                onClick={handleResetPassword}
+                                className="h-14 rounded-2xl font-bold bg-slate-900 hover:bg-black text-white shadow-xl shadow-slate-900/20 transition-all active:scale-95"
+                            >
+                                {isResetting ? <Loader2 className="h-5 w-5 animate-spin" /> : "Update Credentials"}
+                            </Button>
+                            <Button
+                                variant="ghost"
+                                onClick={() => setIsResetModalOpen(false)}
+                                className="h-12 rounded-xl font-bold text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-all uppercase text-[10px] tracking-widest"
+                            >
+                                Cancel
+                            </Button>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
 
             {/* Delete Confirmation Dialog */}
             <Dialog open={!!userToDelete} onOpenChange={(open) => !open && setUserToDelete(null)}>

@@ -117,7 +117,7 @@ export default function PlatformGuidePage() {
             <div className="grid gap-6 md:grid-cols-3">
                 {[
                     { title: "VIN Accuracy", text: "Providing a clear VIN photo reduces sourcing time by up to 40%.", icon: Zap },
-                    { title: "Real-time Alerts", text: "You will receive instant notifications when an agent updates your quote or sends a message.", icon: BellRing },
+                    { title: "Persistent Support", text: "Your support conversations now stay active across browser refreshes even if you haven't signed in yet.", icon: MessageSquare },
                     { title: "Verified Parts", text: "Every part undergoes a 5-point quality audit before shipping.", icon: ShieldCheck }
                 ].map((tip, i) => (
                     <div key={i} className="p-8 bg-slate-50 rounded-[2rem] border border-slate-100 flex flex-col gap-4">

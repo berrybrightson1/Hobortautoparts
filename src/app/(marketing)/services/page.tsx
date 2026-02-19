@@ -2,6 +2,13 @@ import { SERVICES } from "@/lib/mock-data"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import * as LucideIcons from "lucide-react"
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+    title: "Our Services | Hobort Auto Parts Express",
+    description: "Specialized sourcing for Toyota, Honda, Ford, and Mercedes-Benz parts. Genuine US auto parts delivered to Ghana with extreme precision.",
+    keywords: ["US auto parts Ghana", "Toyota parts Ghana", "Honda parts sourcing", "Genuine car parts", "Shipping to Ghana"],
+}
 
 export default function ServicesPage() {
     return (

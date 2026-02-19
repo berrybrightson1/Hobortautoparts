@@ -250,6 +250,43 @@ export default function AdminGuidePage() {
                             </Card>
                         </div>
                     </section>
+
+                    {/* Section 5: Governance & Security */}
+                    <section className="space-y-6">
+                        <div className="flex items-center gap-4">
+                            <div className="h-12 w-12 rounded-2xl bg-red-50 flex items-center justify-center text-red-600">
+                                <ShieldCheck className="h-6 w-6" />
+                            </div>
+                            <div>
+                                <h2 className="text-2xl font-bold tracking-tight text-slate-900">5. Governance & Security</h2>
+                                <p className="text-slate-500 font-medium">Protecting the platform and managing users.</p>
+                            </div>
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-6">
+                            <Card className="border-slate-100 shadow-lg p-6">
+                                <h3 className="font-bold text-slate-900 text-lg mb-4">User Suspension</h3>
+                                <p className="text-slate-500 text-sm leading-relaxed mb-4">
+                                    Admins can revoke platform access for any user. Suspended users are immediately redirected to a blockade page.
+                                </p>
+                                <ul className="space-y-2 text-xs text-slate-600">
+                                    <li className="flex items-center gap-2"><History className="w-4 h-4" /> Go to **User Network**.</li>
+                                    <li className="flex items-center gap-2"><History className="w-4 h-4" /> Click the (•••) menu.</li>
+                                    <li className="flex items-center gap-2"><History className="w-4 h-4" /> Select **Suspend Access**.</li>
+                                </ul>
+                            </Card>
+                            <Card className="border-slate-100 shadow-lg p-6">
+                                <h3 className="font-bold text-slate-900 text-lg mb-4">Security Overrides</h3>
+                                <p className="text-slate-500 text-sm leading-relaxed mb-4">
+                                    Admins can trigger manual password resets for users experiencing lockout issues or security breaches.
+                                </p>
+                                <ul className="space-y-2 text-xs text-slate-600">
+                                    <li className="flex items-center gap-2"><Zap className="w-4 h-4 text-primary-orange" /> Use the **Reset Password** action in the User table.</li>
+                                    <li className="flex items-center gap-2"><Zap className="w-4 h-4 text-primary-orange" /> System logs all manual credential overrides.</li>
+                                </ul>
+                            </Card>
+                        </div>
+                    </section>
                 </TabsContent>
             </Tabs>
         </div>

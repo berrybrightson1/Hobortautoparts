@@ -15,6 +15,20 @@ import { VideoModal } from "@/components/marketing/video-modal"
 
 const updates = [
     {
+        version: "v2.1.0",
+        date: "February 19, 2026",
+        time: "12:15 PM",
+        title: "Account Governance & Persistent Support",
+        description: "Focus on platform stability, secure account recovery, and background persistence for guest support interactions.",
+        changes: [
+            "Launched Advanced User Governance: Admins can now suspend/unsuspend accounts with unified middleware enforcement.",
+            "Implemented Persistent Guest Chat: Conversations now sync to localStorage, ensuring continuity for unauthenticated users.",
+            "Deployed Self-Service Recovery: New 'Forgot Password' flow with real-time security strength indicators during reset.",
+            "Dynamic Blog Architecture: System updates now use slug-based dynamic routing with rich media integration.",
+            "Refined Gallery Masonry: Adjusted layout for 4-column density on ultra-wide screens and better mobile stacking.",
+        ]
+    },
+    {
         version: "v2.0.0",
         date: "February 15, 2026",
         time: "01:15 PM",

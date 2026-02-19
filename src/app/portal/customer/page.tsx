@@ -263,7 +263,7 @@ export default function CustomerDashboard() {
                         <RefreshCw className={cn("h-5 w-5", isLoading && "animate-spin")} />
                     </Button>
                     <Button
-                        onClick={() => router.push('/quote')}
+                        onClick={() => router.push('/quote?from=portal')}
                         className="flex-1 md:flex-none bg-primary-orange hover:bg-orange-600 text-white font-bold uppercase tracking-widest text-xs rounded-xl shadow-lg shadow-orange-900/20 px-8 h-14 transition-all active:scale-95"
                     >
                         <Plus className="mr-3 h-5 w-5" /> New Request
@@ -536,7 +536,7 @@ export default function CustomerDashboard() {
                                     </Button>
                                 ) : (
                                     <Button
-                                        onClick={() => router.push('/quote')}
+                                        onClick={() => router.push('/quote?from=portal')}
                                         variant="outline"
                                         className="rounded-full h-12 px-8 border-slate-200 text-[10px] font-bold uppercase tracking-widest hover:bg-white hover:border-primary-orange hover:text-primary-orange transition-all"
                                     >

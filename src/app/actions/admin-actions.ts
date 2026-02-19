@@ -186,6 +186,59 @@ export async function deleteUser(userId: string) {
     }
 }
 
+export async function suspendUser(userId: string) {
+    try {
+        await requireAdmin()
+        const supabaseAdmin = getAdminClient()
+        const { error } = await supabaseAdmin.auth.admin.updateUserById(
+            userId,
+            { user_metadata: { suspended: true } }
+        )
+
+        if (error) throw error
+
+        revalidatePath('/portal/users')
+        return { success: true }
+    } catch (error: any) {
+        return { success: false, error: error.message }
+    }
+}
+
+export async function unsuspendUser(userId: string) {
+    try {
+        await requireAdmin()
+        const supabaseAdmin = getAdminClient()
+        const { error } = await supabaseAdmin.auth.admin.updateUserById(
+            userId,
+            { user_metadata: { suspended: false } }
+        )
+
+        if (error) throw error
+
+        revalidatePath('/portal/users')
+        return { success: true }
+    } catch (error: any) {
+        return { success: false, error: error.message }
+    }
+}
+
+export async function resetUserPassword(userId: string, newPassword: string) {
+    try {
+        await requireAdmin()
+        const supabaseAdmin = getAdminClient()
+        const { error } = await supabaseAdmin.auth.admin.updateUserById(
+            userId,
+            { password: newPassword }
+        )
+
+        if (error) throw error
+
+        return { success: true }
+    } catch (error: any) {
+        return { success: false, error: error.message }
+    }
+}
+
 export async function createProxyOrder(requestId: string, quoteId: string, userId: string, agentId: string | null) {
     try {
         await requireAdmin()

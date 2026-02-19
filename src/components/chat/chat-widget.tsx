@@ -138,13 +138,16 @@ export function ChatWidget() {
 
     const handleSendMessage = async (e?: React.FormEvent) => {
         e?.preventDefault()
-        if (!newMessage.trim() || !user) return
+        if (!newMessage.trim()) return
 
+        // If guest, we could handle anonymous messaging or prompt for signup
+        // For now, let's allow the hook to handle the logic (might need update)
         await sendMessage(newMessage)
         setNewMessage("")
     }
 
-    if (!user) return null
+    // For guests, we show a simplified trigger and prompt to sign up or just chat
+    // if (!user) return null
 
     // -- RENDER HELPERS --
 
@@ -190,15 +193,33 @@ export function ChatWidget() {
 
         // Customer Logic
         return (
-            <motion.button
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                className="fixed bottom-6 right-6 h-14 w-14 bg-primary-blue text-white rounded-full shadow-xl shadow-blue-900/20 flex items-center justify-center hover:scale-110 transition-transform z-[50]"
-                onClick={() => setIsOpen(true)}
-                aria-label="Open support chat"
+            <motion.div
+                initial={{ scale: 0, opacity: 0, x: 20 }}
+                animate={{ scale: 1, opacity: 1, x: 0 }}
+                className="fixed bottom-6 right-6 flex items-center gap-3 z-[50]"
             >
-                <MessageSquare className="h-6 w-6" />
-            </motion.button>
+                <AnimatePresence>
+                    {!isOpen && (
+                        <motion.div
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: 10 }}
+                            className="bg-white px-4 py-2 rounded-2xl shadow-xl border border-slate-100 hidden md:block"
+                        >
+                            <p className="text-[10px] font-black uppercase tracking-widest text-primary-blue">Need help?</p>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+                <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    className="h-14 w-14 bg-primary-blue text-white rounded-full shadow-xl shadow-blue-900/20 flex items-center justify-center transition-transform"
+                    onClick={() => setIsOpen(true)}
+                    aria-label="Open support chat"
+                >
+                    <MessageSquare className="h-6 w-6" />
+                </motion.button>
+            </motion.div>
         )
     }
 
@@ -313,7 +334,7 @@ export function ChatWidget() {
                                             ) : (
                                                 <>
                                                     {messages.map((msg) => {
-                                                        const isMe = msg.sender_id === user.id
+                                                        const isMe = msg.sender_id === user?.id
                                                         return (
                                                             <div
                                                                 key={msg.id}

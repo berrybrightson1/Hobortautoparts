@@ -13,7 +13,7 @@ import { BrandedSelect } from "@/components/marketing/branded-select"
 import { Loader2, AlertCircle } from "lucide-react"
 import { motion } from "framer-motion"
 import { useAuth } from "@/components/auth/auth-provider"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { supabase } from "@/lib/supabase"
 import { PartLibraryPicker } from "@/components/marketing/part-library-picker"
@@ -53,6 +53,8 @@ const COMMON_TRIMS = ["Base", "Standard", "Premium", "Luxury", "Sport", "LE", "X
 export default function QuotePage() {
     const { user, profile, loading: authLoading } = useAuth()
     const router = useRouter()
+    const searchParams = useSearchParams()
+    const fromPortal = searchParams.get("from") === "portal"
     const [isLoading, setIsLoading] = useState(false)
     const [isSubmitted, setIsSubmitted] = useState(false)
     const [step, setStep] = useState(1)
@@ -294,14 +296,15 @@ export default function QuotePage() {
                                         }
                                     </p>
                                     <div className="pt-4 flex flex-col sm:flex-row gap-4">
-                                        <Link href={user ? "/portal" : "/signup"} className="flex-1 w-full">
+                                        <Link href={user ? (fromPortal ? "/portal" : "/") : "/signup"} className="flex-1 w-full">
                                             <Button className="w-full bg-primary-orange hover:bg-orange-600 text-white font-semibold h-14 rounded-xl shadow-lg shadow-primary-orange/20 text-lg transition-transform hover:scale-[1.02] active:scale-[0.98]">
                                                 {user ? "Go to Dashboard" : "Create Account"} <ArrowRight className="ml-2 h-5 w-5" />
                                             </Button>
                                         </Link>
-                                        <Link href="/" className="flex-1 w-full">
+                                        {/* Back button: return to portal if came from there, else home */}
+                                        <Link href={fromPortal ? "/portal" : "/"} className="flex-1 w-full">
                                             <Button variant="outline" className="w-full border-primary-blue/10 text-primary-blue/60 hover:text-primary-blue hover:bg-primary-blue/5 font-medium h-14 rounded-xl">
-                                                Back to Home
+                                                {fromPortal ? "Back to Portal" : "Back to Home"}
                                             </Button>
                                         </Link>
                                     </div>
@@ -336,7 +339,7 @@ export default function QuotePage() {
                     <div className="space-y-4 text-left">
                         <div className="flex items-center gap-4">
                             <button
-                                onClick={() => step > 1 ? setStep(step - 1) : router.push('/')}
+                                onClick={() => step > 1 ? setStep(step - 1) : router.back()}
                                 className="group p-2 rounded-full hover:bg-primary-blue/5 transition-all outline-none -ml-2"
                                 aria-label="Go back"
                             >

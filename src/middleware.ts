@@ -40,6 +40,16 @@ export async function middleware(request: NextRequest) {
         data: { user },
     } = await supabase.auth.getUser();
 
+    // Enforce suspension if user is logged in
+    if (user?.user_metadata?.suspended === true) {
+        if (request.nextUrl.pathname.startsWith('/portal')) {
+            const redirectUrl = request.nextUrl.clone()
+            redirectUrl.pathname = '/suspended'
+            redirectUrl.searchParams.set('auth_error', 'account_suspended')
+            return NextResponse.redirect(redirectUrl)
+        }
+    }
+
     return response;
 }
 

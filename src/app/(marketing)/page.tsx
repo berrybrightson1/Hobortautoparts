@@ -12,6 +12,7 @@ import { useMediaQuery } from "@/hooks/use-media-query"
 import { HeroSlider } from "@/components/marketing/hero-slider"
 import { TrackingWidget } from "@/components/marketing/tracking-widget"
 import { FAQSection } from "@/components/marketing/faq-section"
+import { GalleryPreview } from "@/components/marketing/gallery-preview"
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -112,6 +113,9 @@ export default function LandingPage() {
         </div>
       </section>
       {/* Removed WhoWeAre from here as it is now the HeroSlider */}
+
+      {/* Gallery Preview Strip */}
+      <GalleryPreview />
 
       {/* Centered Showcase Section */}
       <section className="py-16 bg-white relative overflow-hidden">
