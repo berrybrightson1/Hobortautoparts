@@ -26,7 +26,7 @@ export default function ReturnPolicyPage() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
-                    <div className="p-8 rounded-3xl bg-blue-50/50 border border-blue-100 border-dashed">
+                    <div className="p-8 rounded-2xl bg-blue-50/50 border border-blue-100 border-dashed">
                         <div className="flex items-center gap-4 mb-6">
                             <div className="h-10 w-10 rounded-xl bg-primary-blue text-white flex items-center justify-center">
                                 <ShieldCheck className="h-5 w-5" />
@@ -49,7 +49,7 @@ export default function ReturnPolicyPage() {
                         </ul>
                     </div>
 
-                    <div className="p-8 rounded-3xl bg-slate-50 border border-slate-200 border-dashed">
+                    <div className="p-8 rounded-2xl bg-slate-50 border border-slate-200 border-dashed">
                         <div className="flex items-center gap-4 mb-6">
                             <div className="h-10 w-10 rounded-xl bg-slate-900 text-white flex items-center justify-center">
                                 <RefreshCw className="h-5 w-5" />
@@ -105,7 +105,7 @@ export default function ReturnPolicyPage() {
                                         color: "bg-slate-900 text-white"
                                     },
                                 ].map((item, i) => (
-                                    <div key={i} className="p-8 rounded-[2rem] bg-slate-50 border border-slate-100/50 hover:bg-white hover:shadow-premium transition-all duration-500 group relative overflow-hidden">
+                                    <div key={i} className="p-8 rounded-2xl bg-slate-50 border border-slate-100/50 hover:bg-white hover:shadow-premium transition-all duration-500 group relative overflow-hidden">
                                         <div className="absolute top-0 right-0 p-6 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity">
                                             <item.icon className="h-24 w-24 -mr-8 -mt-8" />
                                         </div>
@@ -130,7 +130,7 @@ export default function ReturnPolicyPage() {
                             </div>
                         </div>
 
-                        <div className="bg-slate-50 rounded-3xl p-10 space-y-8">
+                        <div className="bg-slate-50 rounded-2xl p-10 space-y-8">
                             <div className="flex items-start gap-6">
                                 <div className="h-12 w-12 rounded-2xl bg-white shadow-sm border border-slate-100 flex items-center justify-center shrink-0">
                                     <AlertTriangle className="h-6 w-6 text-primary-orange" />

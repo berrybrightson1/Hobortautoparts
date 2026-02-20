@@ -85,7 +85,7 @@ export default function PrivacyPolicyPage() {
                     </section>
                 </div>
 
-                <div className="p-10 rounded-3xl bg-primary-blue/5 border border-primary-blue/10 flex flex-col md:flex-row items-center gap-8">
+                <div className="p-10 rounded-2xl bg-primary-blue/5 border border-primary-blue/10 flex flex-col md:flex-row items-center gap-8">
                     <ShieldCheck className="h-16 w-16 text-primary-blue shrink-0 animate-pulse" />
                     <div className="space-y-2 text-center md:text-left">
                         <h3 className="text-xl font-semibold text-primary-blue uppercase tracking-tight">Your data is safe with Hobort.</h3>

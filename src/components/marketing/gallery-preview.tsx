@@ -43,13 +43,18 @@ export function GalleryPreview() {
         return () => clearInterval(id)
     }, [filtered.length, activeCategory])
 
-    // Scroll track to currentIndex
+    // Scroll track to center currentIndex in the visible area
     useEffect(() => {
         const track = trackRef.current
         if (!track || filtered.length === 0) return
         const card = track.children[currentIndex] as HTMLElement | undefined
         if (!card) return
-        track.scrollTo({ left: card.offsetLeft - 24, behavior: "smooth" })
+        const trackWidth = track.offsetWidth
+        const cardLeft = card.offsetLeft
+        const cardWidth = card.offsetWidth
+        // Scroll so the card center aligns with the track center
+        const targetScrollLeft = cardLeft - trackWidth / 2 + cardWidth / 2
+        track.scrollTo({ left: Math.max(0, targetScrollLeft), behavior: "smooth" })
     }, [currentIndex, filtered.length])
 
     /* ── Drag to scroll ── */
@@ -122,7 +127,7 @@ export function GalleryPreview() {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0 }}
-                            className="flex flex-col items-center justify-center h-64 gap-4 rounded-[2rem] border-2 border-dashed border-slate-200 bg-slate-50"
+                            className="flex flex-col items-center justify-center h-64 gap-4 rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50"
                         >
                             <div className="h-14 w-14 rounded-2xl bg-slate-100 flex items-center justify-center">
                                 <Images className="h-7 w-7 text-slate-300" />
@@ -148,29 +153,29 @@ export function GalleryPreview() {
                             transition={{ duration: 0.4 }}
                             className="relative"
                         >
-                            {/* Scroll track */}
+                            {/* Scroll track — overflow-y-visible so ring/shadow don't clip */}
                             <div
                                 ref={trackRef}
                                 onMouseDown={onMouseDown}
                                 onMouseMove={onMouseMove}
                                 onMouseUp={stopDrag}
                                 onMouseLeave={stopDrag}
-                                className="no-scrollbar flex gap-4 overflow-x-auto scroll-smooth pb-2 select-none"
+                                className="no-scrollbar flex gap-4 overflow-x-auto overflow-y-visible scroll-smooth py-3 select-none"
                             >
                                 {filtered.map((img, i) => (
                                     <Link
                                         key={img.src}
                                         href={`/gallery?category=${img.category}`}
                                         className={cn(
-                                            "relative shrink-0 rounded-[1.5rem] overflow-hidden cursor-pointer group transition-all duration-500",
-                                            "h-56 md:h-72",
-                                            // main card wider
+                                            "relative shrink-0 rounded-2xl overflow-hidden cursor-pointer group transition-all duration-500",
+                                            // Same width for all cards — focus is shown via scale + height
+                                            "w-56 md:w-72",
                                             i === currentIndex
-                                                ? "w-64 md:w-80 ring-2 ring-primary-orange ring-offset-2"
-                                                : "w-48 md:w-60 opacity-80 hover:opacity-100"
+                                                ? "h-64 md:h-80 ring-2 ring-primary-orange ring-offset-2 scale-[1.04] shadow-2xl shadow-primary-orange/20 z-10"
+                                                : "h-52 md:h-64 opacity-75 hover:opacity-95"
                                         )}
+                                        style={{ transformOrigin: "center bottom" }}
                                         onClick={(e) => {
-                                            // Prevent navigation if user was dragging
                                             if (isDragging.current) e.preventDefault()
                                             setCurrentIndex(i)
                                         }}
@@ -179,7 +184,7 @@ export function GalleryPreview() {
                                             src={img.src}
                                             alt={img.alt}
                                             fill
-                                            sizes="320px"
+                                            sizes="(max-width: 768px) 224px, 288px"
                                             className="object-cover group-hover:scale-105 transition-transform duration-700"
                                             draggable={false}
                                         />

@@ -352,7 +352,7 @@ export default function GuidePage() {
 
                     {/* TAB 2: HOW-TO GUIDES */}
                     <TabsContent value="howto" className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-8">
-                        <div className="p-8 md:p-12 rounded-[2.5rem] bg-gradient-to-br from-primary-blue to-slate-900 text-white shadow-2xl relative overflow-hidden group cursor-pointer" onClick={() => setIsVideoOpen(true)}>
+                        <div className="p-8 md:p-12 rounded-2xl bg-gradient-to-br from-primary-blue to-slate-900 text-white shadow-2xl relative overflow-hidden group cursor-pointer" onClick={() => setIsVideoOpen(true)}>
                             <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
                             <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
                                 <div className="space-y-4 text-center md:text-left">
@@ -455,7 +455,7 @@ export default function GuidePage() {
                             </div>
 
                             <div className="space-y-8">
-                                <Card className="p-8 bg-primary-blue text-white border-none rounded-[2rem] overflow-hidden relative group">
+                                <Card className="p-8 bg-primary-blue text-white border-none rounded-2xl overflow-hidden relative group">
                                     <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-700" />
                                     <h3 className="text-xl font-bold mb-6 relative z-10 uppercase tracking-widest text-primary-orange">
                                         System Status

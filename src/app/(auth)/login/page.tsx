@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { PasswordInput } from "@/components/ui/password-input"
@@ -13,9 +13,20 @@ import { toast } from "sonner"
 import { supabase } from "@/lib/supabase"
 import { usePortalStore } from "@/lib/store"
 import { useAuth } from "@/components/auth/auth-provider"
+import { Suspense } from "react"
 
 export default function LoginPage() {
+    return (
+        <Suspense fallback={<div className="flex items-center justify-center p-12"><Loader2 className="h-8 w-8 animate-spin text-primary-blue/20" /></div>}>
+            <LoginContent />
+        </Suspense>
+    )
+}
+
+function LoginContent() {
     const router = useRouter()
+    const searchParams = useSearchParams()
+    const returnTo = searchParams.get("returnTo")
     const { setRole } = usePortalStore()
     const [isLoading, setIsLoading] = useState(false)
     const [showPassword, setShowPassword] = useState(false)
@@ -34,11 +45,16 @@ export default function LoginPage() {
             // Redirect to the dashboard corresponding to the user's role
             setRole(userRole)
 
-            if (userRole === 'admin') router.push("/portal/admin")
-            else if (userRole === 'agent') router.push("/portal/agent")
-            else router.push("/portal/customer")
+            // Honor returnTo if present, otherwise role-based redirect
+            if (returnTo) {
+                router.push(returnTo)
+            } else {
+                if (userRole === 'admin') router.push("/portal/admin")
+                else if (userRole === 'agent') router.push("/portal/agent")
+                else router.push("/portal/customer")
+            }
         }
-    }, [profile, loading, router, setRole, activeRole])
+    }, [profile, loading, router, setRole, returnTo])
 
 
     async function onSubmit(event: React.SyntheticEvent) {

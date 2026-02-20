@@ -41,7 +41,7 @@ export default function CustomerGuidePage() {
                 {/* STEP 1: SOURCING */}
                 <section className="grid md:grid-cols-2 gap-12 items-center">
                     <div className="order-2 md:order-1 space-y-8 animate-in fade-in slide-in-from-left-8 duration-700 delay-100">
-                        <div className="h-16 w-16 rounded-[2rem] bg-primary-orange/10 flex items-center justify-center text-primary-orange mb-4">
+                        <div className="h-16 w-16 rounded-2xl bg-primary-orange/10 flex items-center justify-center text-primary-orange mb-4">
                             <Search className="h-8 w-8" />
                         </div>
                         <div className="space-y-4">
@@ -73,9 +73,9 @@ export default function CustomerGuidePage() {
                             </Link>
                         </div>
                     </div>
-                    <div className="order-1 md:order-2 bg-slate-50 rounded-[3rem] p-8 md:p-12 aspect-square md:aspect-auto flex items-center justify-center relative overflow-hidden group">
+                    <div className="order-1 md:order-2 bg-slate-50 rounded-2xl p-8 md:p-12 aspect-square md:aspect-auto flex items-center justify-center relative overflow-hidden group">
                         <div className="absolute inset-0 bg-primary-orange/5" />
-                        <div className="relative z-10 w-full max-w-sm bg-white rounded-3xl shadow-2xl shadow-primary-blue/10 p-6 space-y-4 transform group-hover:scale-105 transition-transform duration-500">
+                        <div className="relative z-10 w-full max-w-sm bg-white rounded-2xl shadow-2xl shadow-primary-blue/10 p-6 space-y-4 transform group-hover:scale-105 transition-transform duration-500">
                             <div className="flex items-center gap-4 border-b border-slate-100 pb-4">
                                 <div className="h-10 w-10 bg-primary-orange rounded-full flex items-center justify-center text-white">
                                     <Search className="h-5 w-5" />
@@ -99,7 +99,7 @@ export default function CustomerGuidePage() {
 
                 {/* STEP 2: NEGOTIATION */}
                 <section className="grid md:grid-cols-2 gap-12 items-center">
-                    <div className="bg-primary-blue rounded-[3rem] p-8 md:p-12 aspect-square md:aspect-auto flex items-center justify-center relative overflow-hidden group">
+                    <div className="bg-primary-blue rounded-2xl p-8 md:p-12 aspect-square md:aspect-auto flex items-center justify-center relative overflow-hidden group">
                         {/* Abstract Chat UI */}
                         <div className="relative z-10 w-full max-w-sm space-y-4">
                             <div className="flex justify-start">
@@ -126,7 +126,7 @@ export default function CustomerGuidePage() {
                         </div>
                     </div>
                     <div className="space-y-8 animate-in fade-in slide-in-from-right-8 duration-700 delay-200">
-                        <div className="h-16 w-16 rounded-[2rem] bg-primary-blue/10 flex items-center justify-center text-primary-blue mb-4">
+                        <div className="h-16 w-16 rounded-2xl bg-primary-blue/10 flex items-center justify-center text-primary-blue mb-4">
                             <MessageSquare className="h-8 w-8" />
                         </div>
                         <div className="space-y-4">
@@ -161,7 +161,7 @@ export default function CustomerGuidePage() {
                 {/* STEP 3: TRACKING */}
                 <section className="grid md:grid-cols-2 gap-12 items-center">
                     <div className="order-2 md:order-1 space-y-8 animate-in fade-in slide-in-from-left-8 duration-700 delay-300">
-                        <div className="h-16 w-16 rounded-[2rem] bg-emerald-500/10 flex items-center justify-center text-emerald-600 mb-4">
+                        <div className="h-16 w-16 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-600 mb-4">
                             <Truck className="h-8 w-8" />
                         </div>
                         <div className="space-y-4">
@@ -171,7 +171,7 @@ export default function CustomerGuidePage() {
                             </p>
                         </div>
                         <div className="space-y-6">
-                            <div className="p-6 rounded-3xl bg-primary-blue/5 border border-primary-blue/10">
+                            <div className="p-6 rounded-2xl bg-primary-blue/5 border border-primary-blue/10">
                                 <h4 className="font-bold text-primary-blue mb-4">Tracking States</h4>
                                 <div className="space-y-3">
                                     <div className="flex items-center justify-between text-sm">
@@ -195,8 +195,8 @@ export default function CustomerGuidePage() {
                             </Link>
                         </div>
                     </div>
-                    <div className="order-1 md:order-2 bg-slate-50 rounded-[3rem] p-8 md:p-12 aspect-square md:aspect-auto flex items-center justify-center relative overflow-hidden">
-                        <div className="w-full max-w-sm bg-white rounded-3xl shadow-xl shadow-primary-blue/10 overflow-hidden border border-primary-blue/10">
+                    <div className="order-1 md:order-2 bg-slate-50 rounded-2xl p-8 md:p-12 aspect-square md:aspect-auto flex items-center justify-center relative overflow-hidden">
+                        <div className="w-full max-w-sm bg-white rounded-2xl shadow-xl shadow-primary-blue/10 overflow-hidden border border-primary-blue/10">
                             <div className="bg-primary-blue p-4 flex items-center justify-between text-white">
                                 <span className="text-xs font-bold uppercase tracking-widest">Tracking Details</span>
                                 <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
@@ -224,7 +224,7 @@ export default function CustomerGuidePage() {
                     </div>
                 </section>
 
-                <section className="bg-primary-blue rounded-[3rem] p-12 md:p-24 text-center text-white relative overflow-hidden">
+                <section className="bg-primary-blue rounded-2xl p-12 md:p-24 text-center text-white relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-16 -mt-16 blur-3xl opacity-50" />
                     <div className="absolute bottom-0 left-0 w-48 h-48 bg-primary-orange/20 rounded-full -ml-12 -mb-12 blur-2xl opacity-50" />
                     <div className="relative z-10 max-w-2xl mx-auto space-y-8">

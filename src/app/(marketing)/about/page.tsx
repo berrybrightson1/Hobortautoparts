@@ -44,7 +44,7 @@ export default function AboutPage() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.4, delay: i * 0.05 }}
-                            className="p-6 rounded-[2rem] bg-white border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col items-center text-center group"
+                            className="p-6 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col items-center text-center group"
                         >
                             <div className={`h-12 w-12 rounded-xl ${item.bg} ${item.color} flex items-center justify-center mb-4 group-hover:scale-105 transition-transform`}>
                                 <item.icon className="h-6 w-6" />
@@ -62,7 +62,7 @@ export default function AboutPage() {
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
                     viewport={{ once: true }}
-                    className="max-w-6xl mx-auto rounded-[3rem] bg-primary-blue p-8 md:p-16 relative overflow-hidden text-white"
+                    className="max-w-6xl mx-auto rounded-2xl bg-primary-blue p-8 md:p-16 relative overflow-hidden text-white"
                 >
                     <div className="relative z-10 grid lg:grid-cols-5 gap-12 items-center">
                         <div className="lg:col-span-3 space-y-6">
@@ -76,7 +76,7 @@ export default function AboutPage() {
                                 Many cars in Ghana remain stuck at mechanic shops for weeks because parts are either unavailable or overpriced.
                             </p>
                         </div>
-                        <div className="lg:col-span-2 bg-white/5 backdrop-blur-xl rounded-3xl p-8 border border-white/10 space-y-4">
+                        <div className="lg:col-span-2 bg-white/5 backdrop-blur-xl rounded-2xl p-8 border border-white/10 space-y-4">
                             <h3 className="text-xl font-bold tracking-tight uppercase italic leading-tight">"YOU GET THE EXACT PART. GENUINE QUALITY. DELIVERY WITHIN DAYS."</h3>
                             <p className="text-blue-100/40 text-[11px] font-medium leading-relaxed">
                                 We bypass local delays and inflated costs by connecting you directly to verified U.S. sources.
@@ -196,7 +196,7 @@ export default function AboutPage() {
                         </div>
                     </div>
 
-                    <div className="space-y-8 bg-slate-50 p-8 rounded-[2.5rem] border border-slate-100">
+                    <div className="space-y-8 bg-slate-50 p-8 rounded-2xl border border-slate-100">
                         <h2 className="text-xs font-bold text-primary-orange uppercase tracking-[0.2em]">Target Customers</h2>
                         <div className="grid grid-cols-2 gap-y-3 gap-x-6">
                             {[

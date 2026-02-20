@@ -150,7 +150,7 @@ export default function GalleryPage() {
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
-                                className="flex flex-col items-center justify-center h-80 gap-6 rounded-[2rem] border-2 border-dashed border-slate-200 bg-slate-50"
+                                className="flex flex-col items-center justify-center h-80 gap-6 rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50"
                             >
                                 <div className="h-16 w-16 rounded-2xl bg-slate-100 flex items-center justify-center">
                                     <Images className="h-8 w-8 text-slate-200" />
@@ -187,7 +187,7 @@ export default function GalleryPage() {
                                     >
                                         <button
                                             onClick={() => setLightboxIndex(i)}
-                                            className="relative w-full rounded-[1.25rem] overflow-hidden group cursor-zoom-in shadow-sm hover:shadow-xl hover:shadow-slate-200/60 transition-all duration-500 block"
+                                            className="relative w-full rounded-2xl overflow-hidden group cursor-zoom-in shadow-sm hover:shadow-xl hover:shadow-slate-200/60 transition-all duration-500 block"
                                         >
                                             <div className="relative aspect-[4/3]">
                                                 <Image

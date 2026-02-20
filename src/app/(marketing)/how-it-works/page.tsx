@@ -82,7 +82,7 @@ export default function HowItWorksPage() {
                         >
                             {/* Icon Container */}
                             <div className="w-full md:w-1/2 flex justify-center">
-                                <div className={`relative h-48 w-48 rounded-[3rem] ${step.bg} flex items-center justify-center shadow-premium group transform transition-transform hover:rotate-3`}>
+                                <div className={`relative h-48 w-48 rounded-2xl ${step.bg} flex items-center justify-center shadow-premium group transform transition-transform hover:rotate-3`}>
                                     <step.icon className={`h-20 w-20 ${step.color} transition-transform group-hover:scale-110`} />
                                     <div className="absolute -top-4 -right-4 h-12 w-12 rounded-full bg-white border border-slate-100 shadow-sm flex items-center justify-center text-xl font-bold text-primary-blue">
                                         {index + 1}

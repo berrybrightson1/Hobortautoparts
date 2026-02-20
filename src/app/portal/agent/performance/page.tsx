@@ -103,7 +103,7 @@ export default function AgentPerformanceHub() {
             ) : (
                 <div className="grid gap-6 md:grid-cols-3">
                     {achievements.map((item, i) => (
-                        <Card key={i} className="border-slate-100 shadow-xl shadow-slate-200/40 rounded-[2.5rem] bg-white ring-1 ring-slate-100/50 p-4">
+                        <Card key={i} className="border-slate-100 shadow-xl shadow-slate-200/40 rounded-2xl bg-white ring-1 ring-slate-100/50 p-4">
                             <CardHeader className="flex flex-row items-center justify-between pb-2">
                                 <CardTitle className="text-[10px] font-bold uppercase tracking-widest text-slate-500">{item.title}</CardTitle>
                                 <div className={cn("h-10 w-10 rounded-2xl flex items-center justify-center", item.bg, item.color)}>
@@ -119,14 +119,14 @@ export default function AgentPerformanceHub() {
                 </div>
             )}
 
-            <Card className="border-slate-100 shadow-xl shadow-slate-200/40 rounded-[2.5rem] bg-white ring-1 ring-slate-100/50 p-8">
+            <Card className="border-slate-100 shadow-xl shadow-slate-200/40 rounded-2xl bg-white ring-1 ring-slate-100/50 p-8">
                 <CardHeader className="px-0">
                     <CardTitle className="text-2xl font-bold tracking-tight flex items-center gap-3 leading-tight">
                         <Target className="h-6 w-6 text-primary-orange" /> Growth Trajectory
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="px-0 py-10 flex flex-col items-center justify-center text-center space-y-6">
-                    <div className="h-20 w-20 bg-slate-50 rounded-[2rem] flex items-center justify-center">
+                    <div className="h-20 w-20 bg-slate-50 rounded-2xl flex items-center justify-center">
                         <TrendingUp className="h-10 w-10 text-slate-200" />
                     </div>
                     <div className="space-y-2">

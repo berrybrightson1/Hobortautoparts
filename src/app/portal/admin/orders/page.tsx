@@ -179,7 +179,7 @@ export default function AdminOrdersPage() {
                 </div>
             </div>
 
-            <Card className="border-slate-100 shadow-xl shadow-slate-200/40 rounded-3xl overflow-hidden bg-white">
+            <Card className="border-slate-100 shadow-xl shadow-slate-200/40 rounded-2xl overflow-hidden bg-white">
                 <CardHeader className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-50 p-6">
                     <SearchBar
                         value={searchTerm}
@@ -345,7 +345,7 @@ export default function AdminOrdersPage() {
                             {/* Left Column: Details */}
                             <div className="flex-1 p-8 space-y-6 bg-white lg:border-r border-slate-100">
                                 {/* Financial Stats Section */}
-                                <div className="p-6 bg-slate-50/50 rounded-3xl border border-slate-100/50 space-y-6">
+                                <div className="p-6 bg-slate-50/50 rounded-2xl border border-slate-100/50 space-y-6">
                                     <div className="flex items-center gap-3">
                                         <div className="h-8 w-8 rounded-full bg-white flex items-center justify-center border border-slate-100 shadow-sm">
                                             <DollarSign className="h-4 w-4 text-emerald-600" />
@@ -426,7 +426,7 @@ export default function AdminOrdersPage() {
                                 </div>
 
                                 {/* Customer Section */}
-                                <div className="p-6 bg-blue-50/20 rounded-3xl border border-blue-100/50 space-y-6">
+                                <div className="p-6 bg-blue-50/20 rounded-2xl border border-blue-100/50 space-y-6">
                                     <div className="space-y-4">
                                         <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-blue-600">Customer Identity</p>
                                         <div className="flex items-center gap-4">

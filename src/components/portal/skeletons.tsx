@@ -16,7 +16,7 @@ export function StatsSkeleton() {
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="p-8 rounded-[2rem] border border-slate-100 bg-white/50 backdrop-blur-sm shadow-sm space-y-4">
+                <div key={i} className="p-8 rounded-2xl border border-slate-100 bg-white/50 backdrop-blur-sm shadow-sm space-y-4">
                     <Skeleton className="h-10 w-10 rounded-2xl" />
                     <div className="space-y-2">
                         <Skeleton className="h-4 w-24" />
@@ -30,7 +30,7 @@ export function StatsSkeleton() {
 
 export function CardSkeleton() {
     return (
-        <div className="p-8 rounded-[3rem] border border-slate-100 bg-white/80 backdrop-blur-xl shadow-2xl shadow-slate-200/50 space-y-6">
+        <div className="p-8 rounded-2xl border border-slate-100 bg-white/80 backdrop-blur-xl shadow-2xl shadow-slate-200/50 space-y-6">
             <div className="flex items-center gap-4">
                 <Skeleton className="h-14 w-14 rounded-2xl" />
                 <div className="space-y-2">
@@ -53,7 +53,7 @@ export function ListSkeleton() {
     return (
         <div className="space-y-4">
             {[1, 2, 3].map((i) => (
-                <div key={i} className="p-6 rounded-3xl border border-slate-50 bg-white/50 flex items-center justify-between gap-4">
+                <div key={i} className="p-6 rounded-2xl border border-slate-50 bg-white/50 flex items-center justify-between gap-4">
                     <div className="flex items-center gap-4">
                         <Skeleton className="h-12 w-12 rounded-2xl" />
                         <div className="space-y-2">

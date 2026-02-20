@@ -107,7 +107,7 @@ export default function AdminApprovalsPage() {
             </div>
 
             <div className="grid md:grid-cols-3 gap-6">
-                <Card className="md:col-span-2 border-slate-100 shadow-xl shadow-slate-200/40 rounded-3xl overflow-hidden bg-white">
+                <Card className="md:col-span-2 border-slate-100 shadow-xl shadow-slate-200/40 rounded-2xl overflow-hidden bg-white">
                     <CardHeader className="border-b border-slate-50 p-6">
                         <CardTitle className="flex items-center gap-2 text-xl font-bold">
                             <UserCheck className="h-5 w-5 text-blue-600" /> Agent Network Status
@@ -167,7 +167,7 @@ export default function AdminApprovalsPage() {
                     </CardContent>
                 </Card>
 
-                <Card className="border-slate-100 shadow-xl shadow-slate-200/40 rounded-3xl overflow-hidden bg-slate-900 text-white h-fit">
+                <Card className="border-slate-100 shadow-xl shadow-slate-200/40 rounded-2xl overflow-hidden bg-slate-900 text-white h-fit">
                     <CardHeader className="p-6 pb-2">
                         <CardTitle className="flex items-center gap-2 text-lg font-bold text-white">
                             <ShieldAlert className="h-5 w-5 text-orange-500" /> Pending Actions

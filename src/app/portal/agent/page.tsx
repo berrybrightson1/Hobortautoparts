@@ -283,7 +283,7 @@ export default function AgentDashboard() {
             <div className="grid gap-4 md:gap-6 grid-cols-2 lg:grid-cols-4">
                 {stats.map((stat, i) => (
                     <Card key={i} className={cn(
-                        "border-slate-100 shadow-xl shadow-slate-200/40 rounded-[2rem] overflow-hidden transition-all duration-300 hover:-translate-y-1 bg-white ring-1 ring-slate-100/50",
+                        "border-slate-100 shadow-xl shadow-slate-200/40 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 bg-white ring-1 ring-slate-100/50",
                         i === 0 ? "hover:border-blue-100" :
                             i === 1 ? "hover:border-orange-100" :
                                 i === 2 ? "hover:border-purple-100" : "hover:border-green-100"
@@ -325,7 +325,7 @@ export default function AgentDashboard() {
             </div>
 
             {/* Sourcing Pipeline */}
-            <Card className="border-slate-100 shadow-xl shadow-slate-200/40 rounded-[2rem] md:rounded-[2.5rem] overflow-hidden bg-white ring-1 ring-slate-100/50">
+            <Card className="border-slate-100 shadow-xl shadow-slate-200/40 rounded-2xl md:rounded-2xl overflow-hidden bg-white ring-1 ring-slate-100/50">
                 <CardHeader className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-50 p-6 md:p-10">
                     <div className="space-y-1">
                         <CardTitle className="text-xl md:text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-3">
@@ -463,7 +463,7 @@ export default function AgentDashboard() {
                             {/* Left Column: Details (Scrollable) */}
                             <div className="flex-1 p-8 space-y-6 bg-white lg:border-r border-slate-100">
                                 {/* Vehicle Info Section */}
-                                <div className="p-6 bg-slate-50/50 rounded-3xl border border-slate-100/50 space-y-6">
+                                <div className="p-6 bg-slate-50/50 rounded-2xl border border-slate-100/50 space-y-6">
                                     <div className="flex items-start justify-between">
                                         <div className="space-y-2">
                                             <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-600">Target Vehicle</p>
@@ -490,7 +490,7 @@ export default function AgentDashboard() {
 
                                 {/* Quote Visibility */}
                                 {selectedRequest?.quotes?.[0] && (
-                                    <div className="p-6 bg-slate-950 rounded-3xl shadow-xl space-y-4">
+                                    <div className="p-6 bg-slate-950 rounded-2xl shadow-xl space-y-4">
                                         <div className="flex items-center justify-between">
                                             <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-primary-orange">Active Quote Details</p>
                                             <Badge variant="outline" className="border-primary-orange/20 text-primary-orange text-[9px] uppercase tracking-widest">{selectedRequest.status}</Badge>
@@ -510,7 +510,7 @@ export default function AgentDashboard() {
 
                                 {/* Data Sections */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div className="p-6 bg-slate-50/30 rounded-3xl border border-slate-100/50 space-y-4">
+                                    <div className="p-6 bg-slate-50/30 rounded-2xl border border-slate-100/50 space-y-4">
                                         <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-600">Customer</p>
                                         <div className="flex items-center gap-4">
                                             <div className="h-10 w-10 rounded-full bg-slate-900 flex items-center justify-center text-white font-semibold text-[10px] shadow-lg">
@@ -520,7 +520,7 @@ export default function AgentDashboard() {
                                         </div>
                                     </div>
 
-                                    <div className="p-6 bg-slate-50/30 rounded-3xl border border-slate-100/50 space-y-4">
+                                    <div className="p-6 bg-slate-50/30 rounded-2xl border border-slate-100/50 space-y-4">
                                         <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-600">VIN Number</p>
                                         <div className="h-12 rounded-xl bg-slate-950 flex items-center px-5 shadow-xl">
                                             <p className="font-mono font-medium text-white tracking-[0.1em] text-xs">
@@ -531,7 +531,7 @@ export default function AgentDashboard() {
                                 </div>
 
                                 {/* Agent Protocol */}
-                                <div className="p-6 bg-blue-50/30 rounded-3xl border border-blue-100/50 flex flex-col gap-6">
+                                <div className="p-6 bg-blue-50/30 rounded-2xl border border-blue-100/50 flex flex-col gap-6">
                                     <div className="flex gap-6">
                                         <div className="h-10 w-10 rounded-xl bg-white flex items-center justify-center shrink-0 shadow-sm border border-blue-100">
                                             <Info className="h-5 w-5 text-blue-500" />

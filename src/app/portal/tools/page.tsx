@@ -47,7 +47,7 @@ export default function ToolsPage() {
 
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
                 {tools.map((tool) => (
-                    <Card key={tool.name} className="border-slate-100 shadow-xl shadow-slate-200/40 hover:shadow-2xl hover:shadow-slate-200/50 transition-all duration-300 transform hover:-translate-y-1 cursor-pointer group rounded-[2.5rem] overflow-hidden bg-white">
+                    <Card key={tool.name} className="border-slate-100 shadow-xl shadow-slate-200/40 hover:shadow-2xl hover:shadow-slate-200/50 transition-all duration-300 transform hover:-translate-y-1 cursor-pointer group rounded-2xl overflow-hidden bg-white">
                         <CardHeader className="p-8 pb-4">
                             <div className="flex justify-between items-start">
                                 <div className="h-14 w-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center group-hover:bg-primary-blue group-hover:text-white transition-all duration-300 shadow-inner group-hover:shadow-lg group-hover:shadow-blue-900/20">
@@ -72,7 +72,7 @@ export default function ToolsPage() {
                 ))}
 
                 {/* Coming Soon Card */}
-                <Card className="border-2 border-dashed border-slate-200 shadow-none bg-slate-50/50 flex flex-col items-center justify-center text-center p-8 rounded-[2.5rem] hover:bg-slate-50 hover:border-slate-300 transition-colors cursor-pointer group">
+                <Card className="border-2 border-dashed border-slate-200 shadow-none bg-slate-50/50 flex flex-col items-center justify-center text-center p-8 rounded-2xl hover:bg-slate-50 hover:border-slate-300 transition-colors cursor-pointer group">
                     <div className="h-14 w-14 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-6 group-hover:scale-110 transition-transform duration-300">
                         <Plus className="h-6 w-6" />
                     </div>

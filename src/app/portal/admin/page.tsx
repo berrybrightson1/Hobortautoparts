@@ -170,7 +170,7 @@ export default function AdminPortal() {
                                     stat.label === "Sourcing Success" ? "/portal/admin/orders" : "#"
                         }
                         className={cn(
-                            "p-6 sm:p-8 rounded-[1.5rem] sm:rounded-[2.5rem] border shadow-sm flex items-center justify-between group hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-500 bg-white cursor-pointer active:scale-95",
+                            "p-6 sm:p-8 rounded-2xl sm:rounded-2xl border shadow-sm flex items-center justify-between group hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-500 bg-white cursor-pointer active:scale-95",
                             stat.label.includes("Revenue") ? "hover:border-green-100" :
                                 stat.label.includes("Users") ? "hover:border-blue-100" :
                                     "hover:border-orange-100"
@@ -209,13 +209,13 @@ export default function AdminPortal() {
                     categories={["requests", "completed"]}
                     colors={["#3b82f6", "#10b981"]}
                     type="bar"
-                    className="rounded-[2.5rem] shadow-xl shadow-slate-200/40 border-slate-100"
+                    className="rounded-2xl shadow-xl shadow-slate-200/40 border-slate-100"
                 />
             </div>
 
             <div className="grid grid-cols-1 gap-8">
                 {/* System Activity */}
-                <div className="bg-white rounded-[1.5rem] sm:rounded-[2.5rem] border border-slate-100 p-6 sm:p-8 shadow-xl shadow-slate-200/40">
+                <div className="bg-white rounded-2xl sm:rounded-2xl border border-slate-100 p-6 sm:p-8 shadow-xl shadow-slate-200/40">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                         <h3 className="text-xl font-semibold text-slate-900 flex items-center gap-3">
                             <Activity className="h-5 w-5 sm:h-6 sm:w-6 text-primary-orange" /> Real-time Activity
@@ -230,7 +230,7 @@ export default function AdminPortal() {
                                 <Link
                                     key={item.id}
                                     href={`/portal/admin/requests?id=${item.id}`}
-                                    className="flex items-start gap-4 p-4 hover:bg-slate-50 rounded-3xl transition-colors border border-transparent hover:border-slate-100 group cursor-pointer"
+                                    className="flex items-start gap-4 p-4 hover:bg-slate-50 rounded-2xl transition-colors border border-transparent hover:border-slate-100 group cursor-pointer"
                                 >
                                     <div className="h-12 w-12 rounded-2xl bg-blue-50/50 flex items-center justify-center shrink-0 group-hover:bg-white group-hover:shadow-md transition-all">
                                         <Bell className="h-5 w-5 text-blue-500" />

@@ -16,6 +16,7 @@ CREATE TABLE profiles (
   id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
   role user_role DEFAULT 'customer',
   full_name TEXT,
+  email TEXT,
   phone_number TEXT,
   country TEXT DEFAULT 'Ghana',
   avatar_url TEXT,
@@ -133,16 +134,18 @@ CREATE POLICY "Users can update own profile." ON profiles FOR UPDATE USING (auth
 -- Sourcing Requests: View own, Admin view all
 CREATE POLICY "Users can view own requests." ON sourcing_requests FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "Users can create requests." ON sourcing_requests FOR INSERT WITH CHECK (auth.uid() = user_id);
--- (Admin policies would be added here, usually checking if auth.uid() is in a whitelist or has 'admin' role)
+CREATE POLICY "Users can update own pending requests." ON sourcing_requests FOR UPDATE USING (auth.uid() = user_id AND status = 'pending');
+CREATE POLICY "Agents can update assigned pending requests." ON sourcing_requests FOR UPDATE USING (auth.uid() = agent_id AND status = 'pending');
 
 -- Automatic Profile Creation Trigger
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO public.profiles (id, full_name, role)
+  INSERT INTO public.profiles (id, full_name, email, role)
   VALUES (
     NEW.id, 
     NEW.raw_user_meta_data->>'full_name', 
+    NEW.email,
     COALESCE(NEW.raw_user_meta_data->>'role', 'customer')
   );
   RETURN NEW;

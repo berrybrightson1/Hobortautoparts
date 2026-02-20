@@ -12,13 +12,13 @@ export default function SuspendedPage() {
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="max-w-xl w-full bg-white rounded-[3rem] shadow-2xl overflow-hidden border border-slate-100"
+                className="max-w-xl w-full bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-100"
             >
                 {/* Header Decoration */}
                 <div className="h-4 w-full bg-red-500" />
 
                 <div className="p-10 md:p-16 text-center space-y-8">
-                    <div className="mx-auto h-24 w-24 rounded-[2.5rem] bg-red-50 flex items-center justify-center text-red-600 shadow-inner group">
+                    <div className="mx-auto h-24 w-24 rounded-2xl bg-red-50 flex items-center justify-center text-red-600 shadow-inner group">
                         <ShieldAlert className="h-12 w-12 group-hover:scale-110 transition-transform" />
                     </div>
 
@@ -29,7 +29,7 @@ export default function SuspendedPage() {
                         </p>
                     </div>
 
-                    <div className="bg-slate-50 rounded-3xl p-6 text-left border border-slate-100 space-y-4">
+                    <div className="bg-slate-50 rounded-2xl p-6 text-left border border-slate-100 space-y-4">
                         <div className="flex items-start gap-4">
                             <AlertTriangle className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
                             <p className="text-sm font-medium text-slate-600">

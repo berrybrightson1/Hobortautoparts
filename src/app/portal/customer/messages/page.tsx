@@ -190,7 +190,7 @@ export default function MessagesPage() {
                                             )}
                                         >
                                             <div className={cn(
-                                                "p-4 rounded-3xl text-sm font-medium leading-relaxed shadow-sm",
+                                                "p-4 rounded-2xl text-sm font-medium leading-relaxed shadow-sm",
                                                 isMe
                                                     ? "bg-primary-blue text-white rounded-br-sm"
                                                     : "bg-white border border-slate-100 text-slate-700 rounded-bl-sm"

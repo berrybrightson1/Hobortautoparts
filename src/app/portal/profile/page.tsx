@@ -199,14 +199,14 @@ export default function UnifiedSettingsPage() {
                 </TabsList>
 
                 <TabsContent value="account">
-                    <Card className="border-slate-100 shadow-2xl shadow-slate-200/50 rounded-[2rem] sm:rounded-[3rem] overflow-hidden bg-white/80 backdrop-blur-xl">
+                    <Card className="border-slate-100 shadow-2xl shadow-slate-200/50 rounded-2xl sm:rounded-2xl overflow-hidden bg-white/80 backdrop-blur-xl">
                         <CardHeader className="p-6 sm:p-10 pb-4 sm:pb-6 border-b border-slate-50">
                             <CardTitle className="text-xl sm:text-2xl font-semibold text-slate-900">Profile Details</CardTitle>
                             <CardDescription className="text-slate-500 text-sm sm:text-base">Your official platform representation and core contact data.</CardDescription>
                         </CardHeader>
                         <CardContent className="p-6 sm:p-10 space-y-8 sm:space-y-10">
-                            <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-8 bg-gradient-to-br from-slate-50 to-white p-6 sm:p-8 rounded-[1.5rem] sm:rounded-[2rem] border border-slate-100 shadow-sm relative overflow-hidden group">
-                                <div className="h-20 w-20 sm:h-28 sm:w-28 rounded-[1.5rem] sm:rounded-[2rem] bg-gradient-to-br from-primary-blue to-blue-600 flex items-center justify-center text-white border-4 border-white shadow-2xl transition-transform group-hover:scale-105 duration-500 shrink-0">
+                            <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-8 bg-gradient-to-br from-slate-50 to-white p-6 sm:p-8 rounded-2xl sm:rounded-2xl border border-slate-100 shadow-sm relative overflow-hidden group">
+                                <div className="h-20 w-20 sm:h-28 sm:w-28 rounded-2xl sm:rounded-2xl bg-gradient-to-br from-primary-blue to-blue-600 flex items-center justify-center text-white border-4 border-white shadow-2xl transition-transform group-hover:scale-105 duration-500 shrink-0">
                                     <User className="h-10 w-10 sm:h-12 sm:w-12" />
                                 </div>
                                 <div className="space-y-2 relative z-10 text-center sm:text-left">
@@ -241,7 +241,7 @@ export default function UnifiedSettingsPage() {
                 </TabsContent>
 
                 <TabsContent value="security">
-                    <Card className="border-slate-100 shadow-2xl shadow-slate-200/50 rounded-[3rem] overflow-hidden bg-white/80 backdrop-blur-xl">
+                    <Card className="border-slate-100 shadow-2xl shadow-slate-200/50 rounded-2xl overflow-hidden bg-white/80 backdrop-blur-xl">
                         <CardHeader className="p-6 sm:p-10 pb-4 sm:pb-6 border-b border-slate-50">
                             <CardTitle className="text-xl sm:text-2xl font-semibold text-slate-900 flex items-center gap-3">
                                 <Shield className="h-6 w-6 text-emerald-500" /> Security Protocol
@@ -272,7 +272,7 @@ export default function UnifiedSettingsPage() {
                         </CardFooter>
                     </Card>
 
-                    <Card className="border-red-100 shadow-2xl shadow-red-200/20 rounded-[3rem] overflow-hidden bg-white/80 backdrop-blur-xl mt-8">
+                    <Card className="border-red-100 shadow-2xl shadow-red-200/20 rounded-2xl overflow-hidden bg-white/80 backdrop-blur-xl mt-8">
                         <CardHeader className="p-6 sm:p-10 pb-4 sm:pb-6 border-b border-red-50">
                             <CardTitle className="text-xl sm:text-2xl font-semibold text-red-600 flex items-center gap-3">
                                 <Shield className="h-6 w-6 text-red-500" /> Danger Zone
@@ -294,9 +294,9 @@ export default function UnifiedSettingsPage() {
                                             Delete Account
                                         </Button>
                                     </DialogTrigger>
-                                    <DialogContent className="sm:max-w-md rounded-[2.5rem] border-0 shadow-2xl bg-white p-0 gap-0 overflow-hidden">
+                                    <DialogContent className="sm:max-w-md rounded-2xl border-0 shadow-2xl bg-white p-0 gap-0 overflow-hidden">
                                         <div className="p-8 sm:p-10 text-center space-y-6">
-                                            <div className="mx-auto h-20 w-20 rounded-[2rem] bg-red-50 flex items-center justify-center text-red-600 shadow-inner border border-red-100">
+                                            <div className="mx-auto h-20 w-20 rounded-2xl bg-red-50 flex items-center justify-center text-red-600 shadow-inner border border-red-100">
                                                 <Shield className="h-10 w-10" />
                                             </div>
 
@@ -361,9 +361,9 @@ export default function UnifiedSettingsPage() {
                 </TabsContent>
 
                 <TabsContent value="hub">
-                    <Card className="border-slate-100 shadow-2xl shadow-slate-200/50 rounded-[3rem] overflow-hidden bg-white/80 backdrop-blur-xl min-h-[400px] flex items-center justify-center">
+                    <Card className="border-slate-100 shadow-2xl shadow-slate-200/50 rounded-2xl overflow-hidden bg-white/80 backdrop-blur-xl min-h-[400px] flex items-center justify-center">
                         <CardContent className="p-10 text-center space-y-6">
-                            <div className="h-24 w-24 rounded-[2rem] bg-indigo-50 flex items-center justify-center text-indigo-600 mx-auto shadow-inner border border-indigo-100">
+                            <div className="h-24 w-24 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 mx-auto shadow-inner border border-indigo-100">
                                 <Globe className="h-10 w-10 animate-pulse" />
                             </div>
                             <div className="space-y-2">
@@ -378,9 +378,9 @@ export default function UnifiedSettingsPage() {
                 </TabsContent>
 
                 <TabsContent value="system">
-                    <Card className="border-slate-100 shadow-2xl shadow-slate-200/50 rounded-[3rem] overflow-hidden bg-[#0c1425] text-white min-h-[400px] flex items-center justify-center">
+                    <Card className="border-slate-100 shadow-2xl shadow-slate-200/50 rounded-2xl overflow-hidden bg-[#0c1425] text-white min-h-[400px] flex items-center justify-center">
                         <CardContent className="p-10 text-center space-y-6">
-                            <div className="h-24 w-24 rounded-[2rem] bg-orange-600/10 flex items-center justify-center text-orange-500 mx-auto border border-orange-500/20 shadow-2xl shadow-orange-500/10">
+                            <div className="h-24 w-24 rounded-2xl bg-orange-600/10 flex items-center justify-center text-orange-500 mx-auto border border-orange-500/20 shadow-2xl shadow-orange-500/10">
                                 <Server className="h-10 w-10 animate-bounce" />
                             </div>
                             <div className="space-y-2">

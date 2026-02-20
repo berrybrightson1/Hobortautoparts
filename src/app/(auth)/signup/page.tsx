@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { usePortalStore } from "@/lib/store"
 import { useAuth } from "@/components/auth/auth-provider"
 import { Button } from "@/components/ui/button"
@@ -13,9 +13,21 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ArrowRight, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import { supabase } from "@/lib/supabase"
+import { sendWelcomeEmailAction } from "@/app/actions/email-actions"
+import { Suspense } from "react"
 
 export default function SignupPage() {
+    return (
+        <Suspense fallback={<div className="flex items-center justify-center p-12"><Loader2 className="h-8 w-8 animate-spin text-primary-blue/20" /></div>}>
+            <SignupContent />
+        </Suspense>
+    )
+}
+
+function SignupContent() {
     const router = useRouter()
+    const searchParams = useSearchParams()
+    const returnTo = searchParams.get("returnTo")
     const { setRole } = usePortalStore()
     const [isLoading, setIsLoading] = useState(false)
     const [activeTab, setActiveTab] = useState("customer")
@@ -37,11 +49,16 @@ export default function SignupPage() {
             // Sync store
             setRole(userRole)
 
-            if (userRole === 'admin') router.push("/portal/admin")
-            else if (userRole === 'agent') router.push("/portal/agent")
-            else router.push("/portal/customer")
+            // Honor returnTo if present, otherwise role-based redirect
+            if (returnTo) {
+                router.push(returnTo)
+            } else {
+                if (userRole === 'admin') router.push("/portal/admin")
+                else if (userRole === 'agent') router.push("/portal/agent")
+                else router.push("/portal/customer")
+            }
         }
-    }, [profile, loading, router, setRole])
+    }, [profile, loading, router, setRole, returnTo])
 
     async function onSubmit(event: React.SyntheticEvent) {
         event.preventDefault()
@@ -80,6 +97,12 @@ export default function SignupPage() {
                 toast.success("Account created successfully!", {
                     description: "Welcome to Hobort Auto Parts Express!"
                 })
+                // Send Welcome Email
+                try {
+                    await sendWelcomeEmailAction(email, firstName)
+                } catch (e) {
+                    console.warn("Welcome email failed (non-blocking):", e)
+                }
             }
 
             setRole(activeTab === 'agent' ? 'agent' : 'customer')

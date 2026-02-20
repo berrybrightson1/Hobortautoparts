@@ -39,7 +39,7 @@ export function CommandSearch() {
             </button>
 
             <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent className="max-w-4xl p-0 overflow-hidden border-none shadow-[0_48px_160px_-24px_rgba(0,0,0,0.3)] rounded-[3.5rem] top-[12%] bg-white/90 backdrop-blur-3xl ring-1 ring-white/40">
+                <DialogContent className="max-w-4xl p-0 overflow-hidden border-none shadow-[0_48px_160px_-24px_rgba(0,0,0,0.3)] rounded-2xl top-[12%] bg-white/90 backdrop-blur-3xl ring-1 ring-white/40">
                     <DialogTitle className="sr-only">Universal Search</DialogTitle>
                     <div className="flex flex-col min-h-[500px] max-h-[750px] relative">
                         {/* Search Input Area */}
@@ -72,10 +72,10 @@ export function CommandSearch() {
                                             ].map((action) => (
                                                 <button
                                                     key={action.label}
-                                                    className="group flex flex-col gap-4 p-8 rounded-[2.5rem] bg-slate-50/50 border border-slate-100/50 hover:bg-white hover:shadow-2xl hover:shadow-blue-500/10 transition-all text-left relative overflow-hidden"
+                                                    className="group flex flex-col gap-4 p-8 rounded-2xl bg-slate-50/50 border border-slate-100/50 hover:bg-white hover:shadow-2xl hover:shadow-blue-500/10 transition-all text-left relative overflow-hidden"
                                                 >
                                                     <div className={cn(
-                                                        "h-16 w-16 rounded-3xl flex items-center justify-center transition-transform group-hover:scale-110 duration-500 shadow-sm",
+                                                        "h-16 w-16 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 duration-500 shadow-sm",
                                                         action.color === 'blue' ? "bg-blue-600 text-white shadow-blue-500/20" : "bg-orange-500 text-white shadow-orange-500/20"
                                                     )}>
                                                         <action.icon className="h-8 w-8" />

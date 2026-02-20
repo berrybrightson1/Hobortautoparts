@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Plus, Package, Car, Clock, ChevronRight, Inbox, Loader2, Activity, RefreshCw, Copy as CopyIcon, MessageSquare, ArrowRight, Hash } from "lucide-react"
+import { Plus, Package, Car, Clock, ChevronRight, Inbox, Loader2, Activity, RefreshCw, Copy as CopyIcon, MessageSquare, ArrowRight, Hash, Pencil, Calendar, ShieldCheck, Info, CreditCard, DollarSign, X, Truck, AlertCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/components/auth/auth-provider"
 import { useState, useEffect } from "react"
@@ -12,10 +12,8 @@ import { format } from "date-fns"
 import { useRouter } from "next/navigation"
 import { ResponsiveModal } from "@/components/ui/responsive-modal"
 import { toast } from "sonner"
-import { ShieldCheck, Info, CreditCard, DollarSign } from "lucide-react"
 import { StatsSkeleton, CardSkeleton, Skeleton } from "@/components/portal/skeletons"
 import { FeedbackPanel } from "@/components/portal/feedback-panel"
-import { X, Truck, AlertCircle } from "lucide-react"
 import { getShipmentByOrderId } from "@/app/actions/shipment-actions"
 import { ShipmentTimeline } from "@/components/portal/shipment-timeline"
 import { sendNotificationAction, notifyAdminsAction } from "@/app/actions/notification-actions"
@@ -293,7 +291,7 @@ export default function CustomerDashboard() {
                         { label: "Offers Ready", count: stats.offers, icon: DollarSign, color: "orange" },
                         { label: "In Transit", count: stats.transit, icon: Truck, color: "emerald" }
                     ].map((s, i) => (
-                        <Card key={i} className="border-slate-100 shadow-xl shadow-slate-200/30 rounded-3xl overflow-hidden bg-white/80 backdrop-blur-sm group hover:scale-[1.02] transition-all">
+                        <Card key={i} className="border-slate-100 shadow-xl shadow-slate-200/30 rounded-2xl overflow-hidden bg-white/80 backdrop-blur-sm group hover:scale-[1.02] transition-all">
                             <CardContent className="p-6 flex items-center gap-4">
                                 <div className={cn(
                                     "h-14 w-14 rounded-2xl flex items-center justify-center border shadow-sm",
@@ -315,7 +313,7 @@ export default function CustomerDashboard() {
 
             {/* PROMINENT TRACKING NUMBER CARD */}
             {orders.some(o => getTrackingInfo(o).hasTracking) && (
-                <Card className="bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 border-none shadow-2xl shadow-blue-900/30 rounded-[2rem] overflow-hidden relative group">
+                <Card className="bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 border-none shadow-2xl shadow-blue-900/30 rounded-2xl overflow-hidden relative group">
                     {/* Decorative elements */}
                     <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
                     <div className="absolute bottom-0 left-0 w-48 h-48 bg-primary-orange/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-2xl" />
@@ -399,8 +397,8 @@ export default function CustomerDashboard() {
                                 </div>
                             </div>
                         ) : error ? (
-                            <div className="flex flex-col items-center justify-center py-20 bg-red-50 rounded-[3rem] border border-red-100 gap-6">
-                                <div className="h-20 w-20 rounded-3xl bg-white flex items-center justify-center text-red-500 shadow-sm border border-red-100">
+                            <div className="flex flex-col items-center justify-center py-20 bg-red-50 rounded-2xl border border-red-100 gap-6">
+                                <div className="h-20 w-20 rounded-2xl bg-white flex items-center justify-center text-red-500 shadow-sm border border-red-100">
                                     <AlertCircle className="h-10 w-10" />
                                 </div>
                                 <div className="text-center space-y-2">
@@ -418,7 +416,7 @@ export default function CustomerDashboard() {
                         ) : paginatedOrders.length > 0 ? (
                             <div className="space-y-4">
                                 {paginatedOrders.map((order) => (
-                                    <Card key={order.id} className="border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden hover:shadow-2xl hover:shadow-slate-200/50 transition-all duration-300 group rounded-[2rem] md:rounded-[2.5rem] bg-white ring-1 ring-slate-100/50">
+                                    <Card key={order.id} className="border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden hover:shadow-2xl hover:shadow-slate-200/50 transition-all duration-300 group rounded-2xl md:rounded-2xl bg-white ring-1 ring-slate-100/50">
                                         <CardContent className="p-0">
                                             <div className="flex flex-col sm:flex-row">
                                                 {/* Status Indicator Strip */}
@@ -474,6 +472,16 @@ export default function CustomerDashboard() {
                                                     </div>
 
                                                     <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                                                        {order.status === 'pending' && (
+                                                            <Button
+                                                                onClick={() => router.push(`/portal/customer/requests/${order.id}/edit`)}
+                                                                variant="outline"
+                                                                className="w-full sm:w-auto rounded-xl border-slate-200 text-[10px] font-semibold uppercase tracking-widest transition-all active:scale-95 shrink-0 h-12 sm:h-10 hover:text-primary-orange hover:border-orange-200 hover:bg-orange-50"
+                                                            >
+                                                                <Pencil className="h-3.5 w-3.5 mr-1.5" />
+                                                                Edit
+                                                            </Button>
+                                                        )}
                                                         <Button
                                                             onClick={() => handleViewRequest(order)}
                                                             variant="outline"
@@ -514,8 +522,8 @@ export default function CustomerDashboard() {
                                 )}
                             </div>
                         ) : (
-                            <div className="flex flex-col items-center justify-center py-20 bg-slate-50/50 rounded-[3rem] border border-dashed border-slate-200 gap-6">
-                                <div className="h-24 w-24 rounded-[2.5rem] bg-white flex items-center justify-center text-slate-200 shadow-xl shadow-slate-200/50">
+                            <div className="flex flex-col items-center justify-center py-20 bg-slate-50/50 rounded-2xl border border-dashed border-slate-200 gap-6">
+                                <div className="h-24 w-24 rounded-2xl bg-white flex items-center justify-center text-slate-200 shadow-xl shadow-slate-200/50">
                                     <Inbox className="h-10 w-10" />
                                 </div>
                                 <div className="text-center space-y-2">
@@ -549,7 +557,7 @@ export default function CustomerDashboard() {
                 </div>
 
 
-                <Card className="bg-gradient-to-br from-blue-50 to-slate-50 border-blue-100 shadow-xl shadow-blue-100/50 rounded-[2rem] md:rounded-[2.5rem] overflow-hidden relative group">
+                <Card className="bg-gradient-to-br from-blue-50 to-slate-50 border-blue-100 shadow-xl shadow-blue-100/50 rounded-2xl md:rounded-2xl overflow-hidden relative group">
                     {/* Decorative background effects */}
                     <div className="absolute top-0 right-0 w-32 h-32 bg-primary-orange/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl group-hover:bg-primary-orange/20 transition-colors" />
                     <div className="absolute bottom-0 left-0 w-24 h-24 bg-primary-blue/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-2xl group-hover:bg-primary-blue/20 transition-colors" />
@@ -584,7 +592,7 @@ export default function CustomerDashboard() {
                             {/* Left Column: Details (Scrollable) */}
                             <div className="flex-1 p-8 space-y-6 bg-white lg:border-r border-slate-100">
                                 {/* Status Section */}
-                                <div className="p-6 bg-slate-50/50 rounded-3xl border border-slate-100/50 space-y-4">
+                                <div className="p-6 bg-slate-50/50 rounded-2xl border border-slate-100/50 space-y-4">
                                     <div className="flex items-center justify-between">
                                         <div className="space-y-2">
                                             <p className="text-[10px] font-medium text-slate-600 uppercase tracking-[0.2em]">Sourcing Progress</p>
@@ -599,7 +607,7 @@ export default function CustomerDashboard() {
                                 </div>
 
                                 {quote ? (
-                                    <div className="p-6 bg-slate-50/30 rounded-3xl border border-slate-100/50 space-y-8">
+                                    <div className="p-6 bg-slate-50/30 rounded-2xl border border-slate-100/50 space-y-8">
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div className="p-5 bg-white rounded-2xl border border-slate-100/50 shadow-sm space-y-1">
                                                 <p className="text-[10px] font-medium text-slate-600 uppercase tracking-[0.2em]">Item price</p>
@@ -621,7 +629,7 @@ export default function CustomerDashboard() {
                                         </div>
                                     </div>
                                 ) : (
-                                    <div className="p-6 bg-blue-50/30 rounded-3xl border border-blue-100/50 flex items-start gap-4">
+                                    <div className="p-6 bg-blue-50/30 rounded-2xl border border-blue-100/50 flex items-start gap-4">
                                         <div className="h-10 w-10 rounded-full bg-white flex items-center justify-center shrink-0 shadow-sm border border-blue-100">
                                             <Info className="h-5 w-5 text-blue-500" />
                                         </div>
@@ -635,7 +643,7 @@ export default function CustomerDashboard() {
                                 )}
 
                                 {quote?.notes && (
-                                    <div className="p-6 bg-slate-50/20 rounded-3xl border border-slate-100/50 space-y-3">
+                                    <div className="p-6 bg-slate-50/20 rounded-2xl border border-slate-100/50 space-y-3">
                                         <p className="text-[10px] font-medium text-slate-600 uppercase tracking-[0.2em]">Agent Notes</p>
                                         <div className="text-base font-normal text-slate-600 leading-relaxed italic max-w-2xl">
                                             "{quote.notes}"
@@ -645,7 +653,7 @@ export default function CustomerDashboard() {
 
                                 {/* Unavailable Alert */}
                                 {selectedRequest?.status === 'unavailable' && (
-                                    <div className="p-6 bg-red-50 rounded-3xl border border-red-100 flex items-start gap-4">
+                                    <div className="p-6 bg-red-50 rounded-2xl border border-red-100 flex items-start gap-4">
                                         <div className="h-12 w-12 rounded-full bg-white flex items-center justify-center shrink-0 shadow-sm border border-red-100">
                                             <AlertCircle className="h-6 w-6 text-red-500" />
                                         </div>
@@ -665,7 +673,7 @@ export default function CustomerDashboard() {
 
                                 {/* Shipment Tracking Timeline */}
                                 {(shipment || isLoadingShipment) && (
-                                    <div className="p-6 bg-white rounded-3xl border border-slate-100 shadow-sm space-y-4">
+                                    <div className="p-6 bg-white rounded-2xl border border-slate-100 shadow-sm space-y-4">
                                         <div className="flex items-center justify-between">
                                             <div className="space-y-1">
                                                 <p className="text-[10px] font-bold text-blue-600 uppercase tracking-[0.2em]">Live Tracking</p>
@@ -746,24 +754,3 @@ export default function CustomerDashboard() {
     )
 }
 
-function Calendar(props: any) {
-    return (
-        <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
-            <line x1="16" x2="16" y1="2" y2="6" />
-            <line x1="8" x2="8" y1="2" y2="6" />
-            <line x1="3" x2="21" y1="10" />
-        </svg>
-    )
-}

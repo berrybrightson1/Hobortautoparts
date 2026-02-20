@@ -8,7 +8,7 @@ import Link from "next/link"
 export function PendingApproval() {
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 p-4">
-            <Card className="max-w-lg w-full shadow-2xl border-0 rounded-3xl overflow-hidden">
+            <Card className="max-w-lg w-full shadow-2xl border-0 rounded-2xl overflow-hidden">
                 <div className="bg-gradient-to-r from-amber-500 to-orange-500 p-1">
                     <div className="bg-white rounded-t-[1.4rem]">
                         <CardContent className="pt-10 pb-8 px-6 text-center space-y-5">

@@ -66,7 +66,7 @@ export default function ResetPasswordPage() {
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="max-w-md w-full bg-white rounded-[2.5rem] p-12 shadow-2xl text-center space-y-8"
+                    className="max-w-md w-full bg-white rounded-2xl p-12 shadow-2xl text-center space-y-8"
                 >
                     <div className="mx-auto h-20 w-20 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500">
                         <CheckCircle2 className="h-10 w-10" />
@@ -99,7 +99,7 @@ export default function ResetPasswordPage() {
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-white py-10 px-8 rounded-[2.5rem] shadow-2xl shadow-slate-200/50 border border-slate-100"
+                    className="bg-white py-10 px-8 rounded-2xl shadow-2xl shadow-slate-200/50 border border-slate-100"
                 >
                     <div className="space-y-8">
                         <div className="space-y-2">

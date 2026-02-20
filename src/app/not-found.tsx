@@ -14,7 +14,7 @@ export default function NotFound() {
             <div className="relative z-10 max-w-lg mx-auto flex flex-col items-center gap-8">
                 <div className="relative">
                     <h1 className="text-[12rem] font-black text-slate-200 leading-none select-none">404</h1>
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-[2.5rem] shadow-xl border border-slate-100 rotate-12 animate-pulse">
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-2xl shadow-xl border border-slate-100 rotate-12 animate-pulse">
                         <PackageSearch className="h-16 w-16 text-primary-orange" />
                     </div>
                 </div>

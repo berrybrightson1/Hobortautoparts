@@ -55,9 +55,9 @@ export default function PlatformGuidePage() {
             {/* Stepper Layout */}
             <div className="grid gap-8 grid-cols-1 md:grid-cols-2">
                 {steps.map((step, i) => (
-                    <Card key={i} className="group border-slate-100 shadow-xl shadow-slate-200/40 rounded-[2.5rem] bg-white ring-1 ring-slate-100/50 overflow-hidden hover:shadow-2xl transition-all duration-500">
+                    <Card key={i} className="group border-slate-100 shadow-xl shadow-slate-200/40 rounded-2xl bg-white ring-1 ring-slate-100/50 overflow-hidden hover:shadow-2xl transition-all duration-500">
                         <CardContent className="p-10 space-y-6">
-                            <div className={cn("h-16 w-16 rounded-[1.5rem] flex items-center justify-center transition-transform group-hover:scale-110 duration-500", step.bg, step.color)}>
+                            <div className={cn("h-16 w-16 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 duration-500", step.bg, step.color)}>
                                 <step.icon className="h-8 w-8" />
                             </div>
                             <div className="space-y-2">
@@ -71,9 +71,9 @@ export default function PlatformGuidePage() {
 
             {/* Premium Features */}
             <div className="grid gap-8">
-                <Card className="group border-slate-100 shadow-xl shadow-slate-200/40 rounded-[2.5rem] bg-white ring-1 ring-slate-100/50 overflow-hidden hover:shadow-2xl transition-all duration-500">
+                <Card className="group border-slate-100 shadow-xl shadow-slate-200/40 rounded-2xl bg-white ring-1 ring-slate-100/50 overflow-hidden hover:shadow-2xl transition-all duration-500">
                     <CardContent className="p-10 flex flex-col md:flex-row items-center gap-8">
-                        <div className="h-20 w-20 rounded-[1.5rem] bg-emerald-50 text-emerald-500 flex items-center justify-center shrink-0">
+                        <div className="h-20 w-20 rounded-2xl bg-emerald-50 text-emerald-500 flex items-center justify-center shrink-0">
                             <Package className="h-10 w-10" />
                         </div>
                         <div className="space-y-2 text-center md:text-left">
@@ -85,12 +85,12 @@ export default function PlatformGuidePage() {
             </div>
 
             {/* FAQ / Support Section */}
-            <Card className="border-none bg-slate-900 rounded-[3rem] overflow-hidden relative">
+            <Card className="border-none bg-slate-900 rounded-2xl overflow-hidden relative">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-primary-orange/20 rounded-full -translate-y-1/2 translate-x-1/2 blur-[80px]" />
                 <div className="absolute bottom-0 left-0 w-48 h-48 bg-primary-blue/20 rounded-full translate-y-1/2 -translate-x-1/2 blur-[60px]" />
 
                 <CardContent className="relative z-10 p-12 md:p-20 text-center space-y-8">
-                    <div className="h-20 w-20 bg-white/10 backdrop-blur-xl rounded-[2rem] flex items-center justify-center mx-auto mb-6 ring-1 ring-white/20">
+                    <div className="h-20 w-20 bg-white/10 backdrop-blur-xl rounded-2xl flex items-center justify-center mx-auto mb-6 ring-1 ring-white/20">
                         <HelpCircle className="h-10 w-10 text-white" />
                     </div>
                     <div className="space-y-4">
@@ -120,7 +120,7 @@ export default function PlatformGuidePage() {
                     { title: "Persistent Support", text: "Your support conversations now stay active across browser refreshes even if you haven't signed in yet.", icon: MessageSquare },
                     { title: "Verified Parts", text: "Every part undergoes a 5-point quality audit before shipping.", icon: ShieldCheck }
                 ].map((tip, i) => (
-                    <div key={i} className="p-8 bg-slate-50 rounded-[2rem] border border-slate-100 flex flex-col gap-4">
+                    <div key={i} className="p-8 bg-slate-50 rounded-2xl border border-slate-100 flex flex-col gap-4">
                         <tip.icon className="h-6 w-6 text-slate-400" />
                         <h4 className="text-lg font-bold text-slate-900">{tip.title}</h4>
                         <p className="text-sm text-slate-500 font-medium leading-relaxed">{tip.text}</p>

@@ -69,7 +69,7 @@ export function Navbar() {
                     </div>
 
                     <Link href="/quote" className="hidden lg:block">
-                        <Button variant="orange" size="sm" className="rounded-full px-6 font-semibold shadow-premium h-10 text-xs text-white">
+                        <Button variant="orange" size="sm" className="rounded-full px-6 font-semibold shadow-premium h-10 text-xs text-white uppercase tracking-widest">
                             New Sourcing Request
                         </Button>
                     </Link>
@@ -110,7 +110,7 @@ export function Navbar() {
             {/* Mobile Menu - Premium Drawer Style */}
             {
                 isOpen && (
-                    <div className="fixed inset-x-4 top-24 z-50 rounded-3xl border border-slate-100 bg-white/95 p-6 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-md md:hidden">
+                    <div className="fixed inset-x-4 top-24 z-50 rounded-2xl border border-slate-100 bg-white/95 p-6 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-md md:hidden">
                         <div className="grid gap-6">
                             {[...NAV_LINKS, { name: "New Sourcing Request", href: "/quote" }, ...(isAuthenticated ? [{ name: "Dashboard", href: "/portal" }] : AUTH_LINKS)].map((link) => {
                                 const isActive = pathname === link.href

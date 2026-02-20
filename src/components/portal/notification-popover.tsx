@@ -147,7 +147,7 @@ export function NotificationPopover() {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 10, scale: 0.95 }}
                         transition={{ duration: 0.2, ease: "easeOut" }}
-                        className="absolute right-0 mt-4 w-[420px] bg-white rounded-[2.5rem] shadow-[0_20px_60px_rgba(0,0,0,0.15)] border border-slate-100 overflow-hidden z-[100]"
+                        className="absolute right-0 mt-4 w-[420px] bg-white rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] border border-slate-100 overflow-hidden z-[100]"
                     >
                         <div className="p-6 border-b border-slate-50 flex items-center justify-between bg-white/80 backdrop-blur-md sticky top-0 z-10">
                             <div className="space-y-1">
@@ -185,7 +185,7 @@ export function NotificationPopover() {
                         <ScrollArea className="max-h-[450px]">
                             {notifications.length === 0 ? (
                                 <div className="py-20 flex flex-col items-center justify-center text-center space-y-4 px-12">
-                                    <div className="h-20 w-20 bg-slate-50 rounded-[2rem] flex items-center justify-center border border-slate-100/50 shadow-inner">
+                                    <div className="h-20 w-20 bg-slate-50 rounded-2xl flex items-center justify-center border border-slate-100/50 shadow-inner">
                                         <Bell className="h-10 w-10 text-slate-200" />
                                     </div>
                                     <div className="space-y-1">
@@ -210,7 +210,7 @@ export function NotificationPopover() {
                                                 setIsOpen(false);
                                             }}
                                             className={cn(
-                                                "p-4 rounded-3xl transition-all duration-300 flex gap-4 cursor-pointer group hover:bg-slate-50 border border-transparent",
+                                                "p-4 rounded-2xl transition-all duration-300 flex gap-4 cursor-pointer group hover:bg-slate-50 border border-transparent",
                                                 !notification.read ? "bg-blue-50/20 border-blue-50/50" : "bg-transparent"
                                             )}
                                         >

@@ -26,7 +26,7 @@ export default function ShippingPolicyPage() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
-                    <div className="bg-primary-blue/5 rounded-3xl p-8 border border-primary-blue/5 group hover:border-primary-blue/20 transition-all">
+                    <div className="bg-primary-blue/5 rounded-2xl p-8 border border-primary-blue/5 group hover:border-primary-blue/20 transition-all">
                         <div className="h-12 w-12 rounded-2xl bg-primary-blue flex items-center justify-center text-white mb-6 shadow-xl shadow-primary-blue/20">
                             <Ship className="h-6 w-6" />
                         </div>
@@ -44,7 +44,7 @@ export default function ShippingPolicyPage() {
                         </div>
                     </div>
 
-                    <div className="bg-primary-orange/5 rounded-3xl p-8 border border-primary-orange/5 group hover:border-primary-orange/20 transition-all">
+                    <div className="bg-primary-orange/5 rounded-2xl p-8 border border-primary-orange/5 group hover:border-primary-orange/20 transition-all">
                         <div className="h-12 w-12 rounded-2xl bg-primary-orange flex items-center justify-center text-white mb-6 shadow-xl shadow-primary-orange/20">
                             <Plane className="h-6 w-6" />
                         </div>
@@ -114,7 +114,7 @@ export default function ShippingPolicyPage() {
                     </div>
                 </div>
 
-                <div className="bg-primary-blue rounded-3xl p-12 text-center space-y-6 shadow-2xl shadow-primary-blue/20">
+                <div className="bg-primary-blue rounded-2xl p-12 text-center space-y-6 shadow-2xl shadow-primary-blue/20">
                     <h2 className="text-3xl font-semibold text-white uppercase tracking-tight">Need urgent sourcing?</h2>
                     <p className="text-blue-100/60 font-medium max-w-md mx-auto">
                         Our US-based logistics team is active 24/7 to ensure your parts move fast across the Atlantic.

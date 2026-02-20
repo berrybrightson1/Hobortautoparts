@@ -89,7 +89,7 @@ export default function ContactPage() {
                                     bg: "bg-slate-50"
                                 }
                             ].map((item, i) => (
-                                <Card key={i} className="border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 rounded-[2rem] overflow-hidden group">
+                                <Card key={i} className="border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 rounded-2xl overflow-hidden group">
                                     <CardContent className="p-6 flex items-start gap-6">
                                         <div className={`h-12 w-12 rounded-2xl ${item.bg} flex items-center justify-center shrink-0 transition-transform group-hover:scale-110`}>
                                             <item.icon className={`h-6 w-6 ${item.color}`} />
@@ -104,7 +104,7 @@ export default function ContactPage() {
                             ))}
                         </div>
 
-                        <div className="p-10 rounded-[3rem] bg-primary-blue text-white relative overflow-hidden group shadow-2xl shadow-primary-blue/20">
+                        <div className="p-10 rounded-2xl bg-primary-blue text-white relative overflow-hidden group shadow-2xl shadow-primary-blue/20">
                             <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
                                 <MessageCircle className="h-24 w-24" />
                             </div>
@@ -126,7 +126,7 @@ export default function ContactPage() {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.6, delay: 0.4 }}
                     >
-                        <Card className="border-emerald-100 shadow-2xl shadow-primary-blue/5 rounded-[3.5rem] overflow-hidden">
+                        <Card className="border-emerald-100 shadow-2xl shadow-primary-blue/5 rounded-2xl overflow-hidden">
                             <div className="bg-emerald-600 p-12 text-white relative overflow-hidden">
                                 <div className="absolute top-0 right-0 p-4 opacity-10">
                                     <MessageCircle className="h-32 w-32 -mr-10 -mt-10" />
@@ -147,7 +147,7 @@ export default function ContactPage() {
                                                 placeholder="Berry Brightson"
                                                 value={formData.name}
                                                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                                className="h-16 rounded-[1.25rem] border-slate-100 bg-slate-50 focus:bg-white focus:ring-emerald-500/20 transition-all font-semibold placeholder:font-medium text-primary-blue"
+                                                className="h-16 rounded-2xl border-slate-100 bg-slate-50 focus:bg-white focus:ring-emerald-500/20 transition-all font-semibold placeholder:font-medium text-primary-blue"
                                             />
                                         </div>
                                         <div className="space-y-3">
@@ -169,7 +169,7 @@ export default function ContactPage() {
                                             placeholder="e.g. Bulk Order Inquiry"
                                             value={formData.subject}
                                             onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                                            className="h-16 rounded-[1.25rem] border-slate-100 bg-slate-50 focus:bg-white focus:ring-emerald-500/20 transition-all font-semibold placeholder:font-medium text-primary-blue"
+                                            className="h-16 rounded-2xl border-slate-100 bg-slate-50 focus:bg-white focus:ring-emerald-500/20 transition-all font-semibold placeholder:font-medium text-primary-blue"
                                         />
                                     </div>
                                     <div className="space-y-3">
@@ -180,10 +180,10 @@ export default function ContactPage() {
                                             placeholder="How can we help you today?"
                                             value={formData.message}
                                             onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                                            className="min-h-[160px] rounded-[1.5rem] border-slate-100 bg-slate-50 focus:bg-white focus:ring-emerald-500/20 transition-all font-semibold p-6 resize-none placeholder:font-medium text-primary-blue"
+                                            className="min-h-[160px] rounded-2xl border-slate-100 bg-slate-50 focus:bg-white focus:ring-emerald-500/20 transition-all font-semibold p-6 resize-none placeholder:font-medium text-primary-blue"
                                         />
                                     </div>
-                                    <Button type="submit" className="w-full bg-primary-orange hover:bg-orange-600 text-white font-bold h-20 rounded-[1.5rem] shadow-xl shadow-primary-orange/20 text-xl transition-all hover:scale-[1.01] active:scale-[0.99] group flex items-center justify-center gap-3">
+                                    <Button type="submit" className="w-full bg-primary-orange hover:bg-orange-600 text-white font-bold h-20 rounded-2xl shadow-xl shadow-primary-orange/20 text-xl transition-all hover:scale-[1.01] active:scale-[0.99] group flex items-center justify-center gap-3">
                                         Send to WhatsApp <MessageCircle className="h-6 w-6 group-hover:rotate-12 transition-transform" />
                                     </Button>
                                 </form>

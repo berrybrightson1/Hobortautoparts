@@ -57,23 +57,42 @@ export default function LandingPage() {
       <HeroSlider />
 
 
-      {/* Step 1: Dynamic Brand Marquee */}
-      <section className="bg-primary-blue py-10 border-y border-white/5 relative overflow-hidden group">
-        <div className="absolute top-0 left-0 w-24 h-full bg-gradient-to-r from-primary-blue to-transparent z-10" />
-        <div className="absolute top-0 right-0 w-24 h-full bg-gradient-to-l from-primary-blue to-transparent z-10" />
+      {/* Brand Logo Marquee */}
+      <section className="bg-primary-blue py-8 border-y border-white/5 relative overflow-hidden pause-on-hover">
+        <div className="absolute top-0 left-0 w-32 h-full bg-gradient-to-r from-primary-blue to-transparent z-10 pointer-events-none" />
+        <div className="absolute top-0 right-0 w-32 h-full bg-gradient-to-l from-primary-blue to-transparent z-10 pointer-events-none" />
 
         <div className="flex overflow-hidden relative">
-          <div className="flex animate-marquee pause-on-hover whitespace-nowrap gap-20 items-center py-2">
-            {[...Array(10)].map((_, i) => (
-              <React.Fragment key={i}>
-                <span className="text-2xl font-black text-white/40 italic tracking-tighter hover:text-white hover:scale-110 transition-all cursor-default">TOYOTA</span>
-                <span className="text-2xl font-black text-white/40 italic tracking-tighter hover:text-white hover:scale-110 transition-all cursor-default">MAZDA</span>
-                <span className="text-2xl font-black text-white/40 italic tracking-tighter hover:text-white hover:scale-110 transition-all cursor-default">HONDA</span>
-                <span className="text-2xl font-black text-white/40 italic tracking-tighter hover:text-white hover:scale-110 transition-all cursor-default">MITSUBISHI</span>
-                <span className="text-2xl font-black text-white/40 italic tracking-tighter hover:text-white hover:scale-110 transition-all cursor-default">LEXUS</span>
-                <span className="text-2xl font-black text-white/40 italic tracking-tighter hover:text-white hover:scale-110 transition-all cursor-default">NISSAN</span>
-                <span className="text-2xl font-black text-white/40 italic tracking-tighter hover:text-white hover:scale-110 transition-all cursor-default">FORD</span>
-              </React.Fragment>
+          <div className="flex animate-marquee gap-16 items-center shrink-0">
+            {[
+              { src: "/Car logos/toyota.png", alt: "Toyota" },
+              { src: "/Car logos/Honda.png", alt: "Honda" },
+              { src: "/Car logos/ford.png", alt: "Ford" },
+              { src: "/Car logos/nissan.png", alt: "Nissan" },
+              { src: "/Car logos/mazda.png", alt: "Mazda" },
+              { src: "/Car logos/lexus.png", alt: "Lexus" },
+              { src: "/Car logos/MITSUBISHI.png", alt: "Mitsubishi" },
+              // duplicate for seamless loop
+              { src: "/Car logos/toyota.png", alt: "Toyota" },
+              { src: "/Car logos/Honda.png", alt: "Honda" },
+              { src: "/Car logos/ford.png", alt: "Ford" },
+              { src: "/Car logos/nissan.png", alt: "Nissan" },
+              { src: "/Car logos/mazda.png", alt: "Mazda" },
+              { src: "/Car logos/lexus.png", alt: "Lexus" },
+              { src: "/Car logos/MITSUBISHI.png", alt: "Mitsubishi" },
+            ].map((logo, i) => (
+              <div
+                key={i}
+                className="shrink-0 flex items-center justify-center h-12 px-4 opacity-40 hover:opacity-90 transition-opacity duration-300"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={logo.src}
+                  alt={logo.alt}
+                  className="h-8 w-auto object-contain logo-white"
+                  draggable={false}
+                />
+              </div>
             ))}
           </div>
         </div>
@@ -93,7 +112,7 @@ export default function LandingPage() {
             ].map((item, i) => (
               <div key={i} className="flex flex-row md:flex-col items-center md:text-center gap-4 md:gap-6 group bg-slate-50/50 md:bg-transparent p-4 md:p-0 rounded-2xl md:rounded-none border border-slate-100/50 md:border-none shadow-sm md:shadow-none">
                 <div className="relative shrink-0">
-                  <div className="h-16 w-16 md:h-24 md:w-24 rounded-2xl md:rounded-[2rem] bg-slate-50 md:bg-slate-50 border border-slate-100 flex items-center justify-center text-primary-blue group-hover:bg-primary-orange group-hover:text-white transition-all duration-500 shadow-sm md:group-hover:scale-110 md:group-hover:rotate-3">
+                  <div className="h-16 w-16 md:h-24 md:w-24 rounded-2xl md:rounded-2xl bg-slate-50 md:bg-slate-50 border border-slate-100 flex items-center justify-center text-primary-blue group-hover:bg-primary-orange group-hover:text-white transition-all duration-500 shadow-sm md:group-hover:scale-110 md:group-hover:rotate-3">
                     <item.icon className="h-6 w-6 md:h-10 md:w-10" />
                   </div>
                   <div className="hidden md:flex absolute -bottom-2 -right-2 h-10 w-10 rounded-full bg-white border border-slate-100 items-center justify-center text-xs font-semibold text-primary-blue shadow-sm">
@@ -201,7 +220,7 @@ export default function LandingPage() {
                 {testimonials.slice(testimonialPage * itemsPerPage, (testimonialPage * itemsPerPage) + itemsPerPage).map((testimonial, i) => (
                   <div
                     key={i}
-                    className="relative min-h-[280px] w-full bg-slate-50/50 rounded-[3rem] border border-white p-10 flex flex-col justify-between transition-all duration-500 hover:shadow-xl hover:bg-white group/testimonial overflow-hidden shadow-sm"
+                    className="relative min-h-[280px] w-full bg-slate-50/50 rounded-2xl border border-white p-10 flex flex-col justify-between transition-all duration-500 hover:shadow-xl hover:bg-white group/testimonial overflow-hidden shadow-sm"
                   >
                     <div className="flex flex-col gap-4">
                       <Quote className="h-8 w-8 text-primary-blue/20 fill-primary-blue/5" />

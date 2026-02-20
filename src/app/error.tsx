@@ -22,8 +22,8 @@ export default function GlobalError({
             <div className="max-w-md w-full text-center space-y-8 animate-in fade-in zoom-in duration-500">
                 {/* Visual Element */}
                 <div className="relative mx-auto w-24 h-24">
-                    <div className="absolute inset-0 bg-red-100 rounded-[2.5rem] rotate-6 animate-pulse" />
-                    <div className="absolute inset-0 bg-white rounded-[2.5rem] shadow-xl border border-red-50 flex items-center justify-center">
+                    <div className="absolute inset-0 bg-red-100 rounded-2xl rotate-6 animate-pulse" />
+                    <div className="absolute inset-0 bg-white rounded-2xl shadow-xl border border-red-50 flex items-center justify-center">
                         <AlertTriangle className="h-12 w-12 text-red-500" />
                     </div>
                 </div>

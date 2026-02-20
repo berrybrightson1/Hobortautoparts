@@ -64,7 +64,7 @@ export function InteractiveNotification({ notification, onClose }: InteractiveNo
                         transition: { duration: 0.4, ease: "easeIn" }
                     }}
                     className={cn(
-                        "fixed top-[90px] right-6 z-[9999] w-[340px] bg-white/80 backdrop-blur-xl rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-white/20 p-5 overflow-hidden ring-1 ring-black/[0.05]",
+                        "fixed top-[90px] right-6 z-[9999] w-[340px] bg-white/80 backdrop-blur-xl rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-white/20 p-5 overflow-hidden ring-1 ring-black/[0.05]",
                         notification.link ? "cursor-pointer hover:bg-white active:scale-[0.98] transition-all" : ""
                     )}
                     onClick={() => {
@@ -75,7 +75,7 @@ export function InteractiveNotification({ notification, onClose }: InteractiveNo
                     }}
                 >
                     <div className="flex gap-4 items-center">
-                        <div className={cn("h-12 w-12 rounded-[1.25rem] flex items-center justify-center shrink-0 text-white shadow-lg shadow-black/5", bgColor)}>
+                        <div className={cn("h-12 w-12 rounded-2xl flex items-center justify-center shrink-0 text-white shadow-lg shadow-black/5", bgColor)}>
                             <Icon className="h-6 w-6" />
                         </div>
                         <div className="flex-1 min-w-0 pr-8 space-y-0.5">

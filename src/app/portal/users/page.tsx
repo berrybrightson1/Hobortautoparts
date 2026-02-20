@@ -312,7 +312,7 @@ export default function UsersPage() {
                             <UserPlus className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" /> Create User
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-[425px] p-0 overflow-hidden border-0 shadow-2xl bg-white gap-0 rounded-3xl">
+                    <DialogContent className="sm:max-w-[425px] p-0 overflow-hidden border-0 shadow-2xl bg-white gap-0 rounded-2xl">
                         <DialogHeader className="p-6 pb-2 text-left bg-white">
                             <DialogTitle className="text-xl font-bold text-slate-900 tracking-tight">Create User</DialogTitle>
                             <DialogDescription className="text-slate-500 font-medium text-sm">Add a new user to the portal.</DialogDescription>
@@ -389,8 +389,8 @@ export default function UsersPage() {
             </div>
 
             {/* Premium Controls */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center bg-white p-2 sm:p-4 rounded-[1.5rem] sm:rounded-[3rem] border border-slate-100 shadow-2xl shadow-slate-200/40 overflow-hidden">
-                <div className="lg:col-span-6 flex p-1.5 bg-slate-50 rounded-[1.25rem] sm:rounded-[2rem] relative gap-1 overflow-x-auto no-scrollbar">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center bg-white p-2 sm:p-4 rounded-2xl sm:rounded-2xl border border-slate-100 shadow-2xl shadow-slate-200/40 overflow-hidden">
+                <div className="lg:col-span-6 flex p-1.5 bg-slate-50 rounded-2xl sm:rounded-2xl relative gap-1 overflow-x-auto no-scrollbar">
                     {roles.map((role) => (
                         <button
                             key={role.id}
@@ -419,13 +419,13 @@ export default function UsersPage() {
                         value={searchQuery}
                         onChange={setSearchQuery}
                         placeholder="Search by name, ID, email, or phone..."
-                        className="h-14 rounded-[2rem] bg-white ring-1 ring-slate-100 shadow-sm"
+                        className="h-14 rounded-2xl bg-white ring-1 ring-slate-100 shadow-sm"
                     />
                 </div>
             </div>
 
             {/* List View */}
-            <Card className="border-0 shadow-2xl shadow-slate-200/50 rounded-[3rem] overflow-hidden bg-white ring-1 ring-slate-100/50">
+            <Card className="border-0 shadow-2xl shadow-slate-200/50 rounded-2xl overflow-hidden bg-white ring-1 ring-slate-100/50">
                 <CardContent className="p-0">
                     <div className="overflow-x-auto">
                         <Table>
@@ -559,7 +559,7 @@ export default function UsersPage() {
                                     <TableRow>
                                         <TableCell colSpan={4} className="py-20 text-center">
                                             <div className="flex flex-col items-center justify-center space-y-4">
-                                                <div className="h-24 w-24 bg-slate-50 rounded-[2.5rem] flex items-center justify-center text-slate-200 shadow-inner">
+                                                <div className="h-24 w-24 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-200 shadow-inner">
                                                     <Inbox className="h-10 w-10" />
                                                 </div>
                                                 <div className="space-y-1">
@@ -589,8 +589,8 @@ export default function UsersPage() {
 
             {/* Search Empty State */}
             {filteredUsers.length === 0 && debouncedSearch !== '' && !isLoading && (
-                <div className="h-96 flex flex-col items-center justify-center text-center p-12 bg-white rounded-[3rem] border border-dashed border-slate-200 space-y-6">
-                    <div className="h-24 w-24 bg-slate-50 rounded-[2.5rem] flex items-center justify-center">
+                <div className="h-96 flex flex-col items-center justify-center text-center p-12 bg-white rounded-2xl border border-dashed border-slate-200 space-y-6">
+                    <div className="h-24 w-24 bg-slate-50 rounded-2xl flex items-center justify-center">
                         <Search className="h-10 w-10 text-slate-200" />
                     </div>
                     <div className="space-y-1">
@@ -619,7 +619,7 @@ export default function UsersPage() {
                             {/* Minimal Header */}
                             <div className="px-6 pt-10 pb-6 border-b border-slate-50 flex flex-col gap-4">
                                 <div className="flex items-start justify-between">
-                                    <div className="h-16 w-16 rounded-[1.25rem] bg-slate-100 flex items-center justify-center text-slate-400 border border-slate-100 overflow-hidden shrink-0">
+                                    <div className="h-16 w-16 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 border border-slate-100 overflow-hidden shrink-0">
                                         {selectedUser.avatar_url ? (
                                             <img src={selectedUser.avatar_url} alt="" className="h-full w-full object-cover" />
                                         ) : (
@@ -736,7 +736,7 @@ export default function UsersPage() {
 
             {/* Password Reset Dialog */}
             <Dialog open={isResetModalOpen} onOpenChange={setIsResetModalOpen}>
-                <DialogContent className="sm:max-w-md rounded-[2.5rem] border-0 shadow-2xl bg-white p-0 gap-0 overflow-hidden">
+                <DialogContent className="sm:max-w-md rounded-2xl border-0 shadow-2xl bg-white p-0 gap-0 overflow-hidden">
                     <div className="p-8 sm:p-10 space-y-6">
                         <div className="space-y-2 text-center">
                             <DialogTitle className="text-2xl font-bold text-slate-900 tracking-tight">Reset Password</DialogTitle>
@@ -780,9 +780,9 @@ export default function UsersPage() {
 
             {/* Delete Confirmation Dialog */}
             <Dialog open={!!userToDelete} onOpenChange={(open) => !open && setUserToDelete(null)}>
-                <DialogContent className="sm:max-w-md rounded-[2.5rem] border-0 shadow-2xl bg-white p-0 gap-0 overflow-hidden">
+                <DialogContent className="sm:max-w-md rounded-2xl border-0 shadow-2xl bg-white p-0 gap-0 overflow-hidden">
                     <div className="p-8 sm:p-10 text-center space-y-6">
-                        <div className="mx-auto h-20 w-20 rounded-[2rem] bg-red-50 flex items-center justify-center text-red-600 shadow-inner border border-red-100">
+                        <div className="mx-auto h-20 w-20 rounded-2xl bg-red-50 flex items-center justify-center text-red-600 shadow-inner border border-red-100">
                             <XCircle className="h-10 w-10" />
                         </div>
 

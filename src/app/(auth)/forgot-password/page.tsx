@@ -50,7 +50,7 @@ export default function ForgotPasswordPage() {
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-white py-10 px-8 rounded-[2.5rem] shadow-2xl shadow-slate-200/50 border border-slate-100"
+                    className="bg-white py-10 px-8 rounded-2xl shadow-2xl shadow-slate-200/50 border border-slate-100"
                 >
                     {!isSent ? (
                         <div className="space-y-8">

@@ -286,7 +286,7 @@ export function HeroSlider() {
             </div>
 
             {/* Bottom Section (Branding & Navigation) - Floating at the bottom */}
-            <div className="absolute bottom-4 md:bottom-8 left-1/2 -translate-x-1/2 w-[94%] md:w-[95%] max-w-[1400px] z-30 bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-2xl md:rounded-3xl py-3 md:py-6 shadow-2xl transition-all duration-500">
+            <div className="absolute bottom-4 md:bottom-8 left-1/2 -translate-x-1/2 w-[94%] md:w-[95%] max-w-[1400px] z-30 bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-2xl md:rounded-2xl py-3 md:py-6 shadow-2xl transition-all duration-500">
                 <div className="max-w-[1400px] mx-auto px-3 md:px-6 h-full flex flex-col md:flex-row items-center justify-between gap-4 md:gap-16">
                     <div className="w-full md:w-1/4 flex items-center shrink-0">
                         <TrackingWidget showIndicators={false} />

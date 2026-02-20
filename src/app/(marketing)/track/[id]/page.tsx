@@ -144,7 +144,7 @@ export default function TrackingPage({ params }: { params: Promise<{ id: string 
                         </div>
                     </div>
 
-                    <div className="bg-primary-blue text-white p-8 rounded-[2rem] min-w-[300px] relative overflow-hidden group">
+                    <div className="bg-primary-blue text-white p-8 rounded-2xl min-w-[300px] relative overflow-hidden group">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-700" />
                         <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest mb-4">Estimated Delivery</p>
                         <p className="text-3xl font-black mb-1">
@@ -231,7 +231,7 @@ export default function TrackingPage({ params }: { params: Promise<{ id: string 
                                     </div>
                                 ))
                             ) : (
-                                <div className="p-12 rounded-[2rem] bg-slate-50 border border-slate-100 text-center">
+                                <div className="p-12 rounded-2xl bg-slate-50 border border-slate-100 text-center">
                                     <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Initial journey logging pending...</p>
                                 </div>
                             )}
@@ -239,7 +239,7 @@ export default function TrackingPage({ params }: { params: Promise<{ id: string 
                     </div>
 
                     <div className="space-y-8">
-                        <div className="bg-slate-50 border border-slate-100 p-8 rounded-[2rem] space-y-6">
+                        <div className="bg-slate-50 border border-slate-100 p-8 rounded-2xl space-y-6">
                             <h3 className="text-xs font-bold uppercase tracking-widest text-primary-blue">Consignee Info</h3>
                             <div className="flex items-center gap-4">
                                 <div className="h-14 w-14 rounded-2xl bg-white border border-slate-200 flex items-center justify-center font-black text-primary-blue text-xl">
@@ -261,7 +261,7 @@ export default function TrackingPage({ params }: { params: Promise<{ id: string 
                             </Button>
                         </div>
 
-                        <div className="p-8 bg-primary-blue/5 rounded-[2rem] border border-primary-blue/10">
+                        <div className="p-8 bg-primary-blue/5 rounded-2xl border border-primary-blue/10">
                             <h3 className="text-xs font-bold uppercase tracking-widest text-primary-blue mb-4">Support Link</h3>
                             <p className="text-xs text-slate-500 font-medium leading-relaxed mb-6">
                                 Need direct assistance with your shipment? Connect with your dedicated HAPE logistics agent.

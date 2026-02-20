@@ -69,7 +69,7 @@ export default function ShipmentDetailsPage() {
     if (error || !shipment) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-6">
-                <div className="h-20 w-20 bg-red-50 rounded-3xl flex items-center justify-center shadow-sm border border-red-100">
+                <div className="h-20 w-20 bg-red-50 rounded-2xl flex items-center justify-center shadow-sm border border-red-100">
                     <AlertCircle className="h-10 w-10 text-red-500" />
                 </div>
                 <div>
@@ -116,7 +116,7 @@ export default function ShipmentDetailsPage() {
             <div className="grid md:grid-cols-3 gap-8">
                 {/* Left Column - Tracking Timeline */}
                 <div className="md:col-span-2 space-y-8">
-                    <Card className="border-slate-100 shadow-xl shadow-slate-200/40 rounded-[2.5rem] bg-white overflow-hidden">
+                    <Card className="border-slate-100 shadow-xl shadow-slate-200/40 rounded-2xl bg-white overflow-hidden">
                         <CardHeader className="bg-slate-50/50 border-b border-slate-100 p-8">
                             <CardTitle className="flex items-center gap-3 text-lg text-slate-900">
                                 <Truck className="h-5 w-5 text-primary-blue" />
@@ -131,7 +131,7 @@ export default function ShipmentDetailsPage() {
 
                 {/* Right Column - Details */}
                 <div className="space-y-6">
-                    <Card className="border-slate-100 shadow-lg shadow-slate-200/20 rounded-3xl bg-white overflow-hidden">
+                    <Card className="border-slate-100 shadow-lg shadow-slate-200/20 rounded-2xl bg-white overflow-hidden">
                         <CardHeader className="bg-slate-50/50 border-b border-slate-100 p-6">
                             <CardTitle className="text-sm font-bold uppercase tracking-widest text-slate-500">Logistics Details</CardTitle>
                         </CardHeader>
@@ -183,7 +183,7 @@ export default function ShipmentDetailsPage() {
                         </CardContent>
                     </Card>
 
-                    <Card className="bg-primary-blue text-white rounded-3xl shadow-xl shadow-primary-blue/30 border-none overflow-hidden relative">
+                    <Card className="bg-primary-blue text-white rounded-2xl shadow-xl shadow-primary-blue/30 border-none overflow-hidden relative">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl" />
                         <CardContent className="p-8 space-y-4 relative z-10">
                             <h3 className="font-semibold text-lg">Need Assistance?</h3>

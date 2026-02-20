@@ -141,7 +141,7 @@ export default function AgentOrdersPage() {
             ) : paginatedOrders.length > 0 ? (
                 <div className="grid gap-6">
                     {paginatedOrders.map((order) => (
-                        <Card key={order.id} className="border-slate-100 shadow-xl shadow-slate-200/40 rounded-[2rem] overflow-hidden bg-white ring-1 ring-slate-100/50 hover:shadow-2xl transition-all duration-300">
+                        <Card key={order.id} className="border-slate-100 shadow-xl shadow-slate-200/40 rounded-2xl overflow-hidden bg-white ring-1 ring-slate-100/50 hover:shadow-2xl transition-all duration-300">
                             <CardContent className="p-8">
                                 <div className="flex flex-col md:flex-row items-center gap-8">
                                     <div className="h-16 w-16 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 shrink-0 border border-slate-100 shadow-inner">
@@ -195,9 +195,9 @@ export default function AgentOrdersPage() {
                     )}
                 </div>
             ) : (
-                <Card className="border-slate-100 shadow-xl shadow-slate-200/40 rounded-[2.5rem] bg-white ring-1 ring-slate-100/50 p-8">
+                <Card className="border-slate-100 shadow-xl shadow-slate-200/40 rounded-2xl bg-white ring-1 ring-slate-100/50 p-8">
                     <CardContent className="flex flex-col items-center justify-center py-20 text-center space-y-6">
-                        <div className="h-24 w-24 bg-slate-50 rounded-[2rem] flex items-center justify-center ring-1 ring-slate-100">
+                        <div className="h-24 w-24 bg-slate-50 rounded-2xl flex items-center justify-center ring-1 ring-slate-100">
                             <ShoppingBag className="h-10 w-10 text-slate-300" />
                         </div>
                         <div className="space-y-2">
@@ -221,7 +221,7 @@ export default function AgentOrdersPage() {
                             {/* Left Column: Details */}
                             <div className="flex-1 p-8 space-y-6 bg-white lg:border-r border-slate-100">
                                 {/* Financial Stats Section */}
-                                <div className="p-6 bg-slate-50/50 rounded-3xl border border-slate-100/50 space-y-6">
+                                <div className="p-6 bg-slate-50/50 rounded-2xl border border-slate-100/50 space-y-6">
                                     <div className="flex items-center gap-3">
                                         <div className="h-8 w-8 rounded-full bg-white flex items-center justify-center border border-slate-100 shadow-sm">
                                             <DollarSign className="h-4 w-4 text-emerald-600" />
@@ -264,7 +264,7 @@ export default function AgentOrdersPage() {
 
                                 {/* Shipment Tracking Timeline */}
                                 {(shipment || isLoadingShipment || selectedOrder?.status === 'shipped' || selectedOrder?.status === 'completed') && (
-                                    <div className="p-6 bg-white rounded-3xl border border-slate-100 shadow-sm space-y-4">
+                                    <div className="p-6 bg-white rounded-2xl border border-slate-100 shadow-sm space-y-4">
                                         <div className="flex items-center justify-between">
                                             <div className="space-y-1">
                                                 <p className="text-[10px] font-bold text-blue-600 uppercase tracking-[0.2em]">Shipment Status</p>
@@ -298,7 +298,7 @@ export default function AgentOrdersPage() {
                                 )}
 
                                 {/* Customer Section */}
-                                <div className="p-6 bg-blue-50/20 rounded-3xl border border-blue-100/50 space-y-6">
+                                <div className="p-6 bg-blue-50/20 rounded-2xl border border-blue-100/50 space-y-6">
                                     <div className="space-y-4">
                                         <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-blue-600">Customer Identity</p>
                                         <div className="flex items-center gap-4">

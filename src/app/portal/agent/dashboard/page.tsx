@@ -97,7 +97,7 @@ export default function AgentDashboardHub() {
 
             <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
                 {stats.map((stat, i) => (
-                    <Card key={i} className="border-slate-100 shadow-xl shadow-slate-200/40 rounded-[2rem] overflow-hidden bg-white ring-1 ring-slate-100/50">
+                    <Card key={i} className="border-slate-100 shadow-xl shadow-slate-200/40 rounded-2xl overflow-hidden bg-white ring-1 ring-slate-100/50">
                         <CardHeader className="flex flex-row items-center justify-between pb-2">
                             <CardTitle className="text-[10px] font-bold uppercase tracking-widest text-slate-500">{stat.label}</CardTitle>
                             <div className={cn("h-10 w-10 rounded-2xl flex items-center justify-center", stat.bg, stat.color)}>
@@ -112,7 +112,7 @@ export default function AgentDashboardHub() {
             </div>
 
             <div className="grid gap-8 lg:grid-cols-2">
-                <Card className="border-slate-100 shadow-xl shadow-slate-200/40 rounded-[2.5rem] bg-white ring-1 ring-slate-100/50 p-8">
+                <Card className="border-slate-100 shadow-xl shadow-slate-200/40 rounded-2xl bg-white ring-1 ring-slate-100/50 p-8">
                     <CardHeader className="px-0">
                         <CardTitle className="text-2xl font-bold tracking-tight">Recent Pipeline Activity</CardTitle>
                     </CardHeader>
@@ -141,7 +141,7 @@ export default function AgentDashboardHub() {
                     </CardContent>
                 </Card>
 
-                <Card className="border-slate-100 shadow-xl shadow-slate-200/40 rounded-[2.5rem] bg-white ring-1 ring-slate-100/50 p-8">
+                <Card className="border-slate-100 shadow-xl shadow-slate-200/40 rounded-2xl bg-white ring-1 ring-slate-100/50 p-8">
                     <CardHeader className="px-0">
                         <CardTitle className="text-2xl font-bold tracking-tight">Active Inquiries</CardTitle>
                     </CardHeader>

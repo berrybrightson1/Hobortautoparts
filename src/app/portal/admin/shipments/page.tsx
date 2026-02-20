@@ -255,7 +255,7 @@ export default function AdminShipmentsPage() {
                 </div>
             </div>
 
-            <Card className="border-slate-100 shadow-xl shadow-slate-200/40 rounded-3xl overflow-hidden bg-white">
+            <Card className="border-slate-100 shadow-xl shadow-slate-200/40 rounded-2xl overflow-hidden bg-white">
                 <CardHeader className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-50 p-6">
                     <SearchBar
                         value={searchTerm}
@@ -392,7 +392,7 @@ export default function AdminShipmentsPage() {
 
             {/* Create Shipment Dialog */}
             <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden border-0 shadow-2xl rounded-3xl bg-white gap-0">
+                <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden border-0 shadow-2xl rounded-2xl bg-white gap-0">
                     <DialogHeader className="p-6 pb-2 bg-white">
                         <DialogTitle className="text-xl font-bold text-slate-900 tracking-tight">Create New Shipment</DialogTitle>
                         <DialogDescription className="text-slate-500 font-medium text-xs">Link a tracking number to a customer order.</DialogDescription>
@@ -518,7 +518,7 @@ export default function AdminShipmentsPage() {
 
             {/* Timeline Dialog */}
             <Dialog open={!!viewingShipment} onOpenChange={(open) => !open && setViewingShipment(null)}>
-                <DialogContent className="sm:max-w-[600px] p-0 overflow-hidden border-0 shadow-2xl rounded-3xl bg-white gap-0">
+                <DialogContent className="sm:max-w-[600px] p-0 overflow-hidden border-0 shadow-2xl rounded-2xl bg-white gap-0">
                     <DialogHeader className="p-6 pb-4 bg-white border-b border-slate-50">
                         <DialogTitle className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-3">
                             <Truck className="h-5 w-5 text-slate-400" />

@@ -46,9 +46,9 @@ export default function UpdatesPage() {
             <section className="container max-w-[1400px] mx-auto px-6">
                 <div className="grid gap-12 max-w-5xl mx-auto">
                     {UPDATES.map((update, i) => (
-                        <div key={i} className="group flex flex-col md:flex-row gap-8 items-start pb-12 border-b border-slate-100 last:border-0 transition-all duration-500 hover:bg-slate-50/50 rounded-[2.5rem] -mx-6 px-6">
+                        <div key={i} className="group flex flex-col md:flex-row gap-8 items-start pb-12 border-b border-slate-100 last:border-0 transition-all duration-500 hover:bg-slate-50/50 rounded-2xl -mx-6 px-6">
                             <div className="w-full md:w-[40%] shrink-0">
-                                <Link href={`/updates/${update.slug}`} className="block aspect-[16/10] sm:aspect-[16/8] md:aspect-[16/10] rounded-[2rem] bg-slate-100 border border-slate-200 overflow-hidden relative shadow-sm group-hover:shadow-xl group-hover:shadow-slate-200/50 transition-all duration-500">
+                                <Link href={`/updates/${update.slug}`} className="block aspect-[16/10] sm:aspect-[16/8] md:aspect-[16/10] rounded-2xl bg-slate-100 border border-slate-200 overflow-hidden relative shadow-sm group-hover:shadow-xl group-hover:shadow-slate-200/50 transition-all duration-500">
                                     <img
                                         src={update.image}
                                         alt={update.title}

@@ -55,7 +55,7 @@ export function ResponsiveModal({
                 <DialogContent className={cn(
                     "border-none shadow-[0_48px_160px_-24px_rgba(0,0,0,0.35)] p-0 bg-white dark:bg-white ring-1 ring-black/[0.05] overflow-hidden transition-all duration-300",
                     variant === "center"
-                        ? cn(sizeClasses[size], "rounded-[2.5rem] top-[50%] translate-y-[-50%] max-h-[90vh]")
+                        ? cn(sizeClasses[size], "rounded-2xl top-[50%] translate-y-[-50%] max-h-[90vh]")
                         : "sm:max-w-[600px] rounded-full top-auto bottom-8 translate-y-0",
                     "fixed left-[50%] translate-x-[-50%] flex flex-col"
                 )}>

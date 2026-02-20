@@ -10,7 +10,7 @@ export function DemandHeatmap() {
     const data: any[] = []
 
     return (
-        <Card className="rounded-[2.5rem] border border-slate-50 shadow-xl shadow-slate-200/40 overflow-hidden bg-white">
+        <Card className="rounded-2xl border border-slate-50 shadow-xl shadow-slate-200/40 overflow-hidden bg-white">
             <CardHeader className="p-8 pb-4">
                 <CardTitle className="text-xl font-black text-slate-900">Demand Intelligence</CardTitle>
                 <CardDescription className="font-medium text-slate-400">Total parts requests categorized by vehicle brand.</CardDescription>
@@ -57,11 +57,11 @@ export function DemandHeatmap() {
                 )}
 
                 <div className="mt-8 grid grid-cols-2 gap-4">
-                    <div className="p-4 rounded-3xl bg-slate-50 border border-slate-100 opacity-50">
+                    <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 opacity-50">
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Market Insights</p>
                         <p className="text-sm font-black text-slate-300 italic text-center py-2">System analyzing trends...</p>
                     </div>
-                    <div className="p-4 rounded-3xl bg-slate-50 border border-slate-100 opacity-50">
+                    <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 opacity-50">
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Regional Hotspots</p>
                         <p className="text-sm font-black text-slate-300 italic text-center py-2">Syncing geospatial data...</p>
                     </div>

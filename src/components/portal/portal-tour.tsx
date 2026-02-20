@@ -79,7 +79,7 @@ export function PortalTour() {
                         step.position === 'top' ? targetRect.top - 200 :
                             targetRect.top
                 }}
-                className="absolute w-[320px] bg-white rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/20 p-6 pointer-events-auto overflow-hidden"
+                className="absolute w-[320px] bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/20 p-6 pointer-events-auto overflow-hidden"
             >
                 {/* Decoration */}
                 <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">

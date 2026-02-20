@@ -146,7 +146,7 @@ export function NotificationDrawer() {
                 <ScrollArea className="flex-1 px-2 py-4">
                     {notifications.length === 0 ? (
                         <div className="h-full flex flex-col items-center justify-center p-12 text-center space-y-4">
-                            <div className="h-16 w-16 bg-slate-50 rounded-3xl flex items-center justify-center border border-slate-100/50">
+                            <div className="h-16 w-16 bg-slate-50 rounded-2xl flex items-center justify-center border border-slate-100/50">
                                 <Bell className="h-8 w-8 text-slate-200" />
                             </div>
                             <div className="space-y-1">

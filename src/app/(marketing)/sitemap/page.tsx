@@ -93,7 +93,7 @@ export default function SitemapPage() {
                     ))}
                 </div>
 
-                <div className="p-10 rounded-3xl bg-slate-50 border border-slate-100 flex flex-col items-center text-center space-y-6">
+                <div className="p-10 rounded-2xl bg-slate-50 border border-slate-100 flex flex-col items-center text-center space-y-6">
                     <div className="h-16 w-16 rounded-full bg-white flex items-center justify-center shadow-sm">
                         <MapIcon className="h-8 w-8 text-primary-blue" />
                     </div>

@@ -17,7 +17,7 @@ export default function Error({
 
     return (
         <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-6 text-center px-4">
-            <div className="h-20 w-20 bg-red-50 rounded-3xl flex items-center justify-center shadow-sm border border-red-100">
+            <div className="h-20 w-20 bg-red-50 rounded-2xl flex items-center justify-center shadow-sm border border-red-100">
                 <AlertCircle className="h-10 w-10 text-red-500" />
             </div>
             <div className="space-y-2 max-w-md">

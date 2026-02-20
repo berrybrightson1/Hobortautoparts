@@ -9,7 +9,7 @@ export default function FleetRegisterPage() {
     return (
         <div className="min-h-screen bg-slate-50 pt-32 pb-20">
             <div className="container mx-auto px-4">
-                <div className="max-w-2xl mx-auto bg-white rounded-[3rem] p-12 shadow-premium border border-slate-100">
+                <div className="max-w-2xl mx-auto bg-white rounded-2xl p-12 shadow-premium border border-slate-100">
                     <div className="flex flex-col gap-8">
                         <div className="flex flex-col gap-3">
                             <div className="h-12 w-12 rounded-2xl bg-primary-blue/5 flex items-center justify-center text-primary-blue">

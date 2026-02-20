@@ -43,7 +43,7 @@ export default function AgentGuidePage() {
                 {/* STEP 1: SOURCING PIPELINE */}
                 <section className="grid md:grid-cols-2 gap-12 items-center">
                     <div className="order-2 md:order-1 space-y-8 animate-in fade-in slide-in-from-left-8 duration-700 delay-100">
-                        <div className="h-16 w-16 rounded-[2rem] bg-primary-orange/10 flex items-center justify-center text-primary-orange mb-4">
+                        <div className="h-16 w-16 rounded-2xl bg-primary-orange/10 flex items-center justify-center text-primary-orange mb-4">
                             <PackageSearch className="h-8 w-8" />
                         </div>
                         <div className="space-y-4">
@@ -76,9 +76,9 @@ export default function AgentGuidePage() {
                             </Link>
                         </div>
                     </div>
-                    <div className="order-1 md:order-2 bg-slate-50 rounded-[3rem] p-8 md:p-12 aspect-square md:aspect-auto flex items-center justify-center relative overflow-hidden group">
+                    <div className="order-1 md:order-2 bg-slate-50 rounded-2xl p-8 md:p-12 aspect-square md:aspect-auto flex items-center justify-center relative overflow-hidden group">
                         <div className="absolute inset-0 bg-primary-orange/5" />
-                        <div className="relative z-10 w-full max-w-sm bg-white rounded-3xl shadow-2xl shadow-primary-blue/10 p-6 space-y-4 transform group-hover:scale-105 transition-transform duration-500">
+                        <div className="relative z-10 w-full max-w-sm bg-white rounded-2xl shadow-2xl shadow-primary-blue/10 p-6 space-y-4 transform group-hover:scale-105 transition-transform duration-500">
                             <div className="flex justify-between items-center border-b border-primary-blue/10 pb-4">
                                 <span className="text-[10px] font-bold text-primary-blue uppercase tracking-widest">New Requests</span>
                                 <Badge className="bg-orange-500 text-white border-none py-0.5">3 Active</Badge>
@@ -110,9 +110,9 @@ export default function AgentGuidePage() {
 
                 {/* STEP 2: QUOTING */}
                 <section className="grid md:grid-cols-2 gap-12 items-center">
-                    <div className="bg-primary-blue rounded-[3rem] p-8 md:p-12 aspect-square md:aspect-auto flex items-center justify-center relative overflow-hidden group">
+                    <div className="bg-primary-blue rounded-2xl p-8 md:p-12 aspect-square md:aspect-auto flex items-center justify-center relative overflow-hidden group">
                         {/* Abstract Quote UI */}
-                        <div className="relative z-10 w-full max-w-sm bg-white/5 backdrop-blur-xl border border-white/10 p-6 rounded-3xl space-y-6">
+                        <div className="relative z-10 w-full max-w-sm bg-white/5 backdrop-blur-xl border border-white/10 p-6 rounded-2xl space-y-6">
                             <div className="space-y-2 text-center text-white">
                                 <h3 className="text-xl font-bold">Generate Quote</h3>
                                 <p className="text-xs opacity-70">Calculated symmetrically</p>
@@ -138,7 +138,7 @@ export default function AgentGuidePage() {
                         </div>
                     </div>
                     <div className="space-y-8 animate-in fade-in slide-in-from-right-8 duration-700 delay-200">
-                        <div className="h-16 w-16 rounded-[2rem] bg-primary-blue/10 flex items-center justify-center text-primary-blue mb-4">
+                        <div className="h-16 w-16 rounded-2xl bg-primary-blue/10 flex items-center justify-center text-primary-blue mb-4">
                             <DollarSign className="h-8 w-8" />
                         </div>
                         <div className="space-y-4">
@@ -173,7 +173,7 @@ export default function AgentGuidePage() {
                 {/* STEP 3: ORDERS & FULFILLMENT */}
                 <section className="grid md:grid-cols-2 gap-12 items-center">
                     <div className="order-2 md:order-1 space-y-8 animate-in fade-in slide-in-from-left-8 duration-700 delay-300">
-                        <div className="h-16 w-16 rounded-[2rem] bg-indigo-50 flex items-center justify-center text-indigo-600 mb-4">
+                        <div className="h-16 w-16 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 mb-4">
                             <ShoppingBag className="h-8 w-8" />
                         </div>
                         <div className="space-y-4">
@@ -183,7 +183,7 @@ export default function AgentGuidePage() {
                             </p>
                         </div>
                         <div className="space-y-6">
-                            <div className="p-6 rounded-3xl bg-primary-blue/5 border border-primary-blue/10">
+                            <div className="p-6 rounded-2xl bg-primary-blue/5 border border-primary-blue/10">
                                 <h4 className="font-bold text-primary-blue mb-4">Agent Actions</h4>
                                 <div className="space-y-3">
                                     <div className="flex items-center justify-between text-sm">
@@ -207,8 +207,8 @@ export default function AgentGuidePage() {
                             </Link>
                         </div>
                     </div>
-                    <div className="order-1 md:order-2 bg-slate-50 rounded-[3rem] p-8 md:p-12 aspect-square md:aspect-auto flex items-center justify-center relative overflow-hidden">
-                        <div className="w-full max-w-sm bg-white rounded-3xl shadow-xl shadow-primary-blue/10 overflow-hidden border border-primary-blue/10">
+                    <div className="order-1 md:order-2 bg-slate-50 rounded-2xl p-8 md:p-12 aspect-square md:aspect-auto flex items-center justify-center relative overflow-hidden">
+                        <div className="w-full max-w-sm bg-white rounded-2xl shadow-xl shadow-primary-blue/10 overflow-hidden border border-primary-blue/10">
                             <div className="bg-primary-blue p-4 flex items-center justify-between text-white">
                                 <span className="text-xs font-bold uppercase tracking-widest">Performance Stats</span>
                                 <TrendingUp className="h-5 w-5 text-green-400" />
@@ -233,7 +233,7 @@ export default function AgentGuidePage() {
                     </div>
                 </section>
 
-                <section className="bg-primary-blue rounded-[3rem] p-12 md:p-24 text-center text-white relative overflow-hidden">
+                <section className="bg-primary-blue rounded-2xl p-12 md:p-24 text-center text-white relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-16 -mt-16 blur-3xl opacity-50" />
                     <div className="absolute bottom-0 left-0 w-48 h-48 bg-primary-orange/20 rounded-full -ml-12 -mb-12 blur-2xl opacity-50" />
                     <div className="relative z-10 max-w-2xl mx-auto space-y-8">
@@ -250,9 +250,9 @@ export default function AgentGuidePage() {
                         </div>
                         {/* STEP 4: PERFORMANCE CENTRAL */}
                         <section className="grid md:grid-cols-1 gap-12 items-center">
-                            <Card className="border-slate-100 shadow-2xl rounded-[3rem] bg-white overflow-hidden">
+                            <Card className="border-slate-100 shadow-2xl rounded-2xl bg-white overflow-hidden">
                                 <CardContent className="p-12 flex flex-col md:flex-row items-center gap-12">
-                                    <div className="h-24 w-24 rounded-[2rem] bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                                    <div className="h-24 w-24 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
                                         <TrendingUp className="h-12 w-12" />
                                     </div>
                                     <div className="space-y-4 text-center md:text-left">

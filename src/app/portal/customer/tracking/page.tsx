@@ -111,7 +111,7 @@ export default function CustomerTrackingPage() {
                 </div>
             ) : error ? (
                 <div className="h-[40vh] flex flex-col items-center justify-center space-y-6 text-center">
-                    <div className="h-20 w-20 bg-red-50 rounded-3xl flex items-center justify-center shadow-sm border border-red-100">
+                    <div className="h-20 w-20 bg-red-50 rounded-2xl flex items-center justify-center shadow-sm border border-red-100">
                         <Activity className="h-10 w-10 text-red-500" />
                     </div>
                     <div className="space-y-2">
@@ -125,7 +125,7 @@ export default function CustomerTrackingPage() {
             ) : filteredShipments.length > 0 ? (
                 <div className="grid gap-6">
                     {paginatedShipments.map((shipment) => (
-                        <Card key={shipment.id} className="border-slate-100 shadow-xl shadow-slate-200/40 rounded-[2.5rem] overflow-hidden bg-white ring-1 ring-slate-100/50 hover:shadow-2xl transition-all duration-300">
+                        <Card key={shipment.id} className="border-slate-100 shadow-xl shadow-slate-200/40 rounded-2xl overflow-hidden bg-white ring-1 ring-slate-100/50 hover:shadow-2xl transition-all duration-300">
                             <CardContent className="p-8">
                                 <div className="flex flex-col md:flex-row items-center gap-8">
                                     <div className="h-16 w-16 bg-blue-50 rounded-2xl flex items-center justify-center shrink-0 shadow-inner border border-blue-100">
@@ -174,7 +174,7 @@ export default function CustomerTrackingPage() {
                     )}
                 </div>
             ) : (
-                <Card className="border-slate-100 shadow-xl shadow-slate-200/40 rounded-[2.5rem] bg-white ring-1 ring-slate-100/50 p-8">
+                <Card className="border-slate-100 shadow-xl shadow-slate-200/40 rounded-2xl bg-white ring-1 ring-slate-100/50 p-8">
                     <CardContent className="flex flex-col items-center justify-center py-20 text-center space-y-6">
                         <div className="h-24 w-24 bg-slate-50 rounded-full flex items-center justify-center ring-1 ring-slate-100">
                             <Package className="h-10 w-10 text-slate-300" />
@@ -193,7 +193,7 @@ export default function CustomerTrackingPage() {
                     { title: "Insured Transit", text: "All shipments are fully insured until they reach you.", icon: Package },
                     { title: "Live Updates", text: "Get notified the moment your order reaches a new milestone.", icon: Activity }
                 ].map((item, i) => (
-                    <div key={i} className="p-8 bg-white border border-slate-100 rounded-3xl shadow-sm space-y-4 transition-all hover:shadow-md">
+                    <div key={i} className="p-8 bg-white border border-slate-100 rounded-2xl shadow-sm space-y-4 transition-all hover:shadow-md">
                         <div className="h-12 w-12 bg-slate-50 rounded-2xl flex items-center justify-center">
                             <item.icon className="h-6 w-6 text-slate-400" />
                         </div>

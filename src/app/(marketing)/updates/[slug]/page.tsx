@@ -110,7 +110,7 @@ export default function UpdateDetailPage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
-                    className="bg-white rounded-[2.5rem] border border-slate-100 shadow-2xl p-8 md:p-16"
+                    className="bg-white rounded-2xl border border-slate-100 shadow-2xl p-8 md:p-16"
                 >
                     <article
                         className="prose prose-slate prose-lg max-w-none 
@@ -141,7 +141,7 @@ export default function UpdateDetailPage() {
 
             {/* Newsletter Upsell */}
             <section className="container max-w-4xl mx-auto px-6 mt-20">
-                <div className="bg-primary-blue rounded-[2.5rem] p-8 md:p-12 text-center text-white relative overflow-hidden group">
+                <div className="bg-primary-blue rounded-2xl p-8 md:p-12 text-center text-white relative overflow-hidden group">
                     <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 h-64 w-64 bg-white/5 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-1000" />
                     <div className="relative z-10 space-y-6">
                         <Newspaper className="h-10 w-10 text-primary-orange mx-auto" />
