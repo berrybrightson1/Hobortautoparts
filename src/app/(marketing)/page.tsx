@@ -13,6 +13,7 @@ import { HeroSlider } from "@/components/marketing/hero-slider"
 import { TrackingWidget } from "@/components/marketing/tracking-widget"
 import { FAQSection } from "@/components/marketing/faq-section"
 import { GalleryPreview } from "@/components/marketing/gallery-preview"
+import { Testimonials } from "@/components/marketing/testimonials"
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -30,27 +31,6 @@ const itemVariants = {
 }
 
 export default function LandingPage() {
-  const [testimonialPage, setTestimonialPage] = useState(0)
-  const isMobile = useMediaQuery("(max-width: 768px)")
-  const itemsPerPage = isMobile ? 1 : 3 // 3 per page on desktop for a full-width experience
-
-  const testimonials: any[] = [] // Cleaned demo data
-
-  const totalPages = Math.ceil(testimonials.length / itemsPerPage)
-
-  // Reset page when switching views to prevent out-of-bounds
-  useEffect(() => {
-    setTestimonialPage(0)
-  }, [itemsPerPage])
-
-  useEffect(() => {
-    const intervalTime = isMobile ? 5000 : 8000
-    const timer = setInterval(() => {
-      setTestimonialPage((prev) => (prev + 1) % totalPages)
-    }, intervalTime)
-    return () => clearInterval(timer)
-  }, [totalPages, isMobile])
-
   return (
     <div className="flex flex-col">
       {/* Premium Centered Hero */}
@@ -205,79 +185,9 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* Testimonials section hidden until real reviews or replaced with a Call-to-Action */}
-        {testimonials.length > 0 && (
-          <div className="mt-20 w-full max-w-[1400px] mx-auto px-6 overflow-hidden">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={testimonialPage}
-                initial={{ x: 100, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                exit={{ x: -100, opacity: 0 }}
-                transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-                className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12"
-              >
-                {testimonials.slice(testimonialPage * itemsPerPage, (testimonialPage * itemsPerPage) + itemsPerPage).map((testimonial, i) => (
-                  <div
-                    key={i}
-                    className="relative min-h-[280px] w-full bg-slate-50/50 rounded-2xl border border-white p-10 flex flex-col justify-between transition-all duration-500 hover:shadow-xl hover:bg-white group/testimonial overflow-hidden shadow-sm"
-                  >
-                    <div className="flex flex-col gap-4">
-                      <Quote className="h-8 w-8 text-primary-blue/20 fill-primary-blue/5" />
-                      <p className="text-lg font-medium text-slate-700 leading-snug tracking-tight text-left italic">
-                        "{testimonial.quote}"
-                      </p>
-                    </div>
-
-                    <div className="flex items-center gap-4 pt-6 mt-6 border-t border-slate-200/20">
-                      <div className="h-12 w-12 rounded-full overflow-hidden bg-slate-200 ring-4 ring-white shadow-sm shrink-0">
-                        <img
-                          src={testimonial.avatar}
-                          alt={testimonial.author}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <div className="flex flex-col min-w-0 text-left">
-                        <p className="text-base font-semibold text-primary-blue truncate tracking-tight">{testimonial.author}</p>
-                        <p className="text-[10px] font-semibold text-slate-400 truncate uppercase tracking-[0.2em]">{testimonial.role}</p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </motion.div>
-            </AnimatePresence>
-
-            {/* Set-based Pagination Dots */}
-            <div className="mt-16 flex justify-center gap-3">
-              {[...Array(totalPages)].map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => {
-                    setTestimonialPage(i)
-                  }}
-                  className={cn(
-                    "h-1.5 rounded-full transition-all duration-700",
-                    i === testimonialPage
-                      ? "bg-primary-orange w-12"
-                      : "bg-slate-200 w-3"
-                  )}
-                  aria-label={`Go to testimonial page ${i + 1}`}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-
-        {testimonials.length === 0 && (
-          <div className="mt-12 text-center">
-            <Link href="/register">
-              <Button variant="orange" size="lg" className="rounded-full px-16 h-20 text-xl font-semibold shadow-premium hover:scale-105 transition-transform text-white">
-                Start Your First Order
-              </Button>
-            </Link>
-          </div>
-        )}
       </section>
+
+      <Testimonials />
 
       <FAQSection />
 

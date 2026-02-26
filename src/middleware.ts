@@ -38,11 +38,26 @@ export async function middleware(request: NextRequest) {
     // https://supabase.com/docs/guides/auth/server-side/nextjs
     const {
         data: { user },
+        error
     } = await supabase.auth.getUser();
 
-    // Enforce suspension if user is logged in
+    const isPortalRoute = request.nextUrl.pathname.startsWith('/portal');
+
+    // 1. Strict route protection: 
+    // If trying to access portal but no valid user (e.g. logged out or deleted from DB)
+    if (isPortalRoute && (!user || error)) {
+        const redirectUrl = request.nextUrl.clone();
+        redirectUrl.pathname = '/login';
+        // Clear stale auth cookies on the redirect response
+        const res = NextResponse.redirect(redirectUrl);
+        res.cookies.delete('sb-access-token');
+        res.cookies.delete('sb-refresh-token');
+        return res;
+    }
+
+    // 2. Enforce suspension if user is logged in
     if (user?.user_metadata?.suspended === true) {
-        if (request.nextUrl.pathname.startsWith('/portal')) {
+        if (isPortalRoute) {
             const redirectUrl = request.nextUrl.clone()
             redirectUrl.pathname = '/suspended'
             redirectUrl.searchParams.set('auth_error', 'account_suspended')

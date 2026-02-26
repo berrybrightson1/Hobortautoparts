@@ -62,10 +62,14 @@ export function BrandedSelect({
     // Close when clicking outside
     React.useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            const target = event.target as Node
-            if (
-                containerRef.current && !containerRef.current.contains(target)
-            ) {
+            const target = event.target
+            // Guard: target must be a real DOM Node (avoids TypeError in some browsers/SVG contexts)
+            if (!(target instanceof Node)) return
+            // The dropdown is portaled to document.body, so it lives outside containerRef.
+            // We must also exclude clicks inside the portaled dropdown list.
+            const insideContainer = containerRef.current?.contains(target) ?? false
+            const insideDropdown = dropdownRef.current?.contains(target) ?? false
+            if (!insideContainer && !insideDropdown) {
                 setIsOpen(false)
             }
         }

@@ -116,9 +116,21 @@ export const AuthProvider = ({
                 return
             }
 
-            console.warn("AuthProvider: Profile not found, attempting sync...", error)
+            // PGRST116 = row not found (profile missing — try to auto-create it)
+            // Empty error object {} = FK violation (auth user deleted from Supabase dashboard
+            // but browser still holds a valid JWT session token)
+            const isNotFound = error?.code === 'PGRST116'
+            const isEmptyOrGhostError = !error?.code || Object.keys(error).length === 0
 
-            // Fallback: Use the currentUser object directly instead of fetching again
+            if (isEmptyOrGhostError && !isNotFound) {
+                // Ghost session — user deleted from Supabase, clear and redirect
+                console.warn("AuthProvider: Ghost session detected — user no longer exists, signing out.")
+                await signOut()
+                return
+            }
+
+            console.warn("AuthProvider: Profile row missing, creating from metadata...")
+
             const { data: newProfile, error: syncError } = await supabase
                 .from('profiles')
                 .upsert({
@@ -133,12 +145,19 @@ export const AuthProvider = ({
             if (!syncError) {
                 setProfile(newProfile)
             } else {
-                console.error("AuthProvider: Sync error:", syncError)
-                // If everything fails, at least set a minimal profile to avoid hanging login
-                setProfile({ role: currentUser.user_metadata?.role || 'customer' })
+                // If upsert also fails with empty error or FK violation, it's a ghost session
+                const isFKViolation = syncError?.code === '23503'
+                const isSyncGhost = !syncError?.code || Object.keys(syncError).length === 0
+                if (isFKViolation || isSyncGhost) {
+                    console.warn("AuthProvider: Cannot sync deleted user, signing out.")
+                    await signOut()
+                } else {
+                    console.error("AuthProvider: Sync error:", syncError)
+                    setProfile({ role: currentUser.user_metadata?.role || 'customer' })
+                }
             }
         } catch (err) {
-            console.error("AuthProvider: Unexpected sync error:", err)
+            console.error("AuthProvider: Unexpected error in fetchProfile:", err)
         } finally {
             setLoading(false)
         }
@@ -151,11 +170,14 @@ export const AuthProvider = ({
     }
 
     const signOut = async () => {
-        await supabase.auth.signOut()
-        // Clear legacy state and local storage to prevent ghost "Dashboard" links
+        // Immediately clear client state so the UI responds before the network call finishes
+        setUser(null)
+        setProfile(null)
         localStorage.clear()
 
-        // Use router for smoother transition instead of hard reload
+        // Fire Supabase sign-out in the background (don't await — we already cleared state)
+        supabase.auth.signOut().catch(console.warn)
+
         router.push('/')
         router.refresh()
     }

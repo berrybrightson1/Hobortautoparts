@@ -8,7 +8,7 @@ import { supabase } from '@/lib/supabase';
 export async function sendWelcomeEmailAction(email: string, firstName: string) {
     try {
         const { data, error } = await resend.emails.send({
-            from: 'Hobort Auto Express <notifications@hobortautoparts.com>',
+            from: 'Hobort Auto Express <notifications@send.hobortautopartsexpress.com>',
             to: email,
             subject: 'Welcome to Hobort Auto Parts Express',
             react: WelcomeEmail({ firstName }),
@@ -48,7 +48,7 @@ export async function sendRequestUpdateEmailAction(requestId: string) {
         }
 
         const { data, error } = await resend.emails.send({
-            from: 'Hobort Auto Express <notifications@hobortautoparts.com>',
+            from: 'Hobort Auto Express <notifications@send.hobortautopartsexpress.com>',
             to: request.profiles.email,
             subject: `Update on your request: ${request.part_name}`,
             react: RequestUpdateEmail({

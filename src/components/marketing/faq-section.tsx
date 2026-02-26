@@ -37,6 +37,10 @@ const faqs = [
     {
         question: "Are the parts genuine OEM?",
         answer: "We offer both authentic OEM (Original Equipment Manufacturer) and certified high-grade aftermarket components. Every part listing clearly specifies its origin and certification status."
+    },
+    {
+        question: "Does the initial quote include shipping to Ghana?",
+        answer: "No — the initial quote we provide covers the part cost and US-side handling only. Shipping costs from the USA to Ghana (or your destination country) are calculated separately after the part is confirmed and packaged, as they depend on weight, dimensions, and your exact delivery address. Our team will provide a full landed-cost breakdown before you confirm your order."
     }
 ]
 

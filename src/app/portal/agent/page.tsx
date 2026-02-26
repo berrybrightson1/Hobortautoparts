@@ -109,6 +109,7 @@ export default function AgentDashboard() {
             // For admins who are NOT registered as agents, we allow them in 
             // but they might see no data unless we fetch global data (which we won't for now to avoid bloat)
             // 1. Fetch Assigned Sourcing Requests
+            console.log('[Agent] Fetching sourcing requests for agent:', user.id)
             const { data: sourcingData, error: sourcingError } = await supabase
                 .from('sourcing_requests')
                 .select(`
@@ -120,9 +121,11 @@ export default function AgentDashboard() {
                 .order('created_at', { ascending: false })
 
             if (sourcingError) throw sourcingError
+            console.log('[Agent] Sourcing requests:', sourcingData?.length ?? 0, 'rows', sourcingData)
             setSourcingRequests(sourcingData || [])
 
             // 2. Fetch Assigned Orders
+            console.log('[Agent] Fetching orders for agent:', user.id)
             const { data: ordersData, error: ordersError } = await supabase
                 .from('orders')
                 .select(`
@@ -134,6 +137,7 @@ export default function AgentDashboard() {
                 .order('created_at', { ascending: false })
 
             if (ordersError) throw ordersError
+            console.log('[Agent] Orders:', ordersData?.length ?? 0, 'rows', ordersData)
             setOrders(ordersData || [])
 
             // 3. Calculate Stats

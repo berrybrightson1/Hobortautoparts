@@ -27,7 +27,7 @@ export function FloatingWhatsAppButton() {
 
             {/* Tooltip */}
             <div className="absolute right-full mr-4 px-3 py-2 bg-slate-900 text-white text-[10px] font-bold uppercase tracking-widest rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap hidden md:block">
-                Instant Assistance
+                Order via WhatsApp
             </div>
 
             {/* Ping animation effect */}

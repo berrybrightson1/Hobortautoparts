@@ -47,6 +47,7 @@ export default function CustomerDashboard() {
         setIsLoading(true)
         setError(null)
         try {
+            console.log('[Customer] Fetching sourcing requests for user:', user.id)
             const { data, error } = await supabase
                 .from('sourcing_requests')
                 .select(`
@@ -63,10 +64,14 @@ export default function CustomerDashboard() {
                 .eq('user_id', user.id)
                 .order('created_at', { ascending: false })
 
-            if (error) throw error
+            if (error) {
+                console.error('[Customer] Supabase error:', error.message, error)
+                throw error
+            }
+            console.log('[Customer] Sourcing requests fetched:', data?.length ?? 0, 'rows', data)
             setOrders(data || [])
         } catch (error: any) {
-            console.error("Error fetching orders:", error)
+            console.error('[Customer] fetchOrders failed:', error)
             setError(error.message || "Failed to load orders")
         } finally {
             setIsLoading(false)
@@ -374,9 +379,9 @@ export default function CustomerDashboard() {
                 </Card>
             )}
 
-            <div className="grid md:grid-cols-3 gap-6 md:gap-8">
+            <div className="space-y-6">
                 {/* Main Content: Orders */}
-                <div className="md:col-span-2 space-y-6">
+                <div className="space-y-6">
                     <div className="flex items-center justify-between px-1">
                         <h3 className="text-xl font-semibold text-slate-900 flex items-center gap-3 tracking-tight">
                             <Clock className="h-6 w-6 text-primary-orange" /> Recent Activity
@@ -471,12 +476,12 @@ export default function CustomerDashboard() {
                                                         </div>
                                                     </div>
 
-                                                    <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                                                    <div className="flex items-center gap-2 flex-nowrap shrink-0">
                                                         {order.status === 'pending' && (
                                                             <Button
                                                                 onClick={() => router.push(`/portal/customer/requests/${order.id}/edit`)}
                                                                 variant="outline"
-                                                                className="w-full sm:w-auto rounded-xl border-slate-200 text-[10px] font-semibold uppercase tracking-widest transition-all active:scale-95 shrink-0 h-12 sm:h-10 hover:text-primary-orange hover:border-orange-200 hover:bg-orange-50"
+                                                                className="rounded-xl border-slate-200 text-[10px] font-semibold uppercase tracking-widest transition-all active:scale-95 shrink-0 h-10 px-4 hover:text-primary-orange hover:border-orange-200 hover:bg-orange-50"
                                                             >
                                                                 <Pencil className="h-3.5 w-3.5 mr-1.5" />
                                                                 Edit
@@ -486,7 +491,7 @@ export default function CustomerDashboard() {
                                                             onClick={() => handleViewRequest(order)}
                                                             variant="outline"
                                                             className={cn(
-                                                                "w-full sm:w-auto rounded-xl border-slate-200 text-[10px] font-semibold uppercase tracking-widest transition-all active:scale-95 shrink-0 h-12 sm:h-10",
+                                                                "rounded-xl border-slate-200 text-[10px] font-semibold uppercase tracking-widest transition-all active:scale-95 shrink-0 h-10 px-4",
                                                                 order.status === 'quoted' ? "bg-white border-primary-orange text-primary-orange hover:bg-orange-50" : "hover:text-primary-blue hover:border-blue-200 hover:bg-blue-50"
                                                             )}
                                                         >
@@ -495,11 +500,11 @@ export default function CustomerDashboard() {
                                                         <Button
                                                             onClick={() => handleViewRequest(order)}
                                                             className={cn(
-                                                                "w-full sm:w-auto rounded-xl text-[10px] font-semibold uppercase tracking-widest transition-all active:scale-95 shrink-0 h-12 sm:h-10 px-6 flex items-center gap-2 shadow-lg",
+                                                                "rounded-xl text-[10px] font-semibold uppercase tracking-widest transition-all active:scale-95 shrink-0 h-10 px-4 flex items-center gap-2 shadow-lg",
                                                                 order.status === 'quoted' ? "bg-primary-orange text-white hover:bg-orange-600 shadow-orange-900/20" : "bg-primary-blue text-white hover:bg-blue-600 shadow-blue-900/20"
                                                             )}
                                                         >
-                                                            <MessageSquare className="h-4 w-4" />
+                                                            <MessageSquare className="h-3.5 w-3.5" />
                                                             Chat
                                                         </Button>
                                                     </div>
@@ -555,26 +560,6 @@ export default function CustomerDashboard() {
                         )}
                     </div>
                 </div>
-
-
-                <Card className="bg-gradient-to-br from-blue-50 to-slate-50 border-blue-100 shadow-xl shadow-blue-100/50 rounded-2xl md:rounded-2xl overflow-hidden relative group">
-                    {/* Decorative background effects */}
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary-orange/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl group-hover:bg-primary-orange/20 transition-colors" />
-                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-primary-blue/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-2xl group-hover:bg-primary-blue/20 transition-colors" />
-
-                    <CardHeader className="relative z-10 pb-2 p-8">
-                        <CardTitle className="text-2xl font-semibold tracking-tight text-slate-900">Need Help?</CardTitle>
-                    </CardHeader>
-                    <CardContent className="text-slate-600 text-sm space-y-8 relative z-10 p-8 pt-0">
-                        <p className="font-normal leading-relaxed">Our expert agents are ready to assist you with finding the exact parts for your vehicle.</p>
-                        <Button
-                            onClick={() => router.push('/contact')}
-                            className="w-full bg-primary-blue text-white hover:bg-blue-700 font-semibold uppercase tracking-widest text-xs h-14 rounded-2xl shadow-xl shadow-blue-500/20 border-0 transition-all active:scale-95"
-                        >
-                            Contact Support
-                        </Button>
-                    </CardContent>
-                </Card>
             </div>
 
             <ResponsiveModal

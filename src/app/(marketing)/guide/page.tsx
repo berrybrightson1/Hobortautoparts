@@ -15,6 +15,36 @@ import { VideoModal } from "@/components/marketing/video-modal"
 
 const updates = [
     {
+        version: "v2.3.0",
+        date: "February 26, 2026",
+        time: "05:45 PM",
+        title: "Google SSO & Instant Access",
+        description: "Completely streamlined the user onboarding experience with 1-click Google Single Sign-On, Instant Signups without OTP delays, and hardened fake email prevention.",
+        changes: [
+            "Implemented Google Single Sign-On: Users can now create accounts and log in seamlessly via Google OAuth, automatically linking with existing matching emails.",
+            "Instant Signups & Zero-Delay Welcome Emails: Bypassed the mandatory 6-digit OTP email verification screen. Account creation, login, and welcome email delivery are now instant.",
+            "Advanced Fake Email Prevention: Deployed a robust frontend validation system containing over 250+ known disposable/burner email domains. Fake email attempts are instantly blocked.",
+            "Enforced Strict Role-Based Route Isolation: Upgraded middleware to rigorously prevent users from logging into the wrong portal (e.g., Customers cannot use the Admin login tab).",
+            "Enhanced Testimonials Experience: Integrated a scrolling marquee with native pause-on-hover logic, upgraded typography to brand colors, and injected localized user identities.",
+        ]
+    },
+    {
+        version: "v2.2.0",
+        date: "February 22, 2026",
+        time: "01:30 PM",
+        title: "VIN-First Intelligence & UX Polish",
+        description: "Major overhaul of the sourcing request flow with VIN-gated field unlocking, live trim data from the NHTSA API, and a wave of quality-of-life improvements across the platform.",
+        changes: [
+            "Implemented VIN-First Field Locking: Year, Make, Model, Trim, and Engine fields remain locked until a valid 17-digit VIN is entered — mirroring industry-standard automotive workflows.",
+            "Integrated Live NHTSA Trim Data: Sub-Model / Trim dropdown now fetches real brand-specific trim levels dynamically based on Make, Model, and Year — no more generic placeholders.",
+            "Instant Sign-Out Response: UI now clears user state immediately on logout before the network call, eliminating perceived delay.",
+            "WhatsApp UX Refinements: Floating button tooltip updated to 'Order via WhatsApp'; Contact page button is now WhatsApp brand green (#25D366).",
+            "Gallery Ring Fix: Active slide orange outline now renders fully visible — moved overflow-hidden from the card link to an inner wrapper so the ring draws outside the image boundary.",
+            "FAQ Shipping Notice: Added clear FAQ entry explaining that initial quotes cover the part cost only; Ghana shipping is calculated separately after confirmation.",
+            "Guide Navbar Link: /guide is now accessible directly from the main navigation bar.",
+        ]
+    },
+    {
         version: "v2.1.0",
         date: "February 19, 2026",
         time: "12:15 PM",
@@ -373,22 +403,29 @@ export default function GuidePage() {
                                     <div className="flex gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100">
                                         <div className="h-8 w-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-900 font-bold shrink-0 shadow-sm">1</div>
                                         <div>
-                                            <h4 className="font-bold tracking-tight text-slate-900">Submit Request</h4>
-                                            <p className="text-sm text-slate-500 mt-1">Go to <Link href="/quote" className="text-primary-orange underline">/quote</Link> and enter your Vehicle details.</p>
+                                            <h4 className="font-bold tracking-tight text-slate-900">Enter Your VIN</h4>
+                                            <p className="text-sm text-slate-500 mt-1">Go to <Link href="/quote" className="text-primary-orange underline">/quote</Link> and enter your 17-digit VIN. This unlocks the vehicle detail fields (Year, Make, Model, Trim, Engine) and auto-decodes your vehicle via NHTSA.</p>
                                         </div>
                                     </div>
                                     <div className="flex gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100">
                                         <div className="h-8 w-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-900 font-bold shrink-0 shadow-sm">2</div>
                                         <div>
-                                            <h4 className="font-bold tracking-tight text-slate-900">Clarify & Quote</h4>
-                                            <p className="text-sm text-slate-500 mt-1">Chat live with agents to confirm part details. once finalized, you receive your quote alert.</p>
+                                            <h4 className="font-bold tracking-tight text-slate-900">Confirm Vehicle & Part</h4>
+                                            <p className="text-sm text-slate-500 mt-1">Verify the decoded vehicle details, select the trim and engine, then name the part you need and its condition.</p>
                                         </div>
                                     </div>
                                     <div className="flex gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100">
                                         <div className="h-8 w-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-900 font-bold shrink-0 shadow-sm">3</div>
                                         <div>
+                                            <h4 className="font-bold tracking-tight text-slate-900">Clarify & Quote</h4>
+                                            <p className="text-sm text-slate-500 mt-1">Chat live with agents to confirm part details. Once finalized, you receive a quote alert via email and dashboard notification.</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100">
+                                        <div className="h-8 w-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-900 font-bold shrink-0 shadow-sm">4</div>
+                                        <div>
                                             <h4 className="font-bold tracking-tight text-slate-900">Accept & Pay</h4>
-                                            <p className="text-sm text-slate-500 mt-1">Log in to your Dashboard, approve the price, and finalize the order.</p>
+                                            <p className="text-sm text-slate-500 mt-1">Log in to your Dashboard, approve the price, and finalize the order. Note: the initial quote covers the part cost only — shipping to Ghana is quoted separately.</p>
                                         </div>
                                     </div>
                                 </div>

@@ -315,3 +315,98 @@ export async function getAdminSourcingRequests() {
         return { success: false, error: error.message }
     }
 }
+
+export async function broadcastAnnouncement(title: string, message: string) {
+    try {
+        await requireAdmin()
+        const supabaseAdmin = getAdminClient()
+
+        // 1. Fetch all user IDs from profiles
+        const { data: profiles, error: profileError } = await supabaseAdmin
+            .from('profiles')
+            .select('id')
+
+        if (profileError) throw profileError
+        if (!profiles || profiles.length === 0) return { success: true, count: 0 }
+
+        // 2. Fetch an admin ID for logging
+        const { data: { users } } = await supabaseAdmin.auth.admin.listUsers()
+        const adminId = users.length > 0 ? users[0].id : null
+
+        // 3. Log to broadcast_history
+        if (adminId) {
+            const { error: historyError } = await supabaseAdmin
+                .from('broadcast_history')
+                .insert({
+                    title: title,
+                    message: message,
+                    admin_id: adminId,
+                    recipient_count: profiles.length
+                })
+
+            if (historyError) {
+                console.warn("[Admin Action] Failed to log broadcast history:", historyError)
+            }
+        }
+
+        // 4. Prepare bulk insert array
+        const notificationsToInsert = profiles.map(profile => ({
+            user_id: profile.id,
+            title: title,
+            message: message,
+            type: 'system',
+            read: false,
+        }))
+
+        // 5. Bulk insert notifications
+        const { error: insertError } = await supabaseAdmin
+            .from('notifications')
+            .insert(notificationsToInsert)
+
+        if (insertError) throw insertError
+
+        return { success: true, count: profiles.length }
+    } catch (error: any) {
+        console.error("Broadcast Error:", error)
+        return { success: false, error: error.message || "Failed to broadcast announcement" }
+    }
+}
+
+export async function getBroadcastHistory() {
+    try {
+        await requireAdmin()
+        const supabaseAdmin = getAdminClient()
+
+        const { data, error } = await supabaseAdmin
+            .from('broadcast_history')
+            .select('*')
+            .order('created_at', { ascending: false })
+            .limit(10)
+
+        if (error) throw error
+
+        if (data && data.length > 0) {
+            const adminIds = Array.from(new Set(data.filter(d => d.admin_id).map(d => d.admin_id)))
+            if (adminIds.length > 0) {
+                const { data: profilesData } = await supabaseAdmin
+                    .from('profiles')
+                    .select('id, full_name')
+                    .in('id', adminIds)
+
+                const profileMap = new Map((profilesData || []).map(p => [p.id, p.full_name]))
+
+                const enrichedData = data.map(item => ({
+                    ...item,
+                    profiles: { full_name: profileMap.get(item.admin_id) || 'Unknown Admin' }
+                }))
+
+                return { success: true, data: enrichedData }
+            }
+        }
+
+        return { success: true, data: data || [] }
+    } catch (error: any) {
+        console.error("Fetch Broadcast History Error:", error)
+        return { success: false, error: error.message, data: [] }
+    }
+}

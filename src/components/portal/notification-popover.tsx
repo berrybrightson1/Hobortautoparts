@@ -261,13 +261,6 @@ export function NotificationPopover() {
                     </motion.div>
                 )}
             </AnimatePresence>
-
-            <InteractiveNotification
-                notification={activeInteractive}
-                onClose={() => setActiveInteractive(null)}
-            />
         </div>
     )
 }
-
-

@@ -15,7 +15,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import { User, Shield, Key, Loader2, Save, Unlock, Moon, Minimize2, Bell, Mail, Settings2, Globe, Server, CheckCircle2 } from "lucide-react"
+import { User, Shield, Key, Loader2, Save, Unlock, Moon, Minimize2, Bell, Mail, Settings2, Globe, Server, CheckCircle2, Pencil } from "lucide-react"
 import { useAuth } from "@/components/auth/auth-provider"
 import { useState, useEffect } from "react"
 import { supabase } from "@/lib/supabase"
@@ -26,6 +26,7 @@ export default function UnifiedSettingsPage() {
     const { user, profile, refreshProfile } = useAuth()
     const [isSavingProfile, setIsSavingProfile] = useState(false)
     const [isSaved, setIsSaved] = useState(false)
+    const [isEditing, setIsEditing] = useState(false)
     const [isUpdatingPassword, setIsUpdatingPassword] = useState(false)
     const [isLoadingPrefs, setIsLoadingPrefs] = useState(true)
 
@@ -92,10 +93,11 @@ export default function UnifiedSettingsPage() {
                 .eq('id', user.id)
             if (error) throw error
 
-            await refreshProfile() // Update global context immediately so "Missing Phone" toast vanishes
+            await refreshProfile()
             toast.success("Profile details updated")
 
             setIsSaved(true)
+            setIsEditing(false)
             setTimeout(() => setIsSaved(false), 3000)
 
         } catch (error: any) {
@@ -216,26 +218,74 @@ export default function UnifiedSettingsPage() {
                                 <div className="absolute right-0 top-0 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none" />
                             </div>
 
-                            <div className="grid gap-8 md:grid-cols-2">
-                                <div className="space-y-3">
-                                    <Label className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400 ml-1">Full Legal Name</Label>
-                                    <Input value={fullName} onChange={e => setFullName(e.target.value)} className="h-14 rounded-2xl bg-slate-50/50 border-slate-200 focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all font-semibold text-lg text-slate-900" />
+                            <div className="grid gap-6 md:grid-cols-2">
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400 ml-1">Full Name</Label>
+                                    <Input
+                                        value={fullName}
+                                        onChange={e => setFullName(e.target.value)}
+                                        readOnly={!isEditing}
+                                        className={cn(
+                                            "h-10 rounded-xl border-slate-200 transition-all text-sm text-slate-900 px-3",
+                                            isEditing
+                                                ? "bg-white focus:ring-2 focus:ring-blue-500/10"
+                                                : "bg-slate-50 cursor-default select-none text-slate-600"
+                                        )}
+                                    />
                                 </div>
-                                <div className="space-y-3">
-                                    <Label className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400 ml-1">Verified Mobile</Label>
-                                    <Input value={phoneNumber} onChange={e => setPhoneNumber(e.target.value)} className="h-14 rounded-2xl bg-slate-50/50 border-slate-200 focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all font-semibold text-lg text-slate-900" />
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400 ml-1">Phone Number</Label>
+                                    <Input
+                                        value={phoneNumber}
+                                        onChange={e => setPhoneNumber(e.target.value)}
+                                        readOnly={!isEditing}
+                                        type="tel"
+                                        className={cn(
+                                            "h-10 rounded-xl border-slate-200 transition-all text-sm text-slate-900 px-2 tabular-nums tracking-tight",
+                                            isEditing
+                                                ? "bg-white focus:ring-2 focus:ring-blue-500/10"
+                                                : "bg-slate-50 cursor-default select-none text-slate-600"
+                                        )}
+                                    />
                                 </div>
                             </div>
                         </CardContent>
-                        <CardFooter className="bg-slate-50/80 p-6 sm:p-10 flex justify-end">
-                            <Button onClick={handleUpdateProfile} disabled={isSavingProfile || isSaved} className={cn(
-                                "h-12 sm:h-14 w-full sm:w-auto px-10 rounded-xl sm:rounded-2xl shadow-xl font-bold gap-3 transition-all active:scale-95 text-xs sm:text-base",
-                                isSaved ? "bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/20 text-white" : "bg-primary-blue hover:bg-blue-700 shadow-blue-500/20"
-                            )}>
-                                {isSavingProfile ? <Loader2 className="animate-spin h-5 w-5" /> :
-                                    isSaved ? <CheckCircle2 className="h-5 w-5" /> : <Save className="h-5 w-5" />}
-                                {isSaved ? "Saved Successfully" : "Update Profile"}
-                            </Button>
+                        <CardFooter className="bg-slate-50/80 p-6 sm:p-10 flex justify-end gap-3">
+                            {isEditing ? (
+                                <>
+                                    <Button
+                                        variant="ghost"
+                                        onClick={() => {
+                                            setIsEditing(false)
+                                            // reset fields to original profile values
+                                            setFullName(profile?.full_name || "")
+                                            setPhoneNumber(profile?.phone_number || "")
+                                        }}
+                                        className="h-12 sm:h-14 px-8 rounded-xl sm:rounded-2xl font-bold text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all text-xs sm:text-base"
+                                    >
+                                        Cancel
+                                    </Button>
+                                    <Button
+                                        onClick={handleUpdateProfile}
+                                        disabled={isSavingProfile}
+                                        className="h-12 sm:h-14 w-full sm:w-auto px-10 rounded-xl sm:rounded-2xl shadow-xl font-bold gap-3 transition-all active:scale-95 text-xs sm:text-base bg-primary-blue hover:bg-blue-700 shadow-blue-500/20"
+                                    >
+                                        {isSavingProfile ? <Loader2 className="animate-spin h-5 w-5" /> : <Save className="h-5 w-5" />}
+                                        Update Profile
+                                    </Button>
+                                </>
+                            ) : (
+                                <Button
+                                    onClick={() => setIsEditing(true)}
+                                    className={cn(
+                                        "h-12 sm:h-14 w-full sm:w-auto px-10 rounded-xl sm:rounded-2xl shadow-xl font-bold gap-3 transition-all active:scale-95 text-xs sm:text-base",
+                                        isSaved ? "bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/20" : "bg-primary-blue hover:bg-blue-700 shadow-blue-500/20"
+                                    )}
+                                >
+                                    {isSaved ? <CheckCircle2 className="h-5 w-5" /> : <Pencil className="h-5 w-5" />}
+                                    {isSaved ? "Saved Successfully" : "Edit Profile"}
+                                </Button>
+                            )}
                         </CardFooter>
                     </Card>
                 </TabsContent>

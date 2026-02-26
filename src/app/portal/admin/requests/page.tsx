@@ -39,6 +39,7 @@ import { Label } from "@/components/ui/label"
 import { useAuth } from "@/components/auth/auth-provider"
 import { useRouter } from "next/navigation"
 import { sendNotificationAction, notifyAdminsAction } from "@/app/actions/notification-actions"
+import { sendRequestUpdateEmailAction } from "@/app/actions/email-actions"
 import { FeedbackPanel } from "@/components/portal/feedback-panel"
 import { ResponsiveModal } from "@/components/ui/responsive-modal"
 import { Activity } from "lucide-react"
@@ -238,6 +239,9 @@ export default function SourcingRequestsPage() {
                 })
             }
 
+            // Fire order update email (non-blocking)
+            sendRequestUpdateEmailAction(requestId).catch((e) => console.warn('Update email failed:', e))
+
             toast.success(`Request status updated to ${newStatus.toUpperCase()}`)
             fetchRequests()
         } catch (error: any) {
@@ -332,13 +336,16 @@ export default function SourcingRequestsPage() {
 
             if (requestError) throw requestError
 
-            // Notify the customer of the new quote
+            // Fire order update email for the 'quoted' status (non-blocking)
+            sendRequestUpdateEmailAction(selectedRequest.id).catch((e) => console.warn('Quote email failed:', e))
+
+            // Notify the customer
             try {
                 await sendNotificationAction({
                     userId: selectedRequest.user_id,
                     title: 'New Quote Available',
-                    message: `An official quote has been generated for your request: ${selectedRequest.part_name}.`,
-                    type: 'order'
+                    message: `An admin has prepared a quote for your "${selectedRequest.part_name}" request.`,
+                    type: 'request'
                 })
 
                 // Relay to all Admins

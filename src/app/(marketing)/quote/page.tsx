@@ -3,14 +3,14 @@
 import { useState } from "react"
 
 import { RequestForm } from "@/components/marketing/request-form"
-import { Zap, ShieldCheck, User, MessageCircle } from "lucide-react"
+import { WhatsAppOrderModal } from "@/components/marketing/whatsapp-order-modal"
+import { Zap, MessageCircle } from "lucide-react"
 import { motion } from "framer-motion"
-import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { validateVIN } from "@/lib/vin-utils"
 
 export default function QuotePage() {
     const [isSubmitted, setIsSubmitted] = useState(false)
+    const [waOpen, setWaOpen] = useState(false)
 
     return (
         <div className="relative min-h-screen bg-slate-50">
@@ -57,15 +57,16 @@ export default function QuotePage() {
                                 transition={{ delay: 0.3 }}
                                 className="shrink-0"
                             >
-                                <Link href="https://wa.me/233555555555" target="_blank">
-                                    <Button className="h-16 px-8 rounded-2xl bg-[#25D366] hover:bg-[#128C7E] text-white font-bold shadow-xl shadow-[#25D366]/20 transition-all flex items-center gap-3 active:scale-95 group">
-                                        <MessageCircle className="h-6 w-6 fill-white group-hover:rotate-12 transition-transform" />
-                                        <div className="text-left">
-                                            <p className="text-[10px] uppercase tracking-widest leading-none opacity-80 mb-1">Instant help</p>
-                                            <p className="text-base uppercase tracking-wider">WhatsApp Support</p>
-                                        </div>
-                                    </Button>
-                                </Link>
+                                <Button
+                                    onClick={() => setWaOpen(true)}
+                                    className="h-16 px-8 rounded-2xl bg-[#25D366] hover:bg-[#128C7E] text-white font-bold shadow-xl shadow-[#25D366]/20 transition-all flex items-center gap-3 active:scale-95 group"
+                                >
+                                    <MessageCircle className="h-6 w-6 fill-white group-hover:rotate-12 transition-transform" />
+                                    <div className="text-left">
+                                        <p className="text-[10px] uppercase tracking-widest leading-none opacity-80 mb-1">Instant Help</p>
+                                        <p className="text-base uppercase tracking-wider">Order Via WhatsApp</p>
+                                    </div>
+                                </Button>
                             </motion.div>
                         </div>
                     )}
@@ -77,6 +78,9 @@ export default function QuotePage() {
 
                 </div>
             </main>
+
+            {/* WhatsApp Modal */}
+            <WhatsAppOrderModal open={waOpen} onOpenChange={setWaOpen} />
         </div>
     )
 }

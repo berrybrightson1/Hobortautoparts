@@ -49,22 +49,23 @@ export function InteractiveNotification({ notification, onClose }: InteractiveNo
             {notification && (
                 <motion.div
                     key={notification.id}
-                    initial={{ opacity: 0, y: -40, x: 40, scale: 0.2 }}
+                    initial={{ opacity: 0, y: -100, x: "-50%", scale: 0.9 }}
                     animate={{
                         opacity: 1,
                         y: 0,
-                        x: 0,
+                        x: "-50%",
                         scale: 1,
+                        transition: { type: "spring", damping: 25, stiffness: 300 }
                     }}
                     exit={{
                         opacity: 0,
-                        y: -40,
-                        x: 40,
-                        scale: 0.2,
-                        transition: { duration: 0.4, ease: "easeIn" }
+                        y: -50,
+                        x: "-50%",
+                        scale: 0.95,
+                        transition: { duration: 0.2, ease: "easeIn" }
                     }}
                     className={cn(
-                        "fixed top-[90px] right-6 z-[9999] w-[340px] bg-white/80 backdrop-blur-xl rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-white/20 p-5 overflow-hidden ring-1 ring-black/[0.05]",
+                        "fixed top-6 left-1/2 z-[99999] w-[90vw] max-w-[420px] bg-white/95 backdrop-blur-2xl rounded-[24px] shadow-[0_30px_60px_rgba(0,0,0,0.12),0_0_0_1px_rgba(0,0,0,0.05)] p-4 overflow-hidden",
                         notification.link ? "cursor-pointer hover:bg-white active:scale-[0.98] transition-all" : ""
                     )}
                     onClick={() => {
@@ -97,8 +98,8 @@ export function InteractiveNotification({ notification, onClose }: InteractiveNo
                     <motion.div
                         initial={{ width: "100%" }}
                         animate={{ width: "0%" }}
-                        transition={{ duration: 5, ease: "linear" }}
-                        className="absolute bottom-0 left-0 h-1 bg-primary-blue/10"
+                        transition={{ duration: 7, ease: "linear" }}
+                        className="absolute bottom-0 left-0 h-1 bg-black/10"
                         onAnimationComplete={onClose}
                     />
                 </motion.div>

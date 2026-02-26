@@ -75,7 +75,7 @@ export function GalleryPreview() {
     const next = useCallback(() => setCurrentIndex((p) => (p + 1) % filtered.length), [filtered.length])
 
     return (
-        <section className="py-16 md:py-24 bg-white overflow-hidden">
+        <section className="py-16 md:py-24 bg-white">
             <div className="container max-w-[1400px] mx-auto px-6">
 
                 {/* ── Header ── */}
@@ -153,56 +153,61 @@ export function GalleryPreview() {
                             transition={{ duration: 0.4 }}
                             className="relative"
                         >
-                            {/* Scroll track — overflow-y-visible so ring/shadow don't clip */}
-                            <div
-                                ref={trackRef}
-                                onMouseDown={onMouseDown}
-                                onMouseMove={onMouseMove}
-                                onMouseUp={stopDrag}
-                                onMouseLeave={stopDrag}
-                                className="no-scrollbar flex gap-4 overflow-x-auto overflow-y-visible scroll-smooth py-3 select-none"
-                            >
-                                {filtered.map((img, i) => (
-                                    <Link
-                                        key={img.src}
-                                        href={`/gallery?category=${img.category}`}
-                                        className={cn(
-                                            "relative shrink-0 rounded-2xl overflow-hidden cursor-pointer group transition-all duration-500",
-                                            // Same width for all cards — focus is shown via scale + height
-                                            "w-56 md:w-72",
-                                            i === currentIndex
-                                                ? "h-64 md:h-80 ring-2 ring-primary-orange ring-offset-2 scale-[1.04] shadow-2xl shadow-primary-orange/20 z-10"
-                                                : "h-52 md:h-64 opacity-75 hover:opacity-95"
-                                        )}
-                                        style={{ transformOrigin: "center bottom" }}
-                                        onClick={(e) => {
-                                            if (isDragging.current) e.preventDefault()
-                                            setCurrentIndex(i)
-                                        }}
-                                    >
-                                        <Image
-                                            src={img.src}
-                                            alt={img.alt}
-                                            fill
-                                            sizes="(max-width: 768px) 224px, 288px"
-                                            className="object-cover group-hover:scale-105 transition-transform duration-700"
-                                            draggable={false}
-                                        />
-                                        {/* Gradient overlay */}
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                                        {/* Category badge */}
-                                        <div className="absolute top-3 left-3">
-                                            <span className="bg-white/90 backdrop-blur-sm text-[9px] font-bold uppercase tracking-widest text-primary-blue px-2.5 py-1 rounded-full">
-                                                {CATEGORY_LABELS[img.category]}
-                                            </span>
-                                        </div>
-                                        {/* Alt text on hover */}
-                                        <p className="absolute bottom-3 left-3 right-3 text-[11px] font-semibold text-white leading-snug opacity-0 group-hover:opacity-100 transition-opacity duration-300 line-clamp-2">
-                                            {img.alt}
-                                        </p>
-                                    </Link>
-                                ))}
-                            </div>
+                            {/* Outer wrapper adds horizontal padding so scaled ring is never clipped */}
+                            <div className="overflow-hidden">
+                                <div
+                                    ref={trackRef}
+                                    onMouseDown={onMouseDown}
+                                    onMouseMove={onMouseMove}
+                                    onMouseUp={stopDrag}
+                                    onMouseLeave={stopDrag}
+                                    className="no-scrollbar flex gap-4 overflow-x-auto overflow-y-visible scroll-smooth py-4 px-6 select-none"
+                                >
+                                    {filtered.map((img, i) => (
+                                        <Link
+                                            key={img.src}
+                                            href={`/gallery?category=${img.category}`}
+                                            className={cn(
+                                                "relative shrink-0 rounded-2xl cursor-pointer group transition-all duration-500",
+                                                // Same width for all cards — focus is shown via scale + height
+                                                "w-56 md:w-72",
+                                                i === currentIndex
+                                                    ? "h-64 md:h-80 ring-2 ring-primary-orange ring-offset-4 scale-[1.04] shadow-2xl shadow-primary-orange/20 z-10"
+                                                    : "h-52 md:h-64 opacity-75 hover:opacity-95"
+                                            )}
+                                            style={{ transformOrigin: "center center" }}
+                                            onClick={(e) => {
+                                                if (isDragging.current) e.preventDefault()
+                                                setCurrentIndex(i)
+                                            }}
+                                        >
+                                            {/* Inner clip — overflow-hidden is here NOT on the Link so the ring draws outside */}
+                                            <div className="absolute inset-0 rounded-2xl overflow-hidden">
+                                                <Image
+                                                    src={img.src}
+                                                    alt={img.alt}
+                                                    fill
+                                                    sizes="(max-width: 768px) 224px, 288px"
+                                                    className="object-cover group-hover:scale-105 transition-transform duration-700"
+                                                    draggable={false}
+                                                />
+                                                {/* Gradient overlay */}
+                                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                            </div>
+                                            {/* Category badge */}
+                                            <div className="absolute top-3 left-3 z-10">
+                                                <span className="bg-white/90 backdrop-blur-sm text-[9px] font-bold uppercase tracking-widest text-primary-blue px-2.5 py-1 rounded-full">
+                                                    {CATEGORY_LABELS[img.category]}
+                                                </span>
+                                            </div>
+                                            {/* Alt text on hover */}
+                                            <p className="absolute bottom-3 left-3 right-3 z-10 text-[11px] font-semibold text-white leading-snug opacity-0 group-hover:opacity-100 transition-opacity duration-300 line-clamp-2">
+                                                {img.alt}
+                                            </p>
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div> {/* end overflow-hidden wrapper */}
 
                             {/* Prev / Next arrows — hidden on mobile (touch-swipe works) */}
                             {filtered.length > 1 && (

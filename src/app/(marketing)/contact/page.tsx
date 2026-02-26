@@ -127,14 +127,12 @@ export default function ContactPage() {
                         transition={{ duration: 0.6, delay: 0.4 }}
                     >
                         <Card className="border-emerald-100 shadow-2xl shadow-primary-blue/5 rounded-2xl overflow-hidden">
-                            <div className="bg-emerald-600 p-12 text-white relative overflow-hidden">
-                                <div className="absolute top-0 right-0 p-4 opacity-10">
-                                    <MessageCircle className="h-32 w-32 -mr-10 -mt-10" />
+                            <div className="bg-emerald-600 px-8 py-5 text-white flex items-center justify-between">
+                                <div>
+                                    <h2 className="text-2xl font-semibold tracking-tight uppercase leading-none">Send a <span className="text-emerald-200">Message</span></h2>
+                                    <p className="text-emerald-50/60 font-medium text-sm mt-1">Direct WhatsApp • Agents Online</p>
                                 </div>
-                                <div className="relative z-10">
-                                    <h2 className="text-4xl font-semibold tracking-tight uppercase leading-none">Send a <span className="text-emerald-200">Message</span></h2>
-                                    <p className="text-emerald-50/70 font-medium mt-3 text-lg">Direct WhatsApp Support • Agents Online</p>
-                                </div>
+                                <MessageCircle className="h-8 w-8 text-emerald-200/60 shrink-0" />
                             </div>
                             <CardContent className="p-10 lg:p-12">
                                 <form onSubmit={handleWhatsAppRedirect} className="space-y-8">
@@ -157,7 +155,7 @@ export default function ContactPage() {
                                                 value={formData.phone}
                                                 onChange={(val) => setFormData({ ...formData, phone: val })}
                                                 placeholder="Enter number..."
-                                                className="w-full"
+                                                className="h-16 rounded-2xl"
                                             />
                                         </div>
                                     </div>
@@ -183,7 +181,7 @@ export default function ContactPage() {
                                             className="min-h-[160px] rounded-2xl border-slate-100 bg-slate-50 focus:bg-white focus:ring-emerald-500/20 transition-all font-semibold p-6 resize-none placeholder:font-medium text-primary-blue"
                                         />
                                     </div>
-                                    <Button type="submit" className="w-full bg-primary-orange hover:bg-orange-600 text-white font-bold h-20 rounded-2xl shadow-xl shadow-primary-orange/20 text-xl transition-all hover:scale-[1.01] active:scale-[0.99] group flex items-center justify-center gap-3">
+                                    <Button type="submit" className="w-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold h-20 rounded-2xl shadow-xl shadow-green-500/20 text-xl transition-all hover:scale-[1.01] active:scale-[0.99] group flex items-center justify-center gap-3">
                                         Send to WhatsApp <MessageCircle className="h-6 w-6 group-hover:rotate-12 transition-transform" />
                                     </Button>
                                 </form>

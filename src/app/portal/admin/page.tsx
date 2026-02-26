@@ -16,6 +16,7 @@ import {
 import { cn } from "@/lib/utils"
 import { AnalyticsChart } from "@/components/admin/analytics-chart"
 import { DemandHeatmap } from "@/components/admin/demand-heatmap"
+import { BroadcastPanel } from "@/components/admin/broadcast-panel"
 import Link from "next/link"
 import { supabase } from "@/lib/supabase"
 import { format, subMonths, startOfMonth, endOfMonth, eachMonthOfInterval } from "date-fns"
@@ -41,6 +42,7 @@ export default function AdminPortal() {
                 .select('*', { count: 'exact', head: true })
 
             // 2. Fetch Revenue
+            console.log('[Admin] Fetching orders for revenue calculation')
             const { data: orderData } = await supabase
                 .from('orders')
                 .select(`
@@ -51,6 +53,7 @@ export default function AdminPortal() {
                 `)
                 .in('status', ['paid', 'processing', 'completed'])
 
+            console.log('[Admin] Orders fetched:', orderData?.length ?? 0, 'orders')
             const totalRevenue = (orderData || []).reduce((acc: number, order: any) => {
                 // Remove currency symbols and parse
                 const amount = parseFloat(String(order.quotes?.total_amount || "0").replace(/[^0-9.-]+/g, ""))
@@ -72,6 +75,7 @@ export default function AdminPortal() {
                 : "0.0"
 
             // 4. Fetch Recent Activity
+            console.log('[Admin] Fetching recent sourcing activity')
             const { data: activity } = await supabase
                 .from('sourcing_requests')
                 .select(`
@@ -84,6 +88,8 @@ export default function AdminPortal() {
                 `)
                 .order('created_at', { ascending: false })
                 .limit(5)
+
+            console.log('[Admin] Recent activity:', activity?.length ?? 0, 'items', activity)
 
             // 5. Generate Chart Data (Last 6 months)
             const months = eachMonthOfInterval({
@@ -211,6 +217,10 @@ export default function AdminPortal() {
                     type="bar"
                     className="rounded-2xl shadow-xl shadow-slate-200/40 border-slate-100"
                 />
+            </div>
+
+            <div className="grid grid-cols-1 gap-8">
+                <BroadcastPanel />
             </div>
 
             <div className="grid grid-cols-1 gap-8">

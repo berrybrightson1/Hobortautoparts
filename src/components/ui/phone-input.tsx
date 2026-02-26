@@ -43,18 +43,19 @@ export function SmartPhoneInput({ value, onChange, className, placeholder, id }:
   }
 
   return (
-    <div className={cn("relative w-full", className)}>
-      <div className="flex h-full w-full rounded-xl border border-slate-200 bg-slate-50 focus-within:bg-white focus-within:ring-2 focus-within:ring-emerald-500/20 transition-all items-center overflow-hidden">
-        <PhoneInput
-          international
-          defaultCountry={defaultCountry}
-          value={value}
-          onChange={(val) => onChange(val as string)}
-          placeholder={placeholder || "Enter phone number"}
-          id={id}
-          className="w-full h-full"
-        />
-      </div>
+    <div className={cn(
+      "w-full flex items-center border border-slate-200 bg-slate-50 focus-within:bg-white focus-within:ring-2 focus-within:ring-emerald-500/20 transition-all overflow-hidden px-3",
+      className
+    )}>
+      <PhoneInput
+        international
+        defaultCountry={defaultCountry}
+        value={value}
+        onChange={(val) => onChange(val as string)}
+        placeholder={placeholder || "Enter phone number"}
+        id={id}
+        className="w-full h-full"
+      />
     </div>
   )
 }

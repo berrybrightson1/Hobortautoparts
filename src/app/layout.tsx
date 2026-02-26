@@ -38,6 +38,7 @@ export const metadata: Metadata = {
 import Providers from "@/app/providers";
 import { createClient } from "@/lib/supabase/server";
 import { ChatWidget } from "@/components/chat/chat-widget";
+import { GlobalNotificationProvider } from "@/components/portal/global-notification-provider";
 
 export default async function RootLayout({
   children,
@@ -51,8 +52,10 @@ export default async function RootLayout({
     <html lang="en">
       <body className={`${inter.variable} font-sans antialiased text-slate-900`}>
         <Providers initialSession={session}>
-          {children}
-          <ChatWidget />
+          <GlobalNotificationProvider>
+            {children}
+            <ChatWidget />
+          </GlobalNotificationProvider>
         </Providers>
       </body>
     </html>

@@ -40,6 +40,21 @@ export const galleryImages: GalleryImage[] = [
         alt: "Premium car parts ready for dispatch",
         category: "new-arrivals",
     },
+    {
+        src: "/gallery/new-arrivals/4.jpg",
+        alt: "Recent batch of auto parts processed",
+        category: "new-arrivals",
+    },
+    {
+        src: "/gallery/new-arrivals/5.jpg",
+        alt: "High quality vehicle components arriving",
+        category: "new-arrivals",
+    },
+    {
+        src: "/gallery/new-arrivals/6.jpg",
+        alt: "Latest inventory additions at our warehouse",
+        category: "new-arrivals",
+    },
 
     // ── CLIENT JOYS ──────────────────────────────────────────────────────────
     {
