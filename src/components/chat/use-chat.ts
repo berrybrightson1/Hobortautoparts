@@ -14,7 +14,8 @@ export function useChat(
     user: { id: string } | null,
     isAdmin: boolean,
     selectedUser: { id: string } | null,
-    isOpen: boolean = true
+    isOpen: boolean = true,
+    userName?: string | null
 ) {
     const [messages, setMessages] = useState<Message[]>([])
     const [isLoading, setIsLoading] = useState(false)
@@ -249,9 +250,16 @@ export function useChat(
                 })
             } else if (activeId) {
                 // Customer or Guest sending to admin
+                let displaySender = userName;
+                if (!displaySender && !activeId.startsWith('guest-')) {
+                    const { data: prof } = await supabase.from('profiles').select('full_name').eq('id', activeId).single();
+                    if (prof?.full_name) displaySender = prof.full_name;
+                }
+                const finalSender = isAdmin ? 'Support' : (displaySender || activeId.substring(0, 8));
+
                 await notifyAdminsAction({
                     title: "New Live Support Message",
-                    message: `${isAdmin ? 'Support' : activeId.substring(0, 8)}: ${text.substring(0, 50)}`,
+                    message: `${finalSender}: ${text.substring(0, 50)}`,
                     type: 'system',
                     link: `/portal/admin/live-support?userId=${activeId}`
                 })

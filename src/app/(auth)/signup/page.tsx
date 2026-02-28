@@ -15,7 +15,8 @@ import { toast } from "sonner"
 import { supabase } from "@/lib/supabase"
 import { sendWelcomeEmailAction } from "@/app/actions/email-actions"
 import { isDisposableEmail } from "@/lib/email-validation"
-import { Suspense } from "react"
+import { Suspense, useRef } from "react"
+import { logAction } from "@/lib/audit"
 
 export default function SignupPage() {
     return (
@@ -40,6 +41,26 @@ function SignupContent() {
     const [phoneNumber, setPhoneNumber] = useState("")
     const [company, setCompany] = useState("")
 
+    // OTP States
+    const [showOtpInput, setShowOtpInput] = useState(false)
+    const [otpValue, setOtpValue] = useState(["", "", "", "", "", ""])
+    const [isVerifying, setIsVerifying] = useState(false)
+    const [resendTimer, setResendTimer] = useState(60)
+    const otpRefs = useRef<(HTMLInputElement | null)[]>([])
+
+    // Timer for OTP Resend
+    useEffect(() => {
+        let interval: NodeJS.Timeout
+        if (showOtpInput && resendTimer > 0) {
+            interval = setInterval(() => setResendTimer((prev) => prev - 1), 1000)
+        }
+        return () => clearInterval(interval)
+    }, [showOtpInput, resendTimer])
+
+    // Auto-redirect was removed to prevent race conditions during signup OTP flows. 
+    // All navigation from this page is now triggered explicitly by user action (Submit OTP, Login, OAuth callback).
+
+
     const handleGoogleSignUp = async () => {
         setIsLoading(true)
         try {
@@ -57,24 +78,6 @@ function SignupContent() {
             setIsLoading(false)
         }
     }
-
-    // Auto-redirect once AuthProvider fetches the role/profile
-    useEffect(() => {
-        if (loading) return
-        if (!profile) return // Not logged in yet
-
-        if (profile?.role) {
-            const userRole = profile.role as 'customer' | 'agent' | 'admin'
-            setRole(userRole)
-            if (returnTo) {
-                router.push(returnTo)
-            } else {
-                if (userRole === 'admin') router.push("/portal/admin")
-                else if (userRole === 'agent') router.push("/portal/agent")
-                else router.push("/portal/customer")
-            }
-        }
-    }, [profile, loading, router, setRole, returnTo])
 
     // STEP 1: Submit the sign-up form
     async function onSubmit(event: React.SyntheticEvent) {
@@ -114,36 +117,236 @@ function SignupContent() {
                     })
                     return
                 }
+                if (error.message?.toLowerCase().includes('aborted')) {
+                    toast.error("Connection Interrupted", {
+                        description: "The request was interrupted. Please try again."
+                    })
+                    return
+                }
                 throw error
             }
 
-            // Instantly send the welcome email for customers since OTP is bypassed
-            if (userRole === 'customer') {
-                try {
-                    await sendWelcomeEmailAction(email, firstName)
-                } catch (e) {
-                    console.warn("Welcome email failed (non-blocking):", e)
-                }
+            logAction('sign_up_initiated', { email: email.toLowerCase(), role: userRole }).catch(console.warn)
 
-                toast.success("Account created! Welcome aboard 🎉", {
-                    description: "Check your email for a welcome message from us. Redirecting..."
+            // --- OTP FLOW ---
+            // We DO NOT set the role yet, preventing the auto-redirect until verified.
+            try {
+                // Trigger the custom OTP email via Supabase Auth
+                await supabase.auth.resend({ type: 'signup', email })
+
+                toast.success("Verification Code Sent", {
+                    description: "Please check your email for a 6-digit code."
                 })
-            } else {
-                toast.success("Application submitted!", {
-                    description: "Your agent application is pending admin approval. You'll receive an email once approved."
-                })
+
+                // Show the OTP input screen
+                setShowOtpInput(true)
+                setResendTimer(60)
+
+                // Focus first input
+                setTimeout(() => otpRefs.current[0]?.focus(), 100)
+
+            } catch (e: any) {
+                if (e?.message?.toLowerCase().includes('aborted')) {
+                    console.warn("OTP delivery aborted (network interruption).")
+                } else {
+                    console.warn("OTP delivery failed:", e)
+                    toast.error("Failed to send code. Please try again.")
+                }
             }
 
-            // The useEffect will handle the redirect once profile syncs, but proactive setRole helps UI switch faster
-            setRole(userRole)
-
         } catch (error: any) {
-            toast.error("Signup failed", {
-                description: error.message || "An error occurred. Please try again."
-            })
+            if (error?.message?.toLowerCase().includes('aborted')) {
+                toast.error("Connection Interrupted", {
+                    description: "The network request was aborted. Please check your connection and try again."
+                })
+            } else {
+                toast.error("Signup failed", {
+                    description: error.message || "An error occurred. Please try again."
+                })
+            }
         } finally {
             setIsLoading(false)
         }
+    }
+
+    const handleOtpChange = (index: number, value: string) => {
+        if (!/^\d*$/.test(value)) return // Only numbers
+
+        const newOtp = [...otpValue]
+        newOtp[index] = value
+        setOtpValue(newOtp)
+
+        // Auto focus next
+        if (value && index < 5) {
+            otpRefs.current[index + 1]?.focus()
+        }
+    }
+
+    const handleOtpKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Backspace' && !otpValue[index] && index > 0) {
+            otpRefs.current[index - 1]?.focus()
+        }
+    }
+
+    const handleOtpSubmit = async (e: React.FormEvent) => {
+        e.preventDefault()
+        const code = otpValue.join('')
+        if (code.length !== 6) return
+
+        setIsVerifying(true)
+
+        try {
+            const { data, error } = await supabase.auth.verifyOtp({
+                email,
+                token: code,
+                type: 'signup'
+            })
+
+            if (error) throw error
+
+            // Verification Success! Send the premium welcome email in the background
+            try {
+                sendWelcomeEmailAction(email, firstName, activeTab).catch(e => {
+                    console.warn("Welcome email failed (non-blocking hook):", e)
+                })
+            } catch (e) {
+                console.warn("Welcome email failed to start:", e)
+            }
+
+            if (activeTab === 'agent') {
+                toast.success("Verification complete!", {
+                    description: "Your agent application is pending admin approval. Redirecting to your portal..."
+                })
+            } else {
+                toast.success("Account verified! Welcome aboard 🎉", {
+                    description: "Redirecting to your portal..."
+                })
+            }
+
+            // Wait briefly to let the auth state sync across the app before hard navigating
+            setTimeout(() => {
+                setRole(activeTab as 'customer' | 'agent')
+
+                // Explicitly push them so we don't rely only on the useEffect which checks email_confirmed_at
+                if (activeTab === 'admin') router.push("/portal/admin")
+                else if (activeTab === 'agent') router.push("/portal/agent")
+                else router.push("/portal/customer")
+            }, 1000)
+
+            logAction('sign_up_verified', { email: email.toLowerCase() }).catch(console.warn)
+
+        } catch (error: any) {
+            if (error?.message?.toLowerCase().includes('aborted')) {
+                console.warn("Verify OTP aborted (network interruption).")
+                // DO NOT RETURN EARLY HERE, let 'finally' run
+            } else {
+                toast.error("Verification failed", {
+                    description: error.message || "The code you entered is invalid or expired."
+                })
+            }
+        } finally {
+            setIsVerifying(false)
+        }
+    }
+
+    const handleResendOtp = async () => {
+        if (resendTimer > 0) return
+
+        setIsVerifying(true)
+        try {
+            const { error } = await supabase.auth.resend({ type: 'signup', email })
+            if (error) throw error
+
+            toast.success("New code sent", {
+                description: "Please check your inbox."
+            })
+            setResendTimer(60)
+            setOtpValue(["", "", "", "", "", ""])
+            otpRefs.current[0]?.focus()
+        } catch (error: any) {
+            if (error?.message?.toLowerCase().includes('aborted')) {
+                console.warn("Resend OTP aborted (network interruption).")
+                return
+            }
+            toast.error("Failed to resend code", {
+                description: error.message
+            })
+        } finally {
+            setIsVerifying(false)
+        }
+    }
+
+    // ── OTP VERIFICATION SCREEN ────────────────────────────────────────
+    if (showOtpInput) {
+        return (
+            <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
+                <div className="space-y-2 text-center items-center flex flex-col pt-4">
+                    <div className="h-16 w-16 bg-orange-100 rounded-full flex items-center justify-center mb-2">
+                        <Mail className="h-8 w-8 text-primary-orange" />
+                    </div>
+                    <h1 className="text-3xl font-semibold text-primary-blue tracking-tight">
+                        Check your email
+                    </h1>
+                    <p className="text-primary-blue/60 font-medium max-w-[280px]">
+                        We've sent a 6-digit verification code to <span className="text-primary-blue font-bold">{email}</span>
+                    </p>
+                </div>
+
+                <form onSubmit={handleOtpSubmit} className="space-y-6 pt-4">
+                    <div className="flex justify-between gap-2 px-2">
+                        {otpValue.map((digit, index) => (
+                            <Input
+                                key={index}
+                                type="text"
+                                inputMode="numeric"
+                                maxLength={1}
+                                value={digit}
+                                ref={(el: any) => { otpRefs.current[index] = el }}
+                                onChange={(e) => handleOtpChange(index, e.target.value)}
+                                onKeyDown={(e) => handleOtpKeyDown(index, e)}
+                                className="w-12 h-14 text-center text-2xl font-bold bg-white border-2 focus-visible:ring-0 focus-visible:border-primary-orange rounded-xl shadow-sm"
+                                disabled={isVerifying}
+                            />
+                        ))}
+                    </div>
+
+                    <Button
+                        type="submit"
+                        disabled={isVerifying || otpValue.join('').length !== 6}
+                        className="w-full h-12 rounded-xl border-slate-200 font-semibold text-base transition-all shadow-xl shadow-primary-blue/5 flex items-center justify-center gap-2"
+                    >
+                        {isVerifying ? (
+                            <>
+                                <Loader2 className="h-5 w-5 animate-spin text-white" />
+                                <span>Verifying...</span>
+                            </>
+                        ) : (
+                            <>
+                                Confirm Account <CheckCircle2 className="ml-2 h-5 w-5" />
+                            </>
+                        )}
+                    </Button>
+                </form>
+
+                <div className="text-center pt-2">
+                    <p className="text-sm text-primary-blue/60 font-medium">
+                        Didn't receive the code?{" "}
+                        {resendTimer > 0 ? (
+                            <span className="text-primary-blue/40">Resend in {resendTimer}s</span>
+                        ) : (
+                            <button
+                                onClick={handleResendOtp}
+                                type="button"
+                                className="font-semibold text-primary-orange hover:text-orange-600 transition-colors flex items-center justify-center gap-1 mx-auto mt-1"
+                                disabled={isVerifying}
+                            >
+                                <RefreshCw className="h-3 w-3" /> Resend Code
+                            </button>
+                        )}
+                    </p>
+                </div>
+            </div>
+        )
     }
 
     // ── SIGN-UP FORM SCREEN ────────────────────────────────────────

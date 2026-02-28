@@ -5,12 +5,27 @@ import { Bell, Check, Trash2, Package, Info, Tag, Clock, CheckCheck, PackageSear
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { cn, formatMinimalDistance } from "@/lib/utils"
+import { cn } from "@/lib/utils"
+import { format, formatDistanceToNow } from "date-fns"
 import { useAuth } from "@/components/auth/auth-provider"
 import { supabase } from "@/lib/supabase"
 import { toast } from "sonner"
 import { motion, AnimatePresence } from "framer-motion"
 import { InteractiveNotification } from "@/components/portal/interactive-notification"
+
+const formatNotificationDate = (dateStr: string) => {
+    const date = new Date(dateStr)
+    const now = new Date()
+    const diffHours = Math.abs(now.getTime() - date.getTime()) / 36e5
+
+    if (diffHours < 24) {
+        return formatDistanceToNow(date, { addSuffix: true })
+    } else {
+        const diffDays = Math.floor(diffHours / 24)
+        const timeStr = format(date, 'h:mm a')
+        return `${diffDays} Day${diffDays === 1 ? '' : 's'} at ${timeStr}`
+    }
+}
 
 interface Notification {
     id: string
@@ -234,7 +249,7 @@ export function NotificationPopover() {
                                                         </p>
                                                     </div>
                                                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tight bg-slate-100 px-2 py-0.5 rounded-full shrink-0">
-                                                        {formatMinimalDistance(notification.created_at)}
+                                                        {formatNotificationDate(notification.created_at)}
                                                     </span>
                                                 </div>
                                                 <p className="text-[11px] text-slate-500 font-medium leading-relaxed line-clamp-2 pr-4">
@@ -253,6 +268,10 @@ export function NotificationPopover() {
                         <div className="p-6 border-t border-slate-50 bg-slate-50/30">
                             <Button
                                 variant="outline"
+                                onClick={() => {
+                                    setIsOpen(false)
+                                    router.push("/portal/notifications")
+                                }}
                                 className="w-full rounded-2xl border-slate-200 text-[10px] font-black uppercase tracking-[0.2em] text-slate-600 h-11 hover:bg-white hover:border-slate-300 transition-all shadow-sm active:scale-95"
                             >
                                 Inbox History

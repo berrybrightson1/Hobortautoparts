@@ -1,0 +1,88 @@
+/* Resend-style toggle: track + thumb, icons for light/dark */
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 9999px;
+  color: var(--text-primary);
+  transition: color 0.2s ease;
+}
+
+.full {
+  width: 100%;
+  min-width: 0;
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  justify-content: space-between;
+  background: var(--bg-page);
+  border: 1px solid var(--border-color);
+  box-sizing: border-box;
+}
+
+.full:hover {
+  background: var(--bg-subtle);
+}
+
+.toggle:hover {
+  color: var(--brand-primary);
+}
+
+.track {
+  position: relative;
+  width: 2.75rem;
+  height: 1.5rem;
+  border-radius: 9999px;
+  background: var(--border-color);
+  transition: background 0.2s ease;
+}
+
+.thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: calc(1.5rem - 4px);
+  height: calc(1.5rem - 4px);
+  border-radius: 50%;
+  background: var(--bg-page);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  transition: transform 0.2s ease;
+}
+
+.dark .thumb {
+  transform: translateX(1.25rem);
+}
+
+.icons {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.5;
+  transition: opacity 0.2s ease;
+}
+
+.sun {
+  opacity: 1;
+}
+
+.dark .sun {
+  opacity: 0.5;
+}
+
+.dark .moon {
+  opacity: 1;
+}
+
+.icon svg {
+  display: block;
+}

@@ -28,10 +28,9 @@ export function Footer() {
                     <div className="flex flex-col gap-4 min-w-[140px]">
                         <span className="text-white border-b border-dashed border-white/20 pb-2 mb-2">Navigation</span>
                         <Link href="/about" className="hover:text-primary-orange transition-colors">About</Link>
-                        <Link href="/how-it-works" className="hover:text-primary-orange transition-colors">How it Works</Link>
+
                         <Link href="/services" className="hover:text-primary-orange transition-colors">Services</Link>
                         <Link href="/contact" className="hover:text-primary-orange transition-colors">Contact</Link>
-                        <Link href="/portal" className="hover:text-primary-orange transition-colors">Client Portal</Link>
                     </div>
 
                     <div className="flex flex-col gap-4 min-w-[140px]">
@@ -39,7 +38,6 @@ export function Footer() {
                         <Link href="/shipping-policy" className="hover:text-primary-orange transition-colors">Shipping Policy</Link>
                         <Link href="/return-policy" className="hover:text-primary-orange transition-colors">Return Policy</Link>
                         <Link href="/privacy-policy" className="hover:text-primary-orange transition-colors">Privacy Policy</Link>
-                        <Link href="/sitemap" className="hover:text-primary-orange transition-colors">Sitemap</Link>
                     </div>
                 </div>
             </div>

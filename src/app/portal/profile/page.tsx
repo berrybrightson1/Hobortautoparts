@@ -21,6 +21,7 @@ import { useState, useEffect } from "react"
 import { supabase } from "@/lib/supabase"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
+import { logAction } from "@/lib/audit"
 
 export default function UnifiedSettingsPage() {
     const { user, profile, refreshProfile } = useAuth()
@@ -94,6 +95,10 @@ export default function UnifiedSettingsPage() {
             if (error) throw error
 
             await refreshProfile()
+
+            // Log the profile update
+            logAction('update_profile', { updates: { full_name: fullName !== profile?.full_name, phone_number: phoneNumber !== profile?.phone_number } }).catch(console.warn)
+
             toast.success("Profile details updated")
 
             setIsSaved(true)
@@ -132,6 +137,9 @@ export default function UnifiedSettingsPage() {
             // Update to new password
             const { error } = await supabase.auth.updateUser({ password: passwords.new })
             if (error) throw error
+
+            // Log security update
+            logAction('update_password', {}).catch(console.warn)
 
             toast.success("Security credentials updated")
             setPasswords({ current: "", new: "", confirm: "" })

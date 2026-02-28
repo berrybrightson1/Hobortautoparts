@@ -1,17 +1,21 @@
-'use server';
+"use server";
 
 import { resend } from '@/lib/email';
-import WelcomeEmail from '@/emails/WelcomeEmail';
+import CustomerWelcome from '@/emails/CustomerWelcome';
+import AgentWelcome from '@/emails/AgentWelcome';
 import RequestUpdateEmail from '@/emails/RequestUpdateEmail';
+import VerificationCodeEmail from '@/emails/VerificationCode';
 import { supabase } from '@/lib/supabase';
 
-export async function sendWelcomeEmailAction(email: string, firstName: string) {
+export async function sendWelcomeEmailAction(email: string, firstName: string, role: string = 'customer') {
     try {
+        const EmailTemplate = role === 'agent' ? AgentWelcome : CustomerWelcome;
+
         const { data, error } = await resend.emails.send({
-            from: 'Hobort Auto Express <notifications@send.hobortautopartsexpress.com>',
+            from: 'Hobort Auto Express <notifications@hobortautopartsexpress.com>',
             to: email,
-            subject: 'Welcome to Hobort Auto Parts Express',
-            react: WelcomeEmail({ firstName }),
+            subject: role === 'agent' ? 'Hobort B2B Agent Network - Welcome' : 'Welcome to Hobort Auto Parts Express',
+            react: EmailTemplate({ firstName }),
         });
 
         if (error) {
@@ -48,7 +52,7 @@ export async function sendRequestUpdateEmailAction(requestId: string) {
         }
 
         const { data, error } = await resend.emails.send({
-            from: 'Hobort Auto Express <notifications@send.hobortautopartsexpress.com>',
+            from: 'Hobort Auto Express <notifications@hobortautopartsexpress.com>',
             to: request.profiles.email,
             subject: `Update on your request: ${request.part_name}`,
             react: RequestUpdateEmail({

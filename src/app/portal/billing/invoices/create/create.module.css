@@ -1,0 +1,746 @@
+/* Create invoice - refined UI/UX, brand-aligned */
+
+.page {
+  max-width: 68rem;
+  margin: 0 auto;
+  padding-inline: 2rem;
+  padding-bottom: 3rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 1rem;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e5e7eb;
+  border-top-color: #1e3a5f;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.header {
+  margin-bottom: 2.25rem;
+}
+
+.headerTitle {
+  font-size: 1.625rem;
+  font-weight: 700;
+  color: #1e3a5f;
+  margin: 0 0 0.375rem;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+.headerSubtitle {
+  font-size: 0.9375rem;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.55;
+}
+
+.limitBanner {
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.25rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.limitBanner p {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: #1f2937;
+  flex: 1;
+  min-width: 0;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.formColumns {
+  display: flex;
+  gap: 1.75rem;
+  align-items: flex-start;
+}
+
+.formMain {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.formSidebar {
+  flex-shrink: 0;
+  width: 22rem;
+  position: sticky;
+  top: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+/* Cards */
+.card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding-block: 1.625rem;
+  padding-inline: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  transition: box-shadow 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.cardInner {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.cardTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e3a5f;
+  margin: 0 0 0.25rem;
+  letter-spacing: -0.01em;
+}
+
+.cardSubtitle {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.45;
+}
+
+.cardHint {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.cardRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem 2rem;
+  flex-wrap: wrap;
+  margin: 0;
+}
+
+.cardRowWrap {
+  gap: 1.25rem 2rem;
+  margin-inline: 0;
+}
+
+.cardFields {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin: 0;
+}
+
+.cardHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin: 0;
+}
+
+.cardHead .cardTitle {
+  margin: 0 0 0.25rem;
+}
+
+.cardHead .cardSubtitle {
+  margin: 0;
+}
+
+/* Fields */
+.field {
+  margin-bottom: 0;
+}
+
+.fieldShort {
+  min-width: 0;
+  flex: 1 1 11rem;
+  max-width: 15rem;
+}
+
+.field label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #1e3a5f;
+  margin-bottom: 0.375rem;
+}
+
+.required {
+  color: #ef4444;
+}
+
+.input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  min-height: 2.5rem;
+  font-size: 0.875rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-family: inherit;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background: white;
+  box-sizing: border-box;
+  color: #1f2937;
+}
+
+.input:hover {
+  border-color: #d1d5db;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #1e3a5f;
+  box-shadow: 0 0 0 3px rgba(45, 79, 106, 0.12);
+}
+
+.inputReadonly {
+  background: #f9fafb;
+  color: #6b7280;
+  cursor: default;
+}
+
+.inputSm {
+  width: 4rem;
+  text-align: right;
+  display: inline-block;
+}
+
+.inputCell {
+  padding: 0.4rem 0.5rem;
+  font-size: 0.8125rem;
+  min-width: 0;
+}
+
+.inputNumber {
+  text-align: right;
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 4.5rem;
+  line-height: 1.5;
+}
+
+/* Table */
+.tableCard {
+  overflow-x: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #f9fafb;
+  margin: 0;
+}
+
+/* Content containers */
+.cardContent {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #f9fafb;
+  margin: 0;
+}
+
+.cardContentRow {
+  padding: 1rem 1.25rem;
+}
+
+.cardContentFields {
+  padding: 1rem 1.25rem;
+}
+
+.cardContentTextarea {
+  padding: 0;
+  overflow: hidden;
+}
+
+.cardContentTextarea .textarea {
+  width: 100%;
+  border: none;
+  background: transparent;
+  border-radius: 10px;
+  padding: 0.6rem 0.75rem;
+  min-height: 4.5rem;
+}
+
+.cardContentTextarea .textarea:focus {
+  box-shadow: none;
+}
+
+.createTable {
+  width: 100%;
+  min-width: 480px;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.createTable th,
+.createTable td {
+  padding: 0.6rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.createTable th {
+  font-weight: 600;
+  color: #1e3a5f;
+  background: #f9fafb;
+  font-size: 0.8125rem;
+}
+
+.createTable tbody tr:nth-child(even) td {
+  background: #f9fafb;
+}
+
+.createTable tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.createTable tbody tr:hover td {
+  background: #f3f4f6;
+}
+
+.createTableAmount {
+  font-weight: 600;
+  white-space: nowrap;
+  color: #1e3a5f;
+}
+
+.createTableAction {
+  width: 1%;
+  white-space: nowrap;
+}
+
+/* Totals card */
+.cardTotals,
+.cardSetup {
+  background: linear-gradient(to bottom, #f9fafb 0%, white 100%);
+  border-color: #e5e7eb;
+  overflow: hidden;
+}
+
+.totalsGrid {
+  width: 100%;
+  margin: 0;
+}
+
+.totalsLine {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  font-size: 0.875rem;
+  color: #1e3a5f;
+}
+
+.totalsLine span:last-child {
+  min-width: 6rem;
+  text-align: right;
+}
+
+.totalsLineInput {
+  display: grid;
+  grid-template-columns: 5.5rem 4rem minmax(6rem, 1fr);
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.totalsLineInput label {
+  flex-shrink: 0;
+}
+
+.totalsLineInput .inputSm {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.totalsSuffix {
+  font-size: 0.875rem;
+  color: #6b7280;
+  text-align: right;
+  min-width: 6rem;
+}
+
+.totalsLineTotal {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: white;
+  background: #1e3a5f;
+  margin: 0.75rem -2rem 0;
+  padding: 1rem 2rem;
+  border-radius: 0;
+}
+
+.totalsLineTotal span:last-child {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+/* Actions */
+.createActions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0;
+  margin: 0;
+}
+
+.createActions .btn {
+  width: 100%;
+}
+
+.createActionsSecondary {
+  margin-top: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+}
+
+.createActionsSecondary .btn {
+  flex: 1;
+}
+
+.btnDanger {
+  color: #ef4444;
+}
+
+.btnDanger:hover:not(:disabled) {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.btnDanger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background 0.15s, border-color 0.15s;
+  font-family: inherit;
+}
+
+.btnPrimary {
+  background: #f97316;
+  color: white;
+  border-color: #f97316;
+  transition: filter 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btnPrimary:hover:not(:disabled) {
+  filter: brightness(1.08);
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.25);
+}
+
+.btnPrimary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btnCta {
+  padding: 0.75rem 1.25rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.btnOutline {
+  background: white;
+  color: #1e3a5f;
+  border-color: #e5e7eb;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.btnOutline:hover {
+  background: #f9fafb;
+  border-color: #6b7280;
+}
+
+.cardHead .btnOutline {
+  transition: transform 0.15s ease;
+}
+
+.cardHead .btnOutline:hover {
+  transform: translateY(-1px);
+}
+
+.btnGhost {
+  background: transparent;
+  color: #6b7280;
+  border: none;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8125rem;
+}
+
+.btnGhost:hover {
+  color: #ef4444;
+}
+
+.link {
+  color: #1e3a5f;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.error {
+  color: #ef4444;
+  margin: 0 0 0.75rem;
+}
+
+.fieldError {
+  font-size: 0.8125rem;
+  color: #ef4444;
+  margin: 0.25rem 0 0;
+}
+
+.fieldErrorCard {
+  margin-bottom: 1rem;
+  margin-top: 0;
+}
+
+.fieldInvalid .input {
+  border-color: #ef4444;
+}
+
+.cardInvalid {
+  border-left: 3px solid #ef4444;
+}
+
+.btnSm {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8125rem;
+}
+
+/* Presets */
+.presets {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(45, 79, 106, 0.04);
+  border: 1px solid rgba(45, 79, 106, 0.12);
+  border-radius: 10px;
+}
+
+.presetsLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #1e3a5f;
+}
+
+.presetsWrap {
+  flex: 1;
+  min-width: 0;
+  max-width: 16rem;
+}
+
+/* Your setup card */
+.cardSetup .cardInner {
+  gap: 1rem;
+}
+
+.setupCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0;
+  gap: 0.75rem;
+}
+
+.setupCardTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e3a5f;
+  margin: 0;
+}
+
+.setupCardEdit {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #1e3a5f;
+  text-decoration: none;
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.setupCardEdit:hover {
+  background: rgba(45, 79, 106, 0.08);
+  border-color: rgba(45, 79, 106, 0.3);
+}
+
+.setupCardEmpty {
+  font-size: 0.875rem;
+  color: #6b7280;
+  line-height: 1.5;
+  margin: 0 0 1rem;
+}
+
+.setupCardCta {
+  display: inline-block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #1e3a5f;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  background: rgba(45, 79, 106, 0.08);
+  transition: background 0.15s;
+}
+
+.setupCardCta:hover {
+  background: rgba(45, 79, 106, 0.14);
+}
+
+.setupCardBody {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.setupCardBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.setupCardLabel {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #6b7280;
+}
+
+.setupCardLogoBox {
+  width: 100px;
+  height: 32px;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: rgba(45, 79, 106, 0.03);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.setupCardLogo {
+  max-width: 90px;
+  max-height: 28px;
+  min-width: 0;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+.setupCardText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.setupCardName {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1e3a5f;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.setupCardMeta {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+@media (max-width: 960px) {
+  .formColumns {
+    flex-direction: column;
+  }
+
+  .formSidebar {
+    width: 100%;
+    position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding-inline: 1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding-inline: 0.75rem;
+  }
+
+  .card {
+    padding-block: 1rem;
+    padding-inline: 1.25rem;
+  }
+
+  .fieldShort {
+    max-width: none;
+    flex: 1 1 100%;
+  }
+
+  .cardHead {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .cardHead .btnOutline {
+    align-self: flex-start;
+  }
+}

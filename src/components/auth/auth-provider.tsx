@@ -4,6 +4,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react'
 import { User } from '@supabase/supabase-js'
 import { useRouter } from "next/navigation"
 import { supabase } from '@/lib/supabase'
+import { logAction } from '@/lib/audit'
 
 type AuthContextType = {
     user: User | null
@@ -54,8 +55,12 @@ export const AuthProvider = ({
                 }
 
                 if (session?.user) {
-                    setUser(session.user)
-                    await fetchProfile(session.user)
+                    if (session.user.email_confirmed_at) {
+                        setUser(session.user)
+                        await fetchProfile(session.user)
+                    } else {
+                        console.warn("AuthProvider: Ignoring unconfirmed email session.")
+                    }
                 }
             } catch (err) {
                 console.error("AuthProvider: Init error:", err)
@@ -64,7 +69,7 @@ export const AuthProvider = ({
             }
         }
 
-        if (initialSession?.user) {
+        if (initialSession?.user && initialSession.user.email_confirmed_at) {
             fetchProfile(initialSession.user)
         }
 
@@ -75,7 +80,6 @@ export const AuthProvider = ({
             async (event, session) => {
                 if (!mounted) return
 
-                // Handle token refresh errors that might come through events
                 if (event === 'SIGNED_OUT') {
                     setUser(null)
                     setProfile(null)
@@ -84,10 +88,14 @@ export const AuthProvider = ({
                 }
 
                 if (session?.user) {
-                    // Only update if different user or profile missing
-                    if (session.user.id !== user?.id) {
+                    if (session.user.email_confirmed_at) {
                         setUser(session.user)
+                        // Always re-fetch profile on any sign-in event so the context is up to date
                         await fetchProfile(session.user)
+                    } else {
+                        console.warn("AuthProvider: Session change ignored for unconfirmed email.")
+                        setUser(null)
+                        setProfile(null)
                     }
                 } else {
                     setUser(null)
@@ -105,6 +113,9 @@ export const AuthProvider = ({
 
     const fetchProfile = async (currentUser: User) => {
         try {
+            // Small delay to allow Postgres trigger to safely commit before querying from replica
+            await new Promise(resolve => setTimeout(resolve, 500))
+
             const { data, error } = await supabase
                 .from('profiles')
                 .select('*')
@@ -152,7 +163,7 @@ export const AuthProvider = ({
                     console.warn("AuthProvider: Cannot sync deleted user, signing out.")
                     await signOut()
                 } else {
-                    console.error("AuthProvider: Sync error:", syncError)
+                    console.error("AuthProvider: Sync error:", syncError?.message || syncError, syncError?.details)
                     setProfile({ role: currentUser.user_metadata?.role || 'customer' })
                 }
             }
@@ -170,12 +181,17 @@ export const AuthProvider = ({
     }
 
     const signOut = async () => {
+        // Log out action before state is cleared
+        if (user?.email) {
+            logAction('logout', { email: user.email }).catch(console.warn)
+        }
+
         // Immediately clear client state so the UI responds before the network call finishes
         setUser(null)
         setProfile(null)
         localStorage.clear()
 
-        // Fire Supabase sign-out in the background (don't await — we already cleared state)
+        // Fire Supabase sign-out in the background
         supabase.auth.signOut().catch(console.warn)
 
         router.push('/')

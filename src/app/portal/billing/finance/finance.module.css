@@ -1,0 +1,357 @@
+/* Finance Page */
+.page {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.pageHeader {
+  margin-bottom: 2rem;
+}
+
+.pageTitle {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e3a5f;
+  margin: 0 0 0.5rem 0;
+}
+
+.pageSubtitle {
+  color: #6b7280;
+  margin: 0;
+}
+
+.financeStats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.statCard {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.statCard svg {
+  flex-shrink: 0;
+  color: #1e3a5f;
+}
+
+.statBody {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.statLabel {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.statValue {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e3a5f;
+}
+
+.statUnit {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.statMeta {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+.panel {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.panelHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.panelTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1e3a5f;
+  margin: 0;
+}
+
+.filterTabs {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.tab {
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tab:hover {
+  background: #f9fafb;
+}
+
+.tab.active {
+  background: #1e3a5f;
+  color: white;
+  border-color: #1e3a5f;
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  text-align: left;
+  padding: 0.75rem;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.table td {
+  padding: 0.875rem 0.75rem;
+  border-bottom: 1px solid #f3f4f6;
+  font-size: 0.9375rem;
+}
+
+.thSort {
+  background: none;
+  border: none;
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.2s;
+}
+
+.thSort:hover {
+  color: #1e3a5f;
+}
+
+.tableEmpty {
+  text-align: center;
+  color: #9ca3af;
+  padding: 2rem !important;
+}
+
+.link {
+  color: #1e3a5f;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.status.paid {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status.pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status.overdue {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.actionsCell {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btnSm {
+  padding: 0.5rem 0.875rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 0.375rem;
+  background: white;
+  border: 1px solid #e5e7eb;
+  color: #1e3a5f;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btnSm:hover:not(:disabled) {
+  background: #f9fafb;
+}
+
+.btnSm:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btnPaid {
+  background: #10b981;
+  color: white;
+  border-color: #10b981;
+}
+
+.btnPaid:hover:not(:disabled) {
+  background: #059669;
+}
+
+.btnUnpaid {
+  background: #6b7280;
+  color: white;
+  border-color: #6b7280;
+}
+
+.btnUnpaid:hover:not(:disabled) {
+  background: #4b5563;
+}
+
+.bankingCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.bankingCard {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+}
+
+.bankingCardTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e3a5f;
+  margin: 0 0 0.5rem 0;
+}
+
+.bankingCardDesc {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0 0 1rem 0;
+}
+
+.bankingCardAmount {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e3a5f;
+  margin: 0 0 0.5rem 0;
+}
+
+.bankingCardUnit {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.bankingCardDetail {
+  font-size: 0.875rem;
+  color: #4b5563;
+  margin: 0;
+}
+
+.bankingCardHint {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin: 0.5rem 0 0 0;
+}
+
+.exchangeRateInline {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.exchangeRateLabel {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.exchangeRateInput {
+  flex: 1;
+  max-width: 150px;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+}
+
+.exchangeRateInput:focus {
+  outline: none;
+  border-color: #1e3a5f;
+}
+
+@media (max-width: 768px) {
+  .financeStats {
+    grid-template-columns: 1fr;
+  }
+
+  .panelHead {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .filterTabs {
+    justify-content: stretch;
+  }
+
+  .tab {
+    flex: 1;
+  }
+
+  .actionsCell {
+    flex-direction: column;
+  }
+
+  .bankingCards {
+    grid-template-columns: 1fr;
+  }
+}

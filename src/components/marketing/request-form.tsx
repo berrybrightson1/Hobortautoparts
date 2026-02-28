@@ -20,6 +20,7 @@ import { notifyAdminsAction } from "@/app/actions/notification-actions"
 import { WhatsAppOrderModal } from "@/components/marketing/whatsapp-order-modal"
 import { MessageSquare as WhatsAppIcon } from "lucide-react"
 import { validateVIN } from "@/lib/vin-utils"
+import { logAction } from "@/lib/audit"
 
 const OTHER_OPTION = "Other..."
 const YEARS = Array.from({ length: 27 }, (_, i) => (2026 - i).toString())
@@ -343,6 +344,12 @@ export function RequestForm({ initialData, requestId, isEdit = false, onSuccess 
                     console.error("Supabase Update Error:", error)
                     throw error
                 }
+
+                logAction('update_sourcing_request', {
+                    requestId: requestId,
+                    partName: formData.part_name
+                }).catch(console.warn)
+
                 console.log("Update Success:", data)
                 toast.success("Request updated successfully!")
                 router.push('/portal')
@@ -362,6 +369,12 @@ export function RequestForm({ initialData, requestId, isEdit = false, onSuccess 
                     console.error("Supabase Insert Error:", error)
                     throw error
                 }
+
+                logAction('create_sourcing_request', {
+                    partName: formData.part_name,
+                    vehicle: vehicle_info
+                }).catch(console.warn)
+
                 console.log("Insert Success:", data)
                 setIsSubmitted(true)
                 if (onSuccess) onSuccess()

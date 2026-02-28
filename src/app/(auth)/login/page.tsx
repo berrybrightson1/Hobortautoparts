@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -13,7 +13,7 @@ import { toast } from "sonner"
 import { supabase } from "@/lib/supabase"
 import { usePortalStore } from "@/lib/store"
 import { useAuth } from "@/components/auth/auth-provider"
-import { Suspense } from "react"
+import { logAction } from "@/lib/audit"
 import { cn } from "@/lib/utils"
 
 export default function LoginPage() {
@@ -92,37 +92,48 @@ function LoginContent() {
 
             if (error) throw error
 
-            // Proactive sync for faster redirection
-            const { data: { user } } = await supabase.auth.getUser()
-            if (user) {
-                const role = user.user_metadata?.role || 'customer'
+            const signedInUser = data.user
+            if (!signedInUser) throw new Error("No user returned from sign in")
 
-                // Strict role isolation: User must log in from the correct tab
-                if (role !== activeRole) {
-                    await supabase.auth.signOut()
-                    throw new Error(`Access denied. Please select the '${role}' tab to sign in.`)
-                }
+            // Strict role isolation: User must log in from the correct tab
+            const metaRole = signedInUser.user_metadata?.role || 'customer'
+            if (metaRole !== activeRole) {
+                await supabase.auth.signOut()
+                throw new Error(`Access denied. Please select the '${metaRole}' tab to sign in.`)
+            }
 
-                setRole(role)
+            // Fetch profile directly to get authoritative role without waiting for AuthProvider
+            const { data: profileData } = await supabase
+                .from('profiles')
+                .select('role')
+                .eq('id', signedInUser.id)
+                .single()
 
-                toast.success("Identity verified", {
-                    description: "Redirecting to your portal..."
-                })
+            const role = profileData?.role || metaRole
+            setRole(role)
 
-                // router.push is handled by useEffect when profile updates
+            await logAction('login', { email: email.toLowerCase(), method: 'password' })
+
+            toast.success("Identity verified", {
+                description: "Redirecting to your portal..."
+            })
+
+            // Redirect immediately — don't wait for AuthProvider to propagate
+            if (returnTo) {
+                router.push(returnTo)
+            } else {
+                if (role === 'admin') router.push("/portal/admin")
+                else if (role === 'agent') router.push("/portal/agent")
+                else router.push("/portal/customer")
             }
 
         } catch (error: any) {
-            // Silently handle abort errors (common during rapid navigation or provider takeover)
-            if (error.name === 'AbortError') {
-                return;
-            }
+            if (error.name === 'AbortError') return
 
             setAuthError("Sign in failed")
             toast.error("Sign in failed", {
                 description: error.message || "Please check your credentials and try again."
             })
-        } finally {
             setIsLoading(false)
         }
     }

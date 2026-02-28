@@ -15,6 +15,35 @@ import { VideoModal } from "@/components/marketing/video-modal"
 
 const updates = [
     {
+        version: "v2.5.0",
+        date: "February 28, 2026",
+        time: "08:30 PM",
+        title: "Hobort Billing Engine & Core Stability",
+        description: "A monumental update launching a professional financial invoicing ecosystem, alongside critical stability patches for authentication and user onboarding.",
+        changes: [
+            "Launched 'Hobort Billing': A professional, text-selectable PDF invoice engine with brand-matched orange aesthetics, generated directly in the browser.",
+            "Dynamic Invoice Management: Built a highly interactive 'Create Invoice' dashboard with auto-calculating line items, subtotal math, and global tax application.",
+            "Visual Status Architecture: Integrated responsive invoice status badges (Draft, Paid, Overdue) and a modular financial tracking interface.",
+            "Fixed OTP Verification Lockup: Transitioned the 'Welcome Email' from a blocking API request to an asynchronous background task, ensuring the UI verification loop never hangs.",
+            "Resolved Instant Redirect Bug: Hardened the Global Auth Provider to strictly reject 'ghost' sessions lacking email confirmation, forcing users to complete the mandatory OTP security gate.",
+            "Eliminated Registration RLS Errors: Added aggressive pre-fetch validation to prevent the app from fetching user profiles before they are mathematically verified, silencing all database security complaints."
+        ]
+    },
+    {
+        version: "v2.4.0",
+        date: "February 28, 2026",
+        time: "05:50 PM",
+        title: "Hobort Billing, Bug Reporting & UI Polish",
+        description: "A monumental update transforming Hobort into a full-scale financial and communication ecosystem with professional billing and real-time feedback loops.",
+        changes: [
+            "Launched 'Hobort Billing': A professional, text-selectable PDF invoice engine with brand-matched orange styling and automated calculations.",
+            "Instant Digital Onboarding: Google SSO combined with zero-delay welcome emails and 1-click account access for a friction-free experience.",
+            "Role-Based Bug Reporting: A high-fidelity feedback portal with 40+ searchable categories and a dedicated Admin resolution hub.",
+            "Navigation Optimization: Completely streamlined the footer and portal navigation, removing 5+ redundant paths for a cleaner, high-end UI.",
+            "Unified Platform Layout: Finalized a symmetrical, mobile-first architecture that scales perfectly from iPhone to Ultra-Wide monitors.",
+        ]
+    },
+    {
         version: "v2.3.0",
         date: "February 26, 2026",
         time: "05:45 PM",
@@ -31,17 +60,13 @@ const updates = [
     {
         version: "v2.2.0",
         date: "February 22, 2026",
-        time: "01:30 PM",
-        title: "VIN-First Intelligence & UX Polish",
-        description: "Major overhaul of the sourcing request flow with VIN-gated field unlocking, live trim data from the NHTSA API, and a wave of quality-of-life improvements across the platform.",
+        time: "11:30 AM",
+        title: "Registration Flow & Hydration Fixes",
+        description: "Focus on onboarding stability and resolving technical hydration mismatches in the signup process.",
         changes: [
-            "Implemented VIN-First Field Locking: Year, Make, Model, Trim, and Engine fields remain locked until a valid 17-digit VIN is entered — mirroring industry-standard automotive workflows.",
-            "Integrated Live NHTSA Trim Data: Sub-Model / Trim dropdown now fetches real brand-specific trim levels dynamically based on Make, Model, and Year — no more generic placeholders.",
-            "Instant Sign-Out Response: UI now clears user state immediately on logout before the network call, eliminating perceived delay.",
-            "WhatsApp UX Refinements: Floating button tooltip updated to 'Order via WhatsApp'; Contact page button is now WhatsApp brand green (#25D366).",
-            "Gallery Ring Fix: Active slide orange outline now renders fully visible — moved overflow-hidden from the card link to an inner wrapper so the ring draws outside the image boundary.",
-            "FAQ Shipping Notice: Added clear FAQ entry explaining that initial quotes cover the part cost only; Ghana shipping is calculated separately after confirmation.",
-            "Guide Navbar Link: /guide is now accessible directly from the main navigation bar.",
+            "Resolved Registration Hydration Mismatch: Fixed the 'Get Started' button submission handler to ensure consistent server/client rendering.",
+            "Optimized Post-Signup Redirection: Unified the landing logic after successful account creation for Customer and Agent roles.",
+            "Enhanced Field Validation: Added real-time error feedback for registration forms to minimize submission failures.",
         ]
     },
     {
@@ -54,7 +79,6 @@ const updates = [
             "Launched Advanced User Governance: Admins can now suspend/unsuspend accounts with unified middleware enforcement.",
             "Implemented Persistent Guest Chat: Conversations now sync to localStorage, ensuring continuity for unauthenticated users.",
             "Deployed Self-Service Recovery: New 'Forgot Password' flow with real-time security strength indicators during reset.",
-            "Dynamic Blog Architecture: System updates now use slug-based dynamic routing with rich media integration.",
             "Refined Gallery Masonry: Adjusted layout for 4-column density on ultra-wide screens and better mobile stacking.",
         ]
     },
@@ -225,13 +249,13 @@ export default function GuidePage() {
                     </p>
                 </div>
 
-                <Tabs defaultValue="structure" className="space-y-12">
+                <Tabs defaultValue="patchnotes" className="space-y-12">
                     <TabsList className="bg-slate-100 p-1.5 rounded-full inline-flex h-auto w-full md:w-auto">
                         <TabsTrigger
-                            value="structure"
+                            value="patchnotes"
                             className="rounded-full px-8 py-3 text-xs md:text-sm font-bold uppercase tracking-wide data-[state=active]:bg-white data-[state=active]:text-primary-orange data-[state=active]:shadow-lg transition-all"
                         >
-                            <LayoutDashboard className="w-4 h-4 mr-2" /> Site Structure
+                            <History className="w-4 h-4 mr-2" /> Patch Notes
                         </TabsTrigger>
                         <TabsTrigger
                             value="howto"
@@ -239,146 +263,8 @@ export default function GuidePage() {
                         >
                             <BookOpen className="w-4 h-4 mr-2" /> Quick Guides
                         </TabsTrigger>
-                        <TabsTrigger
-                            value="patchnotes"
-                            className="rounded-full px-8 py-3 text-xs md:text-sm font-bold uppercase tracking-wide data-[state=active]:bg-white data-[state=active]:text-primary-orange data-[state=active]:shadow-lg transition-all"
-                        >
-                            <History className="w-4 h-4 mr-2" /> Patch Notes
-                        </TabsTrigger>
                     </TabsList>
 
-                    {/* TAB 1: SITE STRUCTURE */}
-                    <TabsContent value="structure" className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-12">
-
-                        {/* Public Marketing */}
-                        <section className="space-y-6">
-                            <div className="flex items-center gap-4">
-                                <div className="h-12 w-12 rounded-2xl bg-blue-50 flex items-center justify-center text-primary-blue">
-                                    <Globe className="h-6 w-6" />
-                                </div>
-                                <div>
-                                    <h2 className="text-2xl font-bold tracking-tight text-slate-900">Public Platform</h2>
-                                    <p className="text-slate-500 font-medium">Accessible to all visitors without login.</p>
-                                </div>
-                            </div>
-                            <div className="grid md:grid-cols-3 gap-6">
-                                <Card className="border-slate-100 shadow-lg hover:shadow-xl hover:border-primary-orange/20 transition-all group cursor-pointer" id="homepage">
-                                    <CardHeader>
-                                        <CardTitle className="text-lg font-bold tracking-tight text-slate-900 group-hover:text-primary-orange transition-colors">Homepage</CardTitle>
-                                        <CardDescription>The central hub. Access vehicle sourcing, tracking, and platform overview.</CardDescription>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <Link href="/">
-                                            <Button variant="outline" className="w-full rounded-xl text-xs font-bold uppercase tracking-wide group-hover:bg-primary-orange group-hover:text-white group-hover:border-primary-orange transition-all">
-                                                Visit Homepage <ArrowRight className="ml-2 h-3 w-3" />
-                                            </Button>
-                                        </Link>
-                                    </CardContent>
-                                </Card>
-
-                                <Card className="border-slate-100 shadow-lg hover:shadow-xl hover:border-primary-orange/20 transition-all group cursor-pointer">
-                                    <CardHeader>
-                                        <CardTitle className="text-lg font-bold tracking-tight text-slate-900 group-hover:text-primary-orange transition-colors">Tracking Hub</CardTitle>
-                                        <CardDescription>Real-time shipment status checker. No login required for basic visibility.</CardDescription>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <Link href="/track">
-                                            <Button variant="outline" className="w-full rounded-xl text-xs font-bold uppercase tracking-wide group-hover:bg-primary-orange group-hover:text-white group-hover:border-primary-orange transition-all">
-                                                Track Shipment <ArrowRight className="ml-2 h-3 w-3" />
-                                            </Button>
-                                        </Link>
-                                    </CardContent>
-                                </Card>
-
-                                <Card className="border-slate-100 shadow-lg hover:shadow-xl hover:border-primary-orange/20 transition-all group cursor-pointer">
-                                    <CardHeader>
-                                        <CardTitle className="text-lg font-bold tracking-tight text-slate-900 group-hover:text-primary-orange transition-colors">Sourcing Request</CardTitle>
-                                        <CardDescription>The starting point. Submit vehicle details to get a custom quote.</CardDescription>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <Link href="/quote">
-                                            <Button variant="outline" className="w-full rounded-xl text-xs font-bold uppercase tracking-wide group-hover:bg-primary-orange group-hover:text-white group-hover:border-primary-orange transition-all">
-                                                Start Request <ArrowRight className="ml-2 h-3 w-3" />
-                                            </Button>
-                                        </Link>
-                                    </CardContent>
-                                </Card>
-                            </div>
-                        </section>
-
-                        {/* Customer Portal */}
-                        <section className="space-y-6">
-                            <div className="flex items-center gap-4">
-                                <div className="h-12 w-12 rounded-2xl bg-orange-50 flex items-center justify-center text-primary-orange">
-                                    <Users className="h-6 w-6" />
-                                </div>
-                                <div>
-                                    <h2 className="text-2xl font-bold tracking-tight text-slate-900">Customer Portal</h2>
-                                    <p className="text-slate-500 font-medium">Secure area for managing your orders and quotes.</p>
-                                </div>
-                            </div>
-                            <div className="grid md:grid-cols-2 gap-6">
-                                <Card className="bg-slate-900 text-white border-none shadow-xl">
-                                    <CardHeader>
-                                        <CardTitle className="text-lg font-bold tracking-tight">Dashboard Overview</CardTitle>
-                                        <CardDescription className="text-slate-400">View active requests, track shipments and chat directly with your sourcing agent in real-time.</CardDescription>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <Link href="/portal/customer">
-                                            <Button className="w-full rounded-xl text-xs font-bold uppercase tracking-wide bg-white text-slate-900 hover:bg-primary-orange hover:text-white transition-all">
-                                                Login to Dashboard <ExternalLink className="ml-2 h-3 w-3" />
-                                            </Button>
-                                        </Link>
-                                    </CardContent>
-                                </Card>
-
-                                <div className="grid gap-4">
-                                    <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100">
-                                        <h4 className="font-bold tracking-tight text-slate-900 mb-1">Quote Management</h4>
-                                        <p className="text-sm text-slate-500">Review agent pricing, accept quotes, and process payments.</p>
-                                    </div>
-                                    <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100">
-                                        <h4 className="font-bold tracking-tight text-slate-900 mb-1">Live Tracking</h4>
-                                        <p className="text-sm text-slate-500">Visual timeline of your order from US warehouse to delivery.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
-
-                        {/* Agent/Admin Portal */}
-                        <section className="space-y-6">
-                            <div className="flex items-center gap-4">
-                                <div className="h-12 w-12 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-600">
-                                    <ShieldCheck className="h-6 w-6" />
-                                </div>
-                                <div>
-                                    <h2 className="text-2xl font-bold tracking-tight text-slate-900">Agent Command</h2>
-                                    <p className="text-slate-500 font-medium">Tools for sourcing agents and system administrators.</p>
-                                </div>
-                            </div>
-                            <div className="grid md:grid-cols-2 gap-6">
-                                <Card className="border-slate-100 shadow-md">
-                                    <CardHeader>
-                                        <CardTitle className="text-lg font-bold tracking-tight text-slate-900">Sourcing Pipeline</CardTitle>
-                                        <CardDescription>Admins view incoming requests and assign quotes.</CardDescription>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <ul className="space-y-2 text-sm text-slate-500 mb-4">
-                                            <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-500" /> Real-time Customer Messaging</li>
-                                            <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-500" /> Generate Symmetrical Price Quotes</li>
-                                            <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-500" /> Manage Advanced Logistics & Feedback</li>
-                                        </ul>
-                                        <Link href="/portal/admin">
-                                            <Button variant="ghost" className="w-full text-xs font-bold uppercase tracking-wide text-slate-400 hover:text-slate-900">
-                                                Access Restricted <ExternalLink className="ml-2 h-3 w-3" />
-                                            </Button>
-                                        </Link>
-                                    </CardContent>
-                                </Card>
-                            </div>
-                        </section>
-
-                    </TabsContent>
 
                     {/* TAB 2: HOW-TO GUIDES */}
                     <TabsContent value="howto" className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-8">

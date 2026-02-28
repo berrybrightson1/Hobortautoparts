@@ -10,7 +10,7 @@ import {
     MessageSquare, MousePointerClick, FileText,
     ArrowRight, CheckCircle2, HelpCircle, Package,
     UserCircle, MapPin, DollarSign, PackageSearch,
-    TrendingUp, ShoppingBag
+    TrendingUp, ShoppingBag, Bug
 } from 'lucide-react'
 
 export default function AgentGuidePage() {
@@ -233,6 +233,60 @@ export default function AgentGuidePage() {
                     </div>
                 </section>
 
+                {/* STEP 4: REPORT A BUG */}
+                <section className="grid md:grid-cols-2 gap-12 items-center">
+                    <div className="order-2 md:order-1 space-y-8 animate-in fade-in slide-in-from-left-8 duration-700 delay-400">
+                        <div className="h-16 w-16 rounded-2xl bg-[#f97316]/10 flex items-center justify-center text-[#f97316] mb-4">
+                            <Bug className="h-8 w-8" />
+                        </div>
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-3">
+                                <h2 className="text-3xl font-bold tracking-tight text-primary-blue">4. Feedback & Bug Reports</h2>
+                                <Badge className="bg-[#f97316]/10 text-[#f97316] border-none text-[10px] font-bold uppercase tracking-wide rounded-full px-3 py-1">New</Badge>
+                            </div>
+                            <p className="text-primary-blue/70 text-lg leading-relaxed">
+                                Help us make the agent experience better. Report interface glitches or process issues in seconds.
+                            </p>
+                        </div>
+                        <ul className="space-y-4">
+                            {[
+                                "Locate the profile card at the bottom of your sidebar.",
+                                "Click the 'Report a Bug' button to open the feedback portal.",
+                                "Select a category (e.g., Sourcing, Pipeline, Chat).",
+                                "Submit your feedback directly to the engineering team."
+                            ].map((item, i) => (
+                                <li key={i} className="flex items-start gap-4 p-4 rounded-2xl bg-primary-blue/5 border border-primary-blue/10">
+                                    <div className="h-6 w-6 rounded-full bg-white border border-primary-blue/20 flex items-center justify-center shrink-0 text-xs font-bold text-primary-blue shadow-sm">
+                                        {i + 1}
+                                    </div>
+                                    <span className="text-primary-blue/80 font-medium">{item}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                    <div className="order-1 md:order-2 bg-slate-50 rounded-2xl p-8 md:p-12 aspect-square md:aspect-auto flex items-center justify-center relative overflow-hidden">
+                        <div className="w-full max-w-sm bg-white rounded-2xl shadow-xl shadow-primary-blue/10 overflow-hidden border border-primary-blue/10">
+                            <div className="bg-[#0b1f3a] p-5 flex items-center gap-3">
+                                <div className="h-9 w-9 rounded-xl bg-white/10 flex items-center justify-center">
+                                    <Bug className="h-5 w-5 text-[#f97316]" />
+                                </div>
+                                <div>
+                                    <p className="text-white font-bold text-sm">Feedback Portal</p>
+                                    <p className="text-white/50 text-[10px]">v2.2.0 Engineering</p>
+                                </div>
+                            </div>
+                            <div className="p-5 space-y-3 font-mono text-[9px]">
+                                <div className="p-2 bg-slate-50 rounded border border-slate-100 text-slate-400">
+                                    Scanning system metadata...
+                                </div>
+                                <div className="p-2 bg-slate-50 rounded border border-slate-100 text-[#f97316] font-bold">
+                                    Ready for report input.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
                 <section className="bg-primary-blue rounded-2xl p-12 md:p-24 text-center text-white relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-16 -mt-16 blur-3xl opacity-50" />
                     <div className="absolute bottom-0 left-0 w-48 h-48 bg-primary-orange/20 rounded-full -ml-12 -mb-12 blur-2xl opacity-50" />
@@ -248,23 +302,6 @@ export default function AgentGuidePage() {
                                 </Button>
                             </Link>
                         </div>
-                        {/* STEP 4: PERFORMANCE CENTRAL */}
-                        <section className="grid md:grid-cols-1 gap-12 items-center">
-                            <Card className="border-slate-100 shadow-2xl rounded-2xl bg-white overflow-hidden">
-                                <CardContent className="p-12 flex flex-col md:flex-row items-center gap-12">
-                                    <div className="h-24 w-24 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-                                        <TrendingUp className="h-12 w-12" />
-                                    </div>
-                                    <div className="space-y-4 text-center md:text-left">
-                                        <h3 className="text-3xl font-bold tracking-tight text-primary-blue">Performance Central</h3>
-                                        <p className="text-primary-blue/70 text-lg leading-relaxed max-w-2xl">
-                                            Admins now monitor sourcing speed and resolution rates in real-time. Use the **Agent Performance Hub** to track your metrics, completed orders, and global rating within the Hobort network.
-                                        </p>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </section>
-
                     </div>
                 </section>
 
@@ -272,3 +309,4 @@ export default function AgentGuidePage() {
         </div>
     )
 }
+

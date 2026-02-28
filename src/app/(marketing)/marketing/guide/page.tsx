@@ -9,7 +9,7 @@ import {
     Search, Truck, CreditCard, ShieldCheck,
     MessageSquare, MousePointerClick, FileText,
     ArrowRight, CheckCircle2, HelpCircle, Package,
-    UserCircle, MapPin, DollarSign
+    UserCircle, MapPin, DollarSign, Bug
 } from 'lucide-react'
 
 export default function CustomerGuidePage() {
@@ -219,6 +219,62 @@ export default function CustomerGuidePage() {
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* STEP 4: REPORT A BUG */}
+                <section className="grid md:grid-cols-2 gap-12 items-center">
+                    <div className="order-2 md:order-1 space-y-8 animate-in fade-in slide-in-from-left-8 duration-700 delay-400">
+                        <div className="h-16 w-16 rounded-2xl bg-[#f97316]/10 flex items-center justify-center text-[#f97316] mb-4">
+                            <Bug className="h-8 w-8" />
+                        </div>
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-3">
+                                <h2 className="text-3xl font-bold tracking-tight text-primary-blue">4. Report a Bug</h2>
+                                <Badge className="bg-[#f97316]/10 text-[#f97316] border-none text-[10px] font-bold uppercase tracking-wide rounded-full px-3 py-1">New</Badge>
+                            </div>
+                            <p className="text-primary-blue/70 text-lg leading-relaxed">
+                                Spotted something that doesn't look right? Let us know directly from your dashboard — no email needed.
+                            </p>
+                        </div>
+                        <ul className="space-y-4">
+                            {[
+                                "Click your profile card at the bottom left of the sidebar.",
+                                "Select 'Report a Bug' from the dropdown menu.",
+                                "Pick the relevant category and describe what happened.",
+                                "Optionally add steps to reproduce the issue and submit."
+                            ].map((item, i) => (
+                                <li key={i} className="flex items-start gap-4 p-4 rounded-2xl bg-primary-blue/5 border border-primary-blue/10">
+                                    <div className="h-6 w-6 rounded-full bg-white border border-primary-blue/20 flex items-center justify-center shrink-0 text-xs font-bold text-primary-blue shadow-sm">
+                                        {i + 1}
+                                    </div>
+                                    <span className="text-primary-blue/80 font-medium">{item}</span>
+                                </li>
+                            ))}
+                        </ul>
+                        <div className="p-4 rounded-2xl bg-[#f97316]/5 border border-[#f97316]/20">
+                            <p className="text-sm text-primary-blue/70 font-medium">
+                                Your browser info and the current page URL are captured automatically — so you don't need to explain where it happened.
+                            </p>
+                        </div>
+                    </div>
+                    <div className="order-1 md:order-2 bg-slate-50 rounded-2xl p-8 md:p-12 aspect-square md:aspect-auto flex items-center justify-center relative overflow-hidden">
+                        <div className="w-full max-w-sm bg-white rounded-2xl shadow-xl shadow-primary-blue/10 overflow-hidden border border-primary-blue/10">
+                            <div className="bg-[#0b1f3a] p-5 flex items-center gap-3">
+                                <div className="h-9 w-9 rounded-xl bg-white/10 flex items-center justify-center">
+                                    <Bug className="h-5 w-5 text-[#f97316]" />
+                                </div>
+                                <div>
+                                    <p className="text-white font-bold text-sm">Report a Bug</p>
+                                    <p className="text-white/50 text-[10px]">Help us improve Hobort</p>
+                                </div>
+                            </div>
+                            <div className="p-5 space-y-3">
+                                <div className="h-9 w-full bg-slate-100 rounded-xl" />
+                                <div className="h-20 w-full bg-slate-50 rounded-xl border border-slate-100" />
+                                <div className="h-9 w-full bg-[#f97316] rounded-xl" />
                             </div>
                         </div>
                     </div>

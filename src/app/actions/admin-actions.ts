@@ -4,6 +4,7 @@ import { createClient } from '@supabase/supabase-js'
 import { revalidatePath } from 'next/cache'
 import { requireAdmin } from '@/lib/auth-checks'
 import { sendNotification } from '@/lib/notifications'
+import { logAction } from '@/lib/audit'
 
 // Initialize Admin Client (Service Role)
 // ONLY for use in Server Actions. Never export this or use on client.
@@ -41,6 +42,8 @@ export async function updateUserRole(userId: string, newRole: 'customer' | 'agen
 
         if (error) throw error
         if (profileError) throw profileError
+
+        await logAction('update_role', { targetUserId: userId, newRole })
 
         // Notify user of role change
         if (newRole === 'agent') {
@@ -175,6 +178,8 @@ export async function deleteUser(userId: string) {
 
         if (error) throw error
 
+        await logAction('admin_delete_user', { targetUserId: userId })
+
         revalidatePath('/portal/users')
         return { success: true }
     } catch (error: any) {
@@ -197,6 +202,8 @@ export async function suspendUser(userId: string) {
 
         if (error) throw error
 
+        await logAction('suspend_user', { targetUserId: userId })
+
         revalidatePath('/portal/users')
         return { success: true }
     } catch (error: any) {
@@ -215,6 +222,8 @@ export async function unsuspendUser(userId: string) {
 
         if (error) throw error
 
+        await logAction('unsuspend_user', { targetUserId: userId })
+
         revalidatePath('/portal/users')
         return { success: true }
     } catch (error: any) {
@@ -232,6 +241,8 @@ export async function resetUserPassword(userId: string, newPassword: string) {
         )
 
         if (error) throw error
+
+        await logAction('admin_reset_password', { targetUserId: userId })
 
         return { success: true }
     } catch (error: any) {
@@ -364,6 +375,8 @@ export async function broadcastAnnouncement(title: string, message: string) {
             .insert(notificationsToInsert)
 
         if (insertError) throw insertError
+
+        await logAction('admin_broadcast', { title, recipientCount: profiles.length })
 
         return { success: true, count: profiles.length }
     } catch (error: any) {

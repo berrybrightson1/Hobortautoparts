@@ -18,7 +18,13 @@ export default function MessagesPage() {
     const [isLoadingRequests, setIsLoadingRequests] = React.useState(true)
 
     // General Chat Hook
-    const { messages, sendMessage, isLoading: isChatLoading, scrollRef } = useChat(user, false, null, activeTab === "general")
+    const { messages, sendMessage, isLoading: isChatLoading, scrollRef } = useChat(
+        user,
+        false,
+        null,
+        activeTab === "general",
+        profile?.full_name || user?.email?.split('@')[0]
+    )
     const [newMessage, setNewMessage] = React.useState("")
 
     React.useEffect(() => {

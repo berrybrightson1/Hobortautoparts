@@ -20,7 +20,14 @@ interface WelcomeEmailProps {
 
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL
     ? `https://${process.env.NEXT_PUBLIC_APP_URL}`
-    : 'https://hobortautoparts.com';
+    : 'https://hobortautopartsexpress.com';
+
+const logoUrl = `${baseUrl}/Hobort auto express logo Main.png`;
+
+// Custom inline SVG icons (email-safe)
+const IconDoc = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>`;
+const IconChat = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`;
+const IconTruck = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>`;
 
 export const WelcomeEmail = ({ firstName }: WelcomeEmailProps) => (
     <Html>
@@ -29,19 +36,19 @@ export const WelcomeEmail = ({ firstName }: WelcomeEmailProps) => (
         <Body style={main}>
             <Container style={container}>
 
-                {/* ── Accent top bar ──────────────────────────────── */}
+                {/* Top accent bar */}
                 <Section style={accentBar} />
 
-                {/* ── Hero Banner ──────────────────────────────────── */}
+                {/* Hero */}
                 <Section style={heroBanner}>
                     <Img
-                        src={`${baseUrl}/logo.png`}
-                        width="150"
+                        src={logoUrl}
+                        width="160"
                         height="auto"
                         alt="Hobort Auto Express"
                         style={logo}
                     />
-                    <Text style={heroEyebrow}>🎉 Account Verified</Text>
+                    <Text style={heroEyebrow}>ACCOUNT VERIFIED</Text>
                     <Text style={heroTitle}>
                         Welcome aboard,{'\n'}{firstName}!
                     </Text>
@@ -56,22 +63,17 @@ export const WelcomeEmail = ({ firstName }: WelcomeEmailProps) => (
                     </Section>
                 </Section>
 
-                {/* ── How It Works ─────────────────────────────────── */}
+                {/* Body */}
                 <Section style={bodySection}>
                     <Text style={sectionLabel}>GET STARTED IN 3 STEPS</Text>
                     <Text style={sectionHeading}>Here's how it works</Text>
 
+                    {/* Step cards */}
                     <Row style={stepsRow}>
                         <Column style={stepCol}>
                             <Section style={stepCard}>
                                 <Text style={stepNumber}>01</Text>
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block', margin: '12px auto' }}>
-                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                                    <polyline points="14 2 14 8 20 8" />
-                                    <line x1="16" y1="13" x2="8" y2="13" />
-                                    <line x1="16" y1="17" x2="8" y2="17" />
-                                    <polyline points="10 9 9 9 8 9" />
-                                </svg>
+                                <div dangerouslySetInnerHTML={{ __html: IconDoc }} />
                                 <Text style={stepTitle}>Submit a Request</Text>
                                 <Text style={stepDesc}>Enter your VIN to unlock vehicle details, then tell us the part you need.</Text>
                             </Section>
@@ -80,9 +82,7 @@ export const WelcomeEmail = ({ firstName }: WelcomeEmailProps) => (
                         <Column style={stepCol}>
                             <Section style={stepCard}>
                                 <Text style={stepNumber}>02</Text>
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block', margin: '12px auto' }}>
-                                    <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
-                                </svg>
+                                <div dangerouslySetInnerHTML={{ __html: IconChat }} />
                                 <Text style={stepTitle}>Receive a Quote</Text>
                                 <Text style={stepDesc}>Chat live with your agent. Once confirmed, a competitive quote lands in your dashboard.</Text>
                             </Section>
@@ -91,23 +91,18 @@ export const WelcomeEmail = ({ firstName }: WelcomeEmailProps) => (
                         <Column style={stepCol}>
                             <Section style={stepCard}>
                                 <Text style={stepNumber}>03</Text>
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block', margin: '12px auto' }}>
-                                    <rect x="1" y="3" width="15" height="13" />
-                                    <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
-                                    <circle cx="5.5" cy="18.5" r="2.5" />
-                                    <circle cx="18.5" cy="18.5" r="2.5" />
-                                </svg>
+                                <div dangerouslySetInnerHTML={{ __html: IconTruck }} />
                                 <Text style={stepTitle}>Track Delivery</Text>
                                 <Text style={stepDesc}>Approve the quote, and watch your shipment move in real time from the US to your door.</Text>
                             </Section>
                         </Column>
                     </Row>
 
-                    {/* ── VIN Tip banner ───────────────────────────── */}
+                    {/* VIN Tip */}
                     <Section style={tipBanner}>
                         <Row>
                             <Column style={tipIconCol}>
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block', margin: '0 16px 0 0' }}>
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block' }}>
                                     <circle cx="12" cy="12" r="10" />
                                     <path d="M12 16v-4" />
                                     <path d="M12 8h.01" />
@@ -122,19 +117,17 @@ export const WelcomeEmail = ({ firstName }: WelcomeEmailProps) => (
                         </Row>
                     </Section>
 
-                    {/* ── Why HAPE ─────────────────────────────────── */}
+                    {/* Why HAPE */}
                     <Section style={highlightSection}>
                         <Text style={sectionLabel}>WHY CHOOSE HAPE</Text>
 
                         <Row style={featureRow}>
                             <Column style={featureIconCol}>
-                                <div style={featureBadge}>
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block' }}>
-                                        <circle cx="12" cy="12" r="10" />
-                                        <line x1="2" y1="12" x2="22" y2="12" />
-                                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-                                    </svg>
-                                </div>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block', background: '#0b1f3a', borderRadius: 8, padding: 6 } as React.CSSProperties}>
+                                    <circle cx="12" cy="12" r="10" />
+                                    <line x1="2" y1="12" x2="22" y2="12" />
+                                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                                </svg>
                             </Column>
                             <Column style={featureTextCol}>
                                 <Text style={featureTitle}>Global Sourcing Network</Text>
@@ -146,12 +139,10 @@ export const WelcomeEmail = ({ firstName }: WelcomeEmailProps) => (
 
                         <Row style={featureRow}>
                             <Column style={featureIconCol}>
-                                <div style={featureBadge}>
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block' }}>
-                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                                        <circle cx="12" cy="10" r="3" />
-                                    </svg>
-                                </div>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block', background: '#0b1f3a', borderRadius: 8, padding: 6 } as React.CSSProperties}>
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                                    <circle cx="12" cy="10" r="3" />
+                                </svg>
                             </Column>
                             <Column style={featureTextCol}>
                                 <Text style={featureTitle}>Live Order Tracking</Text>
@@ -163,14 +154,12 @@ export const WelcomeEmail = ({ firstName }: WelcomeEmailProps) => (
 
                         <Row style={featureRow}>
                             <Column style={featureIconCol}>
-                                <div style={featureBadge}>
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block' }}>
-                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                                        <circle cx="9" cy="7" r="4" />
-                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                                    </svg>
-                                </div>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block', background: '#0b1f3a', borderRadius: 8, padding: 6 } as React.CSSProperties}>
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                    <circle cx="9" cy="7" r="4" />
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                                </svg>
                             </Column>
                             <Column style={featureTextCol}>
                                 <Text style={featureTitle}>Dedicated Expert Support</Text>
@@ -179,23 +168,22 @@ export const WelcomeEmail = ({ firstName }: WelcomeEmailProps) => (
                         </Row>
                     </Section>
 
-                    {/* ── Secondary CTA ────────────────────────────── */}
+                    {/* Secondary CTA */}
                     <Section style={secondaryCtaSection}>
-                        <Text style={secondaryCtaText}>
-                            Ready to source your first part? It only takes 2 minutes.
-                        </Text>
+                        <Text style={secondaryCtaText}>Ready to source your first part? It only takes 2 minutes.</Text>
                         <Button style={secondaryCta} href={`${baseUrl}/portal/customer`}>
                             Open My Dashboard
                         </Button>
                     </Section>
                 </Section>
 
-                {/* ── Footer ──────────────────────────────────────── */}
                 <Hr style={hr} />
+
+                {/* Footer */}
                 <Section style={footerSection}>
                     <Img
-                        src={`${baseUrl}/logo.png`}
-                        width="70"
+                        src={logoUrl}
+                        width="80"
                         height="auto"
                         alt="HAPE"
                         style={footerLogo}
@@ -208,8 +196,7 @@ export const WelcomeEmail = ({ firstName }: WelcomeEmailProps) => (
                         <a href={`${baseUrl}/contact`} style={footerLink}>Contact Us</a>
                     </Text>
                     <Text style={footerMuted}>
-                        You're receiving this because you created an account at hobortautoparts.com.
-                        {'\n'}If this wasn't you, you can safely ignore this email.
+                        You're receiving this because you created an account at hobortautopartsexpress.com.{'\n'}If this wasn't you, you can safely ignore this email.
                     </Text>
                 </Section>
 
@@ -229,42 +216,41 @@ const main = {
 
 const container = {
     margin: '32px auto',
-    maxWidth: '600px',
+    maxWidth: '680px',
+    width: '100%',
     borderRadius: '20px',
     overflow: 'hidden' as const,
     boxShadow: '0 4px 40px rgba(0,0,0,0.10)',
 };
 
-// Accent bar
 const accentBar = {
     backgroundColor: '#f97316',
     height: '5px',
     display: 'block' as const,
 };
 
-// Hero
 const heroBanner = {
     backgroundColor: '#0b1f3a',
-    padding: '48px 40px 44px',
+    padding: '56px 64px 52px',
     textAlign: 'center' as const,
 };
 
 const logo = {
-    margin: '0 auto 20px',
+    margin: '0 auto 24px',
     display: 'block',
 };
 
 const heroEyebrow = {
-    fontSize: '12px',
-    fontWeight: '600',
-    letterSpacing: '0.12em',
+    fontSize: '11px',
+    fontWeight: '700',
+    letterSpacing: '0.15em',
     color: '#f97316',
     textTransform: 'uppercase' as const,
     margin: '0 0 10px',
 };
 
 const heroTitle = {
-    fontSize: '32px',
+    fontSize: '34px',
     fontWeight: '800',
     color: '#ffffff',
     margin: '0 0 14px',
@@ -276,16 +262,14 @@ const heroSubtitle = {
     fontSize: '15px',
     color: '#94a3b8',
     lineHeight: '1.7',
-    margin: '0 0 32px',
-    maxWidth: '400px',
+    margin: '0 0 36px',
+    maxWidth: '420px',
     marginLeft: 'auto',
     marginRight: 'auto',
     whiteSpace: 'pre-line' as const,
 };
 
-const ctaWrapper = {
-    textAlign: 'center' as const,
-};
+const ctaWrapper = { textAlign: 'center' as const };
 
 const ctaButton = {
     backgroundColor: '#f97316',
@@ -295,14 +279,13 @@ const ctaButton = {
     fontWeight: '700',
     textDecoration: 'none',
     display: 'inline-block',
-    padding: '15px 36px',
+    padding: '15px 40px',
     letterSpacing: '0.02em',
 };
 
-// Body
 const bodySection = {
     backgroundColor: '#ffffff',
-    padding: '44px 40px 36px',
+    padding: '48px 56px 40px',
 };
 
 const sectionLabel = {
@@ -315,25 +298,15 @@ const sectionLabel = {
 };
 
 const sectionHeading = {
-    fontSize: '22px',
+    fontSize: '24px',
     fontWeight: '800',
     color: '#0f172a',
     margin: '0 0 28px',
 };
 
-// Steps
-const stepsRow = {
-    marginBottom: '32px',
-};
-
-const stepCol = {
-    width: '30%',
-    verticalAlign: 'top' as const,
-};
-
-const stepColSpacer = {
-    width: '5%',
-};
+const stepsRow = { marginBottom: '32px' };
+const stepCol = { width: '30%', verticalAlign: 'top' as const };
+const stepColSpacer = { width: '5%' };
 
 const stepCard = {
     backgroundColor: '#f8fafc',
@@ -348,21 +321,14 @@ const stepNumber = {
     fontWeight: '800',
     color: '#f97316',
     letterSpacing: '0.1em',
-    margin: '0 0 6px',
-};
-
-const stepEmoji = {
-    fontSize: '28px',
-    lineHeight: '28px',
-    margin: '12px 0',
-    textAlign: 'center' as const,
+    margin: '0 0 8px',
 };
 
 const stepTitle = {
     fontSize: '13px',
     fontWeight: '700',
     color: '#0f172a',
-    margin: '0 0 4px',
+    margin: '8px 0 4px',
 };
 
 const stepDesc = {
@@ -372,7 +338,6 @@ const stepDesc = {
     margin: '0',
 };
 
-// VIN tip
 const tipBanner = {
     backgroundColor: '#fffbeb',
     borderRadius: '12px',
@@ -381,15 +346,7 @@ const tipBanner = {
     marginBottom: '28px',
 };
 
-const tipIconCol = {
-    width: '36px',
-    verticalAlign: 'top' as const,
-};
-
-const tipIcon = {
-    fontSize: '20px',
-    margin: '0',
-};
+const tipIconCol = { width: '36px', verticalAlign: 'top' as const };
 
 const tipTitle = {
     fontSize: '13px',
@@ -405,18 +362,15 @@ const tipDesc = {
     margin: '0',
 };
 
-// Highlights
 const highlightSection = {
     backgroundColor: '#f8fafc',
     borderRadius: '16px',
-    padding: '24px 24px 20px',
+    padding: '24px 28px 20px',
     border: '1px solid #e2e8f0',
     marginBottom: '32px',
 };
 
-const featureRow = {
-    marginBottom: '4px',
-};
+const featureRow = { marginBottom: '4px' };
 
 const featureDivider = {
     borderColor: '#e2e8f0',
@@ -424,19 +378,13 @@ const featureDivider = {
 };
 
 const featureIconCol = {
-    width: '48px',
+    width: '44px',
     verticalAlign: 'middle' as const,
-};
-
-const featureBadge = {
-    fontSize: '22px',
-    margin: '0',
-    lineHeight: '1',
 };
 
 const featureTextCol = {
     verticalAlign: 'middle' as const,
-    paddingLeft: '10px',
+    paddingLeft: '12px',
 };
 
 const featureTitle = {
@@ -453,7 +401,6 @@ const featureDesc = {
     margin: '0',
 };
 
-// Secondary CTA
 const secondaryCtaSection = {
     textAlign: 'center' as const,
     padding: '4px 0 8px',
@@ -473,18 +420,14 @@ const secondaryCta = {
     fontWeight: '600',
     textDecoration: 'none',
     display: 'inline-block',
-    padding: '13px 30px',
+    padding: '13px 32px',
 };
 
-// Footer
-const hr = {
-    borderColor: '#e2e8f0',
-    margin: '0',
-};
+const hr = { borderColor: '#e2e8f0', margin: '0' };
 
 const footerSection = {
     backgroundColor: '#f8fafc',
-    padding: '28px 40px',
+    padding: '28px 56px',
     textAlign: 'center' as const,
 };
 

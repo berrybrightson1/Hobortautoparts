@@ -44,7 +44,8 @@ export function ChatWidget() {
         user,
         isAdmin,
         selectedUser,
-        isOpen
+        isOpen,
+        profile?.full_name || user?.email?.split('@')[0]
     )
 
     // Calculate unread status (if any active user has a last message NOT from me)

@@ -1,294 +1,242 @@
 'use client'
 
 import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
 import {
-    ShieldCheck, Zap, Truck, Globe, Clock, Sparkles, CheckCircle2,
     LayoutDashboard, Users, FileText, Settings, HelpCircle,
-    BookOpen, PlayCircle, History, ArrowRight, ExternalLink,
-    Package,
-    ShoppingBag,
-    DollarSign,
-    AlertCircle,
-    Plane,
-    Ship,
-    MapPin,
-    BellRing,
-    MessageSquare
+    PackageSearch, ShoppingBag, Truck, MessageSquare, ArrowRight, CheckCircle2, AlertCircle
 } from "lucide-react"
-import Link from "next/link"
 
 export default function AdminGuidePage() {
     return (
-        <div className="space-y-8 animate-in fade-in duration-500 max-w-7xl mx-auto pb-10">
-            <div className="max-w-3xl mb-8">
-                <Badge className="mb-4 bg-primary-blue/10 text-primary-blue hover:bg-primary-blue/20 border-none px-4 py-1.5 text-xs font-bold tracking-wide rounded-full">
-                    Admin Documentation
+        <div className="space-y-8 animate-in fade-in duration-500 max-w-5xl mx-auto pb-10">
+            <div className="max-w-3xl mb-12">
+                <Badge className="mb-4 bg-primary-blue/10 text-primary-blue border-none px-4 py-1.5 text-xs tracking-wide rounded-full font-medium">
+                    Admin Quick Start
                 </Badge>
-                <h1 className="text-3xl md:text-5xl font-extrabold tracking-tighter text-slate-900 mb-6 font-display leading-[0.9]">
-                    Operations <span className="text-primary-blue">Manual.</span>
+                <h1 className="text-3xl md:text-5xl tracking-tight text-slate-900 mb-6 leading-tight font-semibold">
+                    Simplicity is key. <span className="text-primary-blue font-medium">Step-by-step workflow.</span>
                 </h1>
-                <p className="text-lg text-slate-600 leading-relaxed font-medium max-w-2xl">
-                    Standard Operating Procedures (SOPs) for managing orders, logistics, and platform data.
+                <p className="text-lg text-slate-600 leading-relaxed font-medium">
+                    As simple as A, B, C, D. Here is exactly what you do when a customer uses the platform.
                 </p>
             </div>
 
-            <Tabs defaultValue="workflow" className="space-y-12">
-                <TabsList className="bg-slate-100 p-1.5 rounded-full inline-flex h-auto w-full md:w-auto">
-                    <TabsTrigger
-                        value="workflow"
-                        className="rounded-full px-8 py-3 text-xs md:text-sm font-bold uppercase tracking-wide data-[state=active]:bg-white data-[state=active]:text-primary-blue data-[state=active]:shadow-lg transition-all"
-                    >
-                        <Zap className="w-4 h-4 mr-2" /> Core Workflows
-                    </TabsTrigger>
-                    {/* Add more tabs like 'User Management' or 'System' later if needed */}
-                </TabsList>
+            <div className="space-y-12 relative">
+                {/* Connecting Line */}
+                <div className="hidden md:block absolute left-[39px] top-10 bottom-10 w-0.5 bg-slate-100 z-0"></div>
 
-                {/* TAB 1: WORKFLOWS */}
-                <TabsContent value="workflow" className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-12">
-
-                    {/* Section 1: Order Management */}
-                    <section className="space-y-6">
-                        <div className="flex items-center gap-4">
-                            <div className="h-12 w-12 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600">
-                                <ShoppingBag className="h-6 w-6" />
-                            </div>
-                            <div>
-                                <h2 className="text-2xl font-bold tracking-tight text-slate-900">1. Order Management</h2>
-                                <p className="text-slate-500 font-medium">Processing payments and preparing orders.</p>
-                            </div>
+                {/* Step A */}
+                <div className="flex gap-6 relative z-10">
+                    <div className="shrink-0 mt-1">
+                        <div className="h-20 w-20 rounded-2xl bg-slate-900 text-white flex items-center justify-center text-2xl font-semibold shadow-lg shadow-slate-900/20">
+                            A
                         </div>
+                    </div>
+                    <div className="flex-1 space-y-4">
+                        <div className="flex items-center gap-3">
+                            <h2 className="text-2xl text-slate-900 tracking-tight font-semibold">Customer makes a Request</h2>
+                            <Badge variant="outline" className="text-[10px] uppercase font-medium">Starts Here</Badge>
+                        </div>
+                        <Card className="border-slate-200 shadow-md p-6 bg-white overflow-hidden relative">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-bl-full -z-10 opacity-50"></div>
+                            <div className="space-y-5 relative z-10">
+                                <p className="text-slate-600 font-medium">When a customer wants a quote for parts...</p>
 
-                        <div className="grid md:grid-cols-1 gap-6">
-                            <Card className="border-slate-100 shadow-lg p-6">
-                                <div className="space-y-6">
-                                    <div className="flex items-start gap-4">
-                                        <div className="h-8 w-8 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-sm shrink-0">1</div>
-                                        <div>
-                                            <h3 className="font-bold text-slate-900 text-lg">Locate & Assess</h3>
-                                            <p className="text-slate-500 mt-1">Navigate to <span className="font-mono font-bold text-xs bg-slate-100 px-2 py-0.5 rounded">Orders</span> page. Identify orders with status <Badge variant="outline" className="text-[10px] bg-orange-50 text-orange-600 border-orange-100">Pending Payment</Badge> or <Badge variant="outline" className="text-[10px] bg-emerald-50 text-emerald-600 border-emerald-100">Paid</Badge>.</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-start gap-4">
-                                        <div className="h-8 w-8 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-sm shrink-0">2</div>
-                                        <div>
-                                            <h3 className="font-bold text-slate-900 text-lg">Update Payment Status</h3>
-                                            <p className="text-slate-500 mt-1">Click the <span className="font-bold">Actions Result (•••)</span> menu on the right of the order row.</p>
-                                            <ul className="mt-2 space-y-2 text-sm text-slate-600">
-                                                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> <strong>Mark Paid:</strong> If customer paid offline/manually.</li>
-                                                <li className="flex items-center gap-2"><Clock className="w-4 h-4 text-blue-500" /> <strong>Mark Processing:</strong> When you begin purchasing items.</li>
-                                                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-slate-500" /> <strong>Mark Completed:</strong> Only for local pickup/no shipping.</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-
-                                    <div className="pt-6 border-t border-slate-100">
-                                        <div className="flex items-start gap-4">
-                                            <div className="h-8 w-8 rounded-full bg-orange-500 text-white flex items-center justify-center font-bold text-sm shrink-0">3</div>
-                                            <div>
-                                                <h3 className="font-bold text-slate-900 text-lg">Agent Proxy Ordering</h3>
-                                                <p className="text-slate-500 mt-1">Admins and assigned Agents can now create orders on behalf of customers directly from a Sourcing Request. Look for the <span className="font-bold text-orange-600 italic">"Create Order (Proxy)"</span> button inside the Request Details modal.</p>
-                                            </div>
-                                        </div>
-                                    </div>
+                                <div className="flex items-center gap-3 p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                                    <PackageSearch className="w-5 h-5 text-blue-500" />
+                                    <span className="text-slate-600 font-medium">Go to <span className="text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md font-medium">Sourcing Requests</span> on the sidebar.</span>
                                 </div>
-                            </Card>
-                        </div>
-                    </section>
 
-                    {/* Section 2: Logistics Initialization */}
-                    <section className="space-y-6">
-                        <div className="flex items-center gap-4">
-                            <div className="h-12 w-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600">
-                                <Package className="h-6 w-6" />
-                            </div>
-                            <div>
-                                <h2 className="text-2xl font-bold tracking-tight text-slate-900">2. Initializing Logistics</h2>
-                                <p className="text-slate-500 font-medium">Creating the tracking link for the customer.</p>
-                            </div>
-                        </div>
-
-                        <div className="grid md:grid-cols-1 gap-6">
-                            <Card className="border-slate-100 shadow-lg p-6">
-                                <div className="space-y-6">
-                                    <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100 mb-4">
-                                        <p className="text-blue-800 text-sm font-medium"><AlertCircle className="w-4 h-4 inline mr-2 mb-0.5" /> <strong>Prerequisite:</strong> Ensure you have the physical items and are ready to ship.</p>
-                                    </div>
-
-                                    <div className="grid md:grid-cols-2 gap-8">
-                                        <div className="space-y-6">
-                                            <div className="flex items-start gap-4">
-                                                <div className="h-8 w-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shrink-0">1</div>
-                                                <div>
-                                                    <h3 className="font-bold text-slate-900 text-lg">Create Shipment</h3>
-                                                    <p className="text-slate-500 mt-1">Go to <span className="font-mono font-bold text-xs bg-slate-100 px-2 py-0.5 rounded">Global Logistics</span> page. Click the <Button size="sm" className="h-6 px-2 text-[10px] bg-slate-900 text-white ml-2 pointer-events-none">+ Create Shipment</Button> button.</p>
-                                                </div>
-                                            </div>
-                                            <div className="flex items-start gap-4">
-                                                <div className="h-8 w-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shrink-0">2</div>
-                                                <div>
-                                                    <h3 className="font-bold text-slate-900 text-lg">Link Order</h3>
-                                                    <p className="text-slate-500 mt-1">Search for the <strong>Order ID</strong> or <strong>Customer Name</strong> in the modal.</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="space-y-6">
-                                            <div className="flex items-start gap-4">
-                                                <div className="h-8 w-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shrink-0">3</div>
-                                                <div>
-                                                    <h3 className="font-bold text-slate-900 text-lg">Assign Tracking</h3>
-                                                    <p className="text-slate-500 mt-1">Enter your generated <strong>Tracking Number</strong> (e.g., TRK-123456).</p>
-                                                </div>
-                                            </div>
-                                            <div className="flex items-start gap-4">
-                                                <div className="h-8 w-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shrink-0">4</div>
-                                                <div>
-                                                    <h3 className="font-bold text-slate-900 text-lg">Set Route</h3>
-                                                    <p className="text-slate-500 mt-1">Select <strong>Air</strong> or <strong>Sea</strong> freight and define the origin/destination hubs.</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </Card>
-                        </div>
-                    </section>
-
-                    {/* Section 3: Tracking Updates */}
-                    <section className="space-y-6">
-                        <div className="flex items-center gap-4">
-                            <div className="h-12 w-12 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-600">
-                                <Truck className="h-6 w-6" />
-                            </div>
-                            <div>
-                                <h2 className="text-2xl font-bold tracking-tight text-slate-900">3. Updating the Journey</h2>
-                                <p className="text-slate-500 font-medium">Moving the package through its lifecycle stages.</p>
-                            </div>
-                        </div>
-
-                        <div className="grid md:grid-cols-1 gap-6">
-                            <Card className="border-slate-100 shadow-lg p-6 bg-slate-900 text-white">
-                                <div className="space-y-8">
-                                    <div className="flex items-start gap-4">
-                                        <div className="h-8 w-8 rounded-full bg-white text-slate-900 flex items-center justify-center font-bold text-sm shrink-0">!</div>
-                                        <div>
-                                            <h3 className="font-bold text-white text-lg">How to Update</h3>
-                                            <p className="text-slate-400 mt-1">In the Logistics table, find the shipment &rarr; Click Actions (•••) &rarr; Select the new stage.</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="grid md:grid-cols-4 gap-4">
-                                        <div className="p-4 rounded-xl bg-white/10 border border-white/10 hover:bg-white/20 transition-colors">
-                                            <Plane className="w-6 h-6 text-sky-400 mb-3" />
-                                            <h4 className="font-bold text-sm uppercase tracking-wider mb-2">In Transit</h4>
-                                            <p className="text-xs text-slate-400">Package has departed origin hub (Air or Sea).</p>
-                                        </div>
-                                        <div className="p-4 rounded-xl bg-white/10 border border-white/10 hover:bg-white/20 transition-colors">
-                                            <AlertCircle className="w-6 h-6 text-orange-400 mb-3" />
-                                            <h4 className="font-bold text-sm uppercase tracking-wider mb-2">Customs</h4>
-                                            <p className="text-xs text-slate-400">Undergoing clearance at borders.</p>
-                                        </div>
-                                        <div className="p-4 rounded-xl bg-white/10 border border-white/10 hover:bg-white/20 transition-colors">
-                                            <MapPin className="w-6 h-6 text-emerald-400 mb-3" />
-                                            <h4 className="font-bold text-sm uppercase tracking-wider mb-2">Pickup Ready</h4>
-                                            <p className="text-xs text-slate-400">Arrived at destination hub for collection.</p>
-                                        </div>
-                                        <div className="p-4 rounded-xl bg-white/10 border border-white/10 hover:bg-white/20 transition-colors">
-                                            <CheckCircle2 className="w-6 h-6 text-emerald-500 mb-3" />
-                                            <h4 className="font-bold text-sm uppercase tracking-wider mb-2">Delivered</h4>
-                                            <p className="text-xs text-slate-400">Handed over to customer.</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </Card>
-                        </div>
-                    </section>
-
-                    {/* Section 4: Real-time Communication */}
-                    <section className="space-y-6">
-                        <div className="flex items-center gap-4">
-                            <div className="h-12 w-12 rounded-2xl bg-orange-50 flex items-center justify-center text-orange-600">
-                                <Sparkles className="h-6 w-6" />
-                            </div>
-                            <div>
-                                <h2 className="text-2xl font-bold tracking-tight text-slate-900">4. Engagement & Notifications</h2>
-                                <p className="text-slate-500 font-medium">Keeping the bridge active with customers.</p>
-                            </div>
-                        </div>
-
-                        <div className="grid md:grid-cols-1 gap-6">
-                            <Card className="border-slate-100 shadow-lg p-8">
-                                <div className="grid md:grid-cols-2 gap-12">
-                                    <div className="space-y-4">
-                                        <h3 className="font-bold text-slate-900 flex items-center gap-2">
-                                            <BellRing className="w-5 h-5 text-primary-orange" /> Automatic Alerts
-                                        </h3>
-                                        <p className="text-slate-500 text-sm leading-relaxed">
-                                            The system automatically notifies customers via **Interactive Popups** and **Real-time Notifications** when:
-                                        </p>
-                                        <ul className="space-y-2 text-sm text-slate-600">
-                                            <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> A quote is sent or updated.</li>
-                                            <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> An order status changes.</li>
-                                            <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> A tracking update is posted.</li>
-                                        </ul>
-                                    </div>
-                                    <div className="space-y-4">
-                                        <h3 className="font-bold text-slate-900 flex items-center gap-2">
-                                            <MessageSquare className="w-5 h-5 text-primary-blue" /> Live Support Quick Actions
-                                        </h3>
-                                        <p className="text-slate-500 text-sm leading-relaxed">
-                                            Use the floating **"Messages" pill** at the bottom right to quickly respond to customer queries without leaving your current workflow.
-                                        </p>
-                                        <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 italic text-[11px] text-slate-400">
-                                            "Pro Tip: Faster response times lead to higher sourcing success rates."
-                                        </div>
-                                    </div>
-                                </div>
-                            </Card>
-                        </div>
-                    </section>
-
-                    {/* Section 5: Governance & Security */}
-                    <section className="space-y-6">
-                        <div className="flex items-center gap-4">
-                            <div className="h-12 w-12 rounded-2xl bg-red-50 flex items-center justify-center text-red-600">
-                                <ShieldCheck className="h-6 w-6" />
-                            </div>
-                            <div>
-                                <h2 className="text-2xl font-bold tracking-tight text-slate-900">5. Governance & Security</h2>
-                                <p className="text-slate-500 font-medium">Protecting the platform and managing users.</p>
-                            </div>
-                        </div>
-
-                        <div className="grid md:grid-cols-2 gap-6">
-                            <Card className="border-slate-100 shadow-lg p-6">
-                                <h3 className="font-bold text-slate-900 text-lg mb-4">User Suspension</h3>
-                                <p className="text-slate-500 text-sm leading-relaxed mb-4">
-                                    Admins can revoke platform access for any user. Suspended users are immediately redirected to a blockade page.
-                                </p>
-                                <ul className="space-y-2 text-xs text-slate-600">
-                                    <li className="flex items-center gap-2"><History className="w-4 h-4" /> Go to **User Network**.</li>
-                                    <li className="flex items-center gap-2"><History className="w-4 h-4" /> Click the (•••) menu.</li>
-                                    <li className="flex items-center gap-2"><History className="w-4 h-4" /> Select **Suspend Access**.</li>
+                                <ul className="space-y-3 pl-2">
+                                    <li className="flex items-start gap-3 text-slate-600 font-medium">
+                                        <ArrowRight className="w-4 h-4 mt-0.5 text-slate-400" />
+                                        <span>Click on the new request to view details.</span>
+                                    </li>
+                                    <li className="flex items-start gap-3 text-slate-600 font-medium">
+                                        <ArrowRight className="w-4 h-4 mt-0.5 text-slate-400" />
+                                        <span>Reply with a quote and attach an invoice (Hobort Billing).</span>
+                                    </li>
+                                    <li className="flex items-start gap-3 text-slate-600 font-medium">
+                                        <ArrowRight className="w-4 h-4 mt-0.5 text-slate-400" />
+                                        <span>Or, click "Create Order (Proxy)" to bypass the customer and create the order for them.</span>
+                                    </li>
                                 </ul>
-                            </Card>
-                            <Card className="border-slate-100 shadow-lg p-6">
-                                <h3 className="font-bold text-slate-900 text-lg mb-4">Security Overrides</h3>
-                                <p className="text-slate-500 text-sm leading-relaxed mb-4">
-                                    Admins can trigger manual password resets for users experiencing lockout issues or security breaches.
-                                </p>
-                                <ul className="space-y-2 text-xs text-slate-600">
-                                    <li className="flex items-center gap-2"><Zap className="w-4 h-4 text-primary-orange" /> Use the **Reset Password** action in the User table.</li>
-                                    <li className="flex items-center gap-2"><Zap className="w-4 h-4 text-primary-orange" /> System logs all manual credential overrides.</li>
-                                </ul>
-                            </Card>
+                            </div>
+                        </Card>
+                    </div>
+                </div>
+
+                {/* Step B */}
+                <div className="flex gap-6 relative z-10">
+                    <div className="shrink-0 mt-1">
+                        <div className="h-20 w-20 rounded-2xl bg-blue-600 text-white flex items-center justify-center text-2xl font-semibold shadow-lg shadow-blue-600/20">
+                            B
                         </div>
-                    </section>
-                </TabsContent>
-            </Tabs>
+                    </div>
+                    <div className="flex-1 space-y-4">
+                        <div className="flex items-center gap-3">
+                            <h2 className="text-2xl text-slate-900 tracking-tight font-semibold">Customer pays for the Order</h2>
+                        </div>
+                        <Card className="border-slate-200 shadow-md p-6 bg-white overflow-hidden relative">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-50 rounded-bl-full -z-10 opacity-50"></div>
+                            <div className="space-y-5 relative z-10">
+                                <p className="text-slate-600 font-medium">After they accept the quote and make payment...</p>
+
+                                <div className="flex items-center gap-3 p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                                    <ShoppingBag className="w-5 h-5 text-emerald-500" />
+                                    <span className="text-slate-600 font-medium">Go to <span className="text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md font-medium">Orders</span> on the sidebar.</span>
+                                </div>
+
+                                <ul className="space-y-3 pl-2">
+                                    <li className="flex items-start gap-3 text-slate-600 font-medium">
+                                        <ArrowRight className="w-4 h-4 mt-0.5 text-slate-400" />
+                                        <span>Find the pending order in the table.</span>
+                                    </li>
+                                    <li className="flex items-start gap-3 text-slate-600 font-medium">
+                                        <ArrowRight className="w-4 h-4 mt-0.5 text-slate-400" />
+                                        <span>Click the actions menu (•••) on the right side of the row.</span>
+                                    </li>
+                                    <li className="flex items-start gap-3 text-slate-600 font-medium">
+                                        <ArrowRight className="w-4 h-4 mt-0.5 text-slate-400" />
+                                        <span>Change the status to "Processing" while you gather their items.</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </Card>
+                    </div>
+                </div>
+
+                {/* Step C */}
+                <div className="flex gap-6 relative z-10">
+                    <div className="shrink-0 mt-1">
+                        <div className="h-20 w-20 rounded-2xl bg-orange-500 text-white flex items-center justify-center text-2xl font-semibold shadow-lg shadow-orange-500/20">
+                            C
+                        </div>
+                    </div>
+                    <div className="flex-1 space-y-4">
+                        <div className="flex items-center gap-3">
+                            <h2 className="text-2xl text-slate-900 tracking-tight font-semibold">Items are ready to ship</h2>
+                        </div>
+                        <Card className="border-slate-200 shadow-md p-6 bg-white overflow-hidden relative">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-orange-50 rounded-bl-full -z-10 opacity-50"></div>
+                            <div className="space-y-5 relative z-10">
+                                <p className="text-slate-600 font-medium">When you have boxes packed and ready to fly/sail...</p>
+
+                                <div className="flex items-center gap-3 p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                                    <Truck className="w-5 h-5 text-orange-500" />
+                                    <span className="text-slate-600 font-medium">Go to <span className="text-orange-600 bg-orange-50 px-2 py-0.5 rounded-md font-medium">Shipments</span> on the sidebar.</span>
+                                </div>
+
+                                <ul className="space-y-3 pl-2">
+                                    <li className="flex items-start gap-3 text-slate-600 font-medium">
+                                        <ArrowRight className="w-4 h-4 mt-0.5 text-slate-400" />
+                                        <span>Click "+ Create Shipment" at the top.</span>
+                                    </li>
+                                    <li className="flex items-start gap-3 text-slate-600 font-medium">
+                                        <ArrowRight className="w-4 h-4 mt-0.5 text-slate-400" />
+                                        <span>Link it to their Order ID, add a tracking number, and set it to Air or Sea.</span>
+                                    </li>
+                                    <li className="flex items-start gap-3 text-slate-600 font-medium">
+                                        <ArrowRight className="w-4 h-4 mt-0.5 text-slate-400" />
+                                        <span>Update the progress status (e.g. In Transit, Customs, Delivered) here as the package moves.</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </Card>
+                    </div>
+                </div>
+
+                {/* Step D */}
+                <div className="flex gap-6 relative z-10">
+                    <div className="shrink-0 mt-1">
+                        <div className="h-20 w-20 rounded-2xl bg-emerald-500 text-white flex items-center justify-center text-2xl font-semibold shadow-lg shadow-emerald-500/20">
+                            D
+                        </div>
+                    </div>
+                    <div className="flex-1 space-y-4">
+                        <div className="flex items-center gap-3">
+                            <h2 className="text-2xl text-slate-900 tracking-tight font-semibold">Communication & Support</h2>
+                            <Badge className="bg-emerald-500 hover:bg-emerald-600 font-medium uppercase text-[10px]">Always on</Badge>
+                        </div>
+                        <Card className="border-slate-200 shadow-md p-6 bg-white overflow-hidden relative">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-slate-50 rounded-bl-full -z-10 opacity-50"></div>
+                            <div className="space-y-5 relative z-10">
+                                <p className="text-slate-600 font-medium">If you or the customer needs to talk at any point...</p>
+
+                                <div className="flex items-center gap-3 p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                                    <MessageSquare className="w-5 h-5 text-slate-500" />
+                                    <span className="text-slate-600 font-medium">Go to <span className="text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md font-medium">Live Support</span> on the sidebar.</span>
+                                </div>
+
+                                <ul className="space-y-3 pl-2">
+                                    <li className="flex items-start gap-3 text-slate-600 font-medium">
+                                        <ArrowRight className="w-4 h-4 mt-0.5 text-slate-400" />
+                                        <span>This acts as a WhatsApp-style messenger.</span>
+                                    </li>
+                                    <li className="flex items-start gap-3 text-slate-600 font-medium">
+                                        <ArrowRight className="w-4 h-4 mt-0.5 text-slate-400" />
+                                        <span>You can reply to customer messages, send files, and clarify order details here.</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </Card>
+                    </div>
+                </div>
+
+                {/* Step E */}
+                <div className="flex gap-6 relative z-10">
+                    <div className="shrink-0 mt-1">
+                        <div className="h-20 w-20 rounded-2xl bg-[#f97316] text-white flex items-center justify-center text-2xl font-semibold shadow-lg shadow-orange-500/20">
+                            E
+                        </div>
+                    </div>
+                    <div className="flex-1 space-y-4">
+                        <div className="flex items-center gap-3">
+                            <h2 className="text-2xl text-slate-900 tracking-tight font-semibold">Monitoring Bug Reports</h2>
+                            <Badge className="bg-[#f97316] hover:bg-orange-600 font-medium uppercase text-[10px]">New in v2.2</Badge>
+                        </div>
+                        <Card className="border-slate-200 shadow-md p-6 bg-white overflow-hidden relative">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-orange-50 rounded-bl-full -z-10 opacity-50"></div>
+                            <div className="space-y-5 relative z-10">
+                                <p className="text-slate-600 font-medium">If a customer or agent spots something broken on the platform...</p>
+
+                                <div className="flex items-center gap-3 p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                                    <AlertCircle className="w-5 h-5 text-[#f97316]" />
+                                    <span className="text-slate-600 font-medium">Open your <span className="text-orange-600 bg-orange-50 px-2 py-0.5 rounded-md font-medium">Profile Card</span> at the bottom of the sidebar → click <span className="text-orange-600 bg-orange-50 px-2 py-0.5 rounded-md font-medium">View Bug Reports</span>.</span>
+                                </div>
+
+                                <ul className="space-y-3 pl-2">
+                                    <li className="flex items-start gap-3 text-slate-600 font-medium">
+                                        <ArrowRight className="w-4 h-4 mt-0.5 text-slate-400" />
+                                        <span>The badge on that item shows the count of open reports — it goes away when they're all resolved.</span>
+                                    </li>
+                                    <li className="flex items-start gap-3 text-slate-600 font-medium">
+                                        <ArrowRight className="w-4 h-4 mt-0.5 text-slate-400" />
+                                        <span>Click any report to expand it. You'll see the full description, steps to reproduce, and the page URL where it happened.</span>
+                                    </li>
+                                    <li className="flex items-start gap-3 text-slate-600 font-medium">
+                                        <ArrowRight className="w-4 h-4 mt-0.5 text-slate-400" />
+                                        <span>Use the status buttons (<strong>Open → In Progress → Resolved → Dismissed</strong>) to manage each report inline.</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </Card>
+                    </div>
+                </div>
+
+                {/* Outro */}
+                <div className="flex gap-6 relative z-10 pt-4">
+                    <div className="shrink-0 w-20 flex justify-center mt-2">
+                        <CheckCircle2 className="w-8 h-8 text-slate-300" />
+                    </div>
+                    <div className="flex-1">
+                        <p className="text-slate-500 font-medium italic text-lg mt-2">
+                            That is the entire complete loop!
+                        </p>
+                    </div>
+                </div>
+            </div>
         </div>
     )
 }

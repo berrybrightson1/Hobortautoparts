@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { UserCheck, MapPin, ShieldCheck, ArrowLeft } from "lucide-react"
 import Link from "next/link"
+import { logAction } from "@/lib/audit"
 
 export default function AgentRegisterPage() {
     const router = useRouter()
@@ -41,6 +42,9 @@ export default function AgentRegisterPage() {
             if (error) throw error
 
             if (data?.user) {
+                // Log application submission
+                logAction('agent_application', { email: formData.email, location: formData.location }).catch(console.warn)
+
                 toast.success("Registration successful!", {
                     description: "Your application is now being reviewed by our admin team."
                 })
