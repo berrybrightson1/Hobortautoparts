@@ -51,6 +51,11 @@ export function FeedbackPanel({ requestId, currentUserId, isAgent = false }: Fee
             }
             setMessages(data || [])
         } catch (error: any) {
+            // Ignore AbortError which happens naturally when a component unmounts or StrictMode double mounts
+            if (error?.name === 'AbortError' || error?.message?.includes('AbortError') || String(error).includes('is aborted')) {
+                // Silently ignore abort errors
+                return
+            }
             console.error("Caught error in fetchMessages:", error?.message || String(error))
         } finally {
             setIsLoading(false)
