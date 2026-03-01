@@ -71,8 +71,7 @@ function LoginContent() {
             if (returnTo) {
                 router.push(returnTo)
             } else {
-                if (userRole === 'admin') router.push("/portal/admin")
-                else if (userRole === 'agent') router.push("/portal/agent")
+                if (userRole === 'agent') router.push("/portal/agent")
                 else router.push("/portal/customer")
             }
         }
@@ -97,6 +96,10 @@ function LoginContent() {
 
             // Strict role isolation: User must log in from the correct tab
             const metaRole = signedInUser.user_metadata?.role || 'customer'
+            if (metaRole === 'admin') {
+                await supabase.auth.signOut()
+                throw new Error(`Access denied. Please use the Admin Portal to sign in.`)
+            }
             if (metaRole !== activeRole) {
                 await supabase.auth.signOut()
                 throw new Error(`Access denied. Please select the '${metaRole}' tab to sign in.`)
@@ -122,8 +125,7 @@ function LoginContent() {
             if (returnTo) {
                 router.push(returnTo)
             } else {
-                if (role === 'admin') router.push("/portal/admin")
-                else if (role === 'agent') router.push("/portal/agent")
+                if (role === 'agent') router.push("/portal/agent")
                 else router.push("/portal/customer")
             }
 
@@ -146,15 +148,12 @@ function LoginContent() {
             </div>
 
             <Tabs defaultValue="customer" className="w-full" onValueChange={setActiveRole}>
-                <TabsList className="grid w-full grid-cols-3 mb-8 h-12 bg-primary-blue/5 p-1 rounded-2xl">
+                <TabsList className="grid w-full grid-cols-2 mb-8 h-12 bg-primary-blue/5 p-1 rounded-2xl">
                     <TabsTrigger value="customer" className="rounded-xl font-semibold h-10 data-[state=active]:bg-white data-[state=active]:text-primary-blue data-[state=active]:shadow-sm text-[10px] uppercase tracking-wider">
                         Customer
                     </TabsTrigger>
                     <TabsTrigger value="agent" className="rounded-xl font-semibold h-10 data-[state=active]:bg-white data-[state=active]:text-primary-blue data-[state=active]:shadow-sm text-[10px] uppercase tracking-wider">
                         Agent
-                    </TabsTrigger>
-                    <TabsTrigger value="admin" className="rounded-xl font-semibold h-10 data-[state=active]:bg-white data-[state=active]:text-primary-blue data-[state=active]:shadow-sm text-[10px] uppercase tracking-wider">
-                        Admin
                     </TabsTrigger>
                 </TabsList>
 

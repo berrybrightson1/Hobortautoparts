@@ -35,16 +35,36 @@ export async function middleware(request: NextRequest) {
     );
 
     // Refresh session if expired - required for Server Components
-    // https://supabase.com/docs/guides/auth/server-side/nextjs
     const {
         data: { user },
         error
     } = await supabase.auth.getUser();
 
-    const isPortalRoute = request.nextUrl.pathname.startsWith('/portal');
+    const host = request.headers.get("host") || "";
+    const isAdminDomain = host.startsWith("admin.");
+    const pathname = request.nextUrl.pathname;
+
+    // Subdomain routing isolation
+    if (isAdminDomain) {
+        // If on admin subdomain, rewrite /login to internal /admin-login
+        if (pathname === "/login") {
+            const rewriteUrl = request.nextUrl.clone();
+            rewriteUrl.pathname = "/admin-login";
+            return NextResponse.rewrite(rewriteUrl);
+        }
+    } else {
+        // If on main domain, completely hide admin routes
+        if (pathname.startsWith("/admin-login") || pathname.startsWith("/portal/admin")) {
+            const rewriteUrl = request.nextUrl.clone();
+            // Next.js triggers standard 404 for unknown paths, this prevents access securely
+            rewriteUrl.pathname = "/404";
+            return NextResponse.rewrite(rewriteUrl);
+        }
+    }
+
+    const isPortalRoute = pathname.startsWith('/portal');
 
     // 1. Strict route protection: 
-    // If trying to access portal but no valid user (e.g. logged out or deleted from DB)
     if (isPortalRoute && (!user || error)) {
         const redirectUrl = request.nextUrl.clone();
         redirectUrl.pathname = '/login';
@@ -70,13 +90,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
     matcher: [
-        /*
-         * Match all request paths except for the ones starting with:
-         * - _next/static (static files)
-         * - _next/image (image optimization files)
-         * - favicon.ico (favicon file)
-         * Feel free to modify this pattern to include more paths.
-         */
         "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
     ],
 };
