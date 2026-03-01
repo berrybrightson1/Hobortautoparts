@@ -20,8 +20,8 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Search, Filter, MoreHorizontal, Package, CheckCircle2, Clock, AlertCircle, Inbox, Loader2, ArrowRight, DollarSign, Calculator, Info, Users, Truck, RefreshCw, Copy as CopyIcon, X, MessageSquare } from "lucide-react"
-import { useState, useEffect, useMemo } from "react"
+import { Search, Filter, MoreHorizontal, Package, CheckCircle2, Clock, AlertCircle, Inbox, Loader2, ArrowRight, DollarSign, Calculator, Info, Users, Truck, RefreshCw, Copy as CopyIcon, X, MessageSquare, ChevronDown, ChevronUp } from "lucide-react"
+import React, { useState, useEffect, useMemo } from "react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { supabase } from "@/lib/supabase"
@@ -77,6 +77,7 @@ export default function SourcingRequestsPage() {
     const [updatingId, setUpdatingId] = useState<string | null>(null)
     const [isAcceptingProxy, setIsAcceptingProxy] = useState(false)
     const [isDetailsOpen, setIsDetailsOpen] = useState(false)
+    const [expandedRequestId, setExpandedRequestId] = useState<string | null>(null)
 
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1)
@@ -93,6 +94,20 @@ export default function SourcingRequestsPage() {
         service_fee: '0.00', // Default to 0
         notes: ''
     })
+
+    // Auto-calculate service fee (7% of Item Price + Shipping Cost)
+    useEffect(() => {
+        const p = parseFloat(quoteData.item_price) || 0;
+        const s = parseFloat(quoteData.shipping_cost) || 0;
+        if (p > 0 || s > 0) {
+            const calculatedFee = ((p + s) * 0.07).toFixed(2);
+            if (calculatedFee !== quoteData.service_fee) {
+                setQuoteData(prev => ({ ...prev, service_fee: calculatedFee }));
+            }
+        } else if (quoteData.service_fee !== '0.00') {
+            setQuoteData(prev => ({ ...prev, service_fee: '0.00' }));
+        }
+    }, [quoteData.item_price, quoteData.shipping_cost]);
 
     const totalAmount = useMemo(() => {
         const p = parseFloat(quoteData.item_price) || 0
@@ -432,140 +447,212 @@ export default function SourcingRequestsPage() {
                                     </TableRow>
                                 ) : paginatedRequests.length > 0 ? (
                                     paginatedRequests.map((request) => (
-                                        <TableRow key={request.id} className="hover:bg-blue-50/30 transition-colors border-slate-50 group cursor-pointer">
-                                            <TableCell className="text-slate-500 text-xs font-medium pl-6 py-4">
-                                                <div className="flex flex-col gap-0.5">
-                                                    <span className="font-semibold text-slate-700">{format(new Date(request.created_at), 'MMM dd, yyyy')}</span>
-                                                    <span className="text-[10px] text-slate-400 uppercase tracking-wide">{format(new Date(request.created_at), 'h:mm a')}</span>
-                                                </div>
-                                            </TableCell>
-                                            <TableCell className="py-4">
-                                                <div className="flex flex-col">
-                                                    <span className="font-semibold text-slate-800">
-                                                        {request.is_proxy_request ? request.customer_name : (request.profiles?.full_name || 'Anonymous')}
-                                                    </span>
-                                                    {request.is_proxy_request && (
-                                                        <span className="text-[10px] text-primary-orange font-bold uppercase tracking-tighter flex items-center gap-1">
-                                                            <Users className="h-2 w-2" /> Proxy Request
+                                        <React.Fragment key={request.id}>
+                                            <TableRow
+                                                className="hover:bg-blue-50/30 transition-colors border-slate-50 group cursor-pointer data-[state=open]:bg-blue-50/30"
+                                                data-state={expandedRequestId === request.id ? "open" : "closed"}
+                                                onClick={() => setExpandedRequestId(expandedRequestId === request.id ? null : request.id)}
+                                            >
+                                                <TableCell className="text-slate-500 text-xs font-medium pl-6 py-4">
+                                                    <div className="flex flex-col gap-0.5">
+                                                        <span className="font-semibold text-slate-700">{format(new Date(request.created_at), 'MMM dd, yyyy')}</span>
+                                                        <span className="text-[10px] text-slate-400 uppercase tracking-wide">{format(new Date(request.created_at), 'h:mm a')}</span>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell className="py-4">
+                                                    <div className="flex flex-col">
+                                                        <span className="font-semibold text-slate-800">
+                                                            {request.is_proxy_request ? request.customer_name : (request.profiles?.full_name || 'Anonymous')}
                                                         </span>
-                                                    )}
-                                                    <span className="text-[10px] font-medium text-slate-400 uppercase tracking-tight">{request.vin || 'NO VIN'}</span>
-                                                </div>
-                                            </TableCell>
-                                            <TableCell className="py-4">
-                                                <div className="flex flex-col">
-                                                    <span className="font-semibold text-slate-800">{request.part_name}</span>
-                                                    <span className="text-xs text-slate-500">{request.vehicle_info || 'N/A'}</span>
-                                                </div>
-                                            </TableCell>
-                                            <TableCell className="py-4">
-                                                <Badge variant="secondary" className={cn(
-                                                    "capitalize font-semibold border-0 px-2 py-0.5 shadow-none",
-                                                    request.status === 'pending' ? "bg-orange-100 text-orange-700" :
-                                                        request.status === 'processing' ? "bg-blue-100 text-blue-700" :
-                                                            request.status === 'quoted' ? "bg-indigo-100 text-indigo-700" :
-                                                                request.status === 'completed' ? "bg-emerald-100 text-emerald-700" :
-                                                                    "bg-slate-100 text-slate-700"
-                                                )}>
-                                                    {request.status}
-                                                </Badge>
-                                            </TableCell>
-                                            <TableCell className="py-4">
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation()
-                                                        setSelectedRequest(request)
-                                                        setIsDetailsOpen(true)
-                                                    }}
-                                                    className="h-9 px-3 rounded-xl hover:bg-blue-50 text-blue-600 hover:text-blue-700 font-bold text-[10px] uppercase tracking-widest flex items-center gap-2 border border-transparent hover:border-blue-100 transition-all"
-                                                >
-                                                    <MessageSquare className="h-4 w-4" />
-                                                    Chat
-                                                </Button>
-                                            </TableCell>
-                                            <TableCell className="text-right pr-6 py-4">
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild>
-                                                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors" disabled={updatingId === request.id}>
-                                                            {updatingId === request.id ? (
-                                                                <Loader2 className="h-4 w-4 animate-spin" />
-                                                            ) : (
-                                                                <MoreHorizontal className="h-4 w-4" />
-                                                            )}
-                                                        </Button>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end" className="w-56 p-2 bg-white/95 backdrop-blur-sm border-slate-200 shadow-xl shadow-slate-200/50 rounded-2xl">
-                                                        <DropdownMenuItem
-                                                            onClick={() => {
-                                                                setSelectedRequest(request)
-                                                                setIsDetailsOpen(true)
-                                                            }}
-                                                            className="rounded-xl px-3 py-2.5 mb-1 cursor-pointer hover:bg-blue-50 focus:bg-blue-50 text-slate-600 focus:text-blue-700 group transition-colors"
-                                                        >
-                                                            <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center mr-3 group-hover:bg-white group-hover:shadow-sm transition-all">
-                                                                <Info className="h-4 w-4 text-blue-600" />
-                                                            </div>
-                                                            <span className="font-medium">Manage Request</span>
-                                                        </DropdownMenuItem>
-
-                                                        <DropdownMenuSeparator className="my-1 bg-slate-100" />
-
-                                                        <DropdownMenuLabel className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-3 py-2">Update Status</DropdownMenuLabel>
-
-                                                        <DropdownMenuItem
-                                                            onClick={() => handleStatusUpdate(request.id, 'processing')}
-                                                            className="rounded-xl px-3 py-2.5 mb-1 cursor-pointer hover:bg-blue-50 focus:bg-blue-50 text-slate-600 focus:text-blue-700 group transition-colors"
-                                                        >
-                                                            <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center mr-3 group-hover:bg-white group-hover:shadow-sm transition-all">
-                                                                <Clock className="h-4 w-4 text-blue-600" />
-                                                            </div>
-                                                            <span className="font-medium">Mark Processing</span>
-                                                        </DropdownMenuItem>
-
-                                                        <DropdownMenuItem
-                                                            onClick={() => handleStatusUpdate(request.id, 'quoted')}
-                                                            className="rounded-xl px-3 py-2.5 mb-1 cursor-pointer hover:bg-indigo-50 focus:bg-indigo-50 text-slate-600 focus:text-indigo-700 group transition-colors"
-                                                        >
-                                                            <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center mr-3 group-hover:bg-white group-hover:shadow-sm transition-all">
-                                                                <CheckCircle2 className="h-4 w-4 text-indigo-600" />
-                                                            </div>
-                                                            <span className="font-medium">Mark Quoted</span>
-                                                        </DropdownMenuItem>
-
-                                                        <DropdownMenuSeparator className="my-1 bg-slate-100" />
-
-                                                        <DropdownMenuLabel className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-3 py-2">Allocation</DropdownMenuLabel>
-                                                        {agents.map(agent => (
+                                                        {request.is_proxy_request && (
+                                                            <span className="text-[10px] text-primary-orange font-bold uppercase tracking-tighter flex items-center gap-1">
+                                                                <Users className="h-2 w-2" /> Proxy Request
+                                                            </span>
+                                                        )}
+                                                        <span className="text-[10px] font-medium text-slate-400 uppercase tracking-tight">{request.vin || 'NO VIN'}</span>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell className="py-4">
+                                                    <div className="flex flex-col">
+                                                        <span className="font-semibold text-slate-800">{request.part_name}</span>
+                                                        <span className="text-xs text-slate-500">{request.vehicle_info || 'N/A'}</span>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell className="py-4">
+                                                    <Badge variant="secondary" className={cn(
+                                                        "capitalize font-semibold border-0 px-2 py-0.5 shadow-none",
+                                                        request.status === 'pending' ? "bg-orange-100 text-orange-700" :
+                                                            request.status === 'processing' ? "bg-blue-100 text-blue-700" :
+                                                                request.status === 'quoted' ? "bg-indigo-100 text-indigo-700" :
+                                                                    request.status === 'completed' ? "bg-emerald-100 text-emerald-700" :
+                                                                        "bg-slate-100 text-slate-700"
+                                                    )}>
+                                                        {request.status}
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell className="py-4">
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation()
+                                                            setSelectedRequest(request)
+                                                            setIsDetailsOpen(true)
+                                                        }}
+                                                        className="h-9 px-3 rounded-xl hover:bg-blue-50 text-blue-600 hover:text-blue-700 font-bold text-[10px] uppercase tracking-widest flex items-center gap-2 border border-transparent hover:border-blue-100 transition-all"
+                                                    >
+                                                        <MessageSquare className="h-4 w-4" />
+                                                        Chat
+                                                    </Button>
+                                                </TableCell>
+                                                <TableCell className="text-right pr-6 py-4">
+                                                    <DropdownMenu>
+                                                        <DropdownMenuTrigger asChild>
+                                                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors" disabled={updatingId === request.id}>
+                                                                {updatingId === request.id ? (
+                                                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                                                ) : (
+                                                                    <MoreHorizontal className="h-4 w-4" />
+                                                                )}
+                                                            </Button>
+                                                        </DropdownMenuTrigger>
+                                                        <DropdownMenuContent align="end" className="w-56 p-2 bg-white/95 backdrop-blur-sm border-slate-200 shadow-xl shadow-slate-200/50 rounded-2xl">
                                                             <DropdownMenuItem
-                                                                key={agent.id}
-                                                                onClick={() => handleAssignment(request.id, agent.id)}
-                                                                className="rounded-xl px-3 py-2.5 mb-1 cursor-pointer hover:bg-slate-50 text-slate-600 focus:text-primary-blue group transition-colors"
+                                                                onClick={() => {
+                                                                    setSelectedRequest(request)
+                                                                    setIsDetailsOpen(true)
+                                                                }}
+                                                                className="rounded-xl px-3 py-2.5 mb-1 cursor-pointer hover:bg-blue-50 focus:bg-blue-50 text-slate-600 focus:text-blue-700 group transition-colors"
                                                             >
-                                                                <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center mr-3 group-hover:bg-white group-hover:shadow-sm transition-all">
-                                                                    <Users className="h-4 w-4 text-slate-400" />
+                                                                <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center mr-3 group-hover:bg-white group-hover:shadow-sm transition-all">
+                                                                    <Info className="h-4 w-4 text-blue-600" />
                                                                 </div>
-                                                                <span className="font-medium">Assign to {agent.full_name.split(' ')[0]}</span>
+                                                                <span className="font-medium">Manage Request</span>
                                                             </DropdownMenuItem>
-                                                        ))}
 
-                                                        <DropdownMenuSeparator className="my-1 bg-slate-100" />
+                                                            <DropdownMenuSeparator className="my-1 bg-slate-100" />
 
-                                                        <DropdownMenuItem
-                                                            onClick={() => openQuoteModal(request)}
-                                                            className="rounded-xl px-3 py-2.5 mb-1 cursor-pointer hover:bg-orange-50 focus:bg-orange-50 text-slate-600 focus:text-orange-700 group transition-colors"
-                                                        >
-                                                            <div className="h-8 w-8 rounded-full bg-orange-100 flex items-center justify-center mr-3 group-hover:bg-white group-hover:shadow-sm transition-all">
-                                                                <ArrowRight className="h-4 w-4 text-orange-600" />
+                                                            <DropdownMenuLabel className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-3 py-2">Update Status</DropdownMenuLabel>
+
+                                                            <DropdownMenuItem
+                                                                onClick={() => handleStatusUpdate(request.id, 'processing')}
+                                                                className="rounded-xl px-3 py-2.5 mb-1 cursor-pointer hover:bg-blue-50 focus:bg-blue-50 text-slate-600 focus:text-blue-700 group transition-colors"
+                                                            >
+                                                                <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center mr-3 group-hover:bg-white group-hover:shadow-sm transition-all">
+                                                                    <Clock className="h-4 w-4 text-blue-600" />
+                                                                </div>
+                                                                <span className="font-medium">Mark Processing</span>
+                                                            </DropdownMenuItem>
+
+                                                            <DropdownMenuItem
+                                                                onClick={() => handleStatusUpdate(request.id, 'quoted')}
+                                                                className="rounded-xl px-3 py-2.5 mb-1 cursor-pointer hover:bg-indigo-50 focus:bg-indigo-50 text-slate-600 focus:text-indigo-700 group transition-colors"
+                                                            >
+                                                                <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center mr-3 group-hover:bg-white group-hover:shadow-sm transition-all">
+                                                                    <CheckCircle2 className="h-4 w-4 text-indigo-600" />
+                                                                </div>
+                                                                <span className="font-medium">Mark Quoted</span>
+                                                            </DropdownMenuItem>
+
+                                                            <DropdownMenuSeparator className="my-1 bg-slate-100" />
+
+                                                            <DropdownMenuLabel className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-3 py-2">Allocation</DropdownMenuLabel>
+                                                            {agents.map(agent => (
+                                                                <DropdownMenuItem
+                                                                    key={agent.id}
+                                                                    onClick={() => handleAssignment(request.id, agent.id)}
+                                                                    className="rounded-xl px-3 py-2.5 mb-1 cursor-pointer hover:bg-slate-50 text-slate-600 focus:text-primary-blue group transition-colors"
+                                                                >
+                                                                    <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center mr-3 group-hover:bg-white group-hover:shadow-sm transition-all">
+                                                                        <Users className="h-4 w-4 text-slate-400" />
+                                                                    </div>
+                                                                    <span className="font-medium">Assign to {agent.full_name.split(' ')[0]}</span>
+                                                                </DropdownMenuItem>
+                                                            ))}
+
+                                                            <DropdownMenuSeparator className="my-1 bg-slate-100" />
+
+                                                            <DropdownMenuItem
+                                                                onClick={() => openQuoteModal(request)}
+                                                                className="rounded-xl px-3 py-2.5 mb-1 cursor-pointer hover:bg-orange-50 focus:bg-orange-50 text-slate-600 focus:text-orange-700 group transition-colors"
+                                                            >
+                                                                <div className="h-8 w-8 rounded-full bg-orange-100 flex items-center justify-center mr-3 group-hover:bg-white group-hover:shadow-sm transition-all">
+                                                                    <ArrowRight className="h-4 w-4 text-orange-600" />
+                                                                </div>
+                                                                <span className="font-medium">Create Quote</span>
+                                                            </DropdownMenuItem>
+
+                                                        </DropdownMenuContent>
+                                                    </DropdownMenu>
+                                                </TableCell>
+                                            </TableRow>
+
+                                            {expandedRequestId === request.id && (
+                                                <TableRow className="bg-slate-50/20 hover:bg-slate-50/20 data-[state=open]:bg-slate-50/20">
+                                                    <TableCell colSpan={6} className="p-0 border-b-2 border-slate-100">
+                                                        <div className="p-6 grid grid-cols-1 lg:grid-cols-3 gap-6 animate-in slide-in-from-top-2 duration-200">
+                                                            <div className="space-y-4">
+                                                                <div className="flex items-center gap-2">
+                                                                    <Package className="h-4 w-4 text-slate-400" />
+                                                                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Request Details</p>
+                                                                </div>
+                                                                <div className="p-4 bg-white rounded-xl border border-slate-100/50 shadow-sm">
+                                                                    <p className="font-semibold text-slate-900 text-lg leading-tight">{request.part_name}</p>
+                                                                    <p className="text-sm font-medium text-slate-500 mt-2 italic flex items-start gap-2">
+                                                                        <div className="mt-1 h-1.5 w-1.5 rounded-full bg-slate-300 shrink-0" />
+                                                                        {request.vehicle_info || 'No vehicle info provided'}
+                                                                    </p>
+                                                                    {request.part_condition && (
+                                                                        <Badge variant="outline" className="mt-3 w-fit font-bold px-2 py-0.5 text-[10px] uppercase tracking-widest text-blue-600 border-blue-200 bg-blue-50">{request.part_condition}</Badge>
+                                                                    )}
+                                                                </div>
+                                                                <div className="pt-2">
+                                                                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">VIN Number</p>
+                                                                    <div className="mt-1.5 h-10 flex items-center px-4 bg-slate-900 rounded-lg max-w-xs shadow-inner">
+                                                                        <p className="font-mono font-medium text-white tracking-[0.1em] text-xs">{request.vin || 'NOT PROVIDED'}</p>
+                                                                    </div>
+                                                                </div>
                                                             </div>
-                                                            <span className="font-medium">Create Quote</span>
-                                                        </DropdownMenuItem>
-
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
-                                            </TableCell>
-                                        </TableRow>
+                                                            <div className="space-y-4">
+                                                                <div className="flex items-center gap-2">
+                                                                    <Users className="h-4 w-4 text-slate-400" />
+                                                                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Customer Identity</p>
+                                                                </div>
+                                                                <div className="p-4 flex items-start gap-4 bg-white rounded-xl border border-slate-100/50 shadow-sm">
+                                                                    <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center font-bold text-blue-600 shadow-inner">
+                                                                        {(request.is_proxy_request ? request.customer_name : request.profiles?.full_name)?.substring(0, 2).toUpperCase() || 'GU'}
+                                                                    </div>
+                                                                    <div className="flex-1">
+                                                                        <p className="font-bold text-slate-900 text-base">{request.is_proxy_request ? request.customer_name : (request.profiles?.full_name || 'Guest User')}</p>
+                                                                        {request.is_proxy_request && request.customer_phone && (
+                                                                            <p className="text-xs font-medium text-slate-500 mt-0.5">{request.customer_phone}</p>
+                                                                        )}
+                                                                        <div className="mt-3 flex items-center gap-2">
+                                                                            <Button
+                                                                                size="sm"
+                                                                                className="h-8 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-[10px] uppercase font-bold tracking-wider shadow-sm"
+                                                                                onClick={(e) => {
+                                                                                    e.stopPropagation();
+                                                                                    setSelectedRequest(request);
+                                                                                    setIsDetailsOpen(true);
+                                                                                }}
+                                                                            >
+                                                                                Open Full Console
+                                                                            </Button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden h-[240px] flex flex-col relative" onClick={(e) => e.stopPropagation()}>
+                                                                {user ? (
+                                                                    <FeedbackPanel requestId={request.id} currentUserId={user.id} isAgent={true} />
+                                                                ) : null}
+                                                            </div>
+                                                        </div>
+                                                    </TableCell>
+                                                </TableRow>
+                                            )}
+                                        </React.Fragment>
                                     ))
                                 ) : (
                                     <TableRow>
@@ -815,6 +902,16 @@ export default function SourcingRequestsPage() {
                                     onChange={(e) => setQuoteData({ ...quoteData, shipping_cost: e.target.value })}
                                 />
                             </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-slate-600">Service Charge (7%) ($)</Label>
+                            <Input
+                                type="text"
+                                readOnly
+                                className="h-12 rounded-xl bg-slate-100 border-slate-200 font-bold text-slate-500"
+                                value={quoteData.service_fee}
+                            />
                         </div>
 
                         <div className="p-6 bg-gradient-to-br from-blue-50 to-slate-50 rounded-2xl border-2 border-blue-100 flex items-center justify-between">

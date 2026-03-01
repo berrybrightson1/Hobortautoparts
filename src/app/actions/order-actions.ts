@@ -42,7 +42,13 @@ export async function getAdminOrders() {
                     item_price,
                     shipping_cost,
                     service_fee,
-                    currency
+                    currency,
+                    sourcing_requests:request_id (
+                        part_name,
+                        vehicle_info,
+                        vin,
+                        part_condition
+                    )
                 ),
                 shipments (
                     tracking_number,

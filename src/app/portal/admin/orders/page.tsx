@@ -20,12 +20,12 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Search, Filter, MoreHorizontal, ShoppingBag, Loader2, CheckCircle2, Clock, AlertCircle, DollarSign, UserCircle, Truck, RefreshCw, MessageSquare, X, Activity } from "lucide-react"
+import { Search, Filter, MoreHorizontal, ShoppingBag, Loader2, CheckCircle2, Clock, AlertCircle, DollarSign, UserCircle, Truck, RefreshCw, MessageSquare, X, Activity, Package } from "lucide-react"
 import { SearchBar } from "@/components/portal/search-bar"
 import { Pagination } from "@/components/portal/pagination"
 import { useAuth } from "@/components/auth/auth-provider"
 import { FeedbackPanel } from "@/components/portal/feedback-panel"
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
@@ -41,6 +41,7 @@ export default function AdminOrdersPage() {
     const [updatingId, setUpdatingId] = useState<string | null>(null)
     const [selectedOrder, setSelectedOrder] = useState<any>(null)
     const [isDetailsOpen, setIsDetailsOpen] = useState(false)
+    const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null)
 
     // Service Fee Editing State
     const [isEditingFee, setIsEditingFee] = useState(false)
@@ -211,97 +212,153 @@ export default function AdminOrdersPage() {
                                 </TableRow>
                             ) : paginatedOrders.length > 0 ? (
                                 paginatedOrders.map((order) => (
-                                    <TableRow key={order.id} className="hover:bg-slate-50/50 transition-colors border-slate-50 group">
-                                        <TableCell className="pl-6 py-4">
-                                            <div className="flex items-center gap-3">
-                                                <div className="h-10 w-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 shrink-0">
-                                                    <ShoppingBag className="h-5 w-5" />
+                                    <React.Fragment key={order.id}>
+                                        <TableRow
+                                            className="hover:bg-slate-50/80 transition-colors border-slate-50 group cursor-pointer data-[state=open]:bg-slate-50/80"
+                                            data-state={expandedOrderId === order.id ? "open" : "closed"}
+                                            onClick={() => setExpandedOrderId(expandedOrderId === order.id ? null : order.id)}
+                                        >
+                                            <TableCell className="pl-6 py-4">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="h-10 w-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 shrink-0">
+                                                        <ShoppingBag className="h-5 w-5" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-sm font-bold text-slate-900 font-mono">#{order.id.slice(0, 8)}</p>
+                                                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wide">
+                                                            {format(new Date(order.created_at), 'MMM dd, yyyy • h:mm a')}
+                                                        </p>
+                                                    </div>
                                                 </div>
+                                            </TableCell>
+                                            <TableCell className="py-4">
                                                 <div>
-                                                    <p className="text-sm font-bold text-slate-900 font-mono">#{order.id.slice(0, 8)}</p>
-                                                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wide">
-                                                        {format(new Date(order.created_at), 'MMM dd, yyyy • h:mm a')}
-                                                    </p>
+                                                    <p className="text-sm font-bold text-slate-900">{order.profiles?.full_name || 'Guest User'}</p>
                                                 </div>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell className="py-4">
-                                            <div>
-                                                <p className="text-sm font-bold text-slate-900">{order.profiles?.full_name || 'Guest User'}</p>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell className="py-4">
-                                            <div className="flex items-center gap-1 font-bold text-slate-900">
-                                                <DollarSign className="h-3 w-3 text-slate-400" />
-                                                {order.quotes?.total_amount?.toFixed(2) || '0.00'}
-                                            </div>
-                                        </TableCell>
-                                        <TableCell className="py-4">
-                                            <Badge className={cn(
-                                                "rounded-lg px-2.5 py-1 font-bold text-[10px] uppercase tracking-wider border-0 shadow-sm",
-                                                order.status === 'paid' || order.status === 'completed' ? "bg-emerald-50 text-emerald-600" :
-                                                    order.status === 'processing' ? "bg-blue-50 text-blue-600" :
-                                                        order.status === 'pending_payment' ? "bg-orange-50 text-orange-600" :
-                                                            "bg-slate-100 text-slate-600"
-                                            )}>
-                                                {order.status.replace('_', ' ')}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell className="py-4">
-                                            {order.shipments && order.shipments.length > 0 ? (
-                                                <div className="flex items-center gap-2">
-                                                    <Truck className="h-3 w-3 text-blue-500" />
-                                                    <span className="text-xs font-bold text-slate-700">{order.shipments[0].tracking_number}</span>
+                                            </TableCell>
+                                            <TableCell className="py-4">
+                                                <div className="flex items-center gap-1 font-bold text-slate-900">
+                                                    <DollarSign className="h-3 w-3 text-slate-400" />
+                                                    {order.quotes?.total_amount?.toFixed(2) || '0.00'}
                                                 </div>
-                                            ) : (
-                                                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Unfulfilled</span>
-                                            )}
-                                        </TableCell>
-                                        <TableCell className="py-4">
-                                            <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={(e) => {
-                                                    e.stopPropagation()
-                                                    setSelectedOrder(order)
-                                                    setIsDetailsOpen(true)
-                                                }}
-                                                className="h-9 px-3 rounded-xl hover:bg-blue-50 text-blue-600 hover:text-blue-700 font-bold text-[10px] uppercase tracking-widest flex items-center gap-2 border border-transparent hover:border-blue-100 transition-all"
-                                            >
-                                                <MessageSquare className="h-4 w-4" />
-                                                Chat
-                                            </Button>
-                                        </TableCell>
-                                        <TableCell className="text-right pr-6 py-4">
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button variant="ghost" className="h-8 w-8 p-0 rounded-lg hover:bg-slate-100" disabled={updatingId === order.id}>
-                                                        {updatingId === order.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <MoreHorizontal className="h-4 w-4" />}
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end" className="w-48 rounded-xl p-2 shadow-xl border-slate-100">
-                                                    <DropdownMenuLabel className="text-[10px] font-bold uppercase tracking-widest text-slate-400 px-2 py-1.5">Manage Order</DropdownMenuLabel>
-                                                    <DropdownMenuSeparator className="bg-slate-50" />
-                                                    <DropdownMenuItem onClick={() => { setSelectedOrder(order); setIsDetailsOpen(true) }} className="text-xs font-bold px-2 py-2 rounded-lg cursor-pointer hover:bg-slate-50">
-                                                        <ShoppingBag className="mr-2 h-4 w-4 text-blue-500" /> View Details
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuSeparator className="bg-slate-50" />
-                                                    <DropdownMenuItem onClick={() => handleStatusUpdate(order.id, 'paid')} className="text-xs font-bold px-2 py-2 rounded-lg cursor-pointer hover:bg-slate-50">
-                                                        <CheckCircle2 className="mr-2 h-4 w-4 text-emerald-500" /> Mark Paid
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem onClick={() => handleStatusUpdate(order.id, 'pending_payment')} className="text-xs font-bold px-2 py-2 rounded-lg cursor-pointer hover:bg-slate-50">
-                                                        <AlertCircle className="mr-2 h-4 w-4 text-orange-500" /> Mark Pending
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem onClick={() => handleStatusUpdate(order.id, 'processing')} className="text-xs font-bold px-2 py-2 rounded-lg cursor-pointer hover:bg-slate-50">
-                                                        <Clock className="mr-2 h-4 w-4 text-blue-500" /> Mark Processing
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem onClick={() => handleStatusUpdate(order.id, 'completed')} className="text-xs font-bold px-2 py-2 rounded-lg cursor-pointer hover:bg-slate-50">
-                                                        <CheckCircle2 className="mr-2 h-4 w-4 text-slate-600" /> Mark Completed
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
-                                        </TableCell>
-                                    </TableRow>
+                                            </TableCell>
+                                            <TableCell className="py-4">
+                                                <Badge className={cn(
+                                                    "rounded-lg px-2.5 py-1 font-bold text-[10px] uppercase tracking-wider border-0 shadow-sm",
+                                                    order.status === 'paid' || order.status === 'completed' ? "bg-emerald-50 text-emerald-600" :
+                                                        order.status === 'processing' ? "bg-blue-50 text-blue-600" :
+                                                            order.status === 'pending_payment' ? "bg-orange-50 text-orange-600" :
+                                                                "bg-slate-100 text-slate-600"
+                                                )}>
+                                                    {order.status.replace('_', ' ')}
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell className="py-4">
+                                                {order.shipments && order.shipments.length > 0 ? (
+                                                    <div className="flex items-center gap-2">
+                                                        <Truck className="h-3 w-3 text-blue-500" />
+                                                        <span className="text-xs font-bold text-slate-700">{order.shipments[0].tracking_number}</span>
+                                                    </div>
+                                                ) : (
+                                                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Unfulfilled</span>
+                                                )}
+                                            </TableCell>
+                                            <TableCell className="py-4">
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation()
+                                                        setSelectedOrder(order)
+                                                        setIsDetailsOpen(true)
+                                                    }}
+                                                    className="h-9 px-3 rounded-xl hover:bg-blue-50 text-blue-600 hover:text-blue-700 font-bold text-[10px] uppercase tracking-widest flex items-center gap-2 border border-transparent hover:border-blue-100 transition-all"
+                                                >
+                                                    <MessageSquare className="h-4 w-4" />
+                                                    Chat
+                                                </Button>
+                                            </TableCell>
+                                            <TableCell className="text-right pr-6 py-4">
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant="ghost" className="h-8 w-8 p-0 rounded-lg hover:bg-slate-100" disabled={updatingId === order.id}>
+                                                            {updatingId === order.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <MoreHorizontal className="h-4 w-4" />}
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end" className="w-48 rounded-xl p-2 shadow-xl border-slate-100">
+                                                        <DropdownMenuLabel className="text-[10px] font-bold uppercase tracking-widest text-slate-400 px-2 py-1.5">Manage Order</DropdownMenuLabel>
+                                                        <DropdownMenuSeparator className="bg-slate-50" />
+                                                        <DropdownMenuItem onClick={() => { setSelectedOrder(order); setIsDetailsOpen(true) }} className="text-xs font-bold px-2 py-2 rounded-lg cursor-pointer hover:bg-slate-50">
+                                                            <ShoppingBag className="mr-2 h-4 w-4 text-blue-500" /> View Details
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuSeparator className="bg-slate-50" />
+                                                        <DropdownMenuItem onClick={() => handleStatusUpdate(order.id, 'paid')} className="text-xs font-bold px-2 py-2 rounded-lg cursor-pointer hover:bg-slate-50">
+                                                            <CheckCircle2 className="mr-2 h-4 w-4 text-emerald-500" /> Mark Paid
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem onClick={() => handleStatusUpdate(order.id, 'pending_payment')} className="text-xs font-bold px-2 py-2 rounded-lg cursor-pointer hover:bg-slate-50">
+                                                            <AlertCircle className="mr-2 h-4 w-4 text-orange-500" /> Mark Pending
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem onClick={() => handleStatusUpdate(order.id, 'processing')} className="text-xs font-bold px-2 py-2 rounded-lg cursor-pointer hover:bg-slate-50">
+                                                            <Clock className="mr-2 h-4 w-4 text-blue-500" /> Mark Processing
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem onClick={() => handleStatusUpdate(order.id, 'completed')} className="text-xs font-bold px-2 py-2 rounded-lg cursor-pointer hover:bg-slate-50">
+                                                            <CheckCircle2 className="mr-2 h-4 w-4 text-slate-600" /> Mark Completed
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </TableCell>
+                                        </TableRow>
+
+                                        {expandedOrderId === order.id && (
+                                            <TableRow className="bg-slate-50/30 hover:bg-slate-50/30 data-[state=open]:bg-slate-50/30">
+                                                <TableCell colSpan={7} className="p-0 border-b-2 border-slate-100">
+                                                    <div className="p-6 grid grid-cols-1 lg:grid-cols-2 gap-6 animate-in slide-in-from-top-2 duration-200">
+                                                        {/* Sourcing Request Info */}
+                                                        <div className="space-y-4">
+                                                            <div className="flex items-center gap-2">
+                                                                <Package className="h-4 w-4 text-slate-400" />
+                                                                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Items to Fulfill</p>
+                                                            </div>
+                                                            <div className="p-4 bg-white rounded-xl border border-slate-100/50 shadow-sm">
+                                                                <p className="font-semibold text-slate-900 text-lg leading-tight">{order.quotes?.sourcing_requests?.part_name || 'Item Name Not Available'}</p>
+                                                                <div className="text-sm font-medium text-slate-500 mt-2 italic flex items-start gap-2">
+                                                                    <div className="mt-1.5 h-1.5 w-1.5 rounded-full bg-slate-300 shrink-0" />
+                                                                    {order.quotes?.sourcing_requests?.vehicle_info || 'No vehicle info connected to this order'}
+                                                                </div>
+                                                                {order.quotes?.sourcing_requests?.part_condition && (
+                                                                    <Badge variant="outline" className="mt-3 w-fit font-bold px-2 py-0.5 text-[10px] uppercase tracking-widest text-blue-600 border-blue-200 bg-blue-50">
+                                                                        {order.quotes.sourcing_requests.part_condition}
+                                                                    </Badge>
+                                                                )}
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Financial Overview Quick Glance */}
+                                                        <div className="space-y-4">
+                                                            <div className="flex items-center gap-2">
+                                                                <DollarSign className="h-4 w-4 text-slate-400" />
+                                                                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Order Finances</p>
+                                                            </div>
+                                                            <div className="p-4 bg-slate-950 rounded-xl shadow-inner text-white flex flex-col justify-center">
+                                                                <div className="flex justify-between items-center pb-3 border-b border-white/10 mb-3">
+                                                                    <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Quote</span>
+                                                                    <span className="font-mono text-sm">${(order.quotes?.item_price + order.quotes?.shipping_cost)?.toFixed(2) || '0.00'}</span>
+                                                                </div>
+                                                                <div className="flex justify-between items-center pb-3 border-b border-white/10 mb-3">
+                                                                    <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Service Fee</span>
+                                                                    <span className="font-mono text-sm text-blue-400">+ ${order.quotes?.service_fee?.toFixed(2) || '0.00'}</span>
+                                                                </div>
+                                                                <div className="flex justify-between items-center">
+                                                                    <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-400">Total Receivable</span>
+                                                                    <span className="font-mono text-xl font-bold text-emerald-400">${order.quotes?.total_amount?.toFixed(2) || '0.00'}</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        )}
+                                    </React.Fragment>
                                 ))
                             ) : (
                                 <TableRow>
