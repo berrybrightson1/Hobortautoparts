@@ -598,10 +598,10 @@ export default function SourcingRequestsPage() {
                                                                 </div>
                                                                 <div className="p-4 bg-white rounded-xl border border-slate-100/50 shadow-sm">
                                                                     <p className="font-semibold text-slate-900 text-lg leading-tight">{request.part_name}</p>
-                                                                    <p className="text-sm font-medium text-slate-500 mt-2 italic flex items-start gap-2">
+                                                                    <div className="text-sm font-medium text-slate-500 mt-2 italic flex items-start gap-2">
                                                                         <div className="mt-1 h-1.5 w-1.5 rounded-full bg-slate-300 shrink-0" />
                                                                         {request.vehicle_info || 'No vehicle info provided'}
-                                                                    </p>
+                                                                    </div>
                                                                     {request.part_condition && (
                                                                         <Badge variant="outline" className="mt-3 w-fit font-bold px-2 py-0.5 text-[10px] uppercase tracking-widest text-blue-600 border-blue-200 bg-blue-50">{request.part_condition}</Badge>
                                                                     )}
