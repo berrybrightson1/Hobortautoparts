@@ -588,62 +588,68 @@ export default function SourcingRequestsPage() {
                                             </TableRow>
 
                                             {expandedRequestId === request.id && (
-                                                <TableRow className="bg-slate-50/20 hover:bg-slate-50/20 data-[state=open]:bg-slate-50/20">
-                                                    <TableCell colSpan={6} className="p-0 border-b-2 border-slate-100">
-                                                        <div className="p-6 grid grid-cols-1 lg:grid-cols-3 gap-6 animate-in slide-in-from-top-2 duration-200">
+                                                <TableRow className="bg-slate-50/50 hover:bg-slate-50/50 data-[state=open]:bg-slate-50/50 relative overflow-hidden">
+                                                    <TableCell colSpan={6} className="p-0 border-b-2 border-slate-200">
+                                                        <div className="p-6 md:p-8 grid grid-cols-1 lg:grid-cols-3 gap-8 animate-in fade-in slide-in-from-top-4 duration-300">
                                                             <div className="space-y-4">
-                                                                <div className="flex items-center gap-2">
-                                                                    <Package className="h-4 w-4 text-slate-400" />
-                                                                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Request Details</p>
+                                                                <div className="flex items-center gap-2 mb-2">
+                                                                    <div className="h-6 w-6 rounded-md bg-slate-200/50 flex items-center justify-center">
+                                                                        <Package className="h-3.5 w-3.5 text-slate-500" />
+                                                                    </div>
+                                                                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Request Details</p>
                                                                 </div>
-                                                                <div className="p-4 bg-white rounded-xl border border-slate-100/50 shadow-sm">
-                                                                    <p className="font-semibold text-slate-900 text-lg leading-tight">{request.part_name}</p>
-                                                                    <div className="text-sm font-medium text-slate-500 mt-2 italic flex items-start gap-2">
-                                                                        <div className="mt-1 h-1.5 w-1.5 rounded-full bg-slate-300 shrink-0" />
-                                                                        {request.vehicle_info || 'No vehicle info provided'}
+                                                                <div className="p-5 bg-white rounded-2xl border border-slate-200/60 shadow-sm transition-all hover:shadow-md">
+                                                                    <p className="font-extrabold text-slate-900 text-xl leading-tight tracking-tight">{request.part_name}</p>
+                                                                    <div className="text-sm font-semibold text-slate-500 mt-2.5 flex items-start gap-2.5">
+                                                                        <div className="mt-1.5 h-1.5 w-1.5 rounded-full bg-blue-400 shrink-0 shadow-sm" />
+                                                                        <span className="leading-snug">{request.vehicle_info || 'No vehicle info provided'}</span>
                                                                     </div>
                                                                     {request.part_condition && (
-                                                                        <Badge variant="outline" className="mt-3 w-fit font-bold px-2 py-0.5 text-[10px] uppercase tracking-widest text-blue-600 border-blue-200 bg-blue-50">{request.part_condition}</Badge>
+                                                                        <Badge variant="outline" className="mt-4 w-fit font-black px-3 py-1 text-[10px] uppercase tracking-widest text-blue-700 border-blue-200 bg-blue-50 shadow-sm">{request.part_condition}</Badge>
                                                                     )}
                                                                 </div>
                                                                 <div className="pt-2">
-                                                                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">VIN Number</p>
-                                                                    <div className="mt-1.5 h-10 flex items-center px-4 bg-slate-900 rounded-lg max-w-xs shadow-inner">
-                                                                        <p className="font-mono font-medium text-white tracking-[0.1em] text-xs">{request.vin || 'NOT PROVIDED'}</p>
+                                                                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-2 pl-1">VIN Number</p>
+                                                                    <div className="h-11 flex items-center px-4 bg-slate-900 rounded-xl shadow-inner border border-slate-800">
+                                                                        <p className="font-mono font-bold text-slate-100 tracking-[0.15em] text-xs">{request.vin || 'NOT PROVIDED'}</p>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                             <div className="space-y-4">
-                                                                <div className="flex items-center gap-2">
-                                                                    <Users className="h-4 w-4 text-slate-400" />
-                                                                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Customer Identity</p>
-                                                                </div>
-                                                                <div className="p-4 flex items-start gap-4 bg-white rounded-xl border border-slate-100/50 shadow-sm">
-                                                                    <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center font-bold text-blue-600 shadow-inner">
-                                                                        {(request.is_proxy_request ? request.customer_name : request.profiles?.full_name)?.substring(0, 2).toUpperCase() || 'GU'}
+                                                                <div className="flex items-center gap-2 mb-2">
+                                                                    <div className="h-6 w-6 rounded-md bg-slate-200/50 flex items-center justify-center">
+                                                                        <Users className="h-3.5 w-3.5 text-slate-500" />
                                                                     </div>
-                                                                    <div className="flex-1">
-                                                                        <p className="font-bold text-slate-900 text-base">{request.is_proxy_request ? request.customer_name : (request.profiles?.full_name || 'Guest User')}</p>
-                                                                        {request.is_proxy_request && request.customer_phone && (
-                                                                            <p className="text-xs font-medium text-slate-500 mt-0.5">{request.customer_phone}</p>
-                                                                        )}
-                                                                        <div className="mt-3 flex items-center gap-2">
-                                                                            <Button
-                                                                                size="sm"
-                                                                                className="h-8 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-[10px] uppercase font-bold tracking-wider shadow-sm"
-                                                                                onClick={(e) => {
-                                                                                    e.stopPropagation();
-                                                                                    setSelectedRequest(request);
-                                                                                    setIsDetailsOpen(true);
-                                                                                }}
-                                                                            >
-                                                                                Open Full Console
-                                                                            </Button>
+                                                                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Customer Identity</p>
+                                                                </div>
+                                                                <div className="p-5 flex flex-col gap-4 bg-white rounded-2xl border border-slate-200/60 shadow-sm transition-all hover:shadow-md h-[180px]">
+                                                                    <div className="flex items-center gap-4">
+                                                                        <div className="h-14 w-14 rounded-full bg-gradient-to-br from-blue-100 to-blue-50 border border-blue-100 flex items-center justify-center font-black text-blue-700 shadow-sm text-lg shrink-0">
+                                                                            {(request.is_proxy_request ? request.customer_name : request.profiles?.full_name)?.substring(0, 2).toUpperCase() || 'GU'}
                                                                         </div>
+                                                                        <div className="flex-1 min-w-0">
+                                                                            <p className="font-extrabold text-slate-900 text-lg truncate tracking-tight">{request.is_proxy_request ? request.customer_name : (request.profiles?.full_name || 'Guest User')}</p>
+                                                                            {request.is_proxy_request && request.customer_phone && (
+                                                                                <p className="text-sm font-semibold text-slate-500 mt-0.5 truncate">{request.customer_phone}</p>
+                                                                            )}
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="mt-auto pt-4 border-t border-slate-100">
+                                                                        <Button
+                                                                            size="sm"
+                                                                            className="w-full h-10 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-[10px] uppercase font-black tracking-[0.15em] shadow-md transition-all active:scale-[0.98]"
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                setSelectedRequest(request);
+                                                                                setIsDetailsOpen(true);
+                                                                            }}
+                                                                        >
+                                                                            Open Full Console
+                                                                        </Button>
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden h-[240px] flex flex-col relative" onClick={(e) => e.stopPropagation()}>
+                                                            <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden h-[280px] flex flex-col relative transition-all hover:shadow-md" onClick={(e) => e.stopPropagation()}>
                                                                 {user ? (
                                                                     <FeedbackPanel requestId={request.id} currentUserId={user.id} isAgent={true} />
                                                                 ) : null}

@@ -228,31 +228,33 @@ export function FeedbackPanel({ requestId, currentUserId, isAgent = false }: Fee
     }
 
     return (
-        <div className="flex flex-col h-full bg-white overflow-hidden">
+        <div className="flex flex-col h-full bg-slate-50/30 overflow-hidden relative">
             {/* Header */}
-            <div className="p-4 sm:p-6 border-b border-slate-100 bg-white flex items-center justify-between">
+            <div className="px-6 py-4 border-b border-slate-100 bg-white/80 backdrop-blur-md sticky top-0 z-10 flex items-center justify-between shadow-sm">
                 <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center text-primary-blue shadow-inner">
-                        <MessageSquare className="h-5 w-5" />
+                    <div className="h-10 w-10 rounded-full bg-slate-900 flex items-center justify-center text-white shadow-md">
+                        <MessageSquare className="h-4 w-4" />
                     </div>
                     <div>
-                        <h4 className="font-semibold text-slate-900 tracking-tight leading-none uppercase text-xs">Messages</h4>
-                        <p className="text-[9px] font-medium uppercase tracking-[0.15em] text-slate-400 pt-1.5">Direct communication</p>
+                        <h4 className="font-bold text-slate-900 tracking-tight leading-none text-sm">Direct Messages</h4>
+                        <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 pt-1">Live Updates</p>
                     </div>
                 </div>
             </div>
 
             {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6" ref={scrollRef}>
+            <div className="flex-1 overflow-y-auto p-6 space-y-6 scroll-smooth pb-32" ref={scrollRef}>
                 {isLoading ? (
-                    <div className="flex flex-col items-center justify-center h-full text-slate-400 gap-2">
-                        <Loader2 className="h-6 w-6 animate-spin" />
-                        <span className="text-xs font-bold uppercase tracking-widest">Loading history...</span>
+                    <div className="flex flex-col items-center justify-center h-full text-slate-400 gap-3">
+                        <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
+                        <span className="text-xs font-bold uppercase tracking-widest text-slate-400">Syncing...</span>
                     </div>
                 ) : messages.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center h-full text-slate-300 gap-4 opacity-50">
-                        <MessageSquare className="h-12 w-12" />
-                        <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-center">No messages yet.<br />Start the conversation.</span>
+                    <div className="flex flex-col items-center justify-center h-full text-slate-400 gap-4 opacity-70">
+                        <div className="h-16 w-16 bg-white rounded-full flex items-center justify-center shadow-sm border border-slate-100">
+                            <MessageSquare className="h-6 w-6 text-slate-300" />
+                        </div>
+                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-center leading-relaxed">No messages found.<br />Start the conversation block.</span>
                     </div>
                 ) : (
                     <>
@@ -261,37 +263,44 @@ export function FeedbackPanel({ requestId, currentUserId, isAgent = false }: Fee
                             const role = msg.profiles?.role
 
                             return (
-                                <div key={msg.id} className={cn("flex gap-3 max-w-[85%]", isMe ? "ml-auto flex-row-reverse" : "")}>
-                                    <Avatar className="h-8 w-8 sm:h-10 sm:w-10 border-2 border-white shadow-sm shrink-0">
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    key={msg.id}
+                                    className={cn("flex gap-3 max-w-[85%]", isMe ? "ml-auto flex-row-reverse" : "")}
+                                >
+                                    <Avatar className="h-8 w-8 sm:h-10 sm:w-10 border-2 border-white shadow-sm shrink-0 mt-1">
                                         <AvatarImage src={msg.profiles?.avatar_url} />
-                                        <AvatarFallback className={cn("text-[10px] font-bold", isMe ? "bg-primary-blue text-white" : "bg-slate-200 text-slate-600")}>
+                                        <AvatarFallback className={cn("text-[10px] font-bold", isMe ? "bg-slate-900 text-white" : "bg-slate-200 text-slate-600")}>
                                             {msg.profiles?.full_name?.substring(0, 2).toUpperCase() || "??"}
                                         </AvatarFallback>
                                     </Avatar>
                                     <div className={cn("space-y-1", isMe ? "items-end" : "items-start")}>
                                         <div className={cn("flex items-center gap-2", isMe ? "flex-row-reverse" : "")}>
-                                            <span className="text-[11px] font-semibold text-slate-700">
+                                            <span className="text-[10px] font-bold text-slate-700 uppercase tracking-wide">
                                                 {isMe ? "You" : (msg.profiles?.full_name || "User")}
                                             </span>
-                                            <span className={cn("text-[8px] font-medium uppercase px-2 py-0.5 rounded-full border",
-                                                role === 'agent' ? "bg-purple-50 text-purple-600 border-purple-100" :
-                                                    role === 'admin' ? "bg-red-50 text-red-600 border-red-100" :
-                                                        "bg-blue-50 text-blue-600 border-blue-100"
+                                            <span className={cn("text-[8px] font-black uppercase px-2 py-0.5 rounded-full border tracking-widest",
+                                                role === 'agent' ? "bg-purple-100 text-purple-700 border-purple-200" :
+                                                    role === 'admin' ? "bg-red-100 text-red-700 border-red-200" :
+                                                        "bg-blue-100 text-blue-700 border-blue-200"
                                             )}>
                                                 {role}
                                             </span>
-                                            <span className="text-[9px] font-medium text-slate-400">
+                                            <span className="text-[9px] font-bold text-slate-400">
                                                 {msg.created_at ? format(new Date(msg.created_at), 'h:mm a') : '...'}
                                             </span>
                                         </div>
                                         <div className={cn(
-                                            "p-4 rounded-2xl text-[13px] font-medium leading-relaxed",
-                                            isMe ? "bg-primary-blue text-white rounded-tr-none" : "bg-slate-50 text-slate-600 border border-slate-100 rounded-tl-none"
+                                            "p-4 px-5 text-[13px] font-medium leading-relaxed shadow-sm",
+                                            isMe
+                                                ? "bg-slate-900 text-white rounded-2xl rounded-tr-sm"
+                                                : "bg-white text-slate-800 border border-slate-100 rounded-2xl rounded-tl-sm ring-1 ring-slate-900/5"
                                         )}>
                                             {msg.message}
                                         </div>
                                     </div>
-                                </div>
+                                </motion.div>
                             )
                         })}
                         {remoteIsTyping && (
@@ -312,9 +321,9 @@ export function FeedbackPanel({ requestId, currentUserId, isAgent = false }: Fee
                 )}
             </div>
 
-            {/* Input Area */}
-            <div className="p-4 sm:p-6 bg-white border-t border-slate-100">
-                <div className="flex items-end gap-2">
+            {/* Input Area (Chat Pill Design) */}
+            <div className="absolute bottom-6 left-6 right-6">
+                <div className="flex items-end gap-2 bg-white/90 backdrop-blur-md p-2 rounded-[24px] shadow-xl ring-1 ring-slate-900/5 transition-all focus-within:ring-slate-900/10 focus-within:shadow-2xl">
                     <Textarea
                         value={newMessage}
                         onChange={(e) => {
@@ -322,21 +331,18 @@ export function FeedbackPanel({ requestId, currentUserId, isAgent = false }: Fee
                             setLocalTyping(true)
                         }}
                         onKeyDown={handleKeyDown}
-                        placeholder="Type your message..."
-                        className="min-h-[3rem] max-h-32 resize-none rounded-2xl border-slate-200 bg-slate-50 focus:bg-white transition-all text-slate-900 placeholder:text-slate-400 py-3"
+                        placeholder="Type a message..."
+                        className="min-h-[44px] max-h-32 resize-none border-0 bg-transparent focus-visible:ring-0 text-slate-900 placeholder:text-slate-400 py-3 px-4 shadow-none"
                     />
                     <Button
                         size="icon"
                         onClick={handleSendMessage}
                         disabled={isSending || !newMessage.trim()}
-                        className="h-12 w-12 rounded-xl bg-primary-blue hover:bg-blue-700 text-white shrink-0 shadow-lg shadow-blue-900/20 active:scale-95 transition-all"
+                        className="h-[44px] w-[44px] rounded-full bg-blue-600 hover:bg-blue-700 text-white shrink-0 shadow-md transition-all disabled:opacity-50 disabled:bg-slate-100 disabled:text-slate-400 disabled:shadow-none"
                     >
-                        {isSending ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5 ml-0.5" />}
+                        {isSending ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-4 w-4 ml-0.5" />}
                     </Button>
                 </div>
-                <p className="text-[10px] text-slate-300 text-center pt-4 font-medium uppercase tracking-widest opacity-60">
-                    Press <kbd className="font-mono bg-slate-50 px-1.5 rounded border border-slate-100">Enter</kbd> to send
-                </p>
             </div>
         </div>
     )
