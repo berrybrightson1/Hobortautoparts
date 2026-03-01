@@ -197,7 +197,7 @@ export function NotificationPopover() {
                             </div>
                         </div>
 
-                        <ScrollArea className="max-h-[450px]">
+                        <div className="overflow-y-auto max-h-[450px] notif-scroll">
                             {notifications.length === 0 ? (
                                 <div className="py-20 flex flex-col items-center justify-center text-center space-y-4 px-12">
                                     <div className="h-20 w-20 bg-slate-50 rounded-2xl flex items-center justify-center border border-slate-100/50 shadow-inner">
@@ -263,7 +263,7 @@ export function NotificationPopover() {
                                     ))}
                                 </div>
                             )}
-                        </ScrollArea>
+                        </div>
 
                         <div className="p-6 border-t border-slate-50 bg-slate-50/30">
                             <Button

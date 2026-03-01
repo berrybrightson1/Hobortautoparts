@@ -1,13 +1,6 @@
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import type { Metadata } from "next"
 import { Circle, Layers, Zap, Shield, Box, Users } from "lucide-react"
-
-export const metadata: Metadata = {
-    title: "Our Services | Hobort Auto Parts Express",
-    description: "Specialized sourcing for Toyota, Honda, Ford, and Mercedes-Benz parts. Genuine US auto parts delivered to Ghana with extreme precision.",
-    keywords: ["US auto parts Ghana", "Toyota parts Ghana", "Honda parts sourcing", "Genuine car parts", "Shipping to Ghana"],
-}
 
 const SERVICES_GRID = [
     {

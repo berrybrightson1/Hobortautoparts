@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache'
 import { requireAdmin } from '@/lib/auth-checks'
 import { sendNotification } from '@/lib/notifications'
 import { logAction } from '@/lib/audit'
+import { sendWelcomeEmailAction } from './email-actions'
 
 // Initialize Admin Client (Service Role)
 // ONLY for use in Server Actions. Never export this or use on client.
@@ -53,6 +54,14 @@ export async function updateUserRole(userId: string, newRole: 'customer' | 'agen
                 message: 'Congratulations! Your application to become a Hobort Agent has been approved. You now have access to the Agent Portal.',
                 type: 'system'
             })
+
+            // Dispatch the delayed Agent Welcome Email
+            const { data: userData } = await supabaseAdmin.auth.admin.getUserById(userId)
+            if (userData?.user?.email) {
+                const fullName = userData.user.user_metadata?.full_name || 'Partner'
+                const firstName = fullName.split(' ')[0]
+                sendWelcomeEmailAction(userData.user.email, firstName, 'agent').catch(e => console.error('Agent Welcome Email dispatch failed:', e))
+            }
         }
 
         revalidatePath('/portal/users')
@@ -133,6 +142,53 @@ export async function getUserSourcingHistory(userId: string) {
     }
 }
 
+export async function getPendingAgents() {
+    try {
+        await requireAdmin()
+        const supabaseAdmin = getAdminClient()
+
+        // Fetch profiles with pending_agent role
+        const { data: profiles, error: profilesError } = await supabaseAdmin
+            .from('profiles')
+            .select('*')
+            .eq('role', 'pending_agent')
+            .order('created_at', { ascending: false })
+
+        if (profilesError) throw profilesError
+
+        // Fetch auth users to map emails and full metadata securely
+        const { data: authData, error: authError } = await supabaseAdmin.auth.admin.listUsers()
+        if (authError) throw authError
+
+        // Map emails and unwrap questionnaire metadata to profiles
+        const mappedProfiles = profiles.map(profile => {
+            const authUser = authData.users.find((u: any) => u.id === profile.id)
+            const meta = authUser?.user_metadata || {}
+
+            return {
+                ...profile,
+                email: authUser?.email || 'N/A',
+                phone_number: authUser?.phone || meta.phone_number || profile.phone_number,
+                questionnaire: {
+                    company_name: meta.company_name,
+                    location: meta.location,
+                    city: meta.city,
+                    years_experience: meta.years_experience,
+                    expertise: meta.expertise,
+                    vendor_relationships: meta.vendor_relationships,
+                    storage_capacity: meta.storage_capacity,
+                    expected_volume: meta.expected_volume
+                }
+            }
+        })
+
+        return { success: true, data: mappedProfiles }
+    } catch (error: any) {
+        console.error("Fetch Pending Agents Error:", error)
+        return { success: false, error: error.message }
+    }
+}
+
 export async function getUsersWithEmails() {
     try {
         await requireAdmin()
@@ -154,9 +210,11 @@ export async function getUsersWithEmails() {
         // Merge email data with profiles
         const usersWithEmails = (profiles || []).map(profile => {
             const authUser = authData.users.find(u => u.id === profile.id)
+            const meta = authUser?.user_metadata || {}
             return {
                 ...profile,
-                email: authUser?.email || 'N/A'
+                email: authUser?.email || 'N/A',
+                phone_number: authUser?.phone || meta.phone_number || profile.phone_number
             }
         })
 
@@ -191,6 +249,43 @@ export async function deleteUser(userId: string) {
     }
 }
 
+export async function declinePendingAgent(userId: string, userEmail: string, agentName: string) {
+    try {
+        await requireAdmin()
+        const supabaseAdmin = getAdminClient()
+
+        // Send Rejection Email (Assuming a Resend API route or internal notification system exists)
+        // We need to check if this user was a pre-existing Customer upgrading, or a brand new Agent signup
+        const { data: authUser, error: fetchError } = await supabaseAdmin.auth.admin.getUserById(userId)
+        if (fetchError) throw fetchError
+
+        const isUpgrade = authUser?.user?.user_metadata?.questionnaire?.is_upgrade === true
+
+        if (isUpgrade) {
+            // For existing customers upgrading, we REVERT them back to a regular customer.
+            // 1. Remove the questionnaire metadata
+            await supabaseAdmin.auth.admin.updateUserById(userId, {
+                user_metadata: { questionnaire: null }
+            })
+            // 2. Revert Public Profile role
+            await supabaseAdmin.from('profiles').update({ role: 'customer' }).eq('id', userId)
+
+            await logAction('agent_upgrade_declined', { targetUserId: userId, agentName, userEmail })
+        } else {
+            // For brand new Agent signups, we DELETE their account entirely so they can re-apply easily
+            const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(userId)
+            if (deleteError) throw deleteError
+            await logAction('agent_application_declined', { targetUserId: userId, agentName, userEmail })
+        }
+
+        revalidatePath('/portal/admin/approvals')
+        return { success: true }
+    } catch (error: any) {
+        console.error("Decline Agent Error:", error)
+        return { success: false, error: error.message }
+    }
+}
+
 export async function suspendUser(userId: string) {
     try {
         await requireAdmin()
@@ -201,6 +296,13 @@ export async function suspendUser(userId: string) {
         )
 
         if (error) throw error
+
+        await sendNotification({
+            userId,
+            title: 'Account Suspended',
+            message: 'Your account has been suspended by an administrator. Please contact support.',
+            type: 'system'
+        })
 
         await logAction('suspend_user', { targetUserId: userId })
 
@@ -221,6 +323,13 @@ export async function unsuspendUser(userId: string) {
         )
 
         if (error) throw error
+
+        await sendNotification({
+            userId,
+            title: 'Account Reactivated',
+            message: 'Your account suspension has been lifted. You may now resume using the platform.',
+            type: 'system'
+        })
 
         await logAction('unsuspend_user', { targetUserId: userId })
 
@@ -421,5 +530,34 @@ export async function getBroadcastHistory() {
     } catch (error: any) {
         console.error("Fetch Broadcast History Error:", error)
         return { success: false, error: error.message, data: [] }
+    }
+}
+
+/**
+ * Server Action to forcibly create or update a profile when RLS blocks the client.
+ * This is used primarily by the AuthProvider when a user logs in but their
+ * profile row is missing or blocked by policies like `pending_agent`.
+ */
+export async function createOrUpdateProfile(userId: string, metadata: any) {
+    try {
+        const supabaseAdmin = getAdminClient()
+
+        const { data, error } = await supabaseAdmin
+            .from('profiles')
+            .upsert({
+                id: userId,
+                full_name: metadata?.full_name || 'New User',
+                role: metadata?.role || 'customer',
+                phone_number: metadata?.phone || null,
+            }, { onConflict: 'id' })
+            .select()
+            .single()
+
+        if (error) throw error
+
+        return { success: true, profile: data }
+    } catch (error: any) {
+        console.error("Create/Update Profile Action Error:", error)
+        return { success: false, error: error.message }
     }
 }

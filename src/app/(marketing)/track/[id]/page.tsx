@@ -1,6 +1,6 @@
 "use client"
 
-import { ShieldCheck, MapPin, Truck, ChevronRight, AlertCircle, Search, PackageSearch, Loader2, Clock } from "lucide-react"
+import { ShieldCheck, MapPin, Truck, ChevronRight, AlertCircle, Search, PackageSearch, Loader2, Clock, Globe2, BellRing } from "lucide-react"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -79,23 +79,27 @@ export default function TrackingPage({ params }: { params: Promise<{ id: string 
     const order = shipment.orders
     const customer = order?.profiles
 
-    // Map shipment status to progress index
+    // Map shipment status to progress index based on new industry standards
     const statusMap: Record<string, number> = {
+        'processing': 0,
         'received_at_hub': 0,
-        'in_transit_air': 1,
-        'in_transit_sea': 1,
-        'clearing_customs': 2,
-        'ready_for_pickup': 3,
-        'delivered': 4
+        'dispatched': 1,
+        'in_transit_air': 2,
+        'in_transit_sea': 2,
+        'clearing_customs': 3,
+        'out_for_delivery': 4,
+        'ready_for_pickup': 4,
+        'delivered': 5
     }
 
     const currentStepIndex = statusMap[shipment.status] ?? 0
 
     const steps = [
-        { label: "Received at Hub", icon: ShieldCheck },
-        { label: "In Transit", icon: Truck },
-        { label: "Clearing Customs", icon: PackageSearch },
-        { label: "Ready for Pickup", icon: MapPin },
+        { label: "Processing", icon: PackageSearch },
+        { label: "Dispatched", icon: Truck },
+        { label: "In Transit", icon: Globe2 },
+        { label: "Customs", icon: ShieldCheck },
+        { label: "Out for Delivery", icon: MapPin },
         { label: "Delivered", icon: CheckCircle2 }
     ]
 
@@ -154,40 +158,57 @@ export default function TrackingPage({ params }: { params: Promise<{ id: string 
                     </div>
                 </div>
 
-                {/* Progress Stepper */}
+                {/* Progress Stepper - Horizontal on Desktop, Vertical on Mobile */}
                 <div className="space-y-8">
-                    <div className="flex items-center gap-3">
-                        <MapPin className="h-5 w-5 text-primary-orange" />
-                        <h2 className="text-sm font-bold uppercase tracking-widest text-primary-blue">Journey Progress</h2>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div className="flex items-center gap-3">
+                            <MapPin className="h-5 w-5 text-primary-orange" />
+                            <h2 className="text-sm font-bold uppercase tracking-widest text-primary-blue">Journey Progress</h2>
+                        </div>
+                        {currentStepIndex < 5 && (
+                            <Button
+                                variant="outline"
+                                className="h-10 rounded-xl border-primary-blue/20 text-primary-blue hover:bg-primary-blue/5 text-xs font-bold uppercase tracking-widest transition-all"
+                                onClick={() => {
+                                    // Could open a modal or trigger a chat event here
+                                    window.location.href = "/contact?ref=" + trackingId;
+                                }}
+                            >
+                                <BellRing className="h-4 w-4 mr-2" /> Request Update
+                            </Button>
+                        )}
                     </div>
 
-                    <div className="relative pt-4 pb-12 overflow-x-auto scrollbar-hide">
-                        <div className="flex justify-between items-start min-w-[800px] relative px-4">
-                            {/* Connector Line */}
-                            <div className="absolute top-6 left-[10%] right-[10%] h-[2px] bg-slate-100 -z-0" />
+                    <div className="relative pt-4 pb-8 overflow-x-auto scrollbar-hide">
+                        <div className="flex justify-between items-start min-w-[900px] relative px-4">
+                            {/* Connector Line Base */}
+                            <div className="absolute top-6 left-[8%] right-[8%] h-[2px] bg-slate-100 -z-0" />
+                            {/* Connector Line Active */}
                             <div
-                                className="absolute top-6 left-[10%] h-[2px] bg-primary-orange transition-all duration-1000 -z-0"
-                                style={{ width: `${(currentStepIndex / (steps.length - 1)) * 80}%` }}
+                                className="absolute top-6 left-[8%] h-[2px] bg-primary-orange transition-all duration-1000 -z-0"
+                                style={{ width: `${(currentStepIndex / (steps.length - 1)) * 84}%` }}
                             />
 
                             {steps.map((step, idx) => {
                                 const isCompleted = idx <= currentStepIndex;
+                                const isCurrent = idx === currentStepIndex;
                                 const StepIcon = step.icon;
 
                                 return (
-                                    <div key={idx} className="relative z-10 flex flex-col items-center group w-40">
+                                    <div key={idx} className="relative z-10 flex flex-col items-center group w-32">
                                         <div className={cn(
-                                            "h-12 w-12 rounded-2xl flex items-center justify-center border-2 transition-all duration-500 mb-4",
+                                            "h-12 w-12 rounded-2xl flex items-center justify-center border-2 transition-all duration-500 mb-4 shadow-sm",
                                             isCompleted
-                                                ? "bg-white border-primary-orange text-primary-orange shadow-lg shadow-orange-100 scale-110"
-                                                : "bg-slate-50 border-slate-100 text-slate-300"
+                                                ? "bg-primary-orange border-primary-orange text-white shadow-orange-200"
+                                                : "bg-white border-slate-200 text-slate-300",
+                                            isCurrent && "ring-4 ring-primary-orange/20 scale-110"
                                         )}>
-                                            <StepIcon className="h-5 w-5" />
+                                            <StepIcon className={cn("h-5 w-5", isCompleted && "animate-in zoom-in duration-300")} />
                                         </div>
                                         <div className="text-center space-y-1">
                                             <h3 className={cn(
                                                 "text-[10px] font-bold uppercase tracking-widest transition-colors",
-                                                isCompleted ? "text-primary-blue" : "text-slate-400"
+                                                isCurrent ? "text-primary-orange" : isCompleted ? "text-primary-blue" : "text-slate-400"
                                             )}>
                                                 {step.label}
                                             </h3>

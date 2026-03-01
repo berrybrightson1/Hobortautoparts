@@ -225,6 +225,51 @@ export default function AdminGuidePage() {
                     </div>
                 </div>
 
+                {/* Step F */}
+                <div className="flex gap-6 relative z-10">
+                    <div className="shrink-0 mt-1">
+                        <div className="h-20 w-20 rounded-2xl bg-violet-600 text-white flex items-center justify-center text-2xl font-semibold shadow-lg shadow-violet-600/20">
+                            F
+                        </div>
+                    </div>
+                    <div className="flex-1 space-y-4">
+                        <div className="flex items-center gap-3">
+                            <h2 className="text-2xl text-slate-900 tracking-tight font-semibold">Agent Management & Approvals</h2>
+                            <Badge className="bg-violet-500 hover:bg-violet-600 font-medium uppercase text-[10px]">New in v2.6</Badge>
+                        </div>
+                        <Card className="border-slate-200 shadow-md p-6 bg-white overflow-hidden relative">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-violet-50 rounded-bl-full -z-10 opacity-50"></div>
+                            <div className="space-y-5 relative z-10">
+                                <p className="text-slate-600 font-medium">When a new or existing customer applies to become a partner agent...</p>
+
+                                <div className="flex items-center gap-3 p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                                    <Users className="w-5 h-5 text-violet-500" />
+                                    <span className="text-slate-600 font-medium">Go to <span className="text-violet-600 bg-violet-50 px-2 py-0.5 rounded-md font-medium">Approvals</span> on the sidebar.</span>
+                                </div>
+
+                                <ul className="space-y-3 pl-2">
+                                    <li className="flex items-start gap-3 text-slate-600 font-medium">
+                                        <ArrowRight className="w-4 h-4 mt-0.5 text-slate-400" />
+                                        <span>Review the applicant's questionnaire — business location, experience, product categories, and sourcing capacity.</span>
+                                    </li>
+                                    <li className="flex items-start gap-3 text-slate-600 font-medium">
+                                        <ArrowRight className="w-4 h-4 mt-0.5 text-slate-400" />
+                                        <span>Click <strong>Approve</strong> to instantly upgrade them to Agent. Their portal updates in real-time — no page reload needed on their end.</span>
+                                    </li>
+                                    <li className="flex items-start gap-3 text-slate-600 font-medium">
+                                        <ArrowRight className="w-4 h-4 mt-0.5 text-slate-400" />
+                                        <span>Click <strong>Decline</strong> to revert them to Customer (for upgrades) or remove the application entirely (for new signups).</span>
+                                    </li>
+                                    <li className="flex items-start gap-3 text-slate-600 font-medium">
+                                        <ArrowRight className="w-4 h-4 mt-0.5 text-slate-400" />
+                                        <span>Phone numbers collected at signup are available in the User Network — use these for direct follow-ups with agents and customers.</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </Card>
+                    </div>
+                </div>
+
                 {/* Outro */}
                 <div className="flex gap-6 relative z-10 pt-4">
                     <div className="shrink-0 w-20 flex justify-center mt-2">
@@ -240,3 +285,4 @@ export default function AdminGuidePage() {
         </div>
     )
 }
+

@@ -15,13 +15,33 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import { User, Shield, Key, Loader2, Save, Unlock, Moon, Minimize2, Bell, Mail, Settings2, Globe, Server, CheckCircle2, Pencil } from "lucide-react"
+import { User, Shield, Key, Loader2, Save, Unlock, Moon, Minimize2, Bell, Mail, Settings2, Globe, Server, CheckCircle2, Pencil, Briefcase } from "lucide-react"
 import { useAuth } from "@/components/auth/auth-provider"
 import { useState, useEffect } from "react"
 import { supabase } from "@/lib/supabase"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { logAction } from "@/lib/audit"
+import { upgradeToAgent } from "@/app/actions/profile-actions"
+
+const GHANA_LOCATIONS: Record<string, string[]> = {
+    "Greater Accra": ["Accra", "Tema", "Madina", "Ashaiman", "Osu", "East Legon", "Dansoman", "Achimota", "Teshie", "Spintex"],
+    "Ashanti": ["Kumasi", "Obuasi", "Mampong", "Ejisu", "Konongo", "Bekwai", "Tafo", "Suame", "Bantama", "Asokwa"],
+    "Western": ["Sekondi-Takoradi", "Tarkwa", "Axim", "Elubo", "Prestea", "Bibiani", "Essikado"],
+    "Central": ["Cape Coast", "Winneba", "Elmina", "Kasoa", "Swedru", "Saltpond", "Mankessim"],
+    "Eastern": ["Koforidua", "Nkawkaw", "Nsawam", "Suhum", "Akropong", "Mpraeso", "Aburi", "Begoro"],
+    "Northern": ["Tamale", "Yendi", "Savelugu", "Walewale", "Bimbilla", "Tolon"],
+    "Volta": ["Ho", "Aflao", "Hohoe", "Keta", "Kpandu", "Denu", "Sogakope", "Peki"],
+    "Upper East": ["Bolgatanga", "Navrongo", "Bawku", "Sandema", "Paga"],
+    "Upper West": ["Wa", "Tumu", "Lawra", "Jirapa", "Nandom"],
+    "Bono": ["Sunyani", "Berekum", "Dormaa Ahenkro", "Wenchi"],
+    "Bono East": ["Techiman", "Kintampo", "Nkoranza", "Atebubu"],
+    "Ahafo": ["Goaso", "Bechem", "Duayaw Nkwanta", "Kenyasi"],
+    "Western North": ["Sefwi Wiawso", "Bibiani", "Enchi", "Juabeso"],
+    "Oti": ["Dambai", "Nkwanta", "Jasikan", "Kadjebi"],
+    "Savannah": ["Damongo", "Salaga", "Bole", "Sawla"],
+    "North East": ["Nalerigu", "Gambaga", "Walewale", "Bunkpurugu"]
+}
 
 export default function UnifiedSettingsPage() {
     const { user, profile, refreshProfile } = useAuth()
@@ -46,6 +66,18 @@ export default function UnifiedSettingsPage() {
         new: "",
         confirm: ""
     })
+
+    // Agent Upgrade State
+    const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false)
+    const [isUpgrading, setIsUpgrading] = useState(false)
+    const [company, setCompany] = useState("")
+    const [location, setLocation] = useState("")
+    const [city, setCity] = useState("")
+    const [yearsExperience, setYearsExperience] = useState("")
+    const [expectedVolume, setExpectedVolume] = useState("")
+    const [expertise, setExpertise] = useState("")
+    const [vendorRelationships, setVendorRelationships] = useState("")
+    const [storageCapacity, setStorageCapacity] = useState("")
 
     // Preferences State
     const [prefs, setPrefs] = useState({
@@ -147,6 +179,45 @@ export default function UnifiedSettingsPage() {
             toast.error("Security Update Failed", { description: error.message })
         } finally {
             setIsUpdatingPassword(false)
+        }
+    }
+
+    const handleUpgradeToAgent = async (e: React.FormEvent) => {
+        e.preventDefault()
+        if (!location || !city || !yearsExperience || !expectedVolume || !expertise || !vendorRelationships || !storageCapacity) {
+            toast.error("Please fill in all required fields.")
+            return
+        }
+
+        setIsUpgrading(true)
+        const questionnaireData = {
+            company_name: company || null,
+            location,
+            city,
+            years_experience: parseInt(yearsExperience),
+            expected_volume: parseInt(expectedVolume),
+            expertise,
+            vendor_relationships: vendorRelationships === 'yes',
+            storage_capacity: storageCapacity === 'yes'
+        }
+
+        try {
+            const res = await upgradeToAgent(questionnaireData)
+            if (res.success) {
+                toast.success("Application Submitted!", {
+                    description: "Your account is now locked for Admin Review. You will be notified once approved.",
+                    duration: 5000
+                })
+                setIsUpgradeModalOpen(false)
+                // Force a hard reload to trigger the Pending Agent overlay layout screen
+                window.location.href = '/portal/agent/bootcamp'
+            } else {
+                throw new Error(res.error)
+            }
+        } catch (error: any) {
+            toast.error("Upgrade Request Failed", { description: error.message })
+        } finally {
+            setIsUpgrading(false)
         }
     }
 
@@ -296,6 +367,241 @@ export default function UnifiedSettingsPage() {
                             )}
                         </CardFooter>
                     </Card>
+
+                    {/* BECOME AN AGENT UPGRADE CARD */}
+                    {profile?.role === 'customer' && (
+                        <Card className="border-indigo-100 shadow-xl shadow-indigo-200/20 rounded-2xl overflow-hidden bg-gradient-to-br from-indigo-50 to-white mt-8 relative">
+                            {/* Background Pattern */}
+                            <div className="absolute right-0 top-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none" />
+                            <div className="absolute left-0 bottom-0 w-64 h-64 bg-primary-orange/5 rounded-full blur-3xl -ml-32 -mb-32 pointer-events-none" />
+
+                            <CardHeader className="p-6 sm:p-10 pb-4 border-b border-indigo-100/50 relative z-10">
+                                <CardTitle className="text-xl sm:text-2xl font-bold text-indigo-900 flex items-center gap-3">
+                                    <Briefcase className="h-6 w-6 text-indigo-600" /> Upgrade to Partner / Agent
+                                </CardTitle>
+                                <CardDescription className="text-indigo-900/60 text-sm sm:text-base font-medium">Join our global network of auto parts professionals and start earning commissions.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="p-6 sm:p-10 relative z-10 grid md:grid-cols-2 gap-8 items-center">
+                                <div className="space-y-6">
+                                    <div className="space-y-4">
+                                        <div className="flex items-start gap-3">
+                                            <CheckCircle2 className="h-5 w-5 text-indigo-600 shrink-0 mt-0.5" />
+                                            <div>
+                                                <h4 className="font-bold text-slate-900">Commission Based Earnings</h4>
+                                                <p className="text-sm text-slate-500">Earn a percentage on every order you refer or fulfill through your network.</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-start gap-3">
+                                            <CheckCircle2 className="h-5 w-5 text-indigo-600 shrink-0 mt-0.5" />
+                                            <div>
+                                                <h4 className="font-bold text-slate-900">B2B Sourcing Tools</h4>
+                                                <p className="text-sm text-slate-500">Access advanced tracking, bulk order management, and direct admin support channels.</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-start gap-3">
+                                            <CheckCircle2 className="h-5 w-5 text-indigo-600 shrink-0 mt-0.5" />
+                                            <div>
+                                                <h4 className="font-bold text-slate-900">Sovereign Logistics</h4>
+                                                <p className="text-sm text-slate-500">Utilize our exclusive US-to-Ghana freight network for all your client importing.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="bg-white p-6 rounded-2xl border border-indigo-100 shadow-sm text-center space-y-4">
+                                    <div className="mx-auto h-16 w-16 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 shadow-inner">
+                                        <User className="h-8 w-8" />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <h4 className="font-bold text-slate-900">Ready to level up?</h4>
+                                        <p className="text-xs text-slate-500">Applications are reviewed within 24-48 hours. By applying, your account will enter a pending state until approved.</p>
+                                    </div>
+
+                                    <Dialog open={isUpgradeModalOpen} onOpenChange={setIsUpgradeModalOpen}>
+                                        <DialogTrigger asChild>
+                                            <Button className="w-full h-12 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold shadow-lg shadow-indigo-600/20 transition-all active:scale-95">
+                                                Apply Now
+                                            </Button>
+                                        </DialogTrigger>
+                                        <DialogContent className="sm:max-w-2xl bg-white p-0 overflow-hidden border-0 shadow-2xl rounded-2xl">
+                                            <div className="bg-indigo-600 p-6 sm:p-8 text-white">
+                                                <DialogHeader>
+                                                    <DialogTitle className="text-2xl font-bold flex items-center gap-3">
+                                                        <Briefcase className="h-6 w-6 opacity-80" /> Agent Application
+                                                    </DialogTitle>
+                                                    <DialogDescription className="text-indigo-100 mt-2 font-medium">
+                                                        Please fill out your operational details. This information helps us verify your business and assign you to the correct regional pipeline.
+                                                    </DialogDescription>
+                                                </DialogHeader>
+                                            </div>
+
+                                            <form onSubmit={handleUpgradeToAgent} className="p-6 sm:p-8 space-y-6 max-h-[60vh] overflow-y-auto">
+                                                <div className="grid gap-2">
+                                                    <Label htmlFor="company" className="ml-1 text-slate-500 font-semibold text-[10px] uppercase tracking-wider">Company Name (Optional)</Label>
+                                                    <Input
+                                                        id="company"
+                                                        placeholder="Auto Pros Ltd"
+                                                        className="h-11 rounded-xl bg-slate-50/50 border-slate-200 font-medium focus:bg-white"
+                                                        disabled={isUpgrading}
+                                                        value={company}
+                                                        onChange={(e) => setCompany(e.target.value)}
+                                                    />
+                                                </div>
+
+                                                <div className="grid grid-cols-2 gap-4">
+                                                    <div className="grid gap-2">
+                                                        <Label htmlFor="location" className="ml-1 text-slate-500 font-semibold text-[10px] uppercase tracking-wider">Region (Ghana) *</Label>
+                                                        <select
+                                                            id="location"
+                                                            name="location"
+                                                            title="Operating Region"
+                                                            required
+                                                            disabled={isUpgrading}
+                                                            value={location}
+                                                            onChange={(e) => {
+                                                                setLocation(e.target.value)
+                                                                setCity("")
+                                                            }}
+                                                            className="h-11 w-full rounded-xl bg-slate-50/50 border border-slate-200 px-3 text-sm font-medium focus:bg-white outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all text-slate-900"
+                                                        >
+                                                            <option value="" disabled>Select Region...</option>
+                                                            {Object.keys(GHANA_LOCATIONS).map((region) => (
+                                                                <option key={region} value={region}>{region}</option>
+                                                            ))}
+                                                        </select>
+                                                    </div>
+                                                    <div className="grid gap-2">
+                                                        <Label htmlFor="city" className="ml-1 text-slate-500 font-semibold text-[10px] uppercase tracking-wider">City / Town *</Label>
+                                                        <select
+                                                            id="city"
+                                                            name="city"
+                                                            title="Operating City"
+                                                            required
+                                                            disabled={isUpgrading || !location}
+                                                            value={city}
+                                                            onChange={(e) => setCity(e.target.value)}
+                                                            className="h-11 w-full rounded-xl bg-slate-50/50 border border-slate-200 px-3 text-sm font-medium focus:bg-white outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all text-slate-900 disabled:opacity-50"
+                                                        >
+                                                            <option value="" disabled>Select City...</option>
+                                                            {location && GHANA_LOCATIONS[location]?.map((c) => (
+                                                                <option key={c} value={c}>{c}</option>
+                                                            ))}
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div className="grid grid-cols-2 gap-4">
+                                                    <div className="grid gap-2">
+                                                        <Label htmlFor="experience" className="ml-1 text-slate-500 font-semibold text-[10px] uppercase tracking-wider">Years Experience *</Label>
+                                                        <Input
+                                                            id="experience"
+                                                            type="number"
+                                                            placeholder="e.g. 3"
+                                                            className="h-11 rounded-xl bg-slate-50/50 border-slate-200 font-medium focus:bg-white"
+                                                            required
+                                                            disabled={isUpgrading}
+                                                            value={yearsExperience}
+                                                            onChange={(e) => setYearsExperience(e.target.value)}
+                                                        />
+                                                    </div>
+                                                    <div className="grid gap-2">
+                                                        <Label htmlFor="volume" className="ml-1 text-slate-500 font-semibold text-[10px] uppercase tracking-wider">Expected Weekly Volume *</Label>
+                                                        <Input
+                                                            id="volume"
+                                                            type="number"
+                                                            placeholder="e.g. 10"
+                                                            className="h-11 rounded-xl bg-slate-50/50 border-slate-200 font-medium focus:bg-white"
+                                                            required
+                                                            disabled={isUpgrading}
+                                                            value={expectedVolume}
+                                                            onChange={(e) => setExpectedVolume(e.target.value)}
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <div className="grid gap-2">
+                                                    <Label htmlFor="expertise" className="ml-1 text-slate-500 font-semibold text-[10px] uppercase tracking-wider">Primary Expertise *</Label>
+                                                    <select
+                                                        id="expertise"
+                                                        name="expertise"
+                                                        title="Primary Expertise"
+                                                        required
+                                                        disabled={isUpgrading}
+                                                        value={expertise}
+                                                        onChange={(e) => setExpertise(e.target.value)}
+                                                        className="h-11 w-full rounded-xl bg-slate-50/50 border border-slate-200 px-3 text-sm font-medium focus:bg-white outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all text-slate-900"
+                                                    >
+                                                        <option value="" disabled>Select Expertise...</option>
+                                                        <option value="Engine Components">Engine Components</option>
+                                                        <option value="Body Exterior">Body Exterior</option>
+                                                        <option value="Electronics">Electronics</option>
+                                                        <option value="General Salvage">General Salvage</option>
+                                                        <option value="All Categories">All Categories</option>
+                                                    </select>
+                                                </div>
+
+                                                <div className="grid grid-cols-2 gap-4">
+                                                    <div className="grid gap-2">
+                                                        <Label htmlFor="vendor" className="ml-1 text-slate-500 font-semibold text-[10px] uppercase tracking-wider">Ext. Vendor Access? *</Label>
+                                                        <select
+                                                            id="vendor"
+                                                            name="vendor_relationships"
+                                                            title="External Vendor Relationships"
+                                                            required
+                                                            disabled={isUpgrading}
+                                                            value={vendorRelationships}
+                                                            onChange={(e) => setVendorRelationships(e.target.value)}
+                                                            className="h-11 w-full rounded-xl bg-slate-50/50 border border-slate-200 px-3 text-sm font-medium focus:bg-white outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all text-slate-900"
+                                                        >
+                                                            <option value="" disabled>Select...</option>
+                                                            <option value="no">No</option>
+                                                            <option value="yes">Yes</option>
+                                                        </select>
+                                                    </div>
+                                                    <div className="grid gap-2">
+                                                        <Label htmlFor="storage" className="ml-1 text-slate-500 font-semibold text-[10px] uppercase tracking-wider">Storage Capacity? *</Label>
+                                                        <select
+                                                            id="storage"
+                                                            name="storage_capacity"
+                                                            title="Secure Storage Capacity"
+                                                            required
+                                                            disabled={isUpgrading}
+                                                            value={storageCapacity}
+                                                            onChange={(e) => setStorageCapacity(e.target.value)}
+                                                            className="h-11 w-full rounded-xl bg-slate-50/50 border border-slate-200 px-3 text-sm font-medium focus:bg-white outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all text-slate-900"
+                                                        >
+                                                            <option value="" disabled>Select...</option>
+                                                            <option value="no">No</option>
+                                                            <option value="yes">Yes</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <DialogFooter className="pt-4 border-t border-slate-100 flex gap-3 sm:justify-between w-full mt-4">
+                                                    <Button
+                                                        type="button"
+                                                        variant="ghost"
+                                                        onClick={() => setIsUpgradeModalOpen(false)}
+                                                        disabled={isUpgrading}
+                                                        className="h-12 w-full sm:w-auto px-8 rounded-xl font-bold text-slate-400 hover:text-slate-600 hover:bg-slate-100"
+                                                    >
+                                                        Cancel
+                                                    </Button>
+                                                    <Button
+                                                        type="submit"
+                                                        disabled={isUpgrading}
+                                                        className="h-12 w-full sm:w-auto px-10 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-700 shadow-xl shadow-indigo-600/20 flex items-center gap-2"
+                                                    >
+                                                        {isUpgrading ? <Loader2 className="h-5 w-5 animate-spin" /> : "Submit Application"}
+                                                    </Button>
+                                                </DialogFooter>
+                                            </form>
+                                        </DialogContent>
+                                    </Dialog>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )}
                 </TabsContent>
 
                 <TabsContent value="security">

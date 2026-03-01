@@ -28,6 +28,7 @@ import {
   Truck,
   ClipboardList,
   MessageSquare,
+  X,
 } from "lucide-react";
 import { LiveSupportTrigger } from "@/components/portal/live-support-trigger";
 
@@ -43,6 +44,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { TutorialProvider } from "@/components/portal/tutorial-context";
 import { PortalTour } from "@/components/portal/portal-tour";
+import { PendingApprovalModal } from "@/components/portal/pending-approval";
 import { AdminRealtimeListener } from "@/components/portal/admin-realtime-listener";
 import {
   DropdownMenu,
@@ -130,15 +132,46 @@ export default function PortalLayout({
   const [sidebarHovered, setSidebarHovered] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
   const [openBugCount, setOpenBugCount] = React.useState(0);
+  const [pendingAgentCount, setPendingAgentCount] = React.useState(0);
+  const [hidePhoneAlert, setHidePhoneAlert] = React.useState(false);
 
   // Fetch open bug count for admin badge
   React.useEffect(() => {
     if (profile?.role !== 'admin') return;
+
+    // Fetch Bugs
     supabase
       .from('bug_reports')
       .select('id', { count: 'exact', head: true })
       .eq('status', 'open')
       .then(({ count }) => setOpenBugCount(count ?? 0));
+
+    // Fetch Pending Agents
+    const fetchAgents = () => {
+      supabase
+        .from('profiles')
+        .select('id', { count: 'exact', head: true })
+        .eq('role', 'pending_agent')
+        .then(({ count }) => setPendingAgentCount(count ?? 0));
+    };
+
+    fetchAgents();
+
+    // Listen to Profiles Table changes for admin roles
+    const profilesChannel = supabase
+      .channel('admin_profiles_tracker')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'profiles' },
+        () => {
+          fetchAgents();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(profilesChannel);
+    };
   }, [profile?.role]);
 
   React.useEffect(() => {
@@ -181,6 +214,16 @@ export default function PortalLayout({
         router.push("/portal/agent");
       } else if (path.startsWith("/portal/billing") && role === "customer") {
         router.push("/portal/customer");
+      }
+
+      // Agent Bootcamp routing
+      if (role === "agent" && path.startsWith("/portal/agent") && role !== "admin") {
+        const hasCompletedBootcamp = user.user_metadata?.onboarding_completed;
+        if (!hasCompletedBootcamp && !path.startsWith("/portal/agent/bootcamp")) {
+          router.push("/portal/agent/bootcamp");
+        } else if (hasCompletedBootcamp && path.startsWith("/portal/agent/bootcamp")) {
+          router.push("/portal/agent");
+        }
       }
 
       // Check for missing phone number and prompt update (DISABLED based on user feedback)
@@ -242,13 +285,14 @@ export default function PortalLayout({
     };
   }, [user]);
 
-  if (loading) {
+  if (!mounted || loading) {
     return (
       <div className="h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
         <div className="h-10 w-10 border-4 border-primary-blue border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
+
 
   // If admin route, render children directly (admin has its own layout)
   // If admin route, we no longer skip. We use the unified layout.
@@ -330,6 +374,11 @@ export default function PortalLayout({
               (a, b) => a + b,
               0,
             );
+
+          if (item.name === "Bug Reports") unreadCount = openBugCount;
+          if (item.name === "Approvals" || item.name === "User Network") {
+            unreadCount = pendingAgentCount;
+          }
 
           const tourId =
             item.name === "Overview" || item.name === "Dashboard"
@@ -671,6 +720,7 @@ export default function PortalLayout({
 
   return (
     <TutorialProvider>
+      {profile?.role === 'pending_agent' && <PendingApprovalModal />}
       <div className="flex h-screen bg-gradient-to-br from-slate-50 to-slate-100">
         {/* Desktop Sidebar — collapses to icon mode when billing panel is open */}
         <motion.aside
@@ -876,6 +926,22 @@ export default function PortalLayout({
               </Link>
             </div>
           </header>
+
+          {/* Missing Phone Number Alert Banner */}
+          {profile && !profile.phone_number && !hidePhoneAlert && (
+            <div className="bg-primary-orange/10 border-b border-primary-orange/20 px-6 py-3 flex items-center justify-between shrink-0 shadow-inner">
+              <div className="flex items-center gap-3">
+                <ShieldAlert className="h-5 w-5 text-primary-orange shrink-0" />
+                <p className="text-sm font-medium text-orange-900 leading-tight">
+                  <strong className="font-bold">Action Required:</strong> Please update your profile with a valid mobile number so our admins can follow up on your orders.
+                </p>
+              </div>
+              <div className="flex items-center gap-2 shrink-0 ml-4">
+                <Button onClick={() => router.push('/portal/profile')} className="h-8 text-xs bg-primary-orange hover:bg-orange-600 text-white font-bold px-4 rounded-xl shadow-md border border-orange-500/20 active:scale-95 transition-all w-full sm:w-auto">Update Now</Button>
+                <button onClick={() => setHidePhoneAlert(true)} title="Dismiss Alert" aria-label="Dismiss Alert" className="p-1.5 text-orange-500 hover:bg-orange-500/10 hover:text-orange-700 rounded-lg transition-colors"><X className="h-4 w-4" /></button>
+              </div>
+            </div>
+          )}
 
           {/* Content Area */}
           {pathname.startsWith("/portal/admin/live-support") ||

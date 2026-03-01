@@ -39,7 +39,7 @@ import {
 import { supabase } from "@/lib/supabase"
 import { useAuth } from "@/components/auth/auth-provider"
 import { format } from "date-fns"
-import { PendingApproval } from "@/components/portal/pending-approval"
+import { PendingApprovalModal } from "@/components/portal/pending-approval"
 import { toast } from "sonner"
 import { StatsSkeleton, CardSkeleton, Skeleton } from "@/components/portal/skeletons"
 import { ResponsiveModal } from "@/components/ui/responsive-modal"
@@ -239,7 +239,7 @@ export default function AgentDashboard() {
     }
 
     if (agentStatus === 'pending' || agentStatus === null) {
-        return <PendingApproval />
+        return <PendingApprovalModal />
     }
 
 

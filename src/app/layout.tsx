@@ -8,8 +8,16 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Hobort Auto Parts Express",
-  description: "Ghana's specialized Request for Quote (RFQ) platform for US auto parts.",
+  metadataBase: new URL("https://hobortautoexpress.com"),
+  title: {
+    default: "Hobort Auto Parts Express | Ghana's Premium US Auto Parts RFQ Platform",
+    template: "%s | Hobort Auto Parts Express",
+  },
+  description: "Ghana's specialized Request for Quote (RFQ) platform for US auto parts. Source genuine, high-quality auto parts directly from the United States with transparent tracking and dedicated agents.",
+  keywords: ["auto parts Ghana", "US auto parts", "car parts Accra", "OEM parts Ghana", "auto logistics", "Hobort Auto Parts Express"],
+  authors: [{ name: "Hobort Auto Parts Express" }],
+  creator: "Hobort Auto Parts Express",
+  publisher: "Hobort Auto Parts Express",
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
@@ -24,7 +32,7 @@ export const metadata: Metadata = {
     siteName: "Hobort Auto Parts Express",
     images: [
       {
-        url: "/Asset 10@288x.png",
+        url: "/Asset%2010@288x.png",
         width: 800,
         height: 600,
         alt: "Hobort Auto Parts Express Logo",
@@ -32,6 +40,23 @@ export const metadata: Metadata = {
     ],
     locale: "en_US",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Hobort Auto Parts Express",
+    description: "Ghana's specialized Request for Quote (RFQ) platform for US auto parts. Source genuine US auto parts with ease.",
+    images: ["/Asset%2010@288x.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
 };
 

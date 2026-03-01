@@ -59,3 +59,40 @@ export async function deleteMyAccount() {
         return { success: false, error: error.message || "Failed to delete account" }
     }
 }
+
+export async function upgradeToAgent(questionnaireData: any) {
+    try {
+        const supabase = await createClient()
+        const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+        if (authError || !user) {
+            throw new Error("Authentication required")
+        }
+
+        // Use Admin Client to bypass RLS for updating Auth Metadata securely
+        const supabaseAdmin = getAdminClient()
+
+        // 1. Update Auth Metadata with the questionnaire answers
+        const { error: metaError } = await supabaseAdmin.auth.admin.updateUserById(
+            user.id,
+            { user_metadata: { questionnaire: { ...questionnaireData, is_upgrade: true } } }
+        )
+        if (metaError) throw metaError
+
+        // 2. Update Public Profile Role to lock them into the pending state
+        const { error: profileError } = await supabaseAdmin
+            .from('profiles')
+            .update({ role: 'pending_agent' })
+            .eq('id', user.id)
+
+        if (profileError) throw profileError
+
+        await logAction('upgrade_agent_request', { userId: user.id })
+
+        revalidatePath('/portal')
+        return { success: true }
+    } catch (error: any) {
+        console.error("Upgrade to Agent Error:", error)
+        return { success: false, error: error.message || "Failed to submit agent application" }
+    }
+}

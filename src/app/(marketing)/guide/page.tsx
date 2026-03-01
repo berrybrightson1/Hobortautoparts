@@ -12,8 +12,26 @@ import {
 import Link from "next/link"
 import { useState } from "react"
 import { VideoModal } from "@/components/marketing/video-modal"
+import { Navbar } from "@/components/marketing/navbar"
+import { Footer } from "@/components/marketing/footer"
 
 const updates = [
+    {
+        version: "v2.6.0",
+        date: "March 1, 2026",
+        time: "03:17 PM",
+        title: "Agent Upgrade Path, Mobile Numbers & Platform Stability",
+        description: "A comprehensive update introducing the customer-to-agent upgrade flow, mandatory phone number collection, real-time role synchronisation, and key stability improvements across the portal.",
+        changes: [
+            "Mobile Number Collection: Phone numbers are now captured at signup for both customers and agents, enabling direct follow-up and improving fulfilment communication.",
+            "Phone Number Alert Banner: A dismissible banner prompts existing users without a phone number on file to update their profile, ensuring the contact directory stays complete.",
+            "Customer → Agent Upgrade Path: Existing customers can now apply to become a partner agent directly from their profile settings, without creating a new account.",
+            "Real-Time Role Synchronisation: The portal now subscribes to live profile changes — when an admin approves an agent, the portal updates instantly without requiring a page refresh.",
+            "Pending Approval Modal Fix: The 'Application Under Review' modal now verifies the user's role directly from the database on mount, preventing it from appearing for already-approved agents.",
+            "Notification Panel Scrolling: The notification panel is now natively scrollable with a branded Hobort-blue / orange hover scrollbar.",
+            "Portal Hydration Mismatch Fixed: Resolved a React server/client hydration error in the portal layout by gating the loading spinner on the mounted flag.",
+        ]
+    },
     {
         version: "v2.5.0",
         date: "February 28, 2026",
@@ -21,6 +39,7 @@ const updates = [
         title: "Hobort Billing Engine & Core Stability",
         description: "A monumental update launching a professional financial invoicing ecosystem, alongside critical stability patches for authentication and user onboarding.",
         changes: [
+
             "Launched 'Hobort Billing': A professional, text-selectable PDF invoice engine with brand-matched orange aesthetics, generated directly in the browser.",
             "Dynamic Invoice Management: Built a highly interactive 'Create Invoice' dashboard with auto-calculating line items, subtotal math, and global tax application.",
             "Visual Status Architecture: Integrated responsive invoice status badges (Draft, Paid, Overdue) and a modular financial tracking interface.",

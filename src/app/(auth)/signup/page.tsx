@@ -10,13 +10,34 @@ import { Input } from "@/components/ui/input"
 import { PasswordInput } from "@/components/ui/password-input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ArrowRight, Loader2, Mail, RefreshCw, CheckCircle2 } from "lucide-react"
 import { toast } from "sonner"
 import { supabase } from "@/lib/supabase"
 import { sendWelcomeEmailAction } from "@/app/actions/email-actions"
 import { isDisposableEmail } from "@/lib/email-validation"
+import { notifyAdmins } from "@/lib/notifications"
 import { Suspense, useRef } from "react"
 import { logAction } from "@/lib/audit"
+
+const GHANA_LOCATIONS: Record<string, string[]> = {
+    "Greater Accra Region": ["Accra", "Tema", "Madina", "Ashaley Botwe", "Osu", "Dansoman", "Achimota", "Teshie", "Nungua", "Spintex", "Other"],
+    "Ashanti Region": ["Kumasi", "Obuasi", "Ejisu", "Konongo", "Bekwai", "Mampong", "Other"],
+    "Central Region": ["Cape Coast", "Kasoa", "Winneba", "Elmina", "Saltpond", "Swedru", "Other"],
+    "Eastern Region": ["Koforidua", "Nkawkaw", "Nsawam", "Suhum", "Aburi", "Mpraeso", "Other"],
+    "Western Region": ["Sekondi-Takoradi", "Tarkwa", "Axim", "Elubo", "Other"],
+    "Northern Region": ["Tamale", "Yendi", "Savelugu", "Bimbilla", "Other"],
+    "Volta Region": ["Ho", "Aflao", "Keta", "Hohoe", "Kpandu", "Other"],
+    "Bono Region": ["Sunyani", "Berekum", "Dormaa Ahenkro", "Wenchi", "Other"],
+    "Ahafo Region": ["Goaso", "Duayaw Nkwanta", "Hwidiem", "Bechem", "Other"],
+    "Bono East Region": ["Techiman", "Kintampo", "Nkoranza", "Atebubu", "Other"],
+    "Oti Region": ["Dambai", "Kadjebi", "Nkwanta", "Jasikan", "Other"],
+    "Savannah Region": ["Damongo", "Salaga", "Bole", "Sawla", "Other"],
+    "North East Region": ["Nalerigu", "Walewale", "Gambaga", "Bunkpurugu", "Other"],
+    "Upper East Region": ["Bolgatanga", "Navrongo", "Bawku", "Sandema", "Other"],
+    "Upper West Region": ["Wa", "Tumu", "Lawra", "Jirapa", "Other"],
+    "Western North Region": ["Sefwi Wiawso", "Bibiani", "Enchi", "Juabeso", "Other"]
+}
 
 export default function SignupPage() {
     return (
@@ -41,6 +62,14 @@ function SignupContent() {
     const [phoneNumber, setPhoneNumber] = useState("")
     const [company, setCompany] = useState("")
 
+    // Agent Questionnaire State
+    const [location, setLocation] = useState("")
+    const [city, setCity] = useState("")
+    const [yearsExperience, setYearsExperience] = useState("")
+    const [expertise, setExpertise] = useState("")
+    const [vendorRelationships, setVendorRelationships] = useState("no")
+    const [storageCapacity, setStorageCapacity] = useState("no")
+    const [expectedVolume, setExpectedVolume] = useState("")
     // OTP States
     const [showOtpInput, setShowOtpInput] = useState(false)
     const [otpValue, setOtpValue] = useState(["", "", "", "", "", ""])
@@ -95,7 +124,7 @@ function SignupContent() {
 
         try {
             const fullName = `${firstName} ${lastName}`.trim()
-            const userRole = activeTab as 'customer' | 'agent'
+            const userRole = activeTab === 'agent' ? 'pending_agent' : 'customer'
 
             const { data, error } = await supabase.auth.signUp({
                 email,
@@ -105,7 +134,14 @@ function SignupContent() {
                         full_name: fullName,
                         role: userRole,
                         phone_number: phoneNumber,
-                        company_name: activeTab === 'agent' ? company : null
+                        company_name: activeTab === 'agent' ? company : null,
+                        location: activeTab === 'agent' ? location : null,
+                        city: activeTab === 'agent' ? city : null,
+                        years_experience: activeTab === 'agent' ? yearsExperience : null,
+                        expertise: activeTab === 'agent' ? expertise : null,
+                        vendor_relationships: activeTab === 'agent' ? vendorRelationships === "yes" : false,
+                        storage_capacity: activeTab === 'agent' ? storageCapacity === "yes" : false,
+                        expected_volume: activeTab === 'agent' ? expectedVolume : null
                     }
                 }
             })
@@ -205,12 +241,26 @@ function SignupContent() {
             if (error) throw error
 
             // Verification Success! Send the premium welcome email in the background
+            // For agents, we delay the welcome email until Admin Approval.
+            if (activeTab !== 'agent') {
+                try {
+                    sendWelcomeEmailAction(email, firstName, activeTab).catch(e => {
+                        console.warn("Welcome email failed (non-blocking hook):", e)
+                    })
+                } catch (e) {
+                    console.warn("Welcome email failed to start:", e)
+                }
+            }
+
+            // Notify admins of new registration verification
             try {
-                sendWelcomeEmailAction(email, firstName, activeTab).catch(e => {
-                    console.warn("Welcome email failed (non-blocking hook):", e)
+                await notifyAdmins({
+                    title: `New ${activeTab === 'agent' ? 'Partner/Agent' : 'Customer'} Registration`,
+                    message: `${firstName} ${lastName} (${email}) has verified their account.`,
+                    type: 'system'
                 })
             } catch (e) {
-                console.warn("Welcome email failed to start:", e)
+                console.warn("Admin notification dispatch failed:", e)
             }
 
             if (activeTab === 'agent') {
@@ -387,6 +437,7 @@ function SignupContent() {
                 </div>
 
                 <form onSubmit={onSubmit} className="space-y-5">
+                    {/* BASE USER INFO */}
                     <div className="grid grid-cols-2 gap-4">
                         <div className="grid gap-2">
                             <Label htmlFor="first-name" className="ml-1 text-primary-blue/80 font-semibold text-xs uppercase tracking-wider">First Name</Label>
@@ -428,45 +479,168 @@ function SignupContent() {
                         />
                     </div>
 
-                    <div className="grid gap-2">
-                        <Label htmlFor="email" className="ml-1 text-primary-blue/80 font-semibold text-xs uppercase tracking-wider">Email Address</Label>
-                        <Input
-                            id="email"
-                            type="email"
-                            placeholder="name@company.com"
-                            className="h-11 rounded-xl bg-primary-blue/5 border-primary-blue/10 font-medium"
-                            required
-                            disabled={isLoading}
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                        />
-                    </div>
-
-                    <div className="grid gap-2">
-                        <Label htmlFor="password" className="ml-1 text-primary-blue/80 font-semibold text-xs uppercase tracking-wider">Password</Label>
-                        <PasswordInput
-                            id="password"
-                            required
-                            disabled={isLoading}
-                            value={password}
-                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
-                            showStrength={true}
-                        />
-                    </div>
-
+                    {/* AGENT SPECIFIC FIELDS (Moved up before Email/Password) */}
                     {activeTab === 'agent' && (
-                        <div className="grid gap-2 animate-in fade-in slide-in-from-top-2 duration-300">
-                            <Label htmlFor="company" className="ml-1 text-primary-blue/80 font-semibold text-xs uppercase tracking-wider">Company Name (Optional)</Label>
+                        <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300 border-t border-slate-100 pt-4 mt-4">
+                            <h3 className="text-sm font-bold text-primary-orange uppercase tracking-wider">Agent Application Form</h3>
+
+                            <div className="grid gap-2">
+                                <Label htmlFor="company" className="ml-1 text-primary-blue/80 font-semibold text-[10px] uppercase tracking-wider">Company Name (Optional)</Label>
+                                <Input
+                                    id="company"
+                                    placeholder="Auto Pros Ltd"
+                                    className="h-11 rounded-xl bg-primary-blue/5 border-primary-blue/10 font-medium"
+                                    disabled={isLoading}
+                                    value={company}
+                                    onChange={(e) => setCompany(e.target.value)}
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="grid gap-2">
+                                    <Label htmlFor="location" className="ml-1 text-primary-blue/80 font-semibold text-[10px] uppercase tracking-wider">Region (Ghana) *</Label>
+                                    <Select
+                                        required={activeTab === 'agent'}
+                                        disabled={isLoading}
+                                        value={location}
+                                        onValueChange={(val) => {
+                                            setLocation(val)
+                                            setCity("") // Reset city when region changes
+                                        }}
+                                    >
+                                        <SelectTrigger id="location" className="h-11 rounded-xl bg-primary-blue/5 border-primary-blue/10 font-medium">
+                                            <SelectValue placeholder="Select Region..." />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {Object.keys(GHANA_LOCATIONS).map((region) => (
+                                                <SelectItem key={region} value={region}>{region}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="city" className="ml-1 text-primary-blue/80 font-semibold text-[10px] uppercase tracking-wider">City / Town *</Label>
+                                    <Select
+                                        required={activeTab === 'agent'}
+                                        disabled={isLoading || !location}
+                                        value={city}
+                                        onValueChange={setCity}
+                                    >
+                                        <SelectTrigger id="city" className="h-11 rounded-xl bg-primary-blue/5 border-primary-blue/10 font-medium">
+                                            <SelectValue placeholder="Select City..." />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {location && GHANA_LOCATIONS[location]?.map((c) => (
+                                                <SelectItem key={c} value={c}>{c}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="grid gap-2">
+                                    <Label htmlFor="experience" className="ml-1 text-primary-blue/80 font-semibold text-[10px] uppercase tracking-wider">Years Experience *</Label>
+                                    <Input
+                                        id="experience"
+                                        type="number"
+                                        placeholder="e.g. 3"
+                                        className="h-11 rounded-xl bg-primary-blue/5 border-primary-blue/10 font-medium"
+                                        required={activeTab === 'agent'}
+                                        disabled={isLoading}
+                                        value={yearsExperience}
+                                        onChange={(e) => setYearsExperience(e.target.value)}
+                                    />
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="volume" className="ml-1 text-primary-blue/80 font-semibold text-[10px] uppercase tracking-wider">Expected Weekly Volume *</Label>
+                                    <Input
+                                        id="volume"
+                                        type="number"
+                                        placeholder="e.g. 10"
+                                        className="h-11 rounded-xl bg-primary-blue/5 border-primary-blue/10 font-medium"
+                                        required={activeTab === 'agent'}
+                                        disabled={isLoading}
+                                        value={expectedVolume}
+                                        onChange={(e) => setExpectedVolume(e.target.value)}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="grid gap-2">
+                                <Label htmlFor="expertise" className="ml-1 text-primary-blue/80 font-semibold text-[10px] uppercase tracking-wider">Primary Expertise *</Label>
+                                <Select required={activeTab === 'agent'} disabled={isLoading} value={expertise} onValueChange={setExpertise}>
+                                    <SelectTrigger id="expertise" className="h-11 rounded-xl bg-primary-blue/5 border-primary-blue/10 font-medium">
+                                        <SelectValue placeholder="Select Expertise..." />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="Engine Components">Engine Components</SelectItem>
+                                        <SelectItem value="Body Exterior">Body Exterior</SelectItem>
+                                        <SelectItem value="Electronics">Electronics</SelectItem>
+                                        <SelectItem value="General Salvage">General Salvage</SelectItem>
+                                        <SelectItem value="All Categories">All Categories</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="grid gap-2">
+                                    <Label htmlFor="vendor" className="ml-1 text-primary-blue/80 font-semibold text-[10px] uppercase tracking-wider">Ext. Vendor Access? *</Label>
+                                    <Select required={activeTab === 'agent'} disabled={isLoading} value={vendorRelationships} onValueChange={setVendorRelationships}>
+                                        <SelectTrigger id="vendor" className="h-11 rounded-xl bg-primary-blue/5 border-primary-blue/10 font-medium">
+                                            <SelectValue placeholder="Select..." />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="no">No</SelectItem>
+                                            <SelectItem value="yes">Yes</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="storage" className="ml-1 text-primary-blue/80 font-semibold text-[10px] uppercase tracking-wider">Storage Capacity? *</Label>
+                                    <Select required={activeTab === 'agent'} disabled={isLoading} value={storageCapacity} onValueChange={setStorageCapacity}>
+                                        <SelectTrigger id="storage" className="h-11 rounded-xl bg-primary-blue/5 border-primary-blue/10 font-medium">
+                                            <SelectValue placeholder="Select..." />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="no">No</SelectItem>
+                                            <SelectItem value="yes">Yes</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+                        </div>
+                    )} {/* End Agent Fields */}
+
+                    {/* ACCOUNT DETAILS (Moved to the bottom) */}
+                    <div className="space-y-4 border-t border-slate-100 pt-4 mt-4">
+                        <h3 className="text-sm font-bold text-primary-blue uppercase tracking-wider">Account Details</h3>
+                        <div className="grid gap-2">
+                            <Label htmlFor="email" className="ml-1 text-primary-blue/80 font-semibold text-xs uppercase tracking-wider">Email Address</Label>
                             <Input
-                                id="company"
-                                placeholder="Auto Pros Ltd"
+                                id="email"
+                                type="email"
+                                placeholder="name@company.com"
                                 className="h-11 rounded-xl bg-primary-blue/5 border-primary-blue/10 font-medium"
+                                required
                                 disabled={isLoading}
-                                value={company}
-                                onChange={(e) => setCompany(e.target.value)}
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                             />
                         </div>
-                    )}
+
+                        <div className="grid gap-2">
+                            <Label htmlFor="password" className="ml-1 text-primary-blue/80 font-semibold text-xs uppercase tracking-wider">Password</Label>
+                            <PasswordInput
+                                id="password"
+                                required
+                                disabled={isLoading}
+                                value={password}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
+                                showStrength={true}
+                            />
+                        </div>
+                    </div>
 
                     <Button type="submit" className="w-full mt-2 h-12 rounded-xl font-semibold text-base shadow-xl shadow-primary-blue/10 bg-primary-blue hover:bg-hobort-blue-dark transition-all hover:scale-[1.01] active:scale-[0.99] text-white" disabled={isLoading}>
                         {isLoading ? (

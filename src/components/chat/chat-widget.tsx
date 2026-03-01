@@ -1,228 +1,98 @@
 "use client"
 
 import * as React from "react"
-import { MessageSquare, Send, X, Loader2, Minus, ArrowLeft, User } from "lucide-react"
+import { MessageSquare, X, Minus, ChevronRight, HelpCircle, ArrowRight } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
-import { supabase } from "@/lib/supabase"
-import { useAuth } from "@/components/auth/auth-provider"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
-import { format } from "date-fns"
-import { useChat, Message } from "@/components/chat/use-chat"
+import Link from "next/link"
+import { useAuth } from "@/components/auth/auth-provider"
 
-interface ChatUser {
-    id: string
-    full_name: string | null
-    avatar_url?: string
-    email?: string
-    last_message?: Message
-}
+// Hardcoded FAQ Dictionary
+// Expanded Hardcoded FAQ Dictionary
+const FAQ_CATEGORIES = [
+    {
+        id: "general",
+        title: "General & Guest Info",
+        questions: [
+            { q: "What is Hobort Auto Parts Express?", a: "We are a premium B2B and B2C integrated auto parts sourcing platform connecting you directly to US-based inventory." },
+            { q: "Do I need an account to buy?", a: "Guests can browse our guides, but an account is required to request tailored quotes and track shipments securely." },
+            { q: "How do I create an account?", a: "Click 'Get Started' in the top right. You can register as a direct Customer or apply to be a Partner Agent." },
+            { q: "Are the parts inspected?", a: "Yes, our team runs strict quality control checks before parts are prepped for freight." }
+        ]
+    },
+    {
+        id: "sourcing",
+        title: "Customers & Sourcing",
+        questions: [
+            { q: "How long does a quote take?", a: "Quotes are typically generated within 2-4 hours during business days." },
+            { q: "Do you source used parts?", a: "Yes, we source both OEM New and certified salvaged parts based on your preference." },
+            { q: "Why do you need my VIN?", a: "Your 17-digit VIN ensures 100% accurate fitment for your specific vehicle trim and engine." },
+            { q: "Can I request multiple parts at once?", a: "Absolutely. You can list all needed components in a single Sourcing Request." }
+        ]
+    },
+    {
+        id: "shipping",
+        title: "Shipping & Logistics",
+        questions: [
+            { q: "How long is shipping to Ghana?", a: "Air freight takes 7-10 days. Ocean freight takes 4-6 weeks to Tema Port." },
+            { q: "How do I track my order?", a: "Use the 8-character Reference ID provided in your dashboard on our Tracking page." },
+            { q: "Are customs included?", a: "Customs clearing fees at Tema Port are handled by HAPE but billed separately upon arrival." }
+        ]
+    },
+    {
+        id: "agent",
+        title: "Agent Program",
+        questions: [
+            { q: "How do I become an agent?", a: "Register an account, fill out the Agent Application, and wait for an Admin to review your logistics background." },
+            { q: "What happens after approval?", a: "You will complete our mandatory Agent Bootcamp to learn our guidelines before your dashboard unlocks." },
+            { q: "What is the commission rate?", a: "Agents earn a competitive percentage on every successful part sourced through their account." },
+            { q: "Can agents order for clients?", a: "Yes, approved agents have a dedicated 'Create Proxy Order' tool within their portal." }
+        ]
+    }
+]
 
 export function ChatWidget() {
-    const { user, profile } = useAuth()
     const [isOpen, setIsOpen] = React.useState(false)
     const [isMinimized, setIsMinimized] = React.useState(false)
+    const [activeCategory, setActiveCategory] = React.useState<string | null>(null)
+    const { profile } = useAuth()
 
-    // Admin State
-    const isAdmin = profile?.role === 'admin'
-    const [view, setView] = React.useState<'list' | 'chat'>('list')
-    const [activeUsers, setActiveUsers] = React.useState<ChatUser[]>([])
-    const [selectedUser, setSelectedUser] = React.useState<ChatUser | null>(null)
-    const [recentAvatars, setRecentAvatars] = React.useState<string[]>([])
-
-    // Shared State via Hook
-    const [newMessage, setNewMessage] = React.useState("")
-    const {
-        messages,
-        sendMessage,
-        isLoading,
-        scrollRef,
-        remoteIsTyping,
-        setLocalTyping
-    } = useChat(
-        user,
-        isAdmin,
-        selectedUser,
-        isOpen,
-        profile?.full_name || user?.email?.split('@')[0]
-    )
-
-    // Calculate unread status (if any active user has a last message NOT from me)
-    const hasUnread = React.useMemo(() => {
-        if (!isAdmin) return false // Customers just see the chat open/close
-        return activeUsers.some(u => u.last_message && u.last_message.sender_id !== user?.id)
-    }, [activeUsers, isAdmin, user])
-
-    // Reset view when closing
-    React.useEffect(() => {
-        if (!isOpen) {
-            // Optional: reset to list if admin?
-            // if (isAdmin) setView('list') 
-        }
-    }, [isOpen, isAdmin])
-
-    // --- ADMIN: Fetch User List for Inbox ---
-    React.useEffect(() => {
-        if (!isAdmin || !user) return
-
-        const fetchActiveUsers = async () => {
-            // Similar logic to AdminSupportPage
-            const { data: messagesData } = await supabase
-                .from('messages')
-                .select('sender_id, recipient_id, content, created_at')
-                .order('created_at', { ascending: false })
-                .limit(100)
-
-            if (messagesData) {
-                const userIds = new Set<string>()
-                const latestMessages = new Map<string, Message>()
-
-                messagesData.forEach((msg: any) => {
-                    if (msg.sender_id !== user.id) userIds.add(msg.sender_id)
-                    if (msg.recipient_id && msg.recipient_id !== user.id) userIds.add(msg.recipient_id)
-
-                    const otherId = msg.sender_id === user.id ? msg.recipient_id : msg.sender_id
-                    if (otherId && !latestMessages.has(otherId)) {
-                        latestMessages.set(otherId, msg)
-                    }
-                })
-
-                if (userIds.size > 0) {
-                    const { data: profiles } = await supabase
-                        .from('profiles')
-                        .select('id, full_name, avatar_url, email')
-                        .in('id', Array.from(userIds))
-
-                    if (profiles) {
-                        const chats: ChatUser[] = profiles.map(p => ({
-                            ...p,
-                            last_message: latestMessages.get(p.id)
-                        })).sort((a, b) => {
-                            const dateA = new Date(a.last_message?.created_at || 0).getTime()
-                            const dateB = new Date(b.last_message?.created_at || 0).getTime()
-                            return dateB - dateA
-                        })
-                        setActiveUsers(chats)
-                        // Only show avatars if they are real and not just placeholders
-                        setRecentAvatars(chats.slice(0, 3).map(c => c.avatar_url).filter(Boolean) as string[])
-                    }
-                } else {
-                    setActiveUsers([])
-                    setRecentAvatars([])
-                }
-            }
-        }
-
-        fetchActiveUsers()
-
-        // Poll for new users occasionally
-        const interval = setInterval(fetchActiveUsers, 10000)
-
-        // Realtime Subscription for INBOX (New messages from anyone)
-        const channel = supabase
-            .channel('admin-inbox-updates')
-            .on('postgres_changes', {
-                event: 'INSERT',
-                schema: 'public',
-                table: 'messages'
-            }, () => {
-                fetchActiveUsers()
-            })
-            .subscribe()
-
-        return () => {
-            clearInterval(interval)
-            supabase.removeChannel(channel)
-        }
-    }, [isAdmin, user])
-
-    const handleSendMessage = async (e?: React.FormEvent) => {
-        e?.preventDefault()
-        if (!newMessage.trim()) return
-
-        // If guest, we could handle anonymous messaging or prompt for signup
-        // For now, let's allow the hook to handle the logic (might need update)
-        await sendMessage(newMessage)
-        setNewMessage("")
+    // Hide quick help widget entirely for admins
+    if (profile?.role === 'admin') {
+        return null
     }
 
-    // For guests, we show a simplified trigger and prompt to sign up or just chat
-    // if (!user) return null
+    const currentCategory = FAQ_CATEGORIES.find(c => c.id === activeCategory)
 
-    // -- RENDER HELPERS --
-
-    const TriggerButton = () => {
-        if (isAdmin) {
-            // Only show the administrative "Messages" pill if there are active users/chats to manage
-            if (activeUsers.length === 0) return null
-
-            return (
-                <motion.button
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    className="fixed bottom-6 right-6 flex items-center gap-3 px-4 py-3 rounded-full bg-slate-900 text-white shadow-xl shadow-slate-900/20 hover:scale-105 transition-transform z-[50] group"
-                    onClick={() => setIsOpen(true)}
-                >
-                    <div className="flex items-center gap-2">
-                        <MessageSquare className="h-5 w-5" />
-                        <span className="font-bold text-sm">Messages</span>
-                    </div>
-
-                    {/* Avatar Stack */}
-                    {recentAvatars.length > 0 && (
-                        <div className="flex items-center pl-2 border-l border-white/20 ml-1">
-                            <div className="flex -space-x-2">
-                                {recentAvatars.map((url, i) => (
-                                    <div key={i} className="relative">
-                                        <img
-                                            src={url}
-                                            alt="User"
-                                            className="h-6 w-6 rounded-full border-2 border-slate-900 object-cover"
-                                        />
-                                    </div>
-                                ))}
-                            </div>
-                            {hasUnread && (
-                                <div className="ml-2 h-2.5 w-2.5 bg-red-500 rounded-full border border-slate-900 animate-pulse" />
-                            )}
-                        </div>
-                    )}
-                </motion.button>
-            )
-        }
-
-        // Customer Logic
-        return (
-            <motion.div
-                initial={{ scale: 0, opacity: 0, x: 20 }}
-                animate={{ scale: 1, opacity: 1, x: 0 }}
-                className="fixed bottom-6 right-6 flex items-center gap-3 z-[50]"
+    const TriggerButton = () => (
+        <motion.div
+            initial={{ scale: 0, opacity: 0, x: 20 }}
+            animate={{ scale: 1, opacity: 1, x: 0 }}
+            className="fixed bottom-6 right-6 flex items-center gap-3 z-[50]"
+        >
+            <AnimatePresence>
+                {!isOpen && (
+                    <motion.div
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 10 }}
+                        className="bg-white px-4 py-2 rounded-2xl shadow-xl border border-slate-100 hidden md:block"
+                    >
+                        <p className="text-[10px] font-black uppercase tracking-widest text-primary-orange">Quick Help</p>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+            <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                className="h-14 w-14 bg-primary-orange text-white rounded-full shadow-xl shadow-orange-900/20 flex items-center justify-center transition-transform"
+                onClick={() => setIsOpen(true)}
+                aria-label="Open support chat"
             >
-                <AnimatePresence>
-                    {!isOpen && (
-                        <motion.div
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: 10 }}
-                            className="bg-white px-4 py-2 rounded-2xl shadow-xl border border-slate-100 hidden md:block"
-                        >
-                            <p className="text-[10px] font-black uppercase tracking-widest text-primary-blue">Need help?</p>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-                <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    className="h-14 w-14 bg-primary-blue text-white rounded-full shadow-xl shadow-blue-900/20 flex items-center justify-center transition-transform"
-                    onClick={() => setIsOpen(true)}
-                    aria-label="Open support chat"
-                >
-                    <MessageSquare className="h-6 w-6" />
-                </motion.button>
-            </motion.div>
-        )
-    }
+                <HelpCircle className="h-6 w-6" />
+            </motion.button>
+        </motion.div>
+    )
 
     return (
         <React.Fragment>
@@ -245,34 +115,34 @@ export function ChatWidget() {
                         )}
                     >
                         {/* Header */}
-                        <div className="p-4 bg-slate-900 text-white flex items-center justify-between shrink-0">
+                        <div className="p-4 bg-primary-blue text-white flex items-center justify-between shrink-0">
                             <div className="flex items-center gap-3">
-                                {isAdmin && view === 'chat' && (
+                                {activeCategory && !isMinimized && (
                                     <button
-                                        onClick={() => setView('list')}
-                                        className="hover:bg-white/10 p-1 rounded-full mr-1"
-                                        aria-label="Back to active chats"
+                                        onClick={() => setActiveCategory(null)}
+                                        className="hover:bg-white/10 p-1 rounded-full mr-1 transition-colors"
+                                        title="Back to Categories"
                                     >
-                                        <ArrowLeft className="h-4 w-4" />
+                                        <ChevronRight className="h-4 w-4 rotate-180" />
                                     </button>
                                 )}
-                                <div className="h-2 w-2 rounded-full bg-green-400 animate-pulse" />
+                                <div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
                                 <span className="font-bold text-sm tracking-wide">
-                                    {isAdmin ? (view === 'list' ? 'Active Chats' : selectedUser?.full_name || 'Chat') : 'Live Support'}
+                                    Hobort Assistant
                                 </span>
                             </div>
                             <div className="flex items-center gap-2">
                                 <button
                                     onClick={() => setIsMinimized(!isMinimized)}
                                     className="p-1 hover:bg-white/10 rounded-lg transition-colors"
-                                    aria-label={isMinimized ? "Maximize chat" : "Minimize chat"}
+                                    title={isMinimized ? "Maximize Assistant" : "Minimize Assistant"}
                                 >
                                     <Minus className="h-4 w-4" />
                                 </button>
                                 <button
                                     onClick={() => setIsOpen(false)}
                                     className="p-1 hover:bg-white/10 rounded-lg transition-colors"
-                                    aria-label="Close chat"
+                                    title="Close Assistant"
                                 >
                                     <X className="h-4 w-4" />
                                 </button>
@@ -280,125 +150,67 @@ export function ChatWidget() {
                         </div>
 
                         {!isMinimized && (
-                            <React.Fragment>
-                                {/* CONTENT AREA */}
-                                {isAdmin && view === 'list' ? (
-                                    // ADMIN INBOX VIEW
-                                    <div className="flex-1 overflow-y-auto bg-slate-50">
-                                        {activeUsers.length === 0 ? (
-                                            <div className="p-8 text-center text-slate-400">
-                                                <p className="text-xs">No active conversations</p>
-                                            </div>
-                                        ) : (
-                                            activeUsers.map(chatUser => (
-                                                <button
-                                                    key={chatUser.id}
-                                                    onClick={() => {
-                                                        setSelectedUser(chatUser)
-                                                        setView('chat')
-                                                    }}
-                                                    className="w-full p-4 flex items-center gap-3 hover:bg-white border-b border-slate-100 transition-colors text-left"
-                                                >
-                                                    {chatUser.avatar_url ? (
-                                                        <img
-                                                            src={chatUser.avatar_url}
-                                                            alt={`${chatUser.full_name}'s avatar`}
-                                                            className="h-10 w-10 rounded-full object-cover"
-                                                        />
-                                                    ) : (
-                                                        <div className="h-10 w-10 rounded-full bg-slate-200 flex items-center justify-center">
-                                                            <User className="h-5 w-5 text-slate-500" />
-                                                        </div>
-                                                    )}
-                                                    <div className="flex-1 min-w-0">
-                                                        <p className="font-bold text-slate-800 text-sm truncate">{chatUser.full_name || chatUser.email}</p>
-                                                        <p className="text-xs text-slate-500 truncate">{chatUser.last_message?.content || 'No messages'}</p>
-                                                    </div>
-                                                    <span className="text-[10px] text-slate-400 shrink-0">
-                                                        {chatUser.last_message && format(new Date(chatUser.last_message.created_at), 'HH:mm')}
-                                                    </span>
-                                                </button>
-                                            ))
-                                        )}
-                                    </div>
-                                ) : (
-                                    // CHAT VIEW (Admin & Customer)
-                                    <>
-                                        <div
-                                            ref={scrollRef}
-                                            className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50 scroll-smooth"
+                            <div className="flex-1 overflow-y-auto bg-slate-50 relative scroll-smooth">
+                                <AnimatePresence mode="wait">
+                                    {!activeCategory ? (
+                                        <motion.div
+                                            key="categories"
+                                            initial={{ opacity: 0, x: -20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            exit={{ opacity: 0, x: -20 }}
+                                            className="p-4 space-y-4"
                                         >
-                                            {isLoading && messages.length === 0 ? (
-                                                <div className="flex items-center justify-center h-full">
-                                                    <Loader2 className="h-6 w-6 animate-spin text-slate-300" />
-                                                </div>
-                                            ) : (
-                                                <>
-                                                    {messages.map((msg) => {
-                                                        const isMe = msg.sender_id === user?.id
-                                                        return (
-                                                            <div
-                                                                key={msg.id}
-                                                                className={cn(
-                                                                    "flex flex-col max-w-[85%]",
-                                                                    isMe ? "ml-auto items-end" : "mr-auto items-start"
-                                                                )}
-                                                            >
-                                                                <div className={cn(
-                                                                    "p-3 rounded-2xl text-xs font-medium leading-relaxed",
-                                                                    isMe
-                                                                        ? "bg-primary-blue text-white rounded-br-none"
-                                                                        : "bg-white border border-slate-100 text-slate-700 rounded-bl-none shadow-sm"
-                                                                )}>
-                                                                    {msg.content}
-                                                                </div>
-                                                                <span className="text-[9px] text-slate-400 mt-1 px-1">
-                                                                    {format(new Date(msg.created_at), 'HH:mm')}
-                                                                </span>
-                                                            </div>
-                                                        )
-                                                    })}
-                                                    {remoteIsTyping && (
-                                                        <motion.div
-                                                            initial={{ opacity: 0, y: 10 }}
-                                                            animate={{ opacity: 1, y: 0 }}
-                                                            className="flex items-center gap-2 text-slate-400 italic text-[10px] pl-2 mt-2"
-                                                        >
-                                                            <div className="flex gap-1">
-                                                                <span className="w-1 h-1 bg-slate-300 rounded-full animate-bounce [animation-delay:-0.3s]" />
-                                                                <span className="w-1 h-1 bg-slate-300 rounded-full animate-bounce [animation-delay:-0.15s]" />
-                                                                <span className="w-1 h-1 bg-slate-300 rounded-full animate-bounce" />
-                                                            </div>
-                                                            <span>Typing...</span>
-                                                        </motion.div>
-                                                    )}
-                                                </>
-                                            )}
-                                        </div>
+                                            <div className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm text-sm font-medium text-slate-700 leading-relaxed mb-6">
+                                                Hi! I'm the Hobort automated assistant. How can I help you today?
+                                            </div>
 
-                                        {/* Input Area */}
-                                        <form onSubmit={handleSendMessage} className="p-3 bg-white border-t border-slate-100 flex gap-2">
-                                            <Input
-                                                value={newMessage}
-                                                onChange={(e) => {
-                                                    setNewMessage(e.target.value)
-                                                    setLocalTyping(true)
-                                                }}
-                                                placeholder="Type message..."
-                                                className="rounded-xl border-slate-200 bg-slate-50 text-xs focus:bg-white h-10"
-                                            />
-                                            <Button
-                                                type="submit"
-                                                size="icon"
-                                                disabled={!newMessage.trim()}
-                                                className="h-10 w-10 rounded-xl bg-primary-blue hover:bg-blue-700 shrink-0 shadow-lg"
-                                            >
-                                                <Send className="h-4 w-4" />
-                                            </Button>
-                                        </form>
-                                    </>
-                                )}
-                            </React.Fragment>
+                                            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 pl-2">Select a Topic</p>
+                                            <div className="space-y-2">
+                                                {FAQ_CATEGORIES.map(category => (
+                                                    <button
+                                                        key={category.id}
+                                                        onClick={() => setActiveCategory(category.id)}
+                                                        className="w-full p-4 bg-white rounded-2xl border border-slate-100 shadow-sm hover:border-primary-orange/30 hover:shadow-md transition-all text-left flex items-center justify-between group"
+                                                    >
+                                                        <span className="font-bold text-slate-800 text-sm">{category.title}</span>
+                                                        <ArrowRight className="h-4 w-4 text-slate-300 group-hover:text-primary-orange transition-colors" />
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </motion.div>
+                                    ) : (
+                                        <motion.div
+                                            key="questions"
+                                            initial={{ opacity: 0, x: 20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            exit={{ opacity: 0, x: 20 }}
+                                            className="p-4 space-y-6"
+                                        >
+                                            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 pl-2">
+                                                {currentCategory?.title}
+                                            </p>
+                                            {currentCategory?.questions.map((q, idx) => (
+                                                <div key={idx} className="space-y-3">
+                                                    {/* Fake Question Bubble */}
+                                                    <div className="ml-auto w-[85%] bg-slate-200 text-slate-700 p-3 rounded-2xl rounded-tr-none text-xs font-semibold shadow-sm">
+                                                        {q.q}
+                                                    </div>
+                                                    {/* Answer Bubble */}
+                                                    <div className="mr-auto w-[90%] bg-white border border-slate-100 text-slate-600 p-4 rounded-2xl rounded-tl-none text-xs font-medium leading-relaxed shadow-sm">
+                                                        {q.a}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                            <div className="pt-6 border-t border-slate-200 text-center">
+                                                <p className="text-xs text-slate-500 mb-3">Still need help?</p>
+                                                <Link href="/contact" className="inline-flex items-center justify-center w-full h-10 rounded-xl bg-slate-900 text-white text-xs font-bold uppercase tracking-widest hover:bg-black transition-colors">
+                                                    Contact Support
+                                                </Link>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
                         )}
                     </motion.div>
                 )}

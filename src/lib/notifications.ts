@@ -1,4 +1,5 @@
-import { supabase } from "./supabase" // Client for client-side/public inserts
+'use server'
+
 import { supabaseService } from "./supabase-service" // Server-side client for privileged ops
 import { Database } from "@/types/database.types"
 

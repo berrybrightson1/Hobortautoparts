@@ -104,11 +104,33 @@ export default function AdminPortal() {
                 target: 0
             }))
 
-            const realRequestVolume = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => ({
-                name: day,
-                requests: 0,
-                completed: 0
-            }))
+            // 5. Generate Chart Data (Last 7 Days)
+            const today = new Date()
+            const last7Days = Array.from({ length: 7 }).map((_, i) => {
+                const d = new Date()
+                d.setDate(today.getDate() - (6 - i))
+                return d
+            })
+
+            const startDate = last7Days[0].toISOString()
+
+            const { data: chartRequests } = await supabase
+                .from('sourcing_requests')
+                .select('created_at, status')
+                .gte('created_at', startDate)
+
+            const realRequestVolume = last7Days.map(date => {
+                const dateStr = format(date, 'yyyy-MM-dd')
+                const dayReqs = (chartRequests || []).filter((req: any) =>
+                    req.created_at.startsWith(dateStr)
+                )
+
+                return {
+                    name: format(date, 'EEE'), // e.g., 'Mon', 'Tue'
+                    requests: dayReqs.length,
+                    completed: dayReqs.filter((req: any) => req.status === 'completed').length
+                }
+            })
 
             setStats([
                 { label: "Active Requests", value: (totalRequests || 0).toString(), icon: LayoutDashboard, color: "text-blue-500", raw: totalRequests || 0 },

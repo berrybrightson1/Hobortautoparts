@@ -117,8 +117,10 @@ export default function PlatformGuidePage() {
             <div className="grid gap-6 md:grid-cols-3">
                 {[
                     { title: "VIN Accuracy", text: "Providing a clear VIN photo reduces sourcing time by up to 40%.", icon: Zap },
-                    { title: "Persistent Support", text: "Your support conversations now stay active across browser refreshes even if you haven't signed in yet.", icon: MessageSquare },
-                    { title: "Verified Parts", text: "Every part undergoes a 5-point quality audit before shipping.", icon: ShieldCheck }
+                    { title: "Persistent Support", text: "Your support conversations stay active across browser refreshes even before you sign in.", icon: MessageSquare },
+                    { title: "Verified Parts", text: "Every part undergoes a 5-point quality audit before shipping.", icon: ShieldCheck },
+                    { title: "Keep Your Phone Updated", text: "Add your phone number in Profile Settings so our team can reach you directly for order follow-ups and delivery coordination.", icon: BellRing },
+                    { title: "Become a Partner Agent", text: "Already a customer? Apply to become a Hobort Partner Agent directly from your Profile Settings — no new account needed.", icon: ArrowRight },
                 ].map((tip, i) => (
                     <div key={i} className="p-8 bg-slate-50 rounded-2xl border border-slate-100 flex flex-col gap-4">
                         <tip.icon className="h-6 w-6 text-slate-400" />
@@ -130,3 +132,4 @@ export default function PlatformGuidePage() {
         </div>
     )
 }
+

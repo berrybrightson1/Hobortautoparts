@@ -5,6 +5,7 @@ import { User } from '@supabase/supabase-js'
 import { useRouter } from "next/navigation"
 import { supabase } from '@/lib/supabase'
 import { logAction } from '@/lib/audit'
+import { createOrUpdateProfile } from '@/app/actions/admin-actions'
 
 type AuthContextType = {
     user: User | null
@@ -105,9 +106,47 @@ export const AuthProvider = ({
             }
         )
 
+        // ── Real-time profile watcher ─────────────────────────────────────
+        // When an admin approves/declines a pending agent, the `profiles` row
+        // is updated server-side. This subscription detects that change and
+        // immediately re-fetches the profile so the UI (e.g. pending modal)
+        // updates without requiring a page refresh.
+        let profileChannel: ReturnType<typeof supabase.channel> | null = null
+
+        const setupProfileChannel = (userId: string) => {
+            profileChannel = supabase
+                .channel(`profile_role_watch:${userId}`)
+                .on(
+                    'postgres_changes',
+                    {
+                        event: 'UPDATE',
+                        schema: 'public',
+                        table: 'profiles',
+                        filter: `id=eq.${userId}`,
+                    },
+                    async (payload) => {
+                        if (!mounted) return
+                        // Re-fetch the full profile so all fields (role, etc.) are fresh
+                        const { data } = await supabase
+                            .from('profiles')
+                            .select('*')
+                            .eq('id', userId)
+                            .single()
+                        if (data && mounted) setProfile(data)
+                    }
+                )
+                .subscribe()
+        }
+
+        // Set up the channel once we have a user
+        if (initialSession?.user?.id) {
+            setupProfileChannel(initialSession.user.id)
+        }
+
         return () => {
             mounted = false
             subscription.unsubscribe()
+            if (profileChannel) supabase.removeChannel(profileChannel)
         }
     }, [])
 
@@ -123,6 +162,12 @@ export const AuthProvider = ({
                 .single()
 
             if (!error && data) {
+                // Ensure Phone Number is synchronized from Auth to Profile
+                const authPhone = currentUser.phone || currentUser.user_metadata?.phone_number || currentUser.user_metadata?.phone;
+                if (authPhone && !data.phone_number) {
+                    supabase.from('profiles').update({ phone_number: authPhone }).eq('id', currentUser.id).then()
+                    data.phone_number = authPhone
+                }
                 setProfile(data)
                 return
             }
@@ -140,32 +185,20 @@ export const AuthProvider = ({
                 return
             }
 
-            console.warn("AuthProvider: Profile row missing, creating from metadata...")
+            console.warn("AuthProvider: Profile row missing, creating via Server Action...")
 
-            const { data: newProfile, error: syncError } = await supabase
-                .from('profiles')
-                .upsert({
-                    id: currentUser.id,
-                    full_name: currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0],
-                    role: currentUser.user_metadata?.role || 'customer',
-                    phone_number: currentUser.user_metadata?.phone,
-                }, { onConflict: 'id' })
-                .select()
-                .single()
+            const syncRes = await createOrUpdateProfile(currentUser.id, {
+                full_name: currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0],
+                role: currentUser.user_metadata?.role || 'customer',
+                phone: currentUser.phone || currentUser.user_metadata?.phone_number || currentUser.user_metadata?.phone,
+            })
 
-            if (!syncError) {
-                setProfile(newProfile)
+            if (syncRes.success && syncRes.profile) {
+                setProfile(syncRes.profile)
             } else {
-                // If upsert also fails with empty error or FK violation, it's a ghost session
-                const isFKViolation = syncError?.code === '23503'
-                const isSyncGhost = !syncError?.code || Object.keys(syncError).length === 0
-                if (isFKViolation || isSyncGhost) {
-                    console.warn("AuthProvider: Cannot sync deleted user, signing out.")
-                    await signOut()
-                } else {
-                    console.error("AuthProvider: Sync error:", syncError?.message || syncError, syncError?.details)
-                    setProfile({ role: currentUser.user_metadata?.role || 'customer' })
-                }
+                // If it fails, fallback to local state mimicking
+                console.error("AuthProvider: Secure sync error:", syncRes.error)
+                setProfile({ role: currentUser.user_metadata?.role || 'customer' })
             }
         } catch (err) {
             console.error("AuthProvider: Unexpected error in fetchProfile:", err)
