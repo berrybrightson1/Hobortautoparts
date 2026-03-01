@@ -241,8 +241,8 @@ export function FeedbackPanel({ requestId, currentUserId, isAgent = false }: Fee
                         <MessageSquare className="h-4 w-4" />
                     </div>
                     <div>
-                        <h4 className="font-bold text-slate-900 tracking-tight leading-none text-sm">Direct Messages</h4>
-                        <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 pt-1">Live Updates</p>
+                        <h4 className="font-medium text-slate-900 tracking-tight leading-none text-sm">Direct Messages</h4>
+                        <p className="text-[10px] uppercase tracking-widest text-slate-400 pt-1">Live Updates</p>
                     </div>
                 </div>
             </div>
@@ -259,7 +259,7 @@ export function FeedbackPanel({ requestId, currentUserId, isAgent = false }: Fee
                         <div className="h-16 w-16 bg-white rounded-full flex items-center justify-center shadow-sm border border-slate-100">
                             <MessageSquare className="h-6 w-6 text-slate-300" />
                         </div>
-                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-center leading-relaxed">No messages found.<br />Start the conversation block.</span>
+                        <span className="text-[10px] uppercase tracking-[0.2em] text-center leading-relaxed">No messages found.<br />Start the conversation block.</span>
                     </div>
                 ) : (
                     <>
@@ -276,23 +276,23 @@ export function FeedbackPanel({ requestId, currentUserId, isAgent = false }: Fee
                                 >
                                     <Avatar className="h-8 w-8 sm:h-10 sm:w-10 border-2 border-white shadow-sm shrink-0 mt-1">
                                         <AvatarImage src={msg.profiles?.avatar_url} />
-                                        <AvatarFallback className={cn("text-[10px] font-bold", isMe ? "bg-slate-900 text-white" : "bg-slate-200 text-slate-600")}>
+                                        <AvatarFallback className={cn("text-[10px]", isMe ? "bg-slate-900 text-white" : "bg-slate-200 text-slate-600")}>
                                             {msg.profiles?.full_name?.substring(0, 2).toUpperCase() || "??"}
                                         </AvatarFallback>
                                     </Avatar>
                                     <div className={cn("space-y-1", isMe ? "items-end" : "items-start")}>
                                         <div className={cn("flex items-center gap-2", isMe ? "flex-row-reverse" : "")}>
-                                            <span className="text-[10px] font-bold text-slate-700 uppercase tracking-wide">
+                                            <span className="text-[10px] font-medium text-slate-700 uppercase tracking-wide">
                                                 {isMe ? "You" : (msg.profiles?.full_name || "User")}
                                             </span>
-                                            <span className={cn("text-[8px] font-black uppercase px-2 py-0.5 rounded-full border tracking-widest",
+                                            <span className={cn("text-[8px] font-medium uppercase px-2 py-0.5 rounded-full border tracking-widest",
                                                 role === 'agent' ? "bg-purple-100 text-purple-700 border-purple-200" :
                                                     role === 'admin' ? "bg-red-100 text-red-700 border-red-200" :
                                                         "bg-blue-100 text-blue-700 border-blue-200"
                                             )}>
                                                 {role}
                                             </span>
-                                            <span className="text-[9px] font-bold text-slate-400">
+                                            <span className="text-[9px] font-medium text-slate-400">
                                                 {msg.created_at ? format(new Date(msg.created_at), 'h:mm a') : '...'}
                                             </span>
                                         </div>

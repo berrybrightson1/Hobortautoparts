@@ -589,29 +589,29 @@ export default function SourcingRequestsPage() {
 
                                             {expandedRequestId === request.id && (
                                                 <TableRow className="bg-slate-50/50 hover:bg-slate-50/50 data-[state=open]:bg-slate-50/50 relative overflow-hidden">
-                                                    <TableCell colSpan={6} className="p-0 border-b-2 border-slate-200">
-                                                        <div className="p-6 md:p-8 grid grid-cols-1 lg:grid-cols-3 gap-8 animate-in fade-in slide-in-from-top-4 duration-300">
+                                                    <TableCell colSpan={6} className="p-0 border-b-2 border-slate-200 bg-slate-50/50">
+                                                        <div className="p-6 md:p-8 grid grid-cols-1 lg:grid-cols-2 gap-8 animate-in fade-in slide-in-from-top-4 duration-300 max-w-5xl mx-auto">
                                                             <div className="space-y-4">
                                                                 <div className="flex items-center gap-2 mb-2">
                                                                     <div className="h-6 w-6 rounded-md bg-slate-200/50 flex items-center justify-center">
                                                                         <Package className="h-3.5 w-3.5 text-slate-500" />
                                                                     </div>
-                                                                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Request Details</p>
+                                                                    <p className="text-[10px] uppercase tracking-[0.2em] text-slate-500">Request Details</p>
                                                                 </div>
                                                                 <div className="p-5 bg-white rounded-2xl border border-slate-200/60 shadow-sm transition-all hover:shadow-md">
-                                                                    <p className="font-extrabold text-slate-900 text-xl leading-tight tracking-tight">{request.part_name}</p>
-                                                                    <div className="text-sm font-semibold text-slate-500 mt-2.5 flex items-start gap-2.5">
+                                                                    <p className="text-slate-900 text-xl leading-tight tracking-tight">{request.part_name}</p>
+                                                                    <div className="text-sm font-medium text-slate-500 mt-2.5 flex items-start gap-2.5">
                                                                         <div className="mt-1.5 h-1.5 w-1.5 rounded-full bg-blue-400 shrink-0 shadow-sm" />
                                                                         <span className="leading-snug">{request.vehicle_info || 'No vehicle info provided'}</span>
                                                                     </div>
                                                                     {request.part_condition && (
-                                                                        <Badge variant="outline" className="mt-4 w-fit font-black px-3 py-1 text-[10px] uppercase tracking-widest text-blue-700 border-blue-200 bg-blue-50 shadow-sm">{request.part_condition}</Badge>
+                                                                        <Badge variant="outline" className="mt-4 w-fit px-3 py-1 text-[10px] uppercase tracking-widest text-blue-700 border-blue-200 bg-blue-50 shadow-sm">{request.part_condition}</Badge>
                                                                     )}
                                                                 </div>
                                                                 <div className="pt-2">
-                                                                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-2 pl-1">VIN Number</p>
+                                                                    <p className="text-[10px] uppercase tracking-[0.2em] text-slate-500 mb-2 pl-1">VIN Number</p>
                                                                     <div className="h-11 flex items-center px-4 bg-slate-900 rounded-xl shadow-inner border border-slate-800">
-                                                                        <p className="font-mono font-bold text-slate-100 tracking-[0.15em] text-xs">{request.vin || 'NOT PROVIDED'}</p>
+                                                                        <p className="font-mono text-slate-100 tracking-[0.15em] text-xs">{request.vin || 'NOT PROVIDED'}</p>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -620,24 +620,24 @@ export default function SourcingRequestsPage() {
                                                                     <div className="h-6 w-6 rounded-md bg-slate-200/50 flex items-center justify-center">
                                                                         <Users className="h-3.5 w-3.5 text-slate-500" />
                                                                     </div>
-                                                                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Customer Identity</p>
+                                                                    <p className="text-[10px] uppercase tracking-[0.2em] text-slate-500">Customer Identity</p>
                                                                 </div>
                                                                 <div className="p-5 flex flex-col gap-4 bg-white rounded-2xl border border-slate-200/60 shadow-sm transition-all hover:shadow-md h-[180px]">
                                                                     <div className="flex items-center gap-4">
-                                                                        <div className="h-14 w-14 rounded-full bg-gradient-to-br from-blue-100 to-blue-50 border border-blue-100 flex items-center justify-center font-black text-blue-700 shadow-sm text-lg shrink-0">
+                                                                        <div className="h-14 w-14 rounded-full bg-gradient-to-br from-blue-100 to-blue-50 border border-blue-100 flex items-center justify-center text-blue-700 shadow-sm text-lg shrink-0">
                                                                             {(request.is_proxy_request ? request.customer_name : request.profiles?.full_name)?.substring(0, 2).toUpperCase() || 'GU'}
                                                                         </div>
                                                                         <div className="flex-1 min-w-0">
-                                                                            <p className="font-extrabold text-slate-900 text-lg truncate tracking-tight">{request.is_proxy_request ? request.customer_name : (request.profiles?.full_name || 'Guest User')}</p>
+                                                                            <p className="text-slate-900 text-lg truncate tracking-tight">{request.is_proxy_request ? request.customer_name : (request.profiles?.full_name || 'Guest User')}</p>
                                                                             {request.is_proxy_request && request.customer_phone && (
-                                                                                <p className="text-sm font-semibold text-slate-500 mt-0.5 truncate">{request.customer_phone}</p>
+                                                                                <p className="text-sm font-medium text-slate-500 mt-0.5 truncate">{request.customer_phone}</p>
                                                                             )}
                                                                         </div>
                                                                     </div>
                                                                     <div className="mt-auto pt-4 border-t border-slate-100">
                                                                         <Button
                                                                             size="sm"
-                                                                            className="w-full h-10 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-[10px] uppercase font-black tracking-[0.15em] shadow-md transition-all active:scale-[0.98]"
+                                                                            className="w-full h-10 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-[10px] uppercase tracking-[0.15em] shadow-md transition-all active:scale-[0.98]"
                                                                             onClick={(e) => {
                                                                                 e.stopPropagation();
                                                                                 setSelectedRequest(request);
@@ -648,11 +648,6 @@ export default function SourcingRequestsPage() {
                                                                         </Button>
                                                                     </div>
                                                                 </div>
-                                                            </div>
-                                                            <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden h-[280px] flex flex-col relative transition-all hover:shadow-md" onClick={(e) => e.stopPropagation()}>
-                                                                {user ? (
-                                                                    <FeedbackPanel requestId={request.id} currentUserId={user.id} isAgent={true} />
-                                                                ) : null}
                                                             </div>
                                                         </div>
                                                     </TableCell>

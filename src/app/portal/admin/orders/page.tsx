@@ -319,16 +319,16 @@ export default function AdminOrdersPage() {
                                                                 <div className="h-6 w-6 rounded-md bg-slate-200/50 flex items-center justify-center">
                                                                     <Package className="h-3.5 w-3.5 text-slate-500" />
                                                                 </div>
-                                                                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Items to Fulfill</p>
+                                                                <p className="text-[10px] uppercase tracking-[0.2em] text-slate-500">Items to Fulfill</p>
                                                             </div>
                                                             <div className="p-5 bg-white rounded-2xl border border-slate-200/60 shadow-sm transition-all hover:shadow-md h-[180px]">
-                                                                <p className="font-extrabold text-slate-900 text-xl leading-tight tracking-tight">{order.quotes?.sourcing_requests?.part_name || 'Item Name Not Available'}</p>
-                                                                <div className="text-sm font-semibold text-slate-500 mt-2.5 flex items-start gap-2.5">
+                                                                <p className="text-slate-900 text-xl leading-tight tracking-tight">{order.quotes?.sourcing_requests?.part_name || 'Item Name Not Available'}</p>
+                                                                <div className="text-sm font-medium text-slate-500 mt-2.5 flex items-start gap-2.5">
                                                                     <div className="mt-1.5 h-1.5 w-1.5 rounded-full bg-blue-400 shrink-0 shadow-sm" />
                                                                     <span className="leading-snug">{order.quotes?.sourcing_requests?.vehicle_info || 'No vehicle info connected to this order'}</span>
                                                                 </div>
                                                                 {order.quotes?.sourcing_requests?.part_condition && (
-                                                                    <Badge variant="outline" className="mt-4 w-fit font-black px-3 py-1 text-[10px] uppercase tracking-widest text-blue-700 border-blue-200 bg-blue-50 shadow-sm">
+                                                                    <Badge variant="outline" className="mt-4 w-fit px-3 py-1 text-[10px] uppercase tracking-widest text-blue-700 border-blue-200 bg-blue-50 shadow-sm">
                                                                         {order.quotes.sourcing_requests.part_condition}
                                                                     </Badge>
                                                                 )}
@@ -341,22 +341,22 @@ export default function AdminOrdersPage() {
                                                                 <div className="h-6 w-6 rounded-md bg-emerald-100/50 flex items-center justify-center">
                                                                     <DollarSign className="h-3.5 w-3.5 text-emerald-600" />
                                                                 </div>
-                                                                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Order Finances</p>
+                                                                <p className="text-[10px] uppercase tracking-[0.2em] text-slate-500">Order Finances</p>
                                                             </div>
                                                             <div className="p-5 bg-slate-950 rounded-2xl shadow-xl text-white flex flex-col justify-center h-[180px] border border-slate-900 relative overflow-hidden">
                                                                 <div className="absolute top-0 right-0 p-8 w-32 h-32 bg-white opacity-5 rounded-full blur-2xl -mt-10 -mr-10 pointer-events-none"></div>
 
                                                                 <div className="flex justify-between items-center pb-3 border-b border-white/10 mb-3 relative z-10">
-                                                                    <span className="text-xs font-semibold uppercase tracking-widest text-slate-400">Total Quote</span>
+                                                                    <span className="text-xs font-medium uppercase tracking-widest text-slate-400">Total Quote</span>
                                                                     <span className="font-mono text-sm tracking-wide text-white">${(order.quotes?.item_price + order.quotes?.shipping_cost)?.toFixed(2) || '0.00'}</span>
                                                                 </div>
                                                                 <div className="flex justify-between items-center pb-4 border-b border-white/10 mb-4 relative z-10">
-                                                                    <span className="text-xs font-semibold uppercase tracking-widest text-slate-400">Service Fee</span>
-                                                                    <span className="font-mono text-sm tracking-wide text-blue-400 font-bold">+ ${order.quotes?.service_fee?.toFixed(2) || '0.00'}</span>
+                                                                    <span className="text-xs font-medium uppercase tracking-widest text-slate-400">Service Fee</span>
+                                                                    <span className="font-mono text-sm tracking-wide text-blue-400 font-medium">+ ${order.quotes?.service_fee?.toFixed(2) || '0.00'}</span>
                                                                 </div>
                                                                 <div className="flex justify-between items-center relative z-10">
-                                                                    <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400">Total Receivable</span>
-                                                                    <span className="font-mono text-2xl font-black tracking-tight text-emerald-400">${order.quotes?.total_amount?.toFixed(2) || '0.00'}</span>
+                                                                    <span className="text-[10px] font-medium uppercase tracking-widest text-emerald-400">Total Receivable</span>
+                                                                    <span className="font-mono text-2xl font-medium tracking-tight text-emerald-400">${order.quotes?.total_amount?.toFixed(2) || '0.00'}</span>
                                                                 </div>
                                                             </div>
                                                         </div>
