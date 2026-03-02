@@ -17,6 +17,19 @@ import { Footer } from "@/components/marketing/footer"
 
 const updates = [
     {
+        version: "v2.7.0",
+        date: "March 2, 2026",
+        time: "11:45 PM",
+        title: "Global Notifications & Checkout Polishing",
+        description: "A major update enabling end-to-end email and in-app notifications across the platform, alongside critical bug fixes for mobile Safari and vehicle sourcing.",
+        changes: [
+            "Comprehensive Email Notifications: Customers and Agents now receive branded HTML emails for key events: new login from unknown devices, order confirmations, shipment tracking updates, proxy order creation, and unread support messages.",
+            "Manual VIN Field Fallbacks: If NHTSA VIN decoding cannot determine a vehicle's Trim level, the field now automatically converts into a text input, allowing customers to manually type their exact sub-model and proceed without being blocked.",
+            "Tracking Widget Mobile Optimization: Addressed a frustrating UX issue where iOS Safari would forcefully zoom in when tapping the Homepage 'Trace Shipment' input. Font sizes have been locked to perfectly prevent auto-zoom.",
+            "Eliminated Infinite Spinners: Resolved several edge-case bugs across the Sourcing Request and Authentication flows where the UI would get stuck in a 'Loading' state upon encountering network latency or silent errors."
+        ]
+    },
+    {
         version: "v2.6.0",
         date: "March 1, 2026",
         time: "03:17 PM",

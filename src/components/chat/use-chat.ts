@@ -82,46 +82,48 @@ export function useChat(
         if (isAdmin && !targetUserId) return
 
         const fetchMessages = async () => {
-            if (!user && guestId) {
-                // For guests, we mostly rely on localStorage, but we can attempt to fetch 
-                // if they previously sent messages that were stored in DB (using guestId)
+            try {
+                if (!user && guestId) {
+                    // For guests, we mostly rely on localStorage, but we can attempt to fetch 
+                    // if they previously sent messages that were stored in DB (using guestId)
+                    setIsLoading(true)
+                    const { data } = await supabase
+                        .from('messages')
+                        .select('*')
+                        .or(`sender_id.eq.${guestId},recipient_id.eq.${guestId}`)
+                        .order('created_at', { ascending: true })
+
+                    if (data && data.length > 0) {
+                        setMessages(data)
+                        localStorage.setItem(`hobort_chat_${guestId}`, JSON.stringify(data))
+                    }
+                    scrollToBottom()
+                    return
+                }
+
                 setIsLoading(true)
-                const { data } = await supabase
+                let query = supabase
                     .from('messages')
                     .select('*')
-                    .or(`sender_id.eq.${guestId},recipient_id.eq.${guestId}`)
                     .order('created_at', { ascending: true })
 
-                if (data && data.length > 0) {
-                    setMessages(data)
-                    localStorage.setItem(`hobort_chat_${guestId}`, JSON.stringify(data))
+                if (isAdmin && selectedUser) {
+                    // Fetch interaction between Admin and Selected User (handles both registered and guest users)
+                    query = query.or(`and(sender_id.eq.${selectedUser.id},recipient_id.eq.${user?.id}),and(sender_id.eq.${user?.id},recipient_id.eq.${selectedUser.id}),and(sender_id.eq.${selectedUser.id},recipient_id.is.null)`)
+                } else {
+                    // Customer: RLS handles it
+                    query = query.limit(100)
                 }
+
+                const { data } = await query
+
+                if (data) {
+                    setMessages(data)
+                    scrollToBottom()
+                }
+            } finally {
                 setIsLoading(false)
-                scrollToBottom()
-                return
             }
-
-            setIsLoading(true)
-            let query = supabase
-                .from('messages')
-                .select('*')
-                .order('created_at', { ascending: true })
-
-            if (isAdmin && selectedUser) {
-                // Fetch interaction between Admin and Selected User (handles both registered and guest users)
-                query = query.or(`and(sender_id.eq.${selectedUser.id},recipient_id.eq.${user?.id}),and(sender_id.eq.${user?.id},recipient_id.eq.${selectedUser.id}),and(sender_id.eq.${selectedUser.id},recipient_id.is.null)`)
-            } else {
-                // Customer: RLS handles it
-                query = query.limit(100)
-            }
-
-            const { data } = await query
-
-            if (data) {
-                setMessages(data)
-                scrollToBottom()
-            }
-            setIsLoading(false)
         }
 
         fetchMessages()
@@ -248,6 +250,20 @@ export function useChat(
                     type: 'promo',
                     link: selectedUser.id.startsWith('guest-') ? '#' : '/portal/customer/messages'
                 })
+
+                if (!selectedUser.id.startsWith('guest-')) {
+                    const { data: prof } = await supabase.from('profiles').select('email, full_name').eq('id', selectedUser.id).single();
+                    if (prof?.email) {
+                        const { sendMessageNotificationEmailAction } = await import('@/app/actions/email-actions');
+                        await sendMessageNotificationEmailAction(
+                            prof.email,
+                            prof.full_name?.split(' ')[0] || 'Customer',
+                            'Hobort Support',
+                            text.substring(0, 100),
+                            `${window.location.origin}/portal/customer/messages`
+                        );
+                    }
+                }
             } else if (activeId) {
                 // Customer or Guest sending to admin
                 let displaySender = userName;

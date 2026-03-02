@@ -27,7 +27,7 @@ export function TrackingWidget({ className, showIndicators = true }: { className
                             <input
                                 type="text"
                                 placeholder="Trace Shipment"
-                                className="w-full h-10 md:h-12 bg-black/20 border border-white/5 rounded-lg md:rounded-2xl pl-9 md:pl-12 pr-2 text-white placeholder-slate-400 text-xs md:text-base focus:outline-none focus:bg-black/40 focus:ring-1 focus:ring-primary-orange/50 transition-all font-medium"
+                                className="w-full h-10 md:h-12 bg-black/20 border border-white/5 rounded-lg md:rounded-2xl pl-9 md:pl-12 pr-2 text-white placeholder-slate-400 text-base focus:outline-none focus:bg-black/40 focus:ring-1 focus:ring-primary-orange/50 transition-all font-medium"
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter') {
                                         const val = (e.currentTarget as HTMLInputElement).value

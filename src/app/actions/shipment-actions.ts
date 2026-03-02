@@ -157,7 +157,7 @@ export async function updateShipmentStatus(
             // Get customer ID from shipment's order
             const { data: shipment } = await supabase
                 .from('shipments')
-                .select('orders(user_id)')
+                .select('tracking_number, orders(user_id)')
                 .eq('id', shipmentId)
                 .single()
 
@@ -169,6 +169,18 @@ export async function updateShipmentStatus(
                     message: `${description}`,
                     type: 'order'
                 })
+
+                const { data: profile } = await supabase.from('profiles').select('email, full_name').eq('id', userId).single();
+                if (profile?.email && shipment?.tracking_number) {
+                    const { sendShipmentUpdateEmailAction } = await import('@/app/actions/email-actions');
+                    await sendShipmentUpdateEmailAction(
+                        profile.email,
+                        profile.full_name?.split(' ')[0] || 'Customer',
+                        shipment.tracking_number,
+                        newStatus.replace(/_/g, ' ').toUpperCase(),
+                        description
+                    );
+                }
             }
         } catch (notifyErr) {
             console.warn('Non-blocking notification failure:', notifyErr)

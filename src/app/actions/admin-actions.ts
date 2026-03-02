@@ -393,6 +393,21 @@ export async function createProxyOrder(requestId: string, quoteId: string, userI
                 message: 'Your order has been verified and confirmed by an administrator.',
                 type: 'order'
             })
+
+            const { data: profile } = await supabaseAdmin.from('profiles').select('email, full_name').eq('id', userId).single();
+            const { data: agentProfile } = agentId ? await supabaseAdmin.from('profiles').select('full_name').eq('id', agentId).single() : { data: null };
+
+            if (profile?.email) {
+                const { sendProxyRequestEmailAction } = await import('@/app/actions/email-actions');
+                await sendProxyRequestEmailAction(
+                    profile.email,
+                    profile.full_name?.split(' ')[0] || 'Customer',
+                    agentProfile?.full_name || 'An agent',
+                    'order_payment',
+                    requestId,
+                    'Your agent has processed payment and confirmed your order.'
+                );
+            }
         } catch (notifyErr) {
             console.warn('Non-blocking notification failure:', notifyErr)
         }

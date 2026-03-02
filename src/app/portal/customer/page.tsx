@@ -167,7 +167,7 @@ export default function CustomerDashboard() {
         try {
             console.log('--- STARTING ORDER CONVERSION ---')
             // 1. Create the order
-            const { error: orderError } = await supabase
+            const { data: orderData, error: orderError } = await supabase
                 .from('orders')
                 .insert({
                     user_id: user.id,
@@ -176,6 +176,8 @@ export default function CustomerDashboard() {
                     status: 'paid', // Simulating successful immediate payment for now
                     payment_method: 'Platform Wallet'
                 })
+                .select()
+                .single()
 
             if (orderError) throw orderError
             console.log('--- ORDER CREATED ---')
@@ -194,8 +196,20 @@ export default function CustomerDashboard() {
             if (requestError) throw requestError
             console.log('--- REQUEST UPDATED ---')
 
-            // 3. Notify Admin and Agent
+            // 3. Email & In-App Notifications
             try {
+                // Send Customer Confirmation Email
+                if (user.email && orderData) {
+                    const { sendOrderConfirmationEmailAction } = await import('@/app/actions/email-actions');
+                    const firstName = user.user_metadata?.full_name?.split(' ')[0] || user.user_metadata?.firstName || 'Customer';
+                    await sendOrderConfirmationEmailAction(
+                        user.email,
+                        firstName,
+                        orderData.id,
+                        `${quote.currency === 'USD' ? '$' : 'GH₵'}${quote.total_amount}`
+                    );
+                }
+
                 // Notify all Admins
                 await notifyAdminsAction({
                     title: 'New Order Payment',

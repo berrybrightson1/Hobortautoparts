@@ -13,6 +13,7 @@ interface BrandedSelectProps {
     placeholder?: string
     disabled?: boolean
     className?: string
+    allowCustom?: boolean
 }
 
 export function BrandedSelect({
@@ -22,11 +23,12 @@ export function BrandedSelect({
     onChange,
     placeholder = "Select...",
     disabled = false,
-    className
+    className,
+    allowCustom = false
 }: BrandedSelectProps) {
     const [isOpen, setIsOpen] = React.useState(false)
     const [dropdownStyle, setDropdownStyle] = React.useState<React.CSSProperties>({})
-    const buttonRef = React.useRef<HTMLButtonElement>(null)
+    const buttonRef = React.useRef<HTMLButtonElement & HTMLInputElement>(null)
     const containerRef = React.useRef<HTMLDivElement>(null)
 
     // Compute dropdown position from the button's bounding rect
@@ -143,22 +145,46 @@ export function BrandedSelect({
     return (
         <div className={cn("space-y-1.5 relative", className)} ref={containerRef}>
             <label className="ml-1 text-[10px] font-medium text-primary-blue/80 uppercase">{label}</label>
-            <button
-                ref={buttonRef}
-                type="button"
-                onClick={isOpen ? () => setIsOpen(false) : openDropdown}
-                className={cn(
-                    "flex items-center justify-between w-full h-12 px-4 rounded-xl border-2 transition-all text-left",
-                    isOpen ? "bg-white border-slate-900 ring-0" : "bg-primary-blue/5 border-transparent hover:bg-primary-blue/10",
-                    disabled && "opacity-50 cursor-not-allowed",
-                    value ? "text-primary-blue font-semibold uppercase" : "text-primary-blue/40 font-medium"
-                )}
-            >
-                <div className="flex items-center gap-2 truncate">
-                    <span>{value || placeholder}</span>
+            {allowCustom ? (
+                <div className="relative">
+                    <input
+                        ref={buttonRef}
+                        type="text"
+                        value={value}
+                        onChange={(e) => onChange(e.target.value)}
+                        onClick={isOpen ? undefined : openDropdown}
+                        onFocus={openDropdown}
+                        placeholder={placeholder}
+                        disabled={disabled}
+                        className={cn(
+                            "flex items-center justify-between w-full h-12 pl-4 pr-10 rounded-xl border-2 transition-all text-left",
+                            isOpen ? "bg-white border-slate-900 ring-0" : "bg-primary-blue/5 border-transparent hover:bg-primary-blue/10 focus:bg-white focus:border-slate-900 outline-none",
+                            disabled && "opacity-50 cursor-not-allowed",
+                            value ? "text-primary-blue font-semibold uppercase" : "text-primary-blue/40 font-medium"
+                        )}
+                    />
+                    <button type="button" aria-label="Toggle dropdown" onClick={isOpen ? () => setIsOpen(false) : openDropdown} className="absolute right-0 top-0 h-12 px-4 flex items-center justify-center text-primary-blue/30 focus:outline-none">
+                        <ChevronDown className={cn("h-4 w-4 transition-transform duration-300", isOpen && "rotate-180")} />
+                    </button>
                 </div>
-                <ChevronDown className={cn("h-4 w-4 text-primary-blue/30 transition-transform duration-300", isOpen && "rotate-180")} />
-            </button>
+            ) : (
+                <button
+                    ref={buttonRef}
+                    type="button"
+                    onClick={isOpen ? () => setIsOpen(false) : openDropdown}
+                    className={cn(
+                        "flex items-center justify-between w-full h-12 px-4 rounded-xl border-2 transition-all text-left",
+                        isOpen ? "bg-white border-slate-900 ring-0" : "bg-primary-blue/5 border-transparent hover:bg-primary-blue/10",
+                        disabled && "opacity-50 cursor-not-allowed",
+                        value ? "text-primary-blue font-semibold uppercase" : "text-primary-blue/40 font-medium"
+                    )}
+                >
+                    <div className="flex items-center gap-2 truncate">
+                        <span>{value || placeholder}</span>
+                    </div>
+                    <ChevronDown className={cn("h-4 w-4 text-primary-blue/30 transition-transform duration-300", isOpen && "rotate-180")} />
+                </button>
+            )}
 
             {/* Render dropdown via portal so it's never clipped by overflow:hidden ancestors */}
             {typeof document !== "undefined" && dropdown && createPortal(dropdown, document.body)}

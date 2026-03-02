@@ -531,6 +531,7 @@ export function RequestForm({ initialData, requestId, isEdit = false, onSuccess 
                                                 options={MAKES}
                                                 onChange={(v) => setFormData({ ...formData, make: v, model: "", submodel: "" })}
                                                 disabled={!vinUnlocked}
+                                                allowCustom
                                             />
                                         </div>
 
@@ -541,6 +542,7 @@ export function RequestForm({ initialData, requestId, isEdit = false, onSuccess 
                                                 options={formData.make ? (COMMON_MODELS[formData.make] || [OTHER_OPTION]) : []}
                                                 onChange={(v) => setFormData({ ...formData, model: v, submodel: "" })}
                                                 disabled={!vinUnlocked}
+                                                allowCustom
                                             />
                                             <BrandedSelect
                                                 label={trimsLoading ? "Loading Trims..." : "Sub-Model / Trim"}
@@ -548,6 +550,7 @@ export function RequestForm({ initialData, requestId, isEdit = false, onSuccess 
                                                 options={vehicleTrims}
                                                 onChange={(v) => setFormData({ ...formData, submodel: v })}
                                                 disabled={!vinUnlocked || trimsLoading}
+                                                allowCustom
                                             />
                                             <BrandedSelect
                                                 label="Engine Configuration"
@@ -555,6 +558,7 @@ export function RequestForm({ initialData, requestId, isEdit = false, onSuccess 
                                                 options={COMMON_ENGINES}
                                                 onChange={(v) => setFormData({ ...formData, engine: v })}
                                                 disabled={!vinUnlocked}
+                                                allowCustom
                                             />
                                         </div>
 

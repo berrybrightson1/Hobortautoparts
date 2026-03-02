@@ -130,7 +130,10 @@ function LoginContent() {
             }
 
         } catch (error: any) {
-            if (error.name === 'AbortError') return
+            if (error.name === 'AbortError') {
+                setIsLoading(false)
+                return
+            }
 
             setAuthError("Sign in failed")
             toast.error("Sign in failed", {
