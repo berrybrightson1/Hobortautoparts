@@ -214,7 +214,8 @@ export default function CustomerDashboard() {
                 await notifyAdminsAction({
                     title: 'New Order Payment',
                     message: `Customer accepted quote and paid for ${selectedRequest.part_name}.`,
-                    type: 'order'
+                    type: 'order',
+                    link: `/portal/admin/orders?orderId=${orderData.id}`
                 })
 
                 // Notify assigned agent if exists
@@ -223,7 +224,8 @@ export default function CustomerDashboard() {
                         userId: selectedRequest.agent_id,
                         title: 'Quote Accepted',
                         message: `Customer accepted quote for ${selectedRequest.part_name}`,
-                        type: 'order'
+                        type: 'order',
+                        link: `/portal/agent/requests?requestId=${selectedRequest.id}`
                     })
                 }
                 console.log('--- NOTIFICATIONS SENT ---')

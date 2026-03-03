@@ -384,7 +384,8 @@ export function RequestForm({ initialData, requestId, isEdit = false, onSuccess 
                     await notifyAdminsAction({
                         title: 'New Sourcing Request',
                         message: `New request for ${formData.part_name} (${vehicle_info})`,
-                        type: 'request'
+                        type: 'request',
+                        link: '/portal/admin/requests'
                     })
                 } catch (notifyError) {
                     console.error("Admin notification failed (non-fatal):", notifyError)

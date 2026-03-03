@@ -162,9 +162,9 @@ export function NotificationPopover() {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 10, scale: 0.95 }}
                         transition={{ duration: 0.2, ease: "easeOut" }}
-                        className="absolute right-0 mt-4 w-[420px] bg-white rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] border border-slate-100 overflow-hidden z-[100]"
+                        className="absolute right-[-10px] sm:right-0 mt-4 w-[340px] sm:w-[420px] bg-white rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] border border-slate-100 overflow-hidden z-[100]"
                     >
-                        <div className="p-6 border-b border-slate-50 flex items-center justify-between bg-white/80 backdrop-blur-md sticky top-0 z-10">
+                        <div className="p-4 sm:p-6 border-b border-slate-50 flex items-center justify-between bg-white/80 backdrop-blur-md sticky top-0 z-10 w-full">
                             <div className="space-y-1">
                                 <h3 className="text-xl font-bold text-slate-900 tracking-tight">Updates</h3>
                                 <div className="flex items-center gap-2">
@@ -180,10 +180,10 @@ export function NotificationPopover() {
                                         variant="ghost"
                                         size="sm"
                                         onClick={markAllAsRead}
-                                        className="h-8 px-3 text-[10px] font-bold uppercase tracking-widest text-primary-blue hover:text-blue-700 hover:bg-blue-50 rounded-full"
+                                        className="h-8 px-2 sm:px-3 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-primary-blue hover:text-blue-700 hover:bg-blue-50 rounded-full"
                                     >
-                                        <CheckCheck className="mr-1.5 h-3.5 w-3.5" />
-                                        Clear All
+                                        <CheckCheck className="mr-1 sm:mr-1.5 h-3.5 w-3.5" />
+                                        Mark All Read
                                     </Button>
                                 )}
                                 <Button

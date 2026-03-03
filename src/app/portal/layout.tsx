@@ -130,7 +130,6 @@ export default function PortalLayout({
   const { invoices } = useInvoices();
   const unpaidCount = invoices.filter((inv) => inv.status === 'balance_due').length;
   const [sidebarHovered, setSidebarHovered] = React.useState(false);
-  const [mounted, setMounted] = React.useState(false);
   const [openBugCount, setOpenBugCount] = React.useState(0);
   const [pendingAgentCount, setPendingAgentCount] = React.useState(0);
   const [hidePhoneAlert, setHidePhoneAlert] = React.useState(false);
@@ -192,7 +191,6 @@ export default function PortalLayout({
   const isAdminRoute = pathname.startsWith("/portal/admin");
 
   React.useEffect(() => {
-    setMounted(true);
     if (!loading && !user) {
       router.push("/login");
     }
@@ -285,7 +283,31 @@ export default function PortalLayout({
     };
   }, [user]);
 
-  if (!mounted || loading) {
+  // Clear unread notifications when visiting the associated section
+  React.useEffect(() => {
+    if (!user) return;
+
+    let typeToClear: string | null = null;
+    if (pathname.includes('/requests') || pathname.endsWith('/agent')) {
+      typeToClear = 'request';
+    } else if (pathname.includes('/orders')) {
+      typeToClear = 'order';
+    }
+
+    if (typeToClear) {
+      supabase
+        .from("notifications")
+        .update({ read: true })
+        .eq("user_id", user.id)
+        .eq("type", typeToClear)
+        .eq("read", false)
+        .then(() => {
+          // Realtime subscription will pick up the update and clear the badge automatically
+        });
+    }
+  }, [pathname, user, unreadCounts]);
+
+  if (loading) {
     return (
       <div className="h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
         <div className="h-10 w-10 border-4 border-primary-blue border-t-transparent rounded-full animate-spin" />
@@ -369,11 +391,7 @@ export default function PortalLayout({
           let unreadCount = 0;
           if (isRequestList) unreadCount = unreadCounts.request || 0;
           else if (isOrderList) unreadCount = unreadCounts.order || 0;
-          else if (isMessages)
-            unreadCount = Object.values(unreadCounts).reduce(
-              (a, b) => a + b,
-              0,
-            );
+          else if (isMessages) unreadCount = unreadCounts.system || 0;
 
           if (item.name === "Bug Reports") unreadCount = openBugCount;
           if (item.name === "Approvals" || item.name === "User Network") {
@@ -593,7 +611,7 @@ export default function PortalLayout({
               <LogOut className="h-3.5 w-3.5" />
             </button>
           </div>
-        ) : mounted ? (
+        ) : (
           <div className="flex items-center group w-full px-1">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -700,18 +718,6 @@ export default function PortalLayout({
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          </div>
-        ) : (
-          <div className="flex items-center group w-full px-1">
-            <div className="flex-1 flex items-center gap-3 px-3 py-2 rounded-xl min-w-0">
-              <div className="h-9 w-9 shrink-0 rounded-full bg-gradient-to-br from-primary-blue to-[#0f2d40] flex items-center justify-center text-white font-bold text-sm shadow-md">
-                {profile?.full_name?.charAt(0) || user?.email?.charAt(0) || "U"}
-              </div>
-              <div className="flex-1 min-w-0 hidden md:block">
-                <div className="h-4 w-24 bg-slate-100 rounded animate-pulse mb-1"></div>
-                <div className="h-3 w-12 bg-slate-50 rounded animate-pulse"></div>
-              </div>
-            </div>
           </div>
         )}
       </div>

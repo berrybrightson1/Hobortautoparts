@@ -106,7 +106,8 @@ export async function createShipment(formData: {
                     userId: order.user_id,
                     title: 'Shipment Created',
                     message: `Your shipment has been created with tracking number ${formData.tracking_number}`,
-                    type: 'order'
+                    type: 'order',
+                    link: '/portal/customer/tracking'
                 })
             }
         } catch (notifyErr) {
@@ -166,8 +167,9 @@ export async function updateShipmentStatus(
                 await sendNotification({
                     userId,
                     title: 'Shipment Status Updated',
-                    message: `${description}`,
-                    type: 'order'
+                    message: `${description} (${newStatus.replace(/_/g, ' ').toUpperCase()})`,
+                    type: 'order',
+                    link: '/portal/customer/tracking'
                 })
 
                 const { data: profile } = await supabase.from('profiles').select('email, full_name').eq('id', userId).single();

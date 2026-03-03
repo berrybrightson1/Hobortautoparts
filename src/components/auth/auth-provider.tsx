@@ -70,10 +70,6 @@ export const AuthProvider = ({
             }
         }
 
-        if (initialSession?.user && initialSession.user.email_confirmed_at) {
-            fetchProfile(initialSession.user)
-        }
-
         initSession()
 
         // Listen for auth changes
@@ -152,9 +148,6 @@ export const AuthProvider = ({
 
     const fetchProfile = async (currentUser: User) => {
         try {
-            // Small delay to allow Postgres trigger to safely commit before querying from replica
-            await new Promise(resolve => setTimeout(resolve, 500))
-
             const { data, error } = await supabase
                 .from('profiles')
                 .select('*')
@@ -186,6 +179,9 @@ export const AuthProvider = ({
             }
 
             console.warn("AuthProvider: Profile row missing, creating via Server Action...")
+
+            // Small delay only for new users: allow Postgres trigger to safely commit
+            await new Promise(resolve => setTimeout(resolve, 500))
 
             const syncRes = await createOrUpdateProfile(currentUser.id, {
                 full_name: currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0],

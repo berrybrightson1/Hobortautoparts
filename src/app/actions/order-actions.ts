@@ -90,7 +90,8 @@ export async function updateOrderStatus(orderId: string, newStatus: string) {
                     userId: order.user_id,
                     title: 'Order Status Updated',
                     message: `Your order status has been updated to ${newStatus.toUpperCase()}.`,
-                    type: 'order'
+                    type: 'order',
+                    link: '/portal/customer/orders'
                 })
             }
         } catch (notifyErr) {
@@ -162,7 +163,8 @@ export async function updateServiceFee(quoteId: string, serviceFee: number) {
                     userId: order.user_id,
                     title: 'Service Fee Updated',
                     message: `A service fee of $${serviceFee} has been applied to your quote.`,
-                    type: 'system'
+                    type: 'system',
+                    link: '/portal/customer/orders'
                 })
             }
         } catch (notifyErr) {

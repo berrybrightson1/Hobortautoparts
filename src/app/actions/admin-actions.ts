@@ -52,7 +52,8 @@ export async function updateUserRole(userId: string, newRole: 'customer' | 'agen
                 userId,
                 title: 'Agent Application Approved',
                 message: 'Congratulations! Your application to become a Hobort Agent has been approved. You now have access to the Agent Portal.',
-                type: 'system'
+                type: 'system',
+                link: '/portal/agent'
             })
 
             // Dispatch the delayed Agent Welcome Email
@@ -301,7 +302,8 @@ export async function suspendUser(userId: string) {
             userId,
             title: 'Account Suspended',
             message: 'Your account has been suspended by an administrator. Please contact support.',
-            type: 'system'
+            type: 'system',
+            link: '/portal/customer'
         })
 
         await logAction('suspend_user', { targetUserId: userId })
@@ -328,7 +330,8 @@ export async function unsuspendUser(userId: string) {
             userId,
             title: 'Account Reactivated',
             message: 'Your account suspension has been lifted. You may now resume using the platform.',
-            type: 'system'
+            type: 'system',
+            link: '/portal/customer'
         })
 
         await logAction('unsuspend_user', { targetUserId: userId })
@@ -391,7 +394,8 @@ export async function createProxyOrder(requestId: string, quoteId: string, userI
                 userId: userId,
                 title: 'Order Confirmed',
                 message: 'Your order has been verified and confirmed by an administrator.',
-                type: 'order'
+                type: 'order',
+                link: '/portal/customer/orders'
             })
 
             const { data: profile } = await supabaseAdmin.from('profiles').select('email, full_name').eq('id', userId).single();
